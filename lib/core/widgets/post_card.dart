@@ -434,7 +434,7 @@ class _PostCardState extends ConsumerState<PostCard> with SingleTickerProviderSt
 
 class _ActionButton extends StatelessWidget {
 
-  const _ActionButton({required this.icon, required this.onTap, this.label});
+  const _ActionButton({required this.icon, required this.onTap, this.label, this.color});
   final IconData icon;
   final String? label;
   final Color? color;
