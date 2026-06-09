@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gotchaa/features/services/domain/models/service_model.dart';
 
@@ -22,35 +23,35 @@ void main() {
         name: 'Swiggy',
         url: 'https://swiggy.com',
         category: ServiceCategory.food,
-        brandColor: null,
+        brandColor: Colors.blue,
         description: 'Food delivery'),
     const GotchaaService(
         id: 'blinkit',
         name: 'Blinkit',
         url: 'https://blinkit.com',
         category: ServiceCategory.grocery,
-        brandColor: null,
+        brandColor: Colors.blue,
         description: 'Grocery delivery'),
     const GotchaaService(
         id: 'amazon',
         name: 'Amazon',
         url: 'https://amazon.com',
         category: ServiceCategory.shopping,
-        brandColor: null,
+        brandColor: Colors.blue,
         description: 'Shopping'),
     const GotchaaService(
         id: 'uber',
         name: 'Uber',
         url: 'https://uber.com',
         category: ServiceCategory.transport,
-        brandColor: null,
+        brandColor: Colors.blue,
         description: 'Transport'),
     const GotchaaService(
         id: 'booking',
         name: 'Booking.com',
         url: 'https://booking.com',
         category: ServiceCategory.hotels,
-        brandColor: null,
+        brandColor: Colors.blue,
         description: 'Hotels'),
   ];
 

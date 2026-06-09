@@ -174,7 +174,11 @@ class _ChatConversationScreenState
     _messageController.dispose();
     _scrollController.dispose();
     _typingTimer?.cancel();
-    Future.microtask(() => ref.read(chatServiceProvider).setActiveChat(null));
+    Future.microtask(() {
+      if (mounted) {
+        ref.read(chatServiceProvider).setActiveChat(null);
+      }
+    });
     super.dispose();
   }
 

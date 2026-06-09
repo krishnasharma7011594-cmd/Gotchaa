@@ -34,7 +34,7 @@ void main() {
         '@example.com', // No local part
         'test@', // No domain
         'test@example..com', // Double dot
-        'test@example', // No TLD (usually invalid in strict contexts)
+        'test@example', // No TLD — regex requires at least one dot in domain
         'test@ example.com', // Space in domain
         'a' * 245 + '@example.com', // Too long (> 254)
       ];
@@ -53,7 +53,8 @@ void main() {
       // We test against the actual strict implementation.
 
       test('Strong password passes', () {
-        final result = InputValidator.validatePassword('Abcdefghij1!');
+        // Non-sequential, mixed-case, has numbers and special chars, 12+ chars
+        final result = InputValidator.validatePassword('P@ssw0rd#Nxt!9');
         expect(result.isValid, isTrue);
       });
 

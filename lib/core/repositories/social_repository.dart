@@ -5,7 +5,8 @@ import '../models/user_profile.dart';
 import '../utils/distributed_counter.dart';
 
 class SocialRepository {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  SocialRepository({FirebaseFirestore? db}) : _db = db ?? FirebaseFirestore.instance;
+  final FirebaseFirestore _db;
 
   // ═══════════════════════════════════════════════════════════════════════
   // FOLLOW SYSTEM
