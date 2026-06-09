@@ -1,0 +1,18 @@
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main {
+  flex: 1;
+  margin-left: 280px;
+  padding: 2rem;
+  background: var(--background);
+  min-width: 0; /* Prevents overflow-x if content is too wide */
+}
+
+.content {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}

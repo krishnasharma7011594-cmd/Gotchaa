@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "389547380059",
+    "project_id": "studio-1284397718-50704",
+    "storage_bucket": "studio-1284397718-50704.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:389547380059:android:4f5b523850e15516ccde7e",
+        "android_client_info": {
+          "package_name": "com.gotcha.gotcha"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "389547380059-no3447ldt1atuujhflhhsn1iquat6vrp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gotcha.gotcha",
+            "certificate_hash": "6b6e71ad5fe351ba2f75b3d0f87f144d7d67dc26"
+          }
+        },
+        {
+          "client_id": "389547380059-j7olb25b8eu8se8o1l19hneci6lu3qbo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDk9tipeuG5XcMHPoA8AwW5YRlfIRZy80c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "389547380059-j7olb25b8eu8se8o1l19hneci6lu3qbo.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "389547380059-epje1oj52j19lue9u7p3uq14ku5j9fgb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.gotcha.gotcha"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:389547380059:android:c771a4eace6c0e76ccde7e",
+        "android_client_info": {
+          "package_name": "com.gotchaa.gotchaa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "389547380059-7i6qqhvkaj6mdnjs5cks6m4i5dqbh1jk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gotchaa.gotchaa",
+            "certificate_hash": "6b6e71ad5fe351ba2f75b3d0f87f144d7d67dc26"
+          }
+        },
+        {
+          "client_id": "389547380059-j7olb25b8eu8se8o1l19hneci6lu3qbo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDk9tipeuG5XcMHPoA8AwW5YRlfIRZy80c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "389547380059-j7olb25b8eu8se8o1l19hneci6lu3qbo.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "389547380059-epje1oj52j19lue9u7p3uq14ku5j9fgb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.gotcha.gotcha"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
