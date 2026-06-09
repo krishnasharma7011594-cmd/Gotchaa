@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../models/circle_model.dart';
@@ -23,7 +24,7 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
   final _tagsController = TextEditingController();
 
   String _selectedCategory = 'Pickleball';
-  String _selectedCity = 'New Delhi';
+  final String _selectedCity = 'New Delhi';
   int _memberLimit = 15;
   bool _isPrivate = false;
   bool _isApprovalRequired = false;
@@ -121,7 +122,7 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
         ),
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -190,7 +191,7 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
               // Category selector
               DropdownButtonFormField<String>(
                 dropdownColor: context.surface,
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 items: _categories.map((c) => DropdownMenuItem(value: c, child: Text(c, style: const TextStyle(color: Colors.white)))).toList(),
                 onChanged: (val) {
                   if (val != null) setState(() => _selectedCategory = val);
@@ -261,7 +262,7 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
                 onChanged: (val) => setState(() => _isPrivate = val),
                 title: Text('Private Circle', style: GoogleFonts.outfit(color: Colors.white)),
                 subtitle: Text('Search engine will hide this circle from public discover feeds.', style: GoogleFonts.inter(color: context.textSecondary, fontSize: 11)),
-                activeColor: AppColors.electricBlue,
+                activeThumbColor: AppColors.electricBlue,
               ),
 
               // Approval required switch
@@ -270,7 +271,7 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
                 onChanged: (val) => setState(() => _isApprovalRequired = val),
                 title: Text('Require host approval to join', style: GoogleFonts.outfit(color: Colors.white)),
                 subtitle: Text('New applicants must be accepted by you to view precise coordinates.', style: GoogleFonts.inter(color: context.textSecondary, fontSize: 11)),
-                activeColor: AppColors.electricBlue,
+                activeThumbColor: AppColors.electricBlue,
               ),
               const SizedBox(height: 24),
 

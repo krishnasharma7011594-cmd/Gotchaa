@@ -2,9 +2,9 @@ import 'dart:typed_data';
 
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
+import 'package:image/image.dart' as img;
 
 import '../logging/app_logger.dart';
-import 'package:image/image.dart' as img;
 
 /// Perceptual hash (dHash) check — PhotoDNA-compatible *approach*.
 /// Production CSAM lists are provided via law enforcement / NCMEC partnerships.

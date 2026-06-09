@@ -1,9 +1,8 @@
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter/foundation.dart';
 
-import '../logging/app_logger.dart';
 import '../../features/reporting/report_model.dart';
 import '../../features/reporting/report_repository.dart';
+import '../logging/app_logger.dart';
 import 'profanity_filter.dart';
 
 enum ModerationActionType {
@@ -192,9 +191,9 @@ class AutoModerationService {
       RegExp(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}').hasMatch(t);
 
   bool _isAllCapsAbuse(String t) {
-    final letters = t.replaceAll(RegExp(r'[^A-Za-z]'), '');
+    final letters = t.replaceAll(RegExp('[^A-Za-z]'), '');
     if (letters.length < 8) return false;
-    final upper = letters.replaceAll(RegExp(r'[^A-Z]'), '').length;
+    final upper = letters.replaceAll(RegExp('[^A-Z]'), '').length;
     return upper / letters.length > 0.7;
   }
 }

@@ -1,16 +1,17 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
+import 'package:gotchaa/core/models/chat_models.dart';
 import 'package:gotchaa/features/chat/presentation/screens/chat_conversation_screen.dart';
 import 'package:gotchaa/features/chat/providers/chat_providers.dart';
-import 'package:gotchaa/core/models/chat_models.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('Complete Chat Flow Test', (WidgetTester tester) async {
+  testWidgets('Complete Chat Flow Test', (tester) async {
     final controller = StreamController<List<MessageModel>>();
     const testChatId = 'test_chat_id';
     

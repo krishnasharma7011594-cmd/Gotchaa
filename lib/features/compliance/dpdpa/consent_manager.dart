@@ -1,11 +1,10 @@
-/**
- * Firestore Collection Schema: users/{uid}/consents/{consentType}
- * 
- * Document ID: consentType (e.g., "dataProcessing", "marketing")
- * Fields:
- * - granted: Boolean
- * - timestamp: Timestamp
- */
+/// Firestore Collection Schema: users/{uid}/consents/{consentType}
+/// 
+/// Document ID: consentType (e.g., "dataProcessing", "marketing")
+/// Fields:
+/// - granted: Boolean
+/// - timestamp: Timestamp
+library;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

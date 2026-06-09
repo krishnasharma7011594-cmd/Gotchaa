@@ -8,12 +8,11 @@ import '../services/circles_checkin_service.dart';
 import '../widgets/glassmorphic_card.dart';
 
 class CheckInQrScreen extends StatefulWidget {
-  final CircleModel circle;
 
   const CheckInQrScreen({
-    super.key,
-    required this.circle,
+    required this.circle, super.key,
   });
+  final CircleModel circle;
 
   @override
   State<CheckInQrScreen> createState() => _CheckInQrScreenState();
@@ -59,8 +58,7 @@ class _CheckInQrScreenState extends State<CheckInQrScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       backgroundColor: context.bg,
       appBar: AppBar(
         backgroundColor: context.bg,
@@ -68,7 +66,7 @@ class _CheckInQrScreenState extends State<CheckInQrScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -86,7 +84,7 @@ class _CheckInQrScreenState extends State<CheckInQrScreen> {
                   borderRadius: 28,
                   blur: 15,
                   child: Padding(
-                    padding: const EdgeInsets.all(24.0),
+                    padding: const EdgeInsets.all(24),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -96,7 +94,7 @@ class _CheckInQrScreenState extends State<CheckInQrScreen> {
                           child: QrImageView(
                             data: _token,
                             version: QrVersions.auto,
-                            size: 200.0,
+                            size: 200,
                             gapless: false,
                           ),
                         ),
@@ -144,5 +142,4 @@ class _CheckInQrScreenState extends State<CheckInQrScreen> {
         ),
       ),
     );
-  }
 }

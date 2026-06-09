@@ -1,14 +1,16 @@
 import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
-import '../models/circle_model.dart';
+
 import '../models/checkin_model.dart';
+import '../models/circle_model.dart';
 import 'circles_firestore_service.dart';
 
 class CirclesCheckInService {
-  static final CirclesCheckInService instance = CirclesCheckInService._internal();
   CirclesCheckInService._internal();
+  static final CirclesCheckInService instance = CirclesCheckInService._internal();
 
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;

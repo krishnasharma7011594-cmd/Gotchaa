@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +5,7 @@ import 'package:flutter/services.dart';
 
 /// FLAG_SECURE on Android; secure channel on iOS (screenshot notification).
 class SecureScreen extends StatefulWidget {
-  const SecureScreen({super.key, required this.child, this.enabled = true});
+  const SecureScreen({required this.child, super.key, this.enabled = true});
 
   final Widget child;
   final bool enabled;

@@ -27,7 +27,7 @@ final blockedUidsProvider = StreamProvider<List<String>>((ref) {
   return Rx.combineLatest2(
     blockerStream,
     blockedStream,
-    (QuerySnapshot blockerSnap, QuerySnapshot blockedSnap) {
+    (blockerSnap, blockedSnap) {
       final Set<String> uids = {};
       for (final doc in blockerSnap.docs) {
         final data = doc.data() as Map<String, dynamic>?;
@@ -58,10 +58,8 @@ final mutedUidsProvider = StreamProvider<List<String>>((ref) {
       .collection('muted_accounts')
       .where('muterId', isEqualTo: currentUserId)
       .snapshots()
-      .map((snapshot) {
-    return snapshot.docs
-        .map((doc) => (doc.data() as Map<String, dynamic>)['mutedId'] as String?)
+      .map((snapshot) => snapshot.docs
+        .map((doc) => doc.data()['mutedId'] as String?)
         .whereType<String>()
-        .toList();
-  });
+        .toList());
 });

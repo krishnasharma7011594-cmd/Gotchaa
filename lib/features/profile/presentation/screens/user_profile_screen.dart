@@ -9,14 +9,13 @@ import '../../../../core/providers/auth_providers.dart';
 import '../../../../core/providers/post_providers.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/providers/social_providers.dart';
+import '../../../../core/services/block_mute_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../chat/presentation/screens/chat_conversation_screen.dart';
-import '../../../reporting/report_dialog.dart';
 import '../../../explore/presentation/screens/post_detail_screen.dart';
+import '../../../reporting/report_dialog.dart';
 import 'creator_analytics_screen.dart';
 import 'follow_list_screen.dart';
-
-import '../../../../core/services/block_mute_service.dart';
 
 /// A provider that streams another user's profile by uid.
 final _otherProfileProvider =
@@ -172,8 +171,7 @@ class _OtherProfileViewState extends ConsumerState<_OtherProfileView> {
           topRight: Radius.circular(20),
         ),
       ),
-      builder: (context) {
-        return SafeArea(
+      builder: (context) => SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -250,8 +248,7 @@ class _OtherProfileViewState extends ConsumerState<_OtherProfileView> {
               ),
             ],
           ),
-        );
-      },
+        ),
     );
   }
 

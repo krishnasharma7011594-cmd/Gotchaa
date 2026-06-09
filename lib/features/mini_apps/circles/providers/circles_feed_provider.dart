@@ -7,6 +7,23 @@ import '../services/circles_local_cache_service.dart';
 import 'circles_onboarding_provider.dart';
 
 class CirclesFeedState {
+
+  CirclesFeedState({
+    required this.circles,
+    required this.isLoading,
+    required this.isThrottled,
+    required this.searchQuery, required this.selectedCategory, required this.hasMore, this.error,
+    this.selectedCity,
+  });
+
+  factory CirclesFeedState.initial() => CirclesFeedState(
+      circles: [],
+      isLoading: false,
+      isThrottled: false,
+      searchQuery: '',
+      selectedCategory: 'All',
+      hasMore: true,
+    );
   final List<CircleModel> circles;
   final bool isLoading;
   final bool isThrottled;
@@ -15,17 +32,6 @@ class CirclesFeedState {
   final String selectedCategory;
   final String? selectedCity;
   final bool hasMore;
-
-  CirclesFeedState({
-    required this.circles,
-    required this.isLoading,
-    required this.isThrottled,
-    this.error,
-    required this.searchQuery,
-    required this.selectedCategory,
-    this.selectedCity,
-    required this.hasMore,
-  });
 
   CirclesFeedState copyWith({
     List<CircleModel>? circles,
@@ -36,8 +42,7 @@ class CirclesFeedState {
     String? selectedCategory,
     String? selectedCity,
     bool? hasMore,
-  }) {
-    return CirclesFeedState(
+  }) => CirclesFeedState(
       circles: circles ?? this.circles,
       isLoading: isLoading ?? this.isLoading,
       isThrottled: isThrottled ?? this.isThrottled,
@@ -47,28 +52,16 @@ class CirclesFeedState {
       selectedCity: selectedCity ?? this.selectedCity,
       hasMore: hasMore ?? this.hasMore,
     );
-  }
-
-  factory CirclesFeedState.initial() {
-    return CirclesFeedState(
-      circles: [],
-      isLoading: false,
-      isThrottled: false,
-      searchQuery: '',
-      selectedCategory: 'All',
-      hasMore: true,
-    );
-  }
 }
 
 class CirclesFeedNotifier extends StateNotifier<CirclesFeedState> {
-  final CirclesFirestoreService _firestoreService;
-  final Ref _ref;
-  DocumentSnapshot? _lastDoc;
 
   CirclesFeedNotifier(this._firestoreService, this._ref) : super(CirclesFeedState.initial()) {
     loadCachedFeed().then((_) => fetchFeed(refresh: true));
   }
+  final CirclesFirestoreService _firestoreService;
+  final Ref _ref;
+  DocumentSnapshot? _lastDoc;
 
   // Load cache immediately for instant loading
   Future<void> loadCachedFeed() async {

@@ -5,11 +5,11 @@ import '../services/circles_firestore_service.dart';
 final circlesFirestoreServiceProvider = Provider((ref) => CirclesFirestoreService());
 
 class CirclesOnboardingNotifier extends StateNotifier<AsyncValue<UserOnboarding>> {
-  final CirclesFirestoreService _firestoreService;
 
   CirclesOnboardingNotifier(this._firestoreService) : super(const AsyncValue.loading()) {
     loadOnboarding();
   }
+  final CirclesFirestoreService _firestoreService;
 
   Future<void> loadOnboarding() async {
     state = const AsyncValue.loading();

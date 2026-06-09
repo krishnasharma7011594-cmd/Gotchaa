@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/webview/in_app_webview_screen.dart';
 
 import '../../../../core/l10n/app_localizations_x.dart';
 import '../../../../core/models/user_profile.dart';
@@ -13,20 +12,21 @@ import '../../../../core/providers/profile_providers.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/webview/in_app_webview_screen.dart';
+import '../../../compliance/dpdpa/data_principal_rights_page.dart';
+import '../../../compliance/india/grievance_officer_page.dart';
 import 'appearance_screen.dart';
 import 'blocked_accounts_screen.dart';
 import 'delete_account_screen.dart';
 import 'language_settings_screen.dart';
+import 'legal_hub_screen.dart';
 import 'personal_information_screen.dart';
 import 'privacy_lists_screen.dart';
-import 'legal_hub_screen.dart';
 import 'privacy_policy_screen.dart';
 import 'privacy_settings_screen.dart';
 import 'saved_posts_screen.dart';
 import 'security_settings_screen.dart';
 import 'terms_of_service_screen.dart';
-import '../../../compliance/india/grievance_officer_page.dart';
-import '../../../compliance/dpdpa/data_principal_rights_page.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});

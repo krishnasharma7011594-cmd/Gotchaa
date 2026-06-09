@@ -2,14 +2,14 @@ import 'package:async/async.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../algorithms/post_scorer.dart';
+import '../geo/content_policy.dart';
+import '../geo/geo_compliance_service.dart';
+import '../geo/geo_content_filter.dart';
 import '../models/feed_item.dart';
 import '../models/post_model.dart';
 import '../models/vybz_model.dart';
-import '../utils/feed_mixer.dart';
-import '../geo/geo_compliance_service.dart';
-import '../geo/content_policy.dart';
-import '../geo/geo_content_filter.dart';
 import '../services/block_mute_service.dart';
+import '../utils/feed_mixer.dart';
 import 'auth_providers.dart';
 import 'profile_providers.dart';
 import 'repository_providers.dart';

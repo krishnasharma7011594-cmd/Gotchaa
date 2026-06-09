@@ -153,11 +153,11 @@ class GlassSidebar extends ConsumerWidget {
                                 builder: (context) => AlertDialog(
                                   backgroundColor: const Color(0xFF1A1D26),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                  title: Row(
+                                  title: const Row(
                                     children: [
-                                      const Icon(Icons.auto_awesome_rounded, color: Colors.amber, size: 28),
-                                      const SizedBox(width: 12),
-                                      const Text(
+                                      Icon(Icons.auto_awesome_rounded, color: Colors.amber, size: 28),
+                                      SizedBox(width: 12),
+                                      Text(
                                         'Coming Soon',
                                         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                                       ),

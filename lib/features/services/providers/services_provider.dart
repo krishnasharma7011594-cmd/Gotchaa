@@ -1,13 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/auth_providers.dart';
-import '../../../core/providers/repository_providers.dart';
 import '../domain/models/service_model.dart';
 
-final servicesProvider = Provider<List<GotchaaService>>((ref) {
-  return [
+final servicesProvider = Provider<List<GotchaaService>>((ref) => [
     const GotchaaService(
       id: 'swiggy',
       name: 'Swiggy',
@@ -197,8 +195,7 @@ final servicesProvider = Provider<List<GotchaaService>>((ref) {
       description: 'Book doctors and consultations',
       iconAsset: 'https://practo.com/favicon.ico',
     ),
-  ];
-});
+  ]);
 
 final recentServicesProvider = StreamProvider<List<String>>((ref) {
   final uid = ref.watch(authStateProvider).asData?.value?.uid;

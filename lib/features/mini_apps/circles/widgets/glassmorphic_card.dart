@@ -2,22 +2,21 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class GlassmorphicCard extends StatelessWidget {
-  final Widget child;
-  final double borderRadius;
-  final double blur;
-  final List<Color>? borderGradients;
-  final double borderWidth;
-  final VoidCallback? onTap;
 
   const GlassmorphicCard({
-    super.key,
-    required this.child,
+    required this.child, super.key,
     this.borderRadius = 24.0,
     this.blur = 15.0,
     this.borderGradients,
     this.borderWidth = 1.2,
     this.onTap,
   });
+  final Widget child;
+  final double borderRadius;
+  final double blur;
+  final List<Color>? borderGradients;
+  final double borderWidth;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -73,15 +72,15 @@ class GlassmorphicCard extends StatelessWidget {
 }
 
 class _GlassBorderPainter extends CustomPainter {
-  final double borderRadius;
-  final double borderWidth;
-  final List<Color> gradientColors;
 
   _GlassBorderPainter({
     required this.borderRadius,
     required this.borderWidth,
     required this.gradientColors,
   });
+  final double borderRadius;
+  final double borderWidth;
+  final List<Color> gradientColors;
 
   @override
   void paint(Canvas canvas, Size size) {

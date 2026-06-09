@@ -1,13 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/providers/profile_providers.dart';
+import '../../../../core/permissions/permission_manager.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/vibetalk_providers.dart';
-import '../../../../core/permissions/permission_manager.dart';
 
 class VibeTalkSummaryScreen extends ConsumerWidget {
   const VibeTalkSummaryScreen({super.key});
@@ -121,8 +120,8 @@ class VibeTalkSummaryScreen extends ConsumerWidget {
     
     final duration = vibeState.lastSessionDuration;
     final durationStr = duration != null 
-        ? "${duration.inMinutes}m ${duration.inSeconds % 60}s"
-        : "0m 0s";
+        ? '${duration.inMinutes}m ${duration.inSeconds % 60}s'
+        : '0m 0s';
         
     final gamesPlayed = vibeState.lastSessionGamesPlayed;
 

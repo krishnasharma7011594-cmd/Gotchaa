@@ -1,5 +1,4 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:flutter/foundation.dart';
 
 import '../logging/app_logger.dart';
 import 'blocked_words.dart';
@@ -33,16 +32,16 @@ class ProfanityMatch {
 }
 
 class ProfanityFilter {
-  static final ProfanityFilter _instance = ProfanityFilter._internal();
   factory ProfanityFilter() => _instance;
-
-  final List<BlockedTerm> _terms = [];
 
   ProfanityFilter._internal() {
     for (final line in BlockedWords.baselineLines) {
       _parseLine(line);
     }
   }
+  static final ProfanityFilter _instance = ProfanityFilter._internal();
+
+  final List<BlockedTerm> _terms = [];
 
   Future<void> initialize() async {
     try {
@@ -163,7 +162,5 @@ class ProfanityFilter {
     return result;
   }
 
-  bool containsViolation(String input, {FilterContext context = FilterContext.message}) {
-    return findMatches(input, context).any((m) => m.severity != FilterSeverity.low);
-  }
+  bool containsViolation(String input, {FilterContext context = FilterContext.message}) => findMatches(input, context).any((m) => m.severity != FilterSeverity.low);
 }

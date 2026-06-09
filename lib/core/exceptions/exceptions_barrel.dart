@@ -31,6 +31,13 @@
 /// ```
 library;
 
+import 'package:cloud_functions/cloud_functions.dart' show Result;
+import '../core_barrel.dart' show GotchaException, Failure, Result;
+import 'exceptions.dart' show GotchaException;
+import 'exceptions_barrel.dart' show GotchaException, Failure, Result;
+import 'failure.dart' show Failure;
+import 'result.dart' show Result;
+
 export 'exceptions.dart';
 export 'failure.dart';
 export 'result.dart';

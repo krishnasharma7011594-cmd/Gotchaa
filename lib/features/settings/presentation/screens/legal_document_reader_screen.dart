@@ -10,8 +10,7 @@ import '../../../../core/theme/app_colors.dart';
 
 class LegalDocumentReaderScreen extends StatefulWidget {
   const LegalDocumentReaderScreen({
-    super.key,
-    required this.document,
+    required this.document, super.key,
     this.showChangeBanner = false,
     this.previousAcceptedVersion,
   });

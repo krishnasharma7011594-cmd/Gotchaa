@@ -1,17 +1,17 @@
-/**
- * Firestore Collection Schema: deletion_requests
- * 
- * Document ID: uid (User ID)
- * Fields:
- * - status: String ("pending", "processed")
- * - requestedAt: Timestamp
- */
+/// Firestore Collection Schema: deletion_requests
+/// 
+/// Document ID: uid (User ID)
+/// Fields:
+/// - status: String ("pending", "processed")
+/// - requestedAt: Timestamp
+library;
 
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'consent_manager.dart';
+import 'package:flutter/material.dart';
+
 import '../india/grievance_officer_page.dart';
+import 'consent_manager.dart';
 
 class DataPrincipalRightsPage extends StatefulWidget {
   const DataPrincipalRightsPage({super.key});
@@ -127,7 +127,7 @@ class _DataPrincipalRightsPageState extends State<DataPrincipalRightsPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Your Data Rights')),
       body: ListView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         children: [
           _buildAccessSection(),
           const Divider(),
@@ -139,8 +139,7 @@ class _DataPrincipalRightsPageState extends State<DataPrincipalRightsPage> {
     );
   }
 
-  Widget _buildAccessSection() {
-    return Column(
+  Widget _buildAccessSection() => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Access My Data', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -156,10 +155,8 @@ class _DataPrincipalRightsPageState extends State<DataPrincipalRightsPage> {
           const Text('No data found.'),
       ],
     );
-  }
 
-  Widget _buildConsentSection() {
-    return Column(
+  Widget _buildConsentSection() => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Manage Consents', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -190,10 +187,8 @@ class _DataPrincipalRightsPageState extends State<DataPrincipalRightsPage> {
         ),
       ],
     );
-  }
 
-  Widget _buildActionSection() {
-    return Column(
+  Widget _buildActionSection() => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Actions', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -226,5 +221,4 @@ class _DataPrincipalRightsPageState extends State<DataPrincipalRightsPage> {
         ),
       ],
     );
-  }
 }

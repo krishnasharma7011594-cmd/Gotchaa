@@ -23,8 +23,7 @@ class DistributedCounter {
   }
 
   /// Streams the sum of all shards for a counter.
-  static Stream<int> streamCount(DocumentReference docRef, String counterName) {
-    return docRef.collection('${counterName}_shards').snapshots().map((snapshot) {
+  static Stream<int> streamCount(DocumentReference docRef, String counterName) => docRef.collection('${counterName}_shards').snapshots().map((snapshot) {
       int total = 0;
       for (final doc in snapshot.docs) {
         final data = doc.data();
@@ -32,7 +31,6 @@ class DistributedCounter {
       }
       return total;
     });
-  }
 
   /// Fetches the sum of all shards (one-shot).
   static Future<int> getCount(DocumentReference docRef, String counterName) async {

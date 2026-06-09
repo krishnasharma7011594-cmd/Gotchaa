@@ -4,13 +4,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../features/explore/presentation/screens/likes_screen.dart';
 import '../providers/auth_providers.dart';
 import '../providers/profile_providers.dart';
 import '../providers/repository_providers.dart';
 import '../providers/social_providers.dart';
 import '../services/analytics_service.dart';
 import '../theme/app_theme.dart';
-import '../../../features/explore/presentation/screens/likes_screen.dart';
 
 class GotchaaLikeButton extends ConsumerStatefulWidget {
   const GotchaaLikeButton({
@@ -50,7 +50,7 @@ class _GotchaaLikeButtonState extends ConsumerState<GotchaaLikeButton>
   
   bool? _isLikedLocal;
   int _likesCountLocal = 0;
-  bool _isInitialized = false;
+  final bool _isInitialized = false;
 
   @override
   void initState() {
@@ -62,8 +62,8 @@ class _GotchaaLikeButtonState extends ConsumerState<GotchaaLikeButton>
       duration: const Duration(milliseconds: 200),
     );
     _scaleAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.4), weight: 50),
-      TweenSequenceItem(tween: Tween(begin: 1.4, end: 1.0), weight: 50),
+      TweenSequenceItem(tween: Tween(begin: 1, end: 1.4), weight: 50),
+      TweenSequenceItem(tween: Tween(begin: 1.4, end: 1), weight: 50),
     ]).animate(CurvedAnimation(parent: _animController, curve: Curves.easeInOut));
   }
 
@@ -136,7 +136,7 @@ class _GotchaaLikeButtonState extends ConsumerState<GotchaaLikeButton>
           _likesCountLocal += currentlyLiked ? 1 : -1;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Failed to update like. Please try again.'),
             behavior: SnackBarBehavior.floating,
           ),

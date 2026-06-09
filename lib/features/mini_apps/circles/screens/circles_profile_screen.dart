@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../models/circle_model.dart';
@@ -27,15 +28,14 @@ class CirclesProfileScreen extends ConsumerWidget {
         child: onboardingState.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (err, stack) => Center(child: Text('Error: $err')),
-          data: (onboarding) {
-            return ListView(
+          data: (onboarding) => ListView(
               padding: const EdgeInsets.all(24),
               children: [
                 // Avatar & Basic Info card
                 GlassmorphicCard(
                   blur: 15,
                   child: Padding(
-                    padding: const EdgeInsets.all(24.0),
+                    padding: const EdgeInsets.all(24),
                     child: Column(
                       children: [
                         const CircleAvatar(
@@ -57,7 +57,7 @@ class CirclesProfileScreen extends ConsumerWidget {
                         // Trust Badge displaying actual user karma
                         const TrustBadgeWidget(
                           karmaScore: 160, // Real-time calculated karma indicator
-                          attendanceRate: 97.0,
+                          attendanceRate: 97,
                         ),
                       ],
                     ),
@@ -80,8 +80,7 @@ class CirclesProfileScreen extends ConsumerWidget {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: onboarding.hobbies.map((hobby) {
-                      return Chip(
+                    children: onboarding.hobbies.map((hobby) => Chip(
                         label: Text(hobby),
                         backgroundColor: AppColors.electricBlue.withOpacity(0.2),
                         labelStyle: GoogleFonts.outfit(color: AppColors.primaryGlow, fontSize: 12, fontWeight: FontWeight.bold),
@@ -89,8 +88,7 @@ class CirclesProfileScreen extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(12),
                           side: const BorderSide(color: Colors.white10),
                         ),
-                      );
-                    }).toList(),
+                      )).toList(),
                   ),
                 const SizedBox(height: 24),
 
@@ -108,7 +106,7 @@ class CirclesProfileScreen extends ConsumerWidget {
                   builder: (context, snapshot) {
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                       return Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
+                        padding: const EdgeInsets.only(top: 4),
                         child: Text(
                           'You haven\'t joined any circles yet.',
                           style: GoogleFonts.inter(color: context.textSecondary, fontSize: 13),
@@ -118,9 +116,9 @@ class CirclesProfileScreen extends ConsumerWidget {
 
                     return Column(
                       children: snapshot.data!.docs.map((doc) {
-                        final circle = CircleModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+                        final circle = CircleModel.fromMap(doc.data()! as Map<String, dynamic>, doc.id);
                         return Padding(
-                          padding: const EdgeInsets.only(bottom: 12.0),
+                          padding: const EdgeInsets.only(bottom: 12),
                           child: GlassmorphicCard(
                             blur: 5,
                             child: ListTile(
@@ -135,8 +133,7 @@ class CirclesProfileScreen extends ConsumerWidget {
                   },
                 )
               ],
-            );
-          },
+            ),
         ),
       ),
     );

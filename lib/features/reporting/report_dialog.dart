@@ -10,10 +10,7 @@ import 'report_repository.dart';
 
 class ReportBottomSheet extends StatefulWidget {
   const ReportBottomSheet({
-    super.key,
-    required this.reportedUserId,
-    required this.contentType,
-    required this.contentId,
+    required this.reportedUserId, required this.contentType, required this.contentId, super.key,
     this.contentPreview,
   });
 

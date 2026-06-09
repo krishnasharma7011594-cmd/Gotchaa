@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gotchaa/main.dart';
+import 'main.dart';
 
 /// Simple wrapper for tests that need a MyApp widget.
 class MyApp extends StatelessWidget {

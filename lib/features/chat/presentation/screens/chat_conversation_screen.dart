@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cryptography/cryptography.dart' as crypto;
@@ -10,21 +9,21 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../../../core/firebase/performance_traces.dart';
 import '../../../../core/l10n/app_localizations_x.dart';
 import '../../../../core/models/chat_models.dart';
 import '../../../../core/providers/auth_providers.dart';
 import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/security/e2ee_service.dart';
+import '../../../../core/security/secure_screen.dart';
 import '../../../../core/services/analytics_service.dart';
 import '../../../../core/services/translation_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../providers/chat_providers.dart';
-import '../../services/chat_service.dart';
-import '../../../../core/firebase/performance_traces.dart';
-import '../../../../core/security/secure_screen.dart';
 import '../../../../features/reporting/report_dialog.dart';
 import '../../../../features/safety/emergency_safety_service.dart';
+import '../../providers/chat_providers.dart';
+import '../../services/chat_service.dart';
 import '../widgets/enhanced_chat_input.dart';
 import '../widgets/message_bubble.dart';
 import 'safety_number_screen.dart';

@@ -1,6 +1,6 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:gotchaa/core/logging/app_logger.dart';
-import 'package:gotchaa/core/services/consent_gate_service.dart';
+import '../logging/app_logger.dart';
+import 'consent_gate_service.dart';
 
 /// Central analytics service for GOTCHAA.
 ///

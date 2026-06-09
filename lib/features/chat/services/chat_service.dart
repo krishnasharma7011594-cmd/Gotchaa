@@ -222,8 +222,8 @@ class ChatService {
     DateTime? expiresAt,
   }) async {
     // Check if blocked by either user
-    final block1 = await _firestore.collection('blocked_accounts').doc('${currentUserId}_blocked_${receiverId}').get();
-    final block2 = await _firestore.collection('blocked_accounts').doc('${receiverId}_blocked_${currentUserId}').get();
+    final block1 = await _firestore.collection('blocked_accounts').doc('${currentUserId}_blocked_$receiverId').get();
+    final block2 = await _firestore.collection('blocked_accounts').doc('${receiverId}_blocked_$currentUserId').get();
     if (block1.exists || block2.exists) {
       throw Exception('Blocked user cannot message');
     }

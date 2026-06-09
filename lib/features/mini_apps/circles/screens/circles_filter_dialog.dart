@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/circles_feed_provider.dart';
-import '../widgets/glassmorphic_card.dart';
 
 class CirclesFilterDialog extends ConsumerStatefulWidget {
   const CirclesFilterDialog({super.key});
@@ -33,8 +32,7 @@ class _CirclesFilterDialogState extends ConsumerState<CirclesFilterDialog> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       decoration: BoxDecoration(
         color: context.bg.withOpacity(0.9),
         borderRadius: const BorderRadius.only(
@@ -85,7 +83,7 @@ class _CirclesFilterDialogState extends ConsumerState<CirclesFilterDialog> {
                 final cat = _categories[index];
                 final isSelected = _selectedCat == cat;
                 return Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
+                  padding: const EdgeInsets.only(right: 8),
                   child: ChoiceChip(
                     label: Text(cat),
                     selected: isSelected,
@@ -118,7 +116,7 @@ class _CirclesFilterDialogState extends ConsumerState<CirclesFilterDialog> {
                 final city = _cities[index];
                 final isSelected = _selectedCity == city;
                 return Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
+                  padding: const EdgeInsets.only(right: 8),
                   child: ChoiceChip(
                     label: Text(city),
                     selected: isSelected,
@@ -158,5 +156,4 @@ class _CirclesFilterDialogState extends ConsumerState<CirclesFilterDialog> {
         ],
       ),
     );
-  }
 }

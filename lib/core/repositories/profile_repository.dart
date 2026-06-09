@@ -163,7 +163,7 @@ class ProfileRepository {
     final batch = _firestore.batch();
 
     // 1. Add to blocked_accounts collection
-    final blockDoc = _firestore.collection('blocked_accounts').doc('${currentUid}_blocked_${targetUid}');
+    final blockDoc = _firestore.collection('blocked_accounts').doc('${currentUid}_blocked_$targetUid');
     batch.set(blockDoc, {
       'blockerId': currentUid,
       'blockedId': targetUid,
@@ -193,7 +193,7 @@ class ProfileRepository {
   Future<void> unblockUser({required String currentUid, required String targetUid}) async {
     final batch = _firestore.batch();
 
-    final blockDoc = _firestore.collection('blocked_accounts').doc('${currentUid}_blocked_${targetUid}');
+    final blockDoc = _firestore.collection('blocked_accounts').doc('${currentUid}_blocked_$targetUid');
     batch.delete(blockDoc);
 
     batch.update(_firestore.collection('users').doc(currentUid), {
@@ -206,7 +206,7 @@ class ProfileRepository {
   Future<void> muteUser({required String currentUid, required String targetUid}) async {
     final batch = _firestore.batch();
 
-    final muteDoc = _firestore.collection('muted_accounts').doc('${currentUid}_muted_${targetUid}');
+    final muteDoc = _firestore.collection('muted_accounts').doc('${currentUid}_muted_$targetUid');
     batch.set(muteDoc, {
       'muterId': currentUid,
       'mutedId': targetUid,
@@ -223,7 +223,7 @@ class ProfileRepository {
   Future<void> unmuteUser({required String currentUid, required String targetUid}) async {
     final batch = _firestore.batch();
 
-    final muteDoc = _firestore.collection('muted_accounts').doc('${currentUid}_muted_${targetUid}');
+    final muteDoc = _firestore.collection('muted_accounts').doc('${currentUid}_muted_$targetUid');
     batch.delete(muteDoc);
 
     batch.update(_firestore.collection('users').doc(currentUid), {

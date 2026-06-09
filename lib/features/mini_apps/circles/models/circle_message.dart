@@ -1,16 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class CircleMessage {
-  final String messageId;
-  final String chatId;
-  final String senderId;
-  final String senderName;
-  final String senderAvatar;
-  final String text;
-  final DateTime timestamp;
-  final DateTime ttl; // auto-delete expiration timestamp
-  final bool isPinned;
-  final Map<String, dynamic>? pinLocation; // { 'lat': double, 'lng': double, 'title': String, 'style': String }
+class CircleMessage { // { 'lat': double, 'lng': double, 'title': String, 'style': String }
 
   CircleMessage({
     required this.messageId,
@@ -25,23 +15,7 @@ class CircleMessage {
     this.pinLocation,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'messageId': messageId,
-      'chatId': chatId,
-      'senderId': senderId,
-      'senderName': senderName,
-      'senderAvatar': senderAvatar,
-      'text': text,
-      'timestamp': Timestamp.fromDate(timestamp),
-      'ttl': Timestamp.fromDate(ttl),
-      'isPinned': isPinned,
-      if (pinLocation != null) 'pinLocation': pinLocation,
-    };
-  }
-
-  factory CircleMessage.fromMap(Map<String, dynamic> map, String docId) {
-    return CircleMessage(
+  factory CircleMessage.fromMap(Map<String, dynamic> map, String docId) => CircleMessage(
       messageId: docId,
       chatId: map['chatId'] ?? '',
       senderId: map['senderId'] ?? '',
@@ -53,5 +27,27 @@ class CircleMessage {
       isPinned: map['isPinned'] ?? false,
       pinLocation: map['pinLocation'] != null ? Map<String, dynamic>.from(map['pinLocation']) : null,
     );
-  }
+  final String messageId;
+  final String chatId;
+  final String senderId;
+  final String senderName;
+  final String senderAvatar;
+  final String text;
+  final DateTime timestamp;
+  final DateTime ttl; // auto-delete expiration timestamp
+  final bool isPinned;
+  final Map<String, dynamic>? pinLocation;
+
+  Map<String, dynamic> toMap() => {
+      'messageId': messageId,
+      'chatId': chatId,
+      'senderId': senderId,
+      'senderName': senderName,
+      'senderAvatar': senderAvatar,
+      'text': text,
+      'timestamp': Timestamp.fromDate(timestamp),
+      'ttl': Timestamp.fromDate(ttl),
+      'isPinned': isPinned,
+      if (pinLocation != null) 'pinLocation': pinLocation,
+    };
 }

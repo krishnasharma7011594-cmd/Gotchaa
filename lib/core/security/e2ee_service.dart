@@ -18,9 +18,9 @@ final e2eeServiceProvider = Provider<E2EEService>((ref) => E2EEService());
 // ---------------------------------------------------------------------------
 
 class E2EEService {
-  static final E2EEService _instance = E2EEService._internal();
   factory E2EEService() => _instance;
   E2EEService._internal();
+  static final E2EEService _instance = E2EEService._internal();
 
   final _secureStorage = const FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
@@ -359,7 +359,7 @@ class E2EEService {
     for (int i = 0; i < clean.length; i += 5) {
       groups.add(clean.substring(i, i + 5));
     }
-    return groups.join("  ");
+    return groups.join('  ');
   }
 
   Future<void> deleteUserData(String uid) async {
@@ -378,14 +378,12 @@ class E2EEService {
   /// even if one key is compromised, past/future messages stay secure.
   Future<RatchetState> createInitialRatchetState(
     SecretKey sharedSecret,
-  ) async {
-    return RatchetState(
+  ) async => RatchetState(
       rootKey: sharedSecret,
       chainKey: sharedSecret,
       messageKeys: {},
       messageNumber: 0,
     );
-  }
 
   /// Perform a symmetric-key ratchet step (Signal Protocol / Double Ratchet).
   /// Derives a unique Message Key per message and advances the Chain Key.
@@ -433,10 +431,6 @@ class E2EEService {
 }
 
 class RatchetState {
-  final SecretKey rootKey;
-  final SecretKey chainKey;
-  final Map<int, SecretKey> messageKeys;
-  final int messageNumber;
 
   RatchetState({
     required this.rootKey,
@@ -444,4 +438,8 @@ class RatchetState {
     required this.messageKeys,
     this.messageNumber = 0,
   });
+  final SecretKey rootKey;
+  final SecretKey chainKey;
+  final Map<int, SecretKey> messageKeys;
+  final int messageNumber;
 }

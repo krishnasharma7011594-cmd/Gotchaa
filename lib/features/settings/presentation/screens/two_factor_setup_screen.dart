@@ -5,15 +5,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cryptography/cryptography.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:otp/otp.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../../../../core/providers/profile_providers.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/theme/app_colors.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TwoFactorSetupScreen extends ConsumerStatefulWidget {
   const TwoFactorSetupScreen({super.key});

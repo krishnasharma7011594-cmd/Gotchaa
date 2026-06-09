@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/services/presentation/screens/web_browser_screen.dart';
-import '../../features/services/providers/services_provider.dart';
-import '../services/analytics_service.dart';
-
 import '../../features/auth/presentation/screens/age_verification_screen.dart';
 import '../../features/auth/presentation/screens/first_time_language_screen.dart';
 import '../../features/auth/presentation/screens/invite_code_screen.dart';
@@ -13,6 +9,8 @@ import '../../features/auth/presentation/screens/legal_consent_gate_screen.dart'
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/verify_email_screen.dart';
 import '../../features/home/presentation/screens/gotchaa_app_shell.dart';
+import '../../features/services/presentation/screens/web_browser_screen.dart';
+import '../../features/services/providers/services_provider.dart';
 import '../../features/settings/presentation/screens/privacy_policy_screen.dart';
 import '../../features/settings/presentation/screens/terms_of_service_screen.dart';
 import '../providers/age_provider.dart';
@@ -20,6 +18,7 @@ import '../providers/auth_providers.dart';
 import '../providers/language_provider.dart';
 import '../providers/legal_provider.dart';
 import '../providers/profile_providers.dart';
+import '../services/analytics_service.dart';
 import 'resolve_username_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();

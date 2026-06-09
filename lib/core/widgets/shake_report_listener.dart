@@ -8,9 +8,7 @@ import '../../features/safety/emergency_safety_service.dart';
 /// Listens for device shake and triggers emergency report callback.
 class ShakeReportListener extends StatefulWidget {
   const ShakeReportListener({
-    super.key,
-    required this.child,
-    required this.enabled,
+    required this.child, required this.enabled, super.key,
     this.onShake,
   });
 
@@ -44,7 +42,7 @@ class _ShakeReportListenerState extends State<ShakeReportListener> {
   void _start() {
     _sub?.cancel();
     _sub = accelerometerEventStream().listen((e) {
-      final magnitude = (e.x * e.x + e.y * e.y + e.z * e.z);
+      final magnitude = e.x * e.x + e.y * e.y + e.z * e.z;
       if (magnitude < _threshold * _threshold) return;
       final now = DateTime.now();
       if (now.difference(_lastShake).inMilliseconds < 1200) return;

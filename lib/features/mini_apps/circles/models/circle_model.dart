@@ -1,6 +1,44 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CircleModel {
+
+  CircleModel({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.category,
+    required this.city,
+    required this.coverImageUrl,
+    required this.hostId,
+    required this.eventDate,
+    required this.memberLimit,
+    required this.locationName,
+    required this.ageGroup, required this.language, required this.isPrivate, required this.isApprovalRequired, required this.memberIds, required this.isActive, required this.tags, required this.createdAt, this.locationLatLng,
+    this.notifiedStart = false,
+  });
+
+  factory CircleModel.fromMap(Map<String, dynamic> map, String docId) => CircleModel(
+      id: docId,
+      title: map['title'] ?? '',
+      description: map['description'] ?? '',
+      category: map['category'] ?? '',
+      city: map['city'] ?? '',
+      coverImageUrl: map['coverImageUrl'] ?? '',
+      hostId: map['hostId'] ?? '',
+      eventDate: (map['eventDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      memberLimit: map['memberLimit'] ?? 0,
+      locationName: map['locationName'] ?? '',
+      locationLatLng: map['locationLatLng'] as GeoPoint?,
+      ageGroup: map['ageGroup'] ?? 'Any',
+      language: map['language'] ?? 'English',
+      isPrivate: map['isPrivate'] ?? false,
+      isApprovalRequired: map['isApprovalRequired'] ?? false,
+      memberIds: List<String>.from(map['memberIds'] ?? []),
+      isActive: map['isActive'] ?? true,
+      tags: List<String>.from(map['tags'] ?? []),
+      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      notifiedStart: map['notifiedStart'] ?? false,
+    );
   final String id;
   final String title;
   final String description;
@@ -21,29 +59,6 @@ class CircleModel {
   final List<String> tags;
   final DateTime createdAt;
   final bool notifiedStart;
-
-  CircleModel({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.category,
-    required this.city,
-    required this.coverImageUrl,
-    required this.hostId,
-    required this.eventDate,
-    required this.memberLimit,
-    required this.locationName,
-    this.locationLatLng,
-    required this.ageGroup,
-    required this.language,
-    required this.isPrivate,
-    required this.isApprovalRequired,
-    required this.memberIds,
-    required this.isActive,
-    required this.tags,
-    required this.createdAt,
-    this.notifiedStart = false,
-  });
 
   CircleModel copyWith({
     String? id,
@@ -66,8 +81,7 @@ class CircleModel {
     List<String>? tags,
     DateTime? createdAt,
     bool? notifiedStart,
-  }) {
-    return CircleModel(
+  }) => CircleModel(
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
@@ -89,10 +103,8 @@ class CircleModel {
       createdAt: createdAt ?? this.createdAt,
       notifiedStart: notifiedStart ?? this.notifiedStart,
     );
-  }
 
-  Map<String, dynamic> toMap() {
-    return {
+  Map<String, dynamic> toMap() => {
       'id': id,
       'title': title,
       'description': description,
@@ -114,32 +126,6 @@ class CircleModel {
       'createdAt': Timestamp.fromDate(createdAt),
       'notifiedStart': notifiedStart,
     };
-  }
-
-  factory CircleModel.fromMap(Map<String, dynamic> map, String docId) {
-    return CircleModel(
-      id: docId,
-      title: map['title'] ?? '',
-      description: map['description'] ?? '',
-      category: map['category'] ?? '',
-      city: map['city'] ?? '',
-      coverImageUrl: map['coverImageUrl'] ?? '',
-      hostId: map['hostId'] ?? '',
-      eventDate: (map['eventDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      memberLimit: map['memberLimit'] ?? 0,
-      locationName: map['locationName'] ?? '',
-      locationLatLng: map['locationLatLng'] as GeoPoint?,
-      ageGroup: map['ageGroup'] ?? 'Any',
-      language: map['language'] ?? 'English',
-      isPrivate: map['isPrivate'] ?? false,
-      isApprovalRequired: map['isApprovalRequired'] ?? false,
-      memberIds: List<String>.from(map['memberIds'] ?? []),
-      isActive: map['isActive'] ?? true,
-      tags: List<String>.from(map['tags'] ?? []),
-      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      notifiedStart: map['notifiedStart'] ?? false,
-    );
-  }
 
   /// Utility to remove sensitive location coordinates for non-members
   CircleModel toPublicView(String currentUserId) {

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
-import 'package:gotchaa/main.dart';
-import 'package:gotchaa/core/providers/post_providers.dart';
-import 'package:gotchaa/core/models/feed_item.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:gotchaa/core/models/feed_item.dart';
+import 'package:gotchaa/core/providers/post_providers.dart';
+import 'package:gotchaa/main.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../test/helpers/test_data.dart';
 
 void main() {
@@ -15,7 +16,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('Complete Feed Flow Test', (WidgetTester tester) async {
+  testWidgets('Complete Feed Flow Test', (tester) async {
     final post = getMockPost();
     final feedItems = [
       PostFeedItem(post),

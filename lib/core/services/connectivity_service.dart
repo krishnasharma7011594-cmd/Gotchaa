@@ -9,11 +9,14 @@ final connectivityServiceProvider = Provider<ConnectivityService>((ref) {
   return svc;
 });
 
-final isOnlineProvider = StreamProvider<bool>((ref) {
-  return ref.watch(connectivityServiceProvider).onlineStream;
-});
+final isOnlineProvider = StreamProvider<bool>((ref) => ref.watch(connectivityServiceProvider).onlineStream);
 
 class ConnectivityService {
+
+  ConnectivityService() {
+    _sub = _connectivity.onConnectivityChanged.listen(_handle);
+    _connectivity.checkConnectivity().then(_handle);
+  }
   final Connectivity _connectivity = Connectivity();
   final StreamController<bool> _controller = StreamController<bool>.broadcast();
   StreamSubscription<List<ConnectivityResult>>? _sub;
@@ -21,11 +24,6 @@ class ConnectivityService {
 
   bool get isOnline => _isOnline;
   Stream<bool> get onlineStream => _controller.stream;
-
-  ConnectivityService() {
-    _sub = _connectivity.onConnectivityChanged.listen(_handle);
-    _connectivity.checkConnectivity().then(_handle);
-  }
 
   void _handle(List<ConnectivityResult> results) {
     final online = results.any((r) => r != ConnectivityResult.none);

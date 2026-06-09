@@ -1,13 +1,15 @@
 import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:flutter/foundation.dart';
+import 'package:geolocator/geolocator.dart';
+
 import '../models/circle_model.dart';
 
 class CirclesLiveLocationService {
-  static final CirclesLiveLocationService instance = CirclesLiveLocationService._internal();
   CirclesLiveLocationService._internal();
+  static final CirclesLiveLocationService instance = CirclesLiveLocationService._internal();
 
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -91,8 +93,7 @@ class CirclesLiveLocationService {
   }
 
   // 4. Listen to other sharing members in the circle (Firestore Cost Protection: limited update intervals)
-  Stream<List<Map<String, dynamic>>> listenToLiveLocations(String circleId) {
-    return _db.collection('circles').doc(circleId).collection('liveLocations')
+  Stream<List<Map<String, dynamic>>> listenToLiveLocations(String circleId) => _db.collection('circles').doc(circleId).collection('liveLocations')
         .snapshots()
         .map((snap) {
           final now = DateTime.now();
@@ -113,7 +114,6 @@ class CirclesLiveLocationService {
             };
           }).toList();
         });
-  }
 
   // Clean listeners on leaving or backgrounding
   void disposeListeners(String circleId) {

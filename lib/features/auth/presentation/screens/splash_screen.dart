@@ -3,7 +3,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/providers/auth_providers.dart';
 import '../../../../core/theme/app_colors.dart';
 import 'legal_consent_gate_screen.dart';
 

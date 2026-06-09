@@ -1,20 +1,19 @@
-/**
- * Firestore Collection Schema: grievances
- * 
- * Document ID: Auto-generated
- * Fields:
- * - userId: String (UID of the reporter)
- * - name: String (Name of the reporter)
- * - email: String (Email of the reporter)
- * - issueType: String (Category of grievance)
- * - description: String (Details)
- * - status: String ("open", "in_progress", "resolved")
- * - timestamp: Timestamp (When submitted)
- */
+/// Firestore Collection Schema: grievances
+/// 
+/// Document ID: Auto-generated
+/// Fields:
+/// - userId: String (UID of the reporter)
+/// - name: String (Name of the reporter)
+/// - email: String (Email of the reporter)
+/// - issueType: String (Category of grievance)
+/// - description: String (Details)
+/// - status: String ("open", "in_progress", "resolved")
+/// - timestamp: Timestamp (When submitted)
+library;
 
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class GrievanceOfficerPage extends StatefulWidget {
   const GrievanceOfficerPage({super.key});
@@ -89,13 +88,12 @@ class _GrievanceOfficerPageState extends State<GrievanceOfficerPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         title: const Text('Grievance Officer'),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -128,11 +126,9 @@ class _GrievanceOfficerPageState extends State<GrievanceOfficerPage> {
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
-                    value: _issueType,
+                    initialValue: _issueType,
                     decoration: const InputDecoration(labelText: 'Issue Type'),
-                    items: _issueTypes.map((type) {
-                      return DropdownMenuItem(value: type, child: Text(type));
-                    }).toList(),
+                    items: _issueTypes.map((type) => DropdownMenuItem(value: type, child: Text(type))).toList(),
                     onChanged: (value) {
                       setState(() {
                         _issueType = value!;
@@ -160,31 +156,28 @@ class _GrievanceOfficerPageState extends State<GrievanceOfficerPage> {
         ),
       ),
     );
-  }
 
-  Widget _buildOfficerInfo() {
-    return Card(
+  Widget _buildOfficerInfo() => const Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Grievance Redressal Mechanism',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
-            const Text('Officer Name: Placeholder Officer'),
-            const Text('Email: grievance@gotchaa.app'),
-            const SizedBox(height: 8),
-            const Text(
+            SizedBox(height: 8),
+            Text('Officer Name: Placeholder Officer'),
+            Text('Email: grievance@gotchaa.app'),
+            SizedBox(height: 8),
+            Text(
               'Response Time:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            const Text('We acknowledge receipt within 24 hours. Most issues are resolved within 15 days as per India IT Rules 2021.'),
+            Text('We acknowledge receipt within 24 hours. Most issues are resolved within 15 days as per India IT Rules 2021.'),
           ],
         ),
       ),
     );
-  }
 }

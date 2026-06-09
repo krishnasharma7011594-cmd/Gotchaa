@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/l10n/app_localizations_x.dart';
-import '../../../../core/widgets/gotchaa_like_button.dart';
 import '../../../../core/models/vybz_model.dart';
 import '../../../../core/providers/auth_providers.dart';
 import '../../../../core/providers/profile_providers.dart';
@@ -15,6 +14,7 @@ import '../../../../core/providers/social_providers.dart';
 import '../../../../core/providers/vybz_providers.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/video_manager.dart';
+import '../../../../core/widgets/gotchaa_like_button.dart';
 import '../../../home/presentation/screens/main_shell.dart';
 import '../../../profile/presentation/screens/user_profile_screen.dart';
 import '../widgets/comment_sheet.dart';
@@ -290,7 +290,7 @@ class _VybzItemState extends ConsumerState<_VybzItem> {
                     
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           content: Text('Appreciation sent! 🌟'),
                           backgroundColor: AppColors.electricBlue,
                         ),

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:gotchaa/core/constants/app_constants.dart';
-import 'package:gotchaa/core/logging/app_logger.dart';
+import '../constants/app_constants.dart';
+import '../logging/app_logger.dart';
 
 /// Records and verifies legal policy acceptance in `users_private`.
 class LegalAcceptanceService {
@@ -58,15 +58,15 @@ class PolicyCheckResult {
     this.acceptedTermsVersion,
   });
 
-  final bool requiresReacceptance;
-  final String requiredPrivacyVersion;
-  final String requiredTermsVersion;
-  final String? acceptedPrivacyVersion;
-  final String? acceptedTermsVersion;
-
   factory PolicyCheckResult.fallbackRequiresCheck() => const PolicyCheckResult(
         requiresReacceptance: true,
         requiredPrivacyVersion: LegalConfig.privacyVersion,
         requiredTermsVersion: LegalConfig.termsVersion,
       );
+
+  final bool requiresReacceptance;
+  final String requiredPrivacyVersion;
+  final String requiredTermsVersion;
+  final String? acceptedPrivacyVersion;
+  final String? acceptedTermsVersion;
 }

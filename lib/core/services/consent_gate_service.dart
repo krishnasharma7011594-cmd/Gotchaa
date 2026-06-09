@@ -1,16 +1,17 @@
 import 'dart:io' show Platform;
+
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
-import 'package:flutter/material.dart' show FlutterError;
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:gotchaa/firebase_options.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/foundation.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:gotchaa/core/logging/app_logger.dart';
+
+import '../../firebase_options.dart';
 import '../firebase/firestore_bootstrap.dart';
+import '../logging/app_logger.dart';
 import './analytics_service.dart';
 import './notification_service.dart';
 

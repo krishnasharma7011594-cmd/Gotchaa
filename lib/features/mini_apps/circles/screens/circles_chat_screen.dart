@@ -1,30 +1,28 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../models/circle_message.dart';
+import '../models/circle_model.dart';
 import '../providers/circles_chat_provider.dart';
 import '../providers/circles_onboarding_provider.dart';
-import '../widgets/glassmorphic_card.dart';
-
-import '../models/circle_model.dart';
-import 'checkin_qr_screen.dart';
-import 'checkin_scanner_screen.dart';
 import '../services/circles_live_location_service.dart';
 import '../widgets/circles_live_map_widget.dart';
+import '../widgets/glassmorphic_card.dart';
+import 'checkin_qr_screen.dart';
+import 'checkin_scanner_screen.dart';
 
 class CirclesChatScreen extends ConsumerStatefulWidget {
-  final String circleId;
-  final String circleTitle;
 
   const CirclesChatScreen({
-    super.key,
-    required this.circleId,
-    required this.circleTitle,
+    required this.circleId, required this.circleTitle, super.key,
   });
+  final String circleId;
+  final String circleTitle;
 
   @override
   ConsumerState<CirclesChatScreen> createState() => _CirclesChatScreenState();
@@ -109,7 +107,7 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
     Future.delayed(const Duration(milliseconds: 100), () {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
-          0.0,
+          0,
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
         );
@@ -301,7 +299,7 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
                       'Share your coordinate coordinates with other checked-in attendees.',
                       style: GoogleFonts.inter(color: Colors.white54, fontSize: 10),
                     ),
-                    activeColor: AppColors.primaryGlow,
+                    activeThumbColor: AppColors.primaryGlow,
                     onChanged: (val) async {
                       try {
                         if (val) {
@@ -328,7 +326,7 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
 
             if (chatState.isThrottled)
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8),
                 child: Text(
                   '⚠️ FireStore cost protection active. Throttling reads.',
                   style: GoogleFonts.outfit(color: AppColors.error, fontSize: 11),
@@ -356,12 +354,12 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
                         if (msg.isPinned && msg.pinLocation != null) {
                           // Display beautiful custom pinned layout card
                           return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 12.0),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
                             child: GlassmorphicCard(
                               borderRadius: 16,
                               blur: 5,
                               child: Padding(
-                                padding: const EdgeInsets.all(16.0),
+                                padding: const EdgeInsets.all(16),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -392,7 +390,7 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
                         }
 
                         return Padding(
-                          padding: const EdgeInsets.only(bottom: 12.0),
+                          padding: const EdgeInsets.only(bottom: 12),
                           child: Align(
                             alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
                             child: Row(
@@ -437,7 +435,7 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
                                           const SizedBox(height: 2),
                                           Text(
                                             DateFormat('hh:mm a').format(msg.timestamp),
-                                            style: TextStyle(color: Colors.white54, fontSize: 9),
+                                            style: const TextStyle(color: Colors.white54, fontSize: 9),
                                           ),
                                         ],
                                       ),
@@ -454,7 +452,7 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
 
             // Message bar input
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
                   Expanded(

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 
 import '../logging/app_logger.dart';
 
@@ -65,7 +64,7 @@ class DataExportService {
 }
 
 class DataExportResult {
-  const DataExportResult._({required this.ok, this.message, this.exportId});
+  const DataExportResult._({required this.ok});
   DataExportResult.success({required this.message, this.exportId})
       : ok = true;
   DataExportResult.error(this.message) : ok = false, exportId = null;

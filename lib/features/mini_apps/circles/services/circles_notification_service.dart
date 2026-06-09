@@ -1,17 +1,19 @@
 import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../models/circle_model.dart';
-import '../screens/circles_details_screen.dart';
 import '../screens/circles_chat_screen.dart';
+import '../screens/circles_details_screen.dart';
 
 class CirclesNotificationService {
-  static final CirclesNotificationService instance = CirclesNotificationService._internal();
   CirclesNotificationService._internal();
+  static final CirclesNotificationService instance = CirclesNotificationService._internal();
 
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -23,12 +25,12 @@ class CirclesNotificationService {
   Future<void> initialize(BuildContext context) async {
     // Background Message Handler setup is typically done in main.dart top-level.
     // We register foreground message listeners here.
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessage.listen((message) {
       _showForegroundBanner(context, message);
     });
 
     // Deep Linking Handler when clicking notification in background state
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
       _handleNotificationTap(context, message.data);
     });
 

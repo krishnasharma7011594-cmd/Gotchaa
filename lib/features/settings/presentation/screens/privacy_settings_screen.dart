@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -45,10 +43,10 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     ]);
     if (mounted) {
       setState(() {
-        _analytics = results[0] as bool;
-        _performance = results[1] as bool;
-        _personalization = results[2] as bool;
-        _doNotSell = results[3] as bool;
+        _analytics = results[0]! as bool;
+        _performance = results[1]! as bool;
+        _personalization = results[2]! as bool;
+        _doNotSell = results[3]! as bool;
         _analyticsTs = results[4] as String?;
         _performanceTs = results[5] as String?;
         _personalizationTs = results[6] as String?;
@@ -208,8 +206,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
       );
 
   Widget _toggle(String title, bool value, String? ts, ValueChanged<bool> onChanged,
-      Color textPrimary, Color textSecondary) {
-    return Column(
+      Color textPrimary, Color textSecondary) => Column(
       children: [
         SwitchListTile(
           title: Text(title, style: GoogleFonts.outfit(fontSize: 15, color: textPrimary)),
@@ -227,5 +224,4 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         ),
       ],
     );
-  }
 }

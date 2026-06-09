@@ -2,9 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../../core/providers/auth_providers.dart';
-import '../../../core/providers/profile_providers.dart';
 import '../../../core/providers/repository_providers.dart';
-import '../../../core/providers/social_providers.dart';
 
 class CreatorAnalyticsData { // Last 12 months or similar
 

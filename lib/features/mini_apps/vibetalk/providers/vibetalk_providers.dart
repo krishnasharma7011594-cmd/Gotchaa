@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'package:gotchaa/core/logging/app_logger.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/logging/app_logger.dart';
 import '../../../../core/providers/auth_providers.dart';
 import '../../../../core/providers/language_provider.dart';
 import '../../../../core/providers/profile_providers.dart';
@@ -188,7 +188,7 @@ class VibeTalkNotifier extends StateNotifier<VibeTalkState> {
             .collection('messages')
             .get();
             
-        for (var doc in messages.docs) {
+        for (final doc in messages.docs) {
           await doc.reference.delete();
         }
         

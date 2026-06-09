@@ -6,11 +6,11 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/l10n/app_localizations_x.dart';
 import '../../../../core/providers/profile_providers.dart';
 import '../../../../core/providers/repository_providers.dart';
+import '../../../../core/security/secure_screen.dart';
 import '../../../../core/theme/app_colors.dart';
 import 'active_sessions_screen.dart';
 import 'e2ee_key_management_screen.dart';
 import 'two_factor_setup_screen.dart';
-import '../../../../core/security/secure_screen.dart';
 
 class SecuritySettingsScreen extends ConsumerWidget {
   const SecuritySettingsScreen({super.key});

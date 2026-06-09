@@ -6,10 +6,6 @@ import '../services/circles_local_cache_service.dart';
 import 'circles_onboarding_provider.dart';
 
 class CirclesChatState {
-  final List<CircleMessage> messages;
-  final bool isLoading;
-  final bool isThrottled;
-  final String? error;
 
   CirclesChatState({
     required this.messages,
@@ -18,36 +14,36 @@ class CirclesChatState {
     this.error,
   });
 
+  factory CirclesChatState.initial() => CirclesChatState(
+      messages: [],
+      isLoading: false,
+      isThrottled: false,
+    );
+  final List<CircleMessage> messages;
+  final bool isLoading;
+  final bool isThrottled;
+  final String? error;
+
   CirclesChatState copyWith({
     List<CircleMessage>? messages,
     bool? isLoading,
     bool? isThrottled,
     String? error,
-  }) {
-    return CirclesChatState(
+  }) => CirclesChatState(
       messages: messages ?? this.messages,
       isLoading: isLoading ?? this.isLoading,
       isThrottled: isThrottled ?? this.isThrottled,
       error: error ?? this.error,
     );
-  }
-
-  factory CirclesChatState.initial() {
-    return CirclesChatState(
-      messages: [],
-      isLoading: false,
-      isThrottled: false,
-    );
-  }
 }
 
 class CirclesChatNotifier extends StateNotifier<CirclesChatState> {
-  final CirclesFirestoreService _firestoreService;
-  StreamSubscription? _chatSub;
 
   CirclesChatNotifier(this._firestoreService, String circleId) : super(CirclesChatState.initial()) {
     loadCachedMessages(circleId).then((_) => streamMessages(circleId));
   }
+  final CirclesFirestoreService _firestoreService;
+  StreamSubscription? _chatSub;
 
   // Load local offline cached messages immediately
   Future<void> loadCachedMessages(String circleId) async {
