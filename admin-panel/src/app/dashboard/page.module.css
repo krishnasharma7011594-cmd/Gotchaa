@@ -1,0 +1,207 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: var(--foreground-muted);
+}
+
+.dateRange {
+  padding: 8px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.statHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.statIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trending {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--success);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.statValue {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.statLabel {
+  color: var(--foreground-muted);
+  font-weight: 500;
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+.sectionHeader {
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.metricsList {
+  display: flex;
+  gap: 3rem;
+}
+
+.metricLabel {
+  color: var(--foreground-muted);
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.metricValue {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.invitersList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.inviterItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--background);
+  border-radius: var(--radius-sm);
+}
+
+.awardIcon {
+  color: var(--warning);
+}
+
+.inviterName {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.inviterCount {
+  color: var(--foreground-muted);
+  font-size: 12px;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 0;
+  gap: 16px;
+  color: var(--foreground-muted);
+}
+
+.leftCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.rightCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.userList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.userItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.userItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.userAvatar {
+  width: 42px;
+  height: 42px;
+  background: var(--primary-glow);
+  color: var(--primary);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.userDetails {
+  flex: 1;
+}
+
+.userName {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+
+.userEmail {
+  color: var(--foreground-muted);
+  font-size: 12px;
+}
+
+.userStatus {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.userJoined {
+  font-size: 11px;
+  color: var(--foreground-muted);
+}

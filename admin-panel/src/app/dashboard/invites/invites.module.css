@@ -1,0 +1,149 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.title { font-size: 28px; font-weight: 700; }
+.subtitle { color: var(--foreground-muted); }
+
+.createBtn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.toolbar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.searchBox {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  gap: 12px;
+  color: var(--foreground-muted);
+}
+
+.searchBox input {
+  background: transparent;
+  border: none;
+  flex: 1;
+  height: 44px;
+  color: var(--foreground);
+  outline: none;
+}
+
+.filterBtn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 1rem 1.5rem;
+  background: var(--surface-hover);
+  color: var(--foreground-muted);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.codeBadge {
+  background: var(--border);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.usageContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 120px;
+}
+
+.usageBar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.usageFill {
+  height: 100%;
+  background: var(--primary);
+}
+
+.status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.active { background: rgba(35, 134, 54, 0.15); color: #3fb950; }
+.exhausted { background: rgba(210, 153, 34, 0.15); color: #d29922; }
+.disabled { background: rgba(248, 81, 73, 0.15); color: #f85149; }
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions button {
+  background: transparent;
+  border: 1px solid var(--border);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: var(--foreground-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.actions button:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+.danger:hover {
+  color: var(--error) !important;
+  border-color: var(--error) !important;
+}

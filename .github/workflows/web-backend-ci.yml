@@ -1,0 +1,90 @@
+name: Web & Backend CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+    paths:
+      - 'admin-panel/**'
+      - 'backend/**'
+      - 'functions/**'
+      - '.github/workflows/web-backend-ci.yml'
+  pull_request:
+    branches: [ main, master, develop ]
+    paths:
+      - 'admin-panel/**'
+      - 'backend/**'
+      - 'functions/**'
+      - '.github/workflows/web-backend-ci.yml'
+
+jobs:
+  admin-panel-ci:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: admin-panel
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: admin-panel/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Linting
+        run: npm run lint
+
+      - name: Build Next.js app
+        run: npm run build
+
+  backend-ci:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check code execution syntax
+        run: node --check index.js
+
+  functions-ci:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: functions
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check cloud functions syntax
+        run: node --check index.js

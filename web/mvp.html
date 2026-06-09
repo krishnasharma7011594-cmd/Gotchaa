@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gotchaa MVP | Download</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #007AFF;
+            --secondary: #5856D6;
+            --bg: #0D0D1A;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: white;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('gotchaa_mvp_landing_bg_1777350866056.png') no-repeat center center/cover;
+            filter: brightness(0.4) blur(5px);
+            z-index: -1;
+            animation: zoomOut 20s infinite alternate;
+        }
+
+        @keyframes zoomOut {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        .container {
+            text-align: center;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 3rem;
+            border-radius: 40px;
+            border: 1px solid var(--glass-border);
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeInScale 0.8s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 2.5rem;
+            font-weight: 300;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-decoration: none;
+            padding: 1.2rem 2.5rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 122, 255, 0.3);
+            margin-bottom: 1.5rem;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 122, 255, 0.5);
+            filter: brightness(1.1);
+        }
+
+        .download-btn svg {
+            margin-right: 12px;
+            width: 24px;
+            height: 24px;
+        }
+
+        .info {
+            font-size: 0.9rem;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 2rem; }
+            .logo { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="container">
+        <div class="badge">Official MVP Build</div>
+        <h1 class="logo">GOTCHAA</h1>
+        <p class="tagline">The Social Super App Evolution.<br><span style="font-size: 0.9rem; color: var(--primary);">New: VibeTalk "Instant-Match" Fixed! (v1.1.0)</span></p>
+        
+        <a href="/releases/app-release.bin" class="download-btn" id="downloadLink" download="Gotchaa_v1.1.0_Production.apk">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download Production APK
+        </a>
+
+        <div class="info">
+            v1.1.0-release | <b>Blaze Plan Activated (Unlimited Vybz)</b><br>
+            Includes: Gemini AI Assistant, VibeTalk, CoinFlow, & E2EE Chat<br>
+            <span style="color: #666; font-size: 0.8rem;">Note: If the file ends in .bin, rename it to .apk after download.</span>
+        </div>
+    </div>
+
+    <script>
+        // Micro-animation for the button
+        const btn = document.getElementById('downloadLink');
+        btn.addEventListener('mousedown', () => btn.style.transform = 'scale(0.95)');
+        btn.addEventListener('mouseup', () => btn.style.transform = 'scale(1)');
+    </script>
+</body>
+</html>

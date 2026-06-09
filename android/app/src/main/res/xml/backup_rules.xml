@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Exclude sensitive data and auth tokens -->
+    <exclude domain="sharedpref" path="FlutterSharedPreferences.xml"/>
+    <exclude domain="file" path="flutter_secure_storage"/>
+    
+    <!-- Exclude cache directories -->
+    <exclude domain="file" path="media_cache"/>
+    <exclude domain="file" path="WebRTC_cache"/>
+    
+    <!-- By default, all other files are included in the backup,
+         such as user display preferences if stored in separate files. -->
+</full-backup-content>

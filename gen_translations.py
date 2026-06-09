@@ -1,0 +1,195 @@
+import json, os
+
+OUT = "c:/Gotchaa/assets/l10n"
+os.makedirs(OUT, exist_ok=True)
+
+# Base English strings
+EN = {
+  "app_name": "GOTCHA", "nav_home": "Home", "nav_explore": "Explore",
+  "nav_activity": "Activity", "nav_profile": "Profile", "settings": "Settings",
+  "settings_search": "Search settings", "settings_account": "ACCOUNT",
+  "settings_personal_info": "Personal Information", "settings_security": "Security",
+  "settings_saved_posts": "Saved Posts", "settings_app_preferences": "APP PREFERENCES",
+  "settings_chat_language": "Chat Language", "settings_app_language": "App Language",
+  "settings_privacy": "PRIVACY", "settings_private_account": "Private Account",
+  "settings_private_account_sub": "Only followers can see posts",
+  "settings_activity_status": "Activity Status", "settings_blocked_accounts": "Blocked Accounts",
+  "settings_notifications": "NOTIFICATIONS", "settings_push_notifications": "Push Notifications",
+  "settings_email_notifications": "Email Notifications", "settings_about": "ABOUT",
+  "settings_privacy_policy": "Privacy Policy", "settings_terms": "Terms of Service",
+  "settings_help": "Help Center", "settings_manage_account": "Manage Account",
+  "logout": "Log Out", "language_settings_title": "App Language",
+  "language_settings_subtitle": "Choose your preferred UI language",
+  "language_section_ui": "UI LANGUAGE", "language_section_chat": "CHAT PREFERENCES",
+  "language_search_hint": "Search languages...", "language_auto_translate": "Auto-Translate Messages",
+  "language_auto_translate_sub": "Incoming messages will be translated automatically",
+  "language_select": "SELECT LANGUAGE", "language_changed": "Language changed to",
+  "notifications_title": "Notifications", "notifications_mark_all_read": "Mark all read",
+  "profile_followers": "Followers", "profile_following": "Following",
+  "profile_vybz": "Vybz", "profile_karma": "Karma", "profile_edit": "Edit Profile",
+  "profile_share": "Share Profile", "profile_settings": "Settings",
+  "explore_title": "Explore", "explore_search": "Search",
+  "chat_title": "Messages", "chat_new": "New Message", "chat_search": "Search conversations",
+  "vybz_title": "Vybz", "vybz_for_you": "For You", "vybz_following": "Following",
+  "vybz_like": "Like", "vybz_comment": "Comment", "vybz_share": "Share", "vybz_tip": "Tip",
+  "wallet_title": "Wallet", "wallet_balance": "Balance", "wallet_send": "Send",
+  "wallet_receive": "Receive", "wallet_history": "Transaction History",
+  "karma_title": "Karma", "karma_your_score": "Your Karma Score",
+  "mini_apps_title": "Mini Apps", "auth_login": "Log In", "auth_signup": "Sign Up",
+  "auth_email": "Email", "auth_password": "Password", "auth_forgot_password": "Forgot Password?",
+  "auth_google": "Continue with Google", "auth_apple": "Continue with Apple",
+  "auth_no_account": "Don't have an account?", "auth_have_account": "Already have an account?",
+  "auth_create_account": "Create Account", "error_something_wrong": "Something went wrong",
+  "error_network": "Network error. Check your connection.", "btn_cancel": "Cancel",
+  "btn_confirm": "Confirm", "btn_save": "Save", "btn_close": "Close", "btn_retry": "Retry",
+  "btn_back": "Back", "btn_done": "Done", "loading": "Loading...",
+  "downloading_model": "Downloading model...\nPlease do not close the app.",
+  "no_internet": "No internet connection. Please connect to Wi-Fi or Cellular to download languages.",
+  "mini_apps_recommended": "Recommended for You",
+  "mini_app_games_name": "Gotcha Games", "mini_app_games_desc": "Play with Hommies",
+  "mini_app_pollster_name": "Pollster", "mini_app_pollster_desc": "Create daily polls",
+  "mini_app_quiz_name": "Quiz Wiz", "mini_app_quiz_desc": "Win Karma points",
+  "mini_app_upi_name": "UPI Pay", "mini_app_upi_desc": "Fast transactions",
+  "mini_app_cab_name": "Gotcha Cab", "mini_app_cab_desc": "Ride anywhere",
+  "mini_app_mood_name": "Mood Tracker", "mini_app_mood_desc": "Daily mental health",
+  "mini_app_gift_name": "Gift Store", "mini_app_gift_desc": "Digital goods",
+  "wallet_balance_label": "Available Balance", "wallet_secured_by": "Secured by Firebase",
+  "wallet_quick_actions": "Quick Actions", "wallet_action_topup": "Top Up",
+  "wallet_action_transfer": "Transfer", "wallet_action_withdraw": "Withdraw",
+  "wallet_karma_rewards": "Karma Rewards", "wallet_karma_label": "Karma Score",
+  "wallet_karma_star": "Star", "wallet_karma_rising": "Rising", "wallet_karma_new": "New",
+  "karma_aura_name": "Karma Aura",
+  "karma_label": "Karma Score",
+  "karma_aura_title": "Understanding Aura",
+  "karma_aura_desc": "Your Karma score is a reflection of your positive contributions to the community.",
+  "karma_redeem_btn": "REDEEM KARMA",
+  "karma_task_daily_post": "Create a daily post",
+  "karma_task_verify": "Verify your identity",
+  "karma_task_give_tips": "Give tips to others",
+  "karma_task_share": "Share GOTCHA with friends",
+  "wallet_recent_activity": "Recent Activity", "wallet_see_all": "See all",
+  "wallet_no_transactions": "No transactions yet", "wallet_tx_funds_added": "Funds added",
+  "wallet_tx_sent_tip": "Sent tip", "wallet_tx_received_tip": "Received tip",
+  "wallet_add_funds_title": "Add Funds", "wallet_add_funds_cancel": "Cancel",
+  "wallet_add_funds_confirm": "Add", "wallet_add_funds_success": "added!",
+  "wallet_action_history": "History",
+  "settings_appearance": "Appearance", "settings_theme_dark": "Dark Mode",
+  "settings_theme_light": "Light Mode", "settings_theme_system": "System Default",
+  "create_post_title": "Create New Vybz",
+  "create_post_hint": "What's on your mind?...",
+  "create_post_location": "Add Location",
+  "create_post_tag": "Tag People",
+  "create_post_audience": "Audience",
+  "create_post_audience_everyone": "Everyone",
+  "create_post_error_no_media": "Please select an image first",
+  "create_post_publish": "Publish",
+  "create_post_add_photo": "Add Photo",
+  "create_post_caption_hint": "Write a caption… #hashtags @friends",
+  "create_post_cancel": "Cancel",
+  "create_post_appbar_title": "New Post",
+  "create_post_uploading_media": "Uploading image…",
+  "create_post_saving": "Saving post…",
+  "create_post_publishing": "Uploading…",
+  "sidebar_wallet": "Wallet", "sidebar_wallet_sub": "Manage funds & transactions",
+  "sidebar_miniapps": "Mini Apps", "sidebar_miniapps_sub": "Explore GOTCHA ecosystem",
+  "sidebar_karma": "Karma Points", "sidebar_karma_sub": "View your karma insights",
+  "sidebar_settings": "Settings", "sidebar_settings_sub": "Preferences & account",
+  "sidebar_karma_badge": "Karma"
+}
+
+# Final Working Supported Languages (12 total)
+SUPPORTED_CODES = [
+    "en", "hi", "es", "fr", "ar", "pt", "id", "ru", "de", "zh", "ja", "ko"
+]
+
+# Existing translations (keep what we have for these codes)
+LANGS = {
+  "id": {
+    "app_name": "GOTCHA",
+    "nav_home": "Beranda",
+    "nav_explore": "Jelajahi",
+    "nav_activity": "Aktivitas",
+    "nav_profile": "Profil",
+    "settings": "Pengaturan",
+    "sidebar_wallet": "Dompet",
+    "sidebar_wallet_sub": "Kelola dana & transaksi",
+    "sidebar_miniapps": "Mini Apps",
+    "sidebar_miniapps_sub": "Jelajahi ekosistem GOTCHA",
+    "sidebar_karma": "Poin Karma",
+    "sidebar_karma_sub": "Lihat wawasan karma Anda",
+    "sidebar_karma_badge": "Karma"
+  },
+  "hi": {
+    "app_name": "गोटचा",
+    "nav_home": "होम",
+    "nav_explore": "एक्सप्लोर",
+    "nav_activity": "गतिविधि",
+    "nav_profile": "प्रोफ़ाइल",
+    "settings": "सेटिंग्स",
+    "sidebar_wallet": "वॉलेट",
+    "sidebar_wallet_sub": "धन और लेनदेन प्रबंधित करें",
+    "sidebar_miniapps": "मिनी एप्स",
+    "sidebar_miniapps_sub": "गोटचा इकोसिस्टम देखें",
+    "sidebar_karma": "कर्मा पॉइंट्स",
+    "sidebar_karma_sub": "अपने कर्मा अंतर्दृष्टि देखें",
+    "sidebar_settings": "सेटिंग्स",
+    "sidebar_settings_sub": "प्राथमिकताएँ और खाता",
+    "sidebar_karma_badge": "कर्मा",
+    "mini_apps_title": "मिनी एप्स",
+    "mini_app_games_name": "गोटचा गेम्स", "mini_app_games_desc": "दोस्तों के साथ खेलें",
+    "mini_app_pollster_name": "पोलस्टर", "mini_app_pollster_desc": "दैनिक मतदान बनाएं",
+    "language_settings_title": "ऐप की भाषा",
+    "wallet_title": "वॉलेट",
+    "karma_title": "कर्मा",
+    "logout": "लॉग आउट"
+  },
+  "es": {
+    "app_name": "GOTCHA",
+    "nav_home": "Inicio",
+    "nav_explore": "Explorar",
+    "nav_activity": "Actividad",
+    "nav_profile": "Perfil",
+    "settings": "Ajustes",
+    "sidebar_wallet": "Billetera",
+    "sidebar_wallet_sub": "Gestionar fondos y transacciones",
+    "sidebar_miniapps": "Mini Aplicaciones",
+    "sidebar_miniapps_sub": "Explora el ecosistema GOTCHA",
+    "sidebar_karma": "Puntos Karma",
+    "sidebar_karma_sub": "Ver tus estadísticas de karma",
+    "sidebar_settings": "Ajustes",
+    "sidebar_settings_sub": "Preferencias y cuenta",
+    "sidebar_karma_badge": "Karma",
+    "mini_apps_title": "Mini Aplicaciones",
+    "mini_app_games_name": "Juegos Gotcha", "mini_app_games_desc": "Juega con amigos",
+    "mini_app_pollster_name": "Pollster", "mini_app_pollster_desc": "Crea encuestas diarias",
+    "language_settings_title": "Idioma de la aplicación",
+    "wallet_title": "Billetera",
+    "karma_title": "Karma",
+    "logout": "Cerrar sesión"
+  }
+}
+
+def save(code, data):
+    path = os.path.join(OUT, f"{code}.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    print(f"Saved {path}")
+
+# Generate only supported languages
+for code in SUPPORTED_CODES:
+    data = LANGS.get(code, {})
+    # Fill any missing keys from English
+    merged = {**EN, **data}
+    save(code, merged)
+
+# Optional: Clean up old json files that are not in SUPPORTED_CODES
+existing_files = os.listdir(OUT)
+for filename in existing_files:
+    if filename.endswith(".json"):
+        code = filename[:-5]
+        if code not in SUPPORTED_CODES:
+            os.remove(os.path.join(OUT, filename))
+            print(f"Removed unused translation: {filename}")
+
+print(f"\nDone! Refined translation files in {OUT}")
+print(f"Total files: {len(os.listdir(OUT))}")

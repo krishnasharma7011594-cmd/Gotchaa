@@ -1,0 +1,530 @@
+{
+  "@@locale": "en",
+  "@@last_modified": "2026-04-21T00:00:00Z",
+
+  "appName": "Gotchaa",
+  "loading": "Loading...",
+  "error": "Something went wrong",
+  "retry": "Retry",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "save": "Save",
+  "delete": "Delete",
+  "edit": "Edit",
+  "done": "Done",
+  "back": "Back",
+  "next": "Next",
+  "skip": "Skip",
+  "close": "Close",
+  "yes": "Yes",
+  "no": "No",
+  "ok": "OK",
+  "search": "Search",
+  "clear": "Clear",
+  "share": "Share",
+  "report": "Report",
+  "block": "Block",
+  "unblock": "Unblock",
+  "follow": "Follow",
+  "unfollow": "Unfollow",
+  "send": "Send",
+  "receive": "Receive",
+  "upload": "Upload",
+  "download": "Download",
+
+  "signUp": "Sign Up",
+  "logIn": "Log In",
+  "logOut": "Log Out",
+  "email": "Email",
+  "emailHint": "Enter your email address",
+  "password": "Password",
+  "passwordHint": "Enter your password",
+  "confirmPassword": "Confirm Password",
+  "confirmPasswordHint": "Re-enter your password",
+  "displayName": "Display Name",
+  "displayNameHint": "What should we call you?",
+  "forgotPassword": "Forgot Password?",
+  "resetPassword": "Reset Password",
+  "resetPasswordSent": "Password reset email sent. Check your inbox.",
+  "alreadyHaveAccount": "Already have an account? Log In",
+  "dontHaveAccount": "Don't have an account? Sign Up",
+  "termsAgreement": "By signing up you agree to our Terms of Service and Privacy Policy",
+  "emailInvalid": "Please enter a valid email address",
+  "passwordTooShort": "Password must be at least 8 characters",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "emailAlreadyInUse": "This email is already registered",
+  "userNotFound": "No account found with this email",
+  "wrongPassword": "Incorrect password",
+  "networkError": "Network error. Please check your connection",
+  "signUpSuccess": "Welcome to Gotchaa! 🎉",
+  "logInSuccess": "Welcome back! 👋",
+
+  "selectYourCountry": "Select your country",
+  "detectedCountry": "We detected you are from {country}",
+  "@detectedCountry": {
+    "placeholders": {
+      "country": { "type": "String" }
+    }
+  },
+  "changeCountry": "Change",
+  "countrySearch": "Search countries...",
+  "countryNotFound": "Country not found",
+  "travellingBanner": "✈️ Travelling in {country}?",
+  "@travellingBanner": {
+    "placeholders": {
+      "country": { "type": "String" }
+    }
+  },
+
+  "home": "Home",
+  "feed": "Feed",
+  "noPostsYet": "No posts yet. Be the first! 🚀",
+  "loadingFeed": "Loading your feed...",
+  "refreshFeed": "Pull to refresh",
+  "nearbyPosts": "Nearby",
+  "countryPosts": "My Country",
+  "worldwidePosts": "Worldwide",
+
+  "createPost": "Create Post",
+  "whatsOnYourMind": "What's on your mind?",
+  "addLocation": "Add location",
+  "removeLocation": "Remove location",
+  "locationTagged": "📍 {location}",
+  "@locationTagged": {
+    "placeholders": {
+      "location": { "type": "String" }
+    }
+  },
+  "postPublished": "Post published! 🎉",
+  "postDeleted": "Post deleted",
+  "postReported": "Post reported. Thank you.",
+  "likePost": "Like",
+  "unlikePost": "Unlike",
+  "commentOnPost": "Comment",
+  "sharePost": "Share",
+  "deletePost": "Delete Post",
+  "confirmDeletePost": "Are you sure you want to delete this post?",
+  "likesCount": "{count} likes",
+  "@likesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "commentsCount": "{count} comments",
+  "@commentsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "camera": "Camera",
+  "filters": "Filters",
+  "noFilter": "No Filter",
+  "filterIntensity": "Intensity",
+  "capturePhoto": "Take Photo",
+  "captureVideo": "Record Video",
+  "switchCamera": "Switch Camera",
+  "flashOn": "Flash On",
+  "flashOff": "Flash Off",
+  "filterApplied": "{filter} filter applied",
+  "@filterApplied": {
+    "placeholders": {
+      "filter": { "type": "String" }
+    }
+  },
+  "shakeTrigger": "Shake for glitch effect! 📳",
+  "tiltForEffect": "Tilt phone for effect 📱",
+
+  "messages": "Messages",
+  "newMessage": "New Message",
+  "typeMessage": "Type a message...",
+  "messageSent": "Sent",
+  "messageDelivered": "Delivered",
+  "messageRead": "Read",
+  "messageExpired": "💨 This message has disappeared",
+  "messagesDisappear": "🔥 Messages disappear after 24 hours",
+  "messagePolicy": "Message Policy",
+  "messagePolicyTitle": "Disappearing Messages",
+  "messagePolicyBody": "Messages in Gotchaa automatically disappear after 24 hours. Reported content may be stored for up to 30 days.",
+  "gotIt": "Got it ✓",
+  "screenshotDetected": "⚠️ Screenshot detected",
+  "screenshotTaken": "⚠️ {name} took a screenshot",
+  "@screenshotTaken": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "messageCountdown": "🔥 {time} left",
+  "@messageCountdown": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "messageExpiringHours": "{hours}h {minutes}m left",
+  "@messageExpiringHours": {
+    "placeholders": {
+      "hours": { "type": "int" },
+      "minutes": { "type": "int" }
+    }
+  },
+  "messageExpiringMinutes": "{minutes}m {seconds}s left",
+  "@messageExpiringMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" },
+      "seconds": { "type": "int" }
+    }
+  },
+  "messageExpiringSeconds": "{seconds}s",
+  "@messageExpiringSeconds": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+
+  "e2eeEnabled": "🔒 End-to-end encrypted",
+  "e2eeVerified": "✅ Encryption verified",
+  "e2eeWarning": "⚠️ Encryption not verified",
+  "verifyEncryption": "Verify Encryption",
+  "safetyNumber": "Safety Number",
+  "encryptionInfo": "Messages are secured with end-to-end encryption. Only you and the recipient can read them.",
+
+  "randomChat": "Random Chat",
+  "randomVideo": "Random Video",
+  "findingMatch": "Finding someone to talk to...",
+  "searchingIn": "🔍 Searching in {scope}",
+  "@searchingIn": {
+    "placeholders": {
+      "scope": { "type": "String" }
+    }
+  },
+  "expandingSearch": "🔍 Expanding search to {scope}...",
+  "@expandingSearch": {
+    "placeholders": {
+      "scope": { "type": "String" }
+    }
+  },
+  "connected": "Connected!",
+  "connectedWith": "Connected with someone from {country} {flag}",
+  "@connectedWith": {
+    "placeholders": {
+      "country": { "type": "String" },
+      "flag": { "type": "String" }
+    }
+  },
+  "sessionEnded": "Session ended",
+  "endSession": "End Chat",
+  "nextPerson": "Next",
+  "keepTalking": "Keep Talking 💬",
+  "keepTalkingWaiting": "Waiting to see if they want to keep talking... ⏳",
+  "keepTalkingPrompt": "They want to keep talking with you! 💬",
+  "keepTalkingAccept": "Keep Talking 💬",
+  "keepTalkingDecline": "Maybe Later",
+  "mutualMatchTitle": "You both want to keep talking! 🎉",
+  "mutualMatchSubtitle": "Starting your conversation...",
+  "anonymous": "Anonymous 👤",
+  "somewhereOnEarth": "🌍 Somewhere on Earth",
+  "speaksLanguage": "🗣️ {language} speaker",
+  "@speaksLanguage": {
+    "placeholders": {
+      "language": { "type": "String" }
+    }
+  },
+  "bothSpeakLanguage": "🗣️ You both speak {language}",
+  "@bothSpeakLanguage": {
+    "placeholders": {
+      "language": { "type": "String" }
+    }
+  },
+  "differentLanguages": "🗣️ They speak {language} • Use simple words",
+  "@differentLanguages": {
+    "placeholders": {
+      "language": { "type": "String" }
+    }
+  },
+  "enableTranslation": "🌐 Enable auto-translate?",
+  "sessionMonitored": "This session may be monitored for safety",
+  "minimumSessionTime": "Chat for a bit before connecting permanently",
+
+  "games": "Games",
+  "playGame": "Play a Game",
+  "gameInvite": "{name} wants to play {game}!",
+  "@gameInvite": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "game": { "type": "String" }
+    }
+  },
+  "gameResult": "Game Over!",
+  "youWon": "You won! 🏆",
+  "youLost": "Better luck next time! 💪",
+  "gameDraw": "It's a draw! 🤝",
+  "rematch": "Rematch",
+  "postGamePrompt": "Great game! Want to keep talking? 💬",
+  "metViaGame": "You both matched after a game of {game}! 🎮🎉",
+  "@metViaGame": {
+    "placeholders": {
+      "game": { "type": "String" }
+    }
+  },
+
+  "profile": "Profile",
+  "editProfile": "Edit Profile",
+  "displayNameLabel": "Display Name",
+  "bioLabel": "Bio",
+  "bioHint": "Tell people about yourself...",
+  "profilePhoto": "Profile Photo",
+  "changePhoto": "Change Photo",
+  "removePhoto": "Remove Photo",
+  "memberSince": "Member since {date}",
+  "@memberSince": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "connectionsCount": "💬 {count} connections made through Gotchaa",
+  "@connectionsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "metViaRandomChat": "Met via random chat",
+  "metViaRandomVideo": "Met via random video",
+  "metViaRandomGame": "Met via a game of {game}",
+  "@metViaRandomGame": {
+    "placeholders": {
+      "game": { "type": "String" }
+    }
+  },
+  "metAgo": "{time} ago",
+  "@metAgo": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "travellingIn": "✈️ Currently in {country}",
+  "@travellingIn": {
+    "placeholders": {
+      "country": { "type": "String" }
+    }
+  },
+
+  "newConnectionTitle": "New Connection! 💬",
+  "newConnectionBody": "You have a new connection waiting!",
+  "keepTalkingNotifTitle": "Someone wants to keep talking! 💬",
+  "keepTalkingNotifBody": "You have 30 seconds to respond before the moment passes",
+  "screenshotNotifTitle": "Screenshot Alert ⚠️",
+  "screenshotNotifBody": "{name} took a screenshot of your chat",
+  "@screenshotNotifBody": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "weeklyStatsTitle": "Your Gotchaa week 🎉",
+  "weeklyStatsBody": "This week you made {count} new connections!",
+  "@weeklyStatsBody": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "reportTitle": "Report",
+  "reportInappropriate": "🔞 Inappropriate sexual content",
+  "reportHarassment": "😡 Harassment or bullying",
+  "reportThreat": "🔪 Threats or violence",
+  "reportMinor": "👶 Suspected minor",
+  "reportBot": "🤖 Bot or spam",
+  "reportDrugs": "💊 Drugs or illegal content",
+  "reportImage": "📸 Unsolicited image",
+  "reportImpersonation": "🎭 Impersonation",
+  "reportSubmitted": "Report submitted. Thank you for keeping Gotchaa safe.",
+  "reportedContentRetention": "Reported content may be stored for up to 30 days",
+  "blocked": "User blocked",
+  "userSuspended": "Your account has been suspended",
+  "trustScoreLow": "Your safety rating is too low to use this feature",
+  "safetyRatingTrusted": "🛡️ Trusted",
+  "safetyRatingGood": "⭐ Good",
+  "safetyRatingNew": "🌱 New",
+
+  "settings": "Settings",
+  "language": "Language",
+  "selectLanguage": "Select Language",
+  "currentLanguage": "Current: {language}",
+  "@currentLanguage": {
+    "placeholders": {
+      "language": { "type": "String" }
+    }
+  },
+  "privacy": "Privacy",
+  "security": "Security",
+  "notifications": "Notifications",
+  "about": "About",
+  "helpAndSupport": "Help & Support",
+  "termsOfService": "Terms of Service",
+  "privacyPolicy": "Privacy Policy",
+  "deleteAccount": "Delete Account",
+  "confirmDeleteAccount": "Are you sure? This cannot be undone.",
+  "accountDeleted": "Your account has been deleted",
+  "twoFactorAuth": "Two-Factor Authentication",
+  "twoFactorEnabled": "2FA Enabled ✅",
+  "twoFactorDisabled": "2FA Disabled",
+  "showLocationOnPosts": "Show location on posts",
+  "locationPrecision": "Location precision",
+  "locationPrecisionExact": "Exact location",
+  "locationPrecisionCity": "City only",
+  "locationPrecisionCountry": "Country only",
+  "clearLocationHistory": "Clear Location History",
+  "locationHistoryCleared": "Location history cleared",
+  "nationVisibility": "Who can see my nation",
+  "nationVisibilityCountry": "Show my country",
+  "nationVisibilityContinent": "Show continent only",
+  "nationVisibilityPrivate": "Keep private",
+  "stayAnonymous": "Stay anonymous in connections",
+  "matchPreferences": "Match Preferences",
+  "matchWorldwide": "🌍 Worldwide",
+  "matchSameContinent": "🌎 Same Continent",
+  "matchSameCountry": "🇮🇳 Same Country",
+  "matchPreferred": "⭐ Preferred Countries",
+  "preferredCountries": "Preferred Countries",
+  "maxPreferredCountries": "Maximum 5 countries",
+
+  "noInternetConnection": "No internet connection",
+  "tryAgain": "Try again",
+  "sessionExpired": "Your session has expired. Please log in again.",
+  "featureUnavailable": "This feature is not available on your device",
+  "permissionDenied": "Permission denied",
+  "cameraPermissionNeeded": "Camera permission is required for this feature",
+  "locationPermissionNeeded": "Location permission is required to tag your location",
+  "microphonePermissionNeeded": "Microphone permission is required for voice chat",
+  "noConnectionsYet": "No connections yet. Start chatting! 💬",
+  "noMessagesYet": "No messages yet. Say hello! 👋",
+  "connectionNotFound": "Connection not found",
+
+  "justNow": "Just now",
+  "minutesAgo": "{count}m ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "hoursAgo": "{count}h ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "daysAgo": "{count}d ago",
+  "@daysAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "yesterday": "Yesterday",
+  "weeksAgo": "{count}w ago",
+  "@weeksAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "systemMessageConnected": "🎉 You two connected through Gotchaa random chat! Start your conversation below 👇",
+  "systemMessageConnectedVideo": "🎉 You two connected through Gotchaa random video! Start your conversation below 👇",
+  "systemMessageConnectedGame": "🎉 You connected after a game of {game}! Start your conversation below 👇",
+  "@systemMessageConnectedGame": {
+    "placeholders": {
+      "game": { "type": "String" }
+    }
+  },
+
+  "onboardingTitle1": "Talk to the World 🌍",
+  "onboardingBody1": "Connect with real people from every country instantly",
+  "onboardingTitle2": "Safe and Private 🔒",
+  "onboardingBody2": "End-to-end encrypted. Messages disappear after 24 hours.",
+  "onboardingTitle3": "Keep the ones you like 💬",
+  "onboardingBody3": "Both enjoy the chat? Connect permanently with one tap.",
+  "getStarted": "Get Started",
+  "alreadyMember": "Already a member? Log In",
+  "following": "Following",
+  "forYou": "For You",
+  "nearby": "Nearby",
+  "notFollowingYet": "You are not following anyone yet",
+  "discoverPeople": "Discover People",
+  "suggestedForYou": "Suggested for you",
+  "postsFromCountry": "Posts from {country} {flag}",
+  "@postsFromCountry": {
+    "placeholders": {
+      "country": { "type": "String" },
+      "flag": { "type": "String" }
+    }
+  },
+  "vybzTitle": "Vybz",
+  "trendingTitle": "Trending",
+  "bookmarks": "Bookmarks",
+  "saveTo": "Save to...",
+  "saved": "Saved",
+  "inspiration": "Inspiration",
+  "recipes": "Recipes",
+  "travel": "Travel",
+  "createNewCollection": "Create new collection",
+  "collectionName": "Collection name",
+  "removeFromCollection": "Remove from {collection}?",
+  "@removeFromCollection": {
+    "placeholders": {
+      "collection": { "type": "String" }
+    }
+  },
+  "moveTo": "Move to...",
+  "shareTo": "Share to...",
+  "copyLink": "Copy Link",
+  "sendToConnection": "Send to Gotchaa connection",
+  "shareText": "Check out this post on Gotchaa! {link}",
+  "@shareText": {
+    "placeholders": {
+      "link": { "type": "String" }
+    }
+  },
+  "sharesCount": "{count} shares",
+  "@sharesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "reply": "Reply",
+  "viewAllComments": "View all {count} comments",
+  "@viewAllComments": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "commentRemoved": "Comment removed",
+  "replyingTo": "Replying to {name}",
+  "@replyingTo": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "peopleYouMayKnow": "People you may know",
+  "all": "All",
+  "art": "Art",
+  "tech": "Tech",
+  "lifestyle": "Lifestyle",
+  "food": "Food",
+  "music": "Music",
+  "hashtags": "Hashtags",
+  "posts": "Posts",
+  "users": "Users",
+  "postsCount": "{count} posts",
+  "@postsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "searchQuery": "Search \"{query}\"",
+  "@searchQuery": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "noResultsFound": "No results found",
+  "newPostsAvailable": "New posts available",
+  "notInterested": "Not interested"
+}

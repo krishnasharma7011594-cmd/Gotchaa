@@ -1,0 +1,17 @@
+{
+  "projects": {
+    "default": "studio-1284397718-50704"
+  },
+  "targets": {
+    "studio-1284397718-50704": {
+      "hosting": {
+        "landing": [
+          "gotchaa-landing"
+        ],
+        "app": [
+          "studio-1284397718-50704"
+        ]
+      }
+    }
+  }
+}

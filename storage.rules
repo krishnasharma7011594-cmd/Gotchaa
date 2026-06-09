@@ -1,0 +1,91 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // --- Helper Functions ---
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Validates if the authenticated user's UID is part of the chatId (format: uid1_uid2)
+    function isChatParticipant(chatId) {
+      return isAuthenticated() && (chatId.matches('.*' + request.auth.uid + '.*'));
+    }
+
+    // --- Profile Pictures ---
+    // Handles flat structure: profile_pictures/{uid}.jpg
+    match /profile_pictures/{filename} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() 
+                   && (filename == request.auth.uid + '.jpg' || filename == request.auth.uid + '.png' || filename == request.auth.uid + '.webp')
+                   && request.resource.size < 10 * 1024 * 1024;
+    }
+
+    // Handles nested structure: profile_pictures/{userId}/{filename}
+    match /profile_pictures/{userId}/{filename} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId)
+                   && request.resource.size < 10 * 1024 * 1024;
+    }
+
+    // Fallback/Legacy for profile path
+    match /profile/{userId}/{filename} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId)
+                   && request.resource.size < 10 * 1024 * 1024;
+    }
+
+    // --- Social Content (Posts & Vybz) ---
+    match /posts/{userId}/{filename} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId)
+                   && (
+                     (request.resource.contentType.matches('image/.*') && request.resource.size < 20 * 1024 * 1024) ||
+                     (request.resource.contentType.matches('video/.*') && request.resource.size < 150 * 1024 * 1024)
+                   );
+    }
+
+    match /vybz/{userId}/{filename} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId)
+                   && request.resource.contentType.matches('video/.*')
+                   && request.resource.size < 150 * 1024 * 1024;
+    }
+
+    // --- Chat Media & Voice ---
+    // Supports chats/{chatId}/{type}/{filename} used in StorageRepository
+    match /chats/{chatId}/{type}/{filename} {
+      allow read: if isChatParticipant(chatId);
+      allow write: if isChatParticipant(chatId)
+                   && (
+                     (type == 'image' && request.resource.size < 20 * 1024 * 1024) ||
+                     (type == 'video' && request.resource.size < 150 * 1024 * 1024) ||
+                     (type == 'voice' && request.resource.size < 15 * 1024 * 1024) ||
+                     (type == 'voice_messages' && request.resource.size < 15 * 1024 * 1024)
+                   );
+    }
+
+    // Supports chat_media/{chatId}/{filename}
+    match /chat_media/{chatId}/{filename} {
+      allow read: if isChatParticipant(chatId);
+      allow write: if isChatParticipant(chatId)
+                   && request.resource.size < 20 * 1024 * 1024;
+    }
+
+    // Supports chat_media/{chatId}/voice_messages/{filename}
+    match /chat_media/{chatId}/voice_messages/{filename} {
+      allow read: if isChatParticipant(chatId);
+      allow write: if isChatParticipant(chatId)
+                   && request.resource.size < 15 * 1024 * 1024;
+    }
+
+    // --- Global Deny ---
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

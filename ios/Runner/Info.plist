@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>CADisableMinimumFrameDurationOnPhone</key>
+		<true/>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>$(DEVELOPMENT_LANGUAGE)</string>
+		<key>CFBundleDisplayName</key>
+		<string>GOTCHAA</string>
+		<key>CFBundleExecutable</key>
+		<string>$(EXECUTABLE_NAME)</string>
+		<key>CFBundleIdentifier</key>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleName</key>
+		<string>gotchaa</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleShortVersionString</key>
+		<string>1.0.0</string>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<key>CFBundleVersion</key>
+		<string>$(FLUTTER_BUILD_NUMBER)</string>
+		<!-- Google Sign-In redirect URL scheme — REPLACE with your actual REVERSED_CLIENT_ID from GoogleService-Info.plist -->
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>$(REVERSED_CLIENT_ID)</string>
+				</array>
+			</dict>
+		</array>
+		<key>LSRequiresIPhoneOS</key>
+		<true/>
+		<!-- Scene-based lifecycle (required by FlutterSceneDelegate) -->
+		<key>UIApplicationSceneManifest</key>
+		<dict>
+			<key>UIApplicationSupportsMultipleScenes</key>
+			<false/>
+			<key>UISceneConfigurations</key>
+			<dict>
+				<key>UIWindowSceneSessionRoleApplication</key>
+				<array>
+					<dict>
+						<key>UISceneClassName</key>
+						<string>UIWindowScene</string>
+						<key>UISceneConfigurationName</key>
+						<string>flutter</string>
+						<key>UISceneDelegateClassName</key>
+						<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+						<key>UISceneStoryboardFile</key>
+						<string>Main</string>
+					</dict>
+				</array>
+			</dict>
+		</dict>
+		<key>UIApplicationSupportsIndirectInputEvents</key>
+		<true/>
+		<key>UILaunchStoryboardName</key>
+		<string>LaunchScreen</string>
+		<key>UIMainStoryboardFile</key>
+		<string>Main</string>
+		<!-- Portrait + landscape support -->
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>UISupportedInterfaceOrientations~ipad</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationPortraitUpsideDown</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>UIStatusBarHidden</key>
+		<false/>
+		<!-- ═══════════════════════════════════════════════════════════════
+		     APPLE APP STORE COMPLIANCE — ALL REQUIRED KEYS
+		     Missing any of these = crash on first access + App Store rejection.
+		     ═══════════════════════════════════════════════════════════════ -->
+		<!-- REQUIRED: Tells App Store this app uses standard encryption only.
+		     false = no export compliance review needed. -->
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false/>
+		<!-- Camera: profile photos, posts, VibeTalk video, AR filters, and QR scanning -->
+		<key>NSCameraUsageDescription</key>
+		<string>GOTCHAA uses your camera to scan QR check-in codes at meetup events, take profile photos, create posts, record Vybz videos, and for VibeTalk video connections.</string>
+		<!-- Microphone: VibeTalk calls, voice messages -->
+		<key>NSMicrophoneUsageDescription</key>
+		<string>GOTCHAA uses your microphone for voice messages in chat and during VibeTalk audio/video connections.</string>
+		<!-- Photo Library read: select photos/videos for posts and profile -->
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>GOTCHAA accesses your photo library so you can choose photos and videos for your profile, posts, and Vybz.</string>
+		<!-- Photo Library write: save media to camera roll -->
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>GOTCHAA saves photos and videos to your photo library when you download content.</string>
+		<!-- Location: country detection for multilingual matching and Circles radar -->
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>GOTCHAA uses your location to enable proximity check-ins and live meetup radar for Circles, detect your country for multilingual matching, and enable ride booking.</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>Circles uses your location in the background to keep the live radar active during your meetup.</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>Circles uses your location in the foreground and background to keep the live radar active and enable proximity check-ins.</string>
+		<!-- Contacts: optional friend discovery -->
+		<key>NSContactsUsageDescription</key>
+		<string>GOTCHAA can access your contacts to help you find friends already on the platform. This is optional and never uploaded without your consent.</string>
+		<!-- Face ID: biometric app lock -->
+		<key>NSFaceIDUsageDescription</key>
+		<string>GOTCHAA can use Face ID to quickly and securely unlock the app.</string>
+		<!-- Motion: required by sensors_plus package for accelerometer/gyroscope -->
+		<key>NSMotionUsageDescription</key>
+		<string>GOTCHAA uses motion sensors for interactive AR effects and activity-based features.</string>
+		<!-- Local Network: required by flutter_webrtc for peer-to-peer VibeTalk connections -->
+		<key>NSLocalNetworkUsageDescription</key>
+		<string>GOTCHAA uses your local network to establish direct VibeTalk connections for lower latency video calls.</string>
+		<!-- Bluetooth: placeholder — required if any plugin queries Bluetooth state -->
+		<key>NSBluetoothAlwaysUsageDescription</key>
+		<string>GOTCHAA may use Bluetooth for nearby device connections.</string>
+		<key>NSBluetoothPeripheralUsageDescription</key>
+		<string>GOTCHAA may use Bluetooth for nearby device connections.</string>
+		<!-- Background modes for FCM push notifications -->
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>fetch</string>
+			<string>remote-notification</string>
+			<string>audio</string>
+			<string>voip</string>
+		</array>
+		<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSAllowsArbitraryLoads</key>
+			<true/>
+			<key>NSAllowsArbitraryLoadsInWebContent</key>
+			<true/>
+		</dict>
+	</dict>
+</plist>
