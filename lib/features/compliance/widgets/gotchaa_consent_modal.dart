@@ -146,8 +146,7 @@ class _GotchaaConsentModalState extends State<GotchaaConsentModal> {
   }
 
   Widget _btn(String label, bool primary, VoidCallback onPressed,
-      {bool outlined = false}) {
-    return SizedBox(
+      {bool outlined = false}) => SizedBox(
       width: double.infinity,
       height: 48,
       child: outlined
@@ -170,5 +169,4 @@ class _GotchaaConsentModalState extends State<GotchaaConsentModal> {
               child: Text(label, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
             ),
     );
-  }
 }

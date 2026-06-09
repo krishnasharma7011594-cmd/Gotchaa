@@ -4,7 +4,7 @@ import 'content_policy.dart';
 class GeoContentFilter {
   /// Checks if a post should be shown based on the region's policy
   bool shouldShowContent(PostModel post, ContentPolicy policy) {
-    final textToCheck = (post.caption + ' ' + post.hashtags.join(' ')).toLowerCase();
+    final textToCheck = '${post.caption} ${post.hashtags.join(' ')}'.toLowerCase();
 
     // Check LGBTQ+ content
     if (!policy.allowLGBTQContent) {
@@ -54,7 +54,5 @@ class GeoContentFilter {
   }
 
   /// Filters a list of posts based on the policy
-  List<PostModel> filterFeed(List<PostModel> posts, ContentPolicy policy) {
-    return posts.where((post) => shouldShowContent(post, policy)).toList();
-  }
+  List<PostModel> filterFeed(List<PostModel> posts, ContentPolicy policy) => posts.where((post) => shouldShowContent(post, policy)).toList();
 }

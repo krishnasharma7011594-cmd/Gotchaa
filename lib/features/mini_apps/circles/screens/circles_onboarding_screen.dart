@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/circles_onboarding_provider.dart';
-import '../widgets/glassmorphic_card.dart';
 
 class CirclesOnboardingScreen extends ConsumerStatefulWidget {
   const CirclesOnboardingScreen({super.key});
@@ -29,12 +28,11 @@ class _CirclesOnboardingScreenState extends ConsumerState<CirclesOnboardingScree
   String _selectedCity = 'New Delhi';
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       backgroundColor: context.bg,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -88,7 +86,7 @@ class _CirclesOnboardingScreenState extends ConsumerState<CirclesOnboardingScree
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
                         dropdownColor: context.surface,
-                        value: _selectedCity,
+                        initialValue: _selectedCity,
                         items: ['New Delhi', 'Mumbai', 'Bangalore', 'New York', 'London']
                             .map((city) => DropdownMenuItem(
                                   value: city,
@@ -226,5 +224,4 @@ class _CirclesOnboardingScreenState extends ConsumerState<CirclesOnboardingScree
         ),
       ),
     );
-  }
 }

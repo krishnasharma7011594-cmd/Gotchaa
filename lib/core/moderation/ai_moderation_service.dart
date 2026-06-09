@@ -1,12 +1,8 @@
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter/foundation.dart';
 
 import '../logging/app_logger.dart';
 
 class ModerationResult {
-  final bool approved;
-  final double confidence;
-  final List<String> flaggedCategories;
 
   ModerationResult({
     required this.approved,
@@ -14,13 +10,14 @@ class ModerationResult {
     required this.flaggedCategories,
   });
 
-  factory ModerationResult.fromMap(Map<String, dynamic> map) {
-    return ModerationResult(
+  factory ModerationResult.fromMap(Map<String, dynamic> map) => ModerationResult(
       approved: map['approved'] ?? true,
       confidence: (map['confidence'] as num?)?.toDouble() ?? 1.0,
       flaggedCategories: List<String>.from(map['flaggedCategories'] ?? []),
     );
-  }
+  final bool approved;
+  final double confidence;
+  final List<String> flaggedCategories;
 }
 
 abstract class AIModerationService {
@@ -48,6 +45,6 @@ class GeminiModerationService implements AIModerationService {
 
     // Fallback: approve if AI check fails (or fail closed depending on policy)
     // Here we fail open to not block users if the service is down, but in high-security apps you might fail closed.
-    return ModerationResult(approved: true, confidence: 1.0, flaggedCategories: []);
+    return ModerationResult(approved: true, confidence: 1, flaggedCategories: []);
   }
 }

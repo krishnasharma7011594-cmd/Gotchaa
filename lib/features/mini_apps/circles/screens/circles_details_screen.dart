@@ -1,23 +1,23 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../models/circle_model.dart';
 import '../models/circle_join_request.dart';
+import '../models/circle_model.dart';
 import '../providers/circles_onboarding_provider.dart';
 import '../widgets/glassmorphic_card.dart';
 import '../widgets/trust_badge_widget.dart';
 import 'circles_chat_screen.dart';
 
 class CirclesDetailsScreen extends ConsumerStatefulWidget {
-  final CircleModel circle;
 
   const CirclesDetailsScreen({
-    super.key,
-    required this.circle,
+    required this.circle, super.key,
   });
+  final CircleModel circle;
 
   @override
   ConsumerState<CirclesDetailsScreen> createState() => _CirclesDetailsScreenState();
@@ -129,7 +129,7 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
             // Trust Badging
             const TrustBadgeWidget(
               karmaScore: 180,
-              attendanceRate: 98.0,
+              attendanceRate: 98,
             ),
             const SizedBox(height: 24),
 
@@ -137,7 +137,7 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
             GlassmorphicCard(
               borderRadius: 20,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -249,7 +249,7 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
                 builder: (context, snapshot) {
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
+                      padding: const EdgeInsets.only(top: 8),
                       child: Text(
                         'No pending join requests.',
                         style: GoogleFonts.inter(color: context.textSecondary),
@@ -264,11 +264,11 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
                     itemBuilder: (context, index) {
                       final req = snapshot.data![index];
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 12.0),
+                        padding: const EdgeInsets.only(bottom: 12),
                         child: GlassmorphicCard(
                           blur: 5,
                           child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

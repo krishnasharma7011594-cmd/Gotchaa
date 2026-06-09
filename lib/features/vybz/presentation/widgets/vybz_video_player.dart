@@ -110,7 +110,7 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
           ),
           ValueListenableBuilder(
             valueListenable: controller,
-            builder: (context, VideoPlayerValue value, child) {
+            builder: (context, value, child) {
               if (!value.isPlaying) {
                 return Center(
                   child: Icon(

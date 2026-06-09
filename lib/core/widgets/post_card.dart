@@ -7,6 +7,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../features/profile/presentation/screens/user_profile_screen.dart';
+import '../../features/reporting/report_dialog.dart';
 import '../models/post_model.dart';
 import '../providers/auth_providers.dart';
 import '../providers/profile_providers.dart';
@@ -14,7 +15,6 @@ import '../providers/repository_providers.dart';
 import '../providers/social_providers.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_theme.dart';
-import '../../features/reporting/report_dialog.dart';
 import '../widgets/comments_sheet.dart';
 import 'gotchaa_like_button.dart';
 
@@ -434,7 +434,7 @@ class _PostCardState extends ConsumerState<PostCard> with SingleTickerProviderSt
 
 class _ActionButton extends StatelessWidget {
 
-  const _ActionButton({required this.icon, required this.onTap, this.label, this.color});
+  const _ActionButton({required this.icon, required this.onTap, this.label});
   final IconData icon;
   final String? label;
   final Color? color;

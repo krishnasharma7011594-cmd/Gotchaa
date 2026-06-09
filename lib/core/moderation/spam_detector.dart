@@ -1,7 +1,7 @@
 class SpamDetector {
-  static final SpamDetector _instance = SpamDetector._internal();
   factory SpamDetector() => _instance;
   SpamDetector._internal();
+  static final SpamDetector _instance = SpamDetector._internal();
 
   // Track messages for repeated message detection
   // Key: message text, Value: list of timestamps when it was sent
@@ -39,7 +39,7 @@ class SpamDetector {
     
     for (int i = 0; i < text.length; i++) {
       final char = text[i];
-      if (RegExp(r'[a-zA-Z]').hasMatch(char)) {
+      if (RegExp('[a-zA-Z]').hasMatch(char)) {
         letterCount++;
         if (char == char.toUpperCase()) {
           upperCount++;

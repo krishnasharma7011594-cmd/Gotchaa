@@ -4,7 +4,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:gotchaa/core/logging/app_logger.dart';
+import '../logging/app_logger.dart';
 
 /// Records login session and triggers new-device security alert.
 class LoginSecurityService {

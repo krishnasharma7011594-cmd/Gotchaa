@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../../../core/l10n/app_localizations_x.dart';
-import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/providers/profile_providers.dart';
+import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/services/consent_gate_service.dart';
 import '../../../../core/services/two_factor_service.dart';
-import '../../../../core/widgets/two_factor_code_dialog.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/two_factor_code_dialog.dart';
 
 class DeleteAccountScreen extends ConsumerStatefulWidget {
   const DeleteAccountScreen({super.key});

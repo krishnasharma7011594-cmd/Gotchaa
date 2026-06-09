@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:gotchaa/core/logging/app_logger.dart';
+import '../logging/app_logger.dart';
 
 class NotificationService {
   factory NotificationService() => _instance;

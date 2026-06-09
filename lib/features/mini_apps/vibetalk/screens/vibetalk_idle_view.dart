@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/l10n/app_localizations_x.dart';
+import '../../../../core/permissions/permission_manager.dart';
 import '../../../../core/providers/profile_providers.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/vibetalk_providers.dart';
-import '../../../../core/permissions/permission_manager.dart';
 
 class VibeTalkIdleView extends ConsumerWidget {
   const VibeTalkIdleView({super.key});
@@ -71,8 +71,7 @@ class VibeTalkIdleView extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withOpacity(0.7),
       builder: (ctx) => StatefulBuilder(
-        builder: (context, setModalState) {
-          return Container(
+        builder: (context, setModalState) => Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -243,15 +242,13 @@ class VibeTalkIdleView extends ConsumerWidget {
                 const SizedBox(height: 12),
               ],
             ),
-          );
-        },
+          ),
       ),
     );
     return result ?? false;
   }
 
-  Widget _buildRuleItem(bool isDark, {required IconData icon, required String title, required String desc}) {
-    return Row(
+  Widget _buildRuleItem(bool isDark, {required IconData icon, required String title, required String desc}) => Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
@@ -293,7 +290,6 @@ class VibeTalkIdleView extends ConsumerWidget {
         ),
       ],
     );
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => Container(

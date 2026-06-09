@@ -1,10 +1,4 @@
 class UserOnboarding {
-  final String userId;
-  final List<String> hobbies;
-  final List<String> languages;
-  final List<String> vibePreferences;
-  final List<String> preferredCities;
-  final bool isOnboardingComplete;
 
   UserOnboarding({
     required this.userId,
@@ -15,19 +9,7 @@ class UserOnboarding {
     required this.isOnboardingComplete,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'userId': userId,
-      'hobbies': hobbies,
-      'languages': languages,
-      'vibePreferences': vibePreferences,
-      'preferredCities': preferredCities,
-      'isOnboardingComplete': isOnboardingComplete,
-    };
-  }
-
-  factory UserOnboarding.fromMap(Map<String, dynamic> map, String uId) {
-    return UserOnboarding(
+  factory UserOnboarding.fromMap(Map<String, dynamic> map, String uId) => UserOnboarding(
       userId: uId,
       hobbies: List<String>.from(map['hobbies'] ?? []),
       languages: List<String>.from(map['languages'] ?? []),
@@ -35,10 +17,8 @@ class UserOnboarding {
       preferredCities: List<String>.from(map['preferredCities'] ?? []),
       isOnboardingComplete: map['isOnboardingComplete'] ?? false,
     );
-  }
 
-  factory UserOnboarding.empty(String uId) {
-    return UserOnboarding(
+  factory UserOnboarding.empty(String uId) => UserOnboarding(
       userId: uId,
       hobbies: [],
       languages: ['English'],
@@ -46,5 +26,19 @@ class UserOnboarding {
       preferredCities: [],
       isOnboardingComplete: false,
     );
-  }
+  final String userId;
+  final List<String> hobbies;
+  final List<String> languages;
+  final List<String> vibePreferences;
+  final List<String> preferredCities;
+  final bool isOnboardingComplete;
+
+  Map<String, dynamic> toMap() => {
+      'userId': userId,
+      'hobbies': hobbies,
+      'languages': languages,
+      'vibePreferences': vibePreferences,
+      'preferredCities': preferredCities,
+      'isOnboardingComplete': isOnboardingComplete,
+    };
 }

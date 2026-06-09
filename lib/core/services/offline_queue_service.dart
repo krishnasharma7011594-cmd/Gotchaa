@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:convert';
-
+import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -24,13 +23,21 @@ enum OfflineActionType { message, like, post }
 
 class OfflineAction {
   OfflineAction({
-    String? id,
-    required this.type,
-    required this.payload,
-    required this.createdAt,
+    required this.type, required this.payload, required this.createdAt, String? id,
     this.retries = 0,
     this.nextRetryAt,
   }) : id = id ?? const Uuid().v4();
+
+  factory OfflineAction.fromJson(Map<String, dynamic> json) => OfflineAction(
+        id: json['id'] as String?,
+        type: OfflineActionType.values.byName(json['type'] as String),
+        payload: Map<String, dynamic>.from(json['payload'] as Map),
+        createdAt: DateTime.parse(json['createdAt'] as String),
+        retries: json['retries'] as int? ?? 0,
+        nextRetryAt: json['nextRetryAt'] != null
+            ? DateTime.tryParse(json['nextRetryAt'] as String)
+            : null,
+      );
 
   final String id;
   final OfflineActionType type;
@@ -55,17 +62,6 @@ class OfflineAction {
         'retries': retries,
         'nextRetryAt': nextRetryAt?.toIso8601String(),
       };
-
-  factory OfflineAction.fromJson(Map<String, dynamic> json) => OfflineAction(
-        id: json['id'] as String?,
-        type: OfflineActionType.values.byName(json['type'] as String),
-        payload: Map<String, dynamic>.from(json['payload'] as Map),
-        createdAt: DateTime.parse(json['createdAt'] as String),
-        retries: json['retries'] as int? ?? 0,
-        nextRetryAt: json['nextRetryAt'] != null
-            ? DateTime.tryParse(json['nextRetryAt'] as String)
-            : null,
-      );
 
   /// Increment retries and compute next eligible time using exponential backoff.
   /// Backoff: 2^retries seconds, capped at 5 minutes.

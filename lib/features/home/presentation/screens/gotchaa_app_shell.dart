@@ -3,18 +3,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/l10n/app_localizations_x.dart';
 import '../../../../core/providers/auth_providers.dart';
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/providers/legal_provider.dart';
 import '../../../../core/providers/profile_providers.dart';
-import '../../../../core/services/consent_gate_service.dart';
-import '../../../compliance/widgets/gotchaa_consent_modal.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/providers/shell_navigation_provider.dart';
 import '../../../../core/services/activity_service.dart';
+import '../../../../core/services/consent_gate_service.dart';
 import '../../../../core/services/offline_queue_service.dart';
-import '../../../chat/services/chat_service.dart';
 import '../../../../core/services/translation_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/ui/offline_banner.dart';
@@ -22,10 +20,12 @@ import '../../../../core/widgets/glass_sidebar.dart';
 import '../../../../core/widgets/restricted_feature.dart';
 import '../../../camera/presentation/screens/camera_stream_screen.dart';
 import '../../../chat/presentation/screens/chat_home_screen.dart';
+import '../../../chat/services/chat_service.dart';
+import '../../../compliance/widgets/gotchaa_consent_modal.dart';
 import '../../../explore/presentation/screens/explore_screen.dart';
+import '../../../mini_apps/presentation/screens/gotchaa_mini_apps_screen.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
 import '../../../vybz/presentation/screens/vybz_feed_screen.dart';
-import '../../../mini_apps/presentation/screens/gotchaa_mini_apps_screen.dart';
 import 'main_shell.dart';
 
 class GotchaaAppShell extends ConsumerStatefulWidget {

@@ -1,21 +1,16 @@
-/**
- * Firebase Remote Config Key: geo_policy_overrides
- * 
- * This key allows updating regional policies without an app release.
- * 
- * Expected Structure:
- * {
- *   "AE": { "allowLGBTQContent": false },
- *   "US": { "allowLGBTQContent": true }
- * }
- */
+/// Firebase Remote Config Key: geo_policy_overrides
+/// 
+/// This key allows updating regional policies without an app release.
+/// 
+/// Expected Structure:
+/// {
+///   "AE": { "allowLGBTQContent": false },
+///   "US": { "allowLGBTQContent": true }
+/// }
+library;
 import 'geo_compliance_service.dart';
 
 class ContentPolicy {
-  final bool allowLGBTQContent;
-  final bool allowAlcoholReferences;
-  final bool allowDatingFeatures;
-  final bool allowGamblingContent;
 
   ContentPolicy({
     required this.allowLGBTQContent,
@@ -70,6 +65,10 @@ class ContentPolicy {
         );
     }
   }
+  final bool allowLGBTQContent;
+  final bool allowAlcoholReferences;
+  final bool allowDatingFeatures;
+  final bool allowGamblingContent;
 
   /// Creates a copy of this policy with some overrides
   ContentPolicy copyWith({
@@ -77,12 +76,10 @@ class ContentPolicy {
     bool? allowAlcoholReferences,
     bool? allowDatingFeatures,
     bool? allowGamblingContent,
-  }) {
-    return ContentPolicy(
+  }) => ContentPolicy(
       allowLGBTQContent: allowLGBTQContent ?? this.allowLGBTQContent,
       allowAlcoholReferences: allowAlcoholReferences ?? this.allowAlcoholReferences,
       allowDatingFeatures: allowDatingFeatures ?? this.allowDatingFeatures,
       allowGamblingContent: allowGamblingContent ?? this.allowGamblingContent,
     );
-  }
 }

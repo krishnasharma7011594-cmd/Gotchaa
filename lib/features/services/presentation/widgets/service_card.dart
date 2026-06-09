@@ -3,22 +3,19 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../domain/models/service_model.dart';
 
 class ServiceCard extends StatelessWidget {
+
+  const ServiceCard({
+    required this.service, required this.onTap, super.key,
+    this.isFavourite = false,
+    this.onFavouriteToggle,
+  });
   final GotchaaService service;
   final VoidCallback onTap;
   final bool isFavourite;
   final VoidCallback? onFavouriteToggle;
 
-  const ServiceCard({
-    super.key,
-    required this.service,
-    required this.onTap,
-    this.isFavourite = false,
-    this.onFavouriteToggle,
-  });
-
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
+  Widget build(BuildContext context) => GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
@@ -74,5 +71,4 @@ class ServiceCard extends StatelessWidget {
         ),
       ),
     );
-  }
 }

@@ -2,21 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart' as ll;
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../models/circle_model.dart';
 import '../services/circles_live_location_service.dart';
 import 'glassmorphic_card.dart';
 
 class CirclesLiveMapWidget extends StatefulWidget {
-  final String circleId;
-  final CircleModel circle;
 
   const CirclesLiveMapWidget({
-    super.key,
-    required this.circleId,
-    required this.circle,
+    required this.circleId, required this.circle, super.key,
   });
+  final String circleId;
+  final CircleModel circle;
 
   @override
   State<CirclesLiveMapWidget> createState() => _CirclesLiveMapWidgetState();
@@ -57,7 +55,7 @@ class _CirclesLiveMapWidgetState extends State<CirclesLiveMapWidget> with Single
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
+            padding: EdgeInsets.symmetric(vertical: 8),
             child: Center(child: CircularProgressIndicator()),
           );
         }
@@ -65,11 +63,11 @@ class _CirclesLiveMapWidgetState extends State<CirclesLiveMapWidget> with Single
         final locations = snapshot.data!;
 
         return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           child: GlassmorphicCard(
             borderRadius: 24,
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -108,13 +106,12 @@ class _CirclesLiveMapWidgetState extends State<CirclesLiveMapWidget> with Single
                       borderRadius: BorderRadius.circular(20),
                       child: AnimatedBuilder(
                         animation: _pulseAnimation,
-                        builder: (context, child) {
-                          return FlutterMap(
+                        builder: (context, child) => FlutterMap(
                             options: MapOptions(
                               initialCenter: centerLatLng,
-                              initialZoom: 16.0,
-                              maxZoom: 18.0,
-                              minZoom: 12.0,
+                              initialZoom: 16,
+                              maxZoom: 18,
+                              minZoom: 12,
                             ),
                             children: [
                               TileLayer(
@@ -220,8 +217,7 @@ class _CirclesLiveMapWidgetState extends State<CirclesLiveMapWidget> with Single
                                 }).toList(),
                               ),
                             ],
-                          );
-                        }
+                          )
                       ),
                     ),
                   ),

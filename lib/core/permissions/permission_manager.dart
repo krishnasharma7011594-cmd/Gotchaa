@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'permission_rationale_dialog.dart';
+
 import 'permission_denied_dialog.dart';
+import 'permission_rationale_dialog.dart';
 
 class PermissionManager {
   static Future<bool> requestCameraPermission(BuildContext context) async {
@@ -11,16 +12,16 @@ class PermissionManager {
     if (status.isPermanentlyDenied) {
       _showSettingsDialog(
         context,
-        "Camera Permission Required",
-        "You have permanently denied camera access. Please enable it in settings to use this feature.",
+        'Camera Permission Required',
+        'You have permanently denied camera access. Please enable it in settings to use this feature.',
       );
       return false;
     }
 
-    bool userAgreed = await _showRationale(
+    final bool userAgreed = await _showRationale(
       context,
-      title: "Camera Access",
-      description: "GOTCHAA uses your camera for AR filters, Vybz content creation, and profile photos. Your camera is only active when you choose to use these features.",
+      title: 'Camera Access',
+      description: 'GOTCHAA uses your camera for AR filters, Vybz content creation, and profile photos. Your camera is only active when you choose to use these features.',
       icon: Icons.camera_alt,
     );
 
@@ -39,16 +40,16 @@ class PermissionManager {
     if (status.isPermanentlyDenied) {
       _showSettingsDialog(
         context,
-        "Microphone Permission Required",
-        "You have permanently denied microphone access. Please enable it in settings to use this feature.",
+        'Microphone Permission Required',
+        'You have permanently denied microphone access. Please enable it in settings to use this feature.',
       );
       return false;
     }
 
-    bool userAgreed = await _showRationale(
+    final bool userAgreed = await _showRationale(
       context,
-      title: "Microphone Access",
-      description: "GOTCHAA uses your microphone for voice messages, voice chat, and video calls. Audio is never recorded without your knowledge.",
+      title: 'Microphone Access',
+      description: 'GOTCHAA uses your microphone for voice messages, voice chat, and video calls. Audio is never recorded without your knowledge.',
       icon: Icons.mic,
     );
 
@@ -67,16 +68,16 @@ class PermissionManager {
     if (status.isPermanentlyDenied) {
       _showSettingsDialog(
         context,
-        "Location Permission Required",
-        "You have permanently denied location access. Please enable approximate location in settings to use this feature.",
+        'Location Permission Required',
+        'You have permanently denied location access. Please enable approximate location in settings to use this feature.',
       );
       return false;
     }
 
-    bool userAgreed = await _showRationale(
+    final bool userAgreed = await _showRationale(
       context,
-      title: "Location Access",
-      description: "GOTCHAA uses your approximate (coarse) location to help you connect with people nearby at a city level. We never track your precise GPS coordinates.",
+      title: 'Location Access',
+      description: 'GOTCHAA uses your approximate (coarse) location to help you connect with people nearby at a city level. We never track your precise GPS coordinates.',
       icon: Icons.location_on,
     );
 

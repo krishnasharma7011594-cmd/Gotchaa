@@ -3,11 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../auth/presentation/screens/login_screen.dart';
 import '../../domain/models/service_model.dart';
 import '../../providers/services_provider.dart';
-import 'web_browser_screen.dart';
 import '../widgets/service_card.dart';
+import 'web_browser_screen.dart';
 
 class ServicesScreen extends ConsumerStatefulWidget {
   const ServicesScreen({super.key});
@@ -45,7 +44,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
             child: TextField(
               controller: _searchController,
               style: const TextStyle(color: Colors.white),

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../core/l10n/app_localizations_x.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -61,8 +60,7 @@ class _GotchaaLikesScreenState extends ConsumerState<GotchaaLikesScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       backgroundColor: context.bg,
       appBar: AppBar(
         backgroundColor: context.bg,
@@ -106,7 +104,6 @@ class _GotchaaLikesScreenState extends ConsumerState<GotchaaLikesScreen> {
                       },
                     ),
     );
-  }
 }
 
 class _LikerTile extends StatelessWidget {

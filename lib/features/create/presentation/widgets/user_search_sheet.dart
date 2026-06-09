@@ -6,9 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/models/user_profile.dart';
 import '../../../../core/providers/repository_providers.dart';
-import '../../../../core/theme/app_colors.dart';
-
 import '../../../../core/services/block_mute_service.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class UserSearchSheet extends ConsumerStatefulWidget {
   const UserSearchSheet({super.key});

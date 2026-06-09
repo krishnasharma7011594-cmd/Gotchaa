@@ -221,7 +221,7 @@ class _E2eeKeyManagementScreenState
             hintText: hint,
             hintStyle: GoogleFonts.outfit(color: Colors.white38),
             enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
-            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.electricBlue)),
+            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.electricBlue)),
           ),
         ),
         actions: [
@@ -264,7 +264,7 @@ class _E2eeKeyManagementScreenState
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.electricBlue),
+              borderSide: const BorderSide(color: AppColors.electricBlue),
             ),
           ),
         ),
@@ -287,8 +287,7 @@ class _E2eeKeyManagementScreenState
   // UI
   // ---------------------------------------------------------------------------
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       backgroundColor: const Color(0xFF0D0D1A),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -356,7 +355,6 @@ class _E2eeKeyManagementScreenState
         ),
       ),
     );
-  }
 
   Widget _buildSectionTitle(String title) => Text(
     title.toUpperCase(),
@@ -442,7 +440,7 @@ class _E2eeKeyManagementScreenState
     ),
   ).animate().fadeIn(delay: 100.ms);
 
-  Widget _divider() => Divider(color: Colors.white10, height: 20);
+  Widget _divider() => const Divider(color: Colors.white10, height: 20);
 
   Widget _buildTechRow(String label, String value, IconData icon) => Row(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -503,7 +501,7 @@ class _E2eeKeyManagementScreenState
               ],
             ),
           ),
-          Icon(Icons.chevron_right_rounded, color: Colors.white24),
+          const Icon(Icons.chevron_right_rounded, color: Colors.white24),
         ],
       ),
     ),

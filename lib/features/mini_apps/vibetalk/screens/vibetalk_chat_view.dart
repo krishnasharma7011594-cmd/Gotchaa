@@ -2,20 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../core/l10n/app_localizations_x.dart';
 import '../../../../core/services/analytics_service.dart';
 import '../../../../core/services/translation_service.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/shake_report_listener.dart';
+import '../../../../features/reporting/report_dialog.dart';
+import '../../../../features/safety/emergency_safety_service.dart';
 import '../models/vibe_message.dart';
 import '../providers/vibetalk_providers.dart';
 import '../services/vibetalk_webrtc_service.dart';
 import '../widgets/vibetalk_game_menu.dart';
 import '../widgets/vibetalk_game_overlay.dart';
-import '../../../../features/reporting/report_dialog.dart';
-import '../../../../core/widgets/shake_report_listener.dart';
-import '../../../../features/safety/emergency_safety_service.dart';
 
 class VibeTalkChatView extends ConsumerStatefulWidget {
   const VibeTalkChatView({super.key});

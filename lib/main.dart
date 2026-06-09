@@ -127,9 +127,7 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const ProviderScope(child: GotchaaApp());
-  }
+  Widget build(BuildContext context) => const ProviderScope(child: GotchaaApp());
 }
 
 class GotchaaApp extends ConsumerWidget {

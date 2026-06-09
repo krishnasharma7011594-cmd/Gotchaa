@@ -1,13 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
-import 'package:gotchaa/main.dart';
 import 'package:gotchaa/core/providers/repository_providers.dart';
 import 'package:gotchaa/core/repositories/auth_repository.dart';
+import 'package:gotchaa/main.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 class MockUserCredential extends Mock implements UserCredential {}
@@ -34,7 +34,7 @@ void main() {
     when(() => mockAuthRepository.authStateChanges).thenAnswer((_) => Stream.value(null));
   });
 
-  testWidgets('Complete Auth Flow Test', (WidgetTester tester) async {
+  testWidgets('Complete Auth Flow Test', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [

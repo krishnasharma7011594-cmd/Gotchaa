@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/l10n/app_localizations_x.dart';
 import '../../../../core/models/age_tier.dart';
@@ -206,7 +205,7 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -261,7 +260,7 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
                         duration: const Duration(milliseconds: 600),
                         delay: const Duration(milliseconds: 200),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
                             context.tr('age_verification_subtitle') ?? 
                             'Select your date of birth. This helps us customize your safety experience and compliant settings.',
@@ -499,8 +498,7 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
     return 'Full Access (18+)';
   }
 
-  Widget _buildBlockedScreen(bool isDark) {
-    return Scaffold(
+  Widget _buildBlockedScreen(bool isDark) => Scaffold(
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
@@ -515,7 +513,7 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 28.0, vertical: 24.0),
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -593,7 +591,7 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
                         ),
                         elevation: 0,
                         child: Padding(
-                          padding: const EdgeInsets.all(24.0),
+                          padding: const EdgeInsets.all(24),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -785,5 +783,4 @@ class _AgeVerificationScreenState extends ConsumerState<AgeVerificationScreen> {
         ),
       ),
     );
-  }
 }

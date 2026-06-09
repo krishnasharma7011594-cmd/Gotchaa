@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/l10n/app_localizations_x.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../providers/vibetalk_providers.dart';
 import '../services/vibetalk_webrtc_service.dart';
 
 // ── Audio Waveform Painter ──

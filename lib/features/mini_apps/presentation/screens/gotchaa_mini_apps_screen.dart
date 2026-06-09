@@ -5,19 +5,12 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../services/domain/models/service_model.dart';
-import '../../../services/providers/services_provider.dart';
 import '../../../services/presentation/screens/web_browser_screen.dart';
-
-import '../../vibetalk/screens/vibetalk_main_screen.dart';
+import '../../../services/providers/services_provider.dart';
 import '../../circles/screens/circles_feed_screen.dart';
+import '../../vibetalk/screens/vibetalk_main_screen.dart';
 
 class NativeMiniApp {
-  final String id;
-  final String name;
-  final String description;
-  final IconData icon;
-  final Widget screen;
-  final Color color;
 
   const NativeMiniApp({
     required this.id,
@@ -27,6 +20,12 @@ class NativeMiniApp {
     required this.screen,
     required this.color,
   });
+  final String id;
+  final String name;
+  final String description;
+  final IconData icon;
+  final Widget screen;
+  final Color color;
 }
 
 final nativeMiniApps = [
@@ -91,7 +90,7 @@ class _GotchaaMiniAppsScreenState extends ConsumerState<GotchaaMiniAppsScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
             child: TextField(
               controller: _searchController,
               style: TextStyle(color: context.textPrimary),
@@ -119,7 +118,7 @@ class _GotchaaMiniAppsScreenState extends ConsumerState<GotchaaMiniAppsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
+                  padding: const EdgeInsets.only(bottom: 12),
                   child: Text('Apps & Services', style: GoogleFonts.outfit(color: context.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
                 ),
                 SizedBox(

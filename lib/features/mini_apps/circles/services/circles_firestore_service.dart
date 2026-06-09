@@ -1,10 +1,12 @@
 import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import '../models/circle_model.dart';
-import '../models/circle_message.dart';
+
 import '../models/circle_join_request.dart';
+import '../models/circle_message.dart';
+import '../models/circle_model.dart';
 import '../models/user_onboarding_model.dart';
 
 class CirclesFirestoreService {
@@ -83,9 +85,7 @@ class CirclesFirestoreService {
     final snap = await query.get();
     _incrementReads(snap.docs.length);
 
-    List<CircleModel> circles = snap.docs.map((doc) {
-      return CircleModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
-    }).toList();
+    List<CircleModel> circles = snap.docs.map((doc) => CircleModel.fromMap(doc.data()! as Map<String, dynamic>, doc.id)).toList();
 
     // Client-side local search / hashtags support
     if (searchQuery != null && searchQuery.isNotEmpty) {
@@ -131,8 +131,9 @@ class CirclesFirestoreService {
     final karma = userSnap.data()?['karmaScore'] ?? 10;
     
     String tier = 'New';
-    if (karma > 200) tier = 'Verified';
-    else if (karma > 50) tier = 'Trusted';
+    if (karma > 200) {
+      tier = 'Verified';
+    } else if (karma > 50) tier = 'Trusted';
 
     final docRef = _db.collection('circle_join_requests').doc();
     final req = CircleJoinRequest(
@@ -193,9 +194,7 @@ class CirclesFirestoreService {
           _incrementReads(snap.docs.length);
           final now = DateTime.now();
           // Filter out expired TTL messages client-side
-          return snap.docs.map((doc) {
-            return CircleMessage.fromMap(doc.data(), doc.id);
-          }).where((m) => m.ttl.isAfter(now)).toList();
+          return snap.docs.map((doc) => CircleMessage.fromMap(doc.data(), doc.id)).where((m) => m.ttl.isAfter(now)).toList();
         });
   }
 

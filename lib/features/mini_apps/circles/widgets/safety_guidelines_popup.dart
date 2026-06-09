@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_theme.dart';
 import 'glassmorphic_card.dart';
 
 class SafetyGuidelinesPopup extends StatelessWidget {
-  final VoidCallback onAccepted;
 
   const SafetyGuidelinesPopup({
-    super.key,
-    required this.onAccepted,
+    required this.onAccepted, super.key,
   });
+  final VoidCallback onAccepted;
 
   @override
-  Widget build(BuildContext context) {
-    return Dialog(
+  Widget build(BuildContext context) => Dialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
       child: GlassmorphicCard(
         borderRadius: 28,
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -101,10 +98,8 @@ class SafetyGuidelinesPopup extends StatelessWidget {
         ),
       ),
     );
-  }
 
-  Widget _buildSafetyItem(IconData icon, String title, String body) {
-    return Row(
+  Widget _buildSafetyItem(IconData icon, String title, String body) => Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, color: AppColors.primaryGlow, size: 20),
@@ -135,5 +130,4 @@ class SafetyGuidelinesPopup extends StatelessWidget {
         ),
       ],
     );
-  }
 }

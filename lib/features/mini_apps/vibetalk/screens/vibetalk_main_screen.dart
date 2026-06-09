@@ -1,11 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../core/l10n/app_localizations_x.dart';
 import '../../../../core/providers/profile_providers.dart';
 import '../../../../core/services/analytics_service.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/vibetalk_providers.dart';
 import 'vibetalk_chat_view.dart';

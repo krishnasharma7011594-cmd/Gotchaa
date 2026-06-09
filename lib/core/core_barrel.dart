@@ -37,6 +37,22 @@
 /// Extend [BaseViewModel], [StateViewModel], or [ListViewModel] for consistent UI state management.
 library;
 
+import 'package:cloud_functions/cloud_functions.dart' show Result;
+import 'architecture/architecture_barrel.dart' show BaseViewModel, StateViewModel, ListViewModel;
+import 'architecture/base_viewmodel.dart' show BaseViewModel, StateViewModel, ListViewModel;
+import 'core_barrel.dart' show Result, Failure, AppLogger, Debouncer, Throttler, InputValidator, RateLimitingService, ApiKeyManager, BearerTokenManager, BaseViewModel, StateViewModel, ListViewModel;
+import 'exceptions/exceptions_barrel.dart' show Result, Failure;
+import 'exceptions/failure.dart' show Failure;
+import 'exceptions/result.dart' show Result;
+import 'logging/app_logger.dart' show AppLogger;
+import 'logging/logging_barrel.dart' show AppLogger;
+import 'performance/performance_barrel.dart' show Debouncer, Throttler;
+import 'performance/performance_utils.dart' show Debouncer, Throttler;
+import 'security/api_key_manager.dart' show ApiKeyManager, BearerTokenManager;
+import 'security/rate_limiting.dart' show RateLimitingService;
+import 'security/security_barrel.dart' show InputValidator, RateLimitingService, ApiKeyManager, BearerTokenManager;
+import 'security/validators.dart' show InputValidator;
+
 export 'architecture/architecture_barrel.dart';
 export 'constants/app_constants.dart';
 export 'exceptions/exceptions_barrel.dart';

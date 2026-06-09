@@ -11,9 +11,7 @@ final vybzFeedProvider = StreamProvider<List<VybzModel>>((ref) {
   final blockedUids = ref.watch(blockedUidsProvider).value ?? [];
   final mutedUids = ref.watch(mutedUidsProvider).value ?? [];
   
-  return ref.watch(firestoreRepositoryProvider).getVybzFeed(limit: limit).map((list) {
-    return list.where((v) => !blockedUids.contains(v.creatorId) && !mutedUids.contains(v.creatorId)).toList();
-  });
+  return ref.watch(firestoreRepositoryProvider).getVybzFeed(limit: limit).map((list) => list.where((v) => !blockedUids.contains(v.creatorId) && !mutedUids.contains(v.creatorId)).toList());
 });
 
 final userVybzLimitProvider = StateProvider.family<int, String>((ref, userId) => 10);

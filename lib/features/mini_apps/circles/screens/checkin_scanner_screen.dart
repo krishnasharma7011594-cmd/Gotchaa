@@ -1,6 +1,7 @@
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:confetti/confetti.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../models/circle_model.dart';
@@ -8,12 +9,11 @@ import '../services/circles_checkin_service.dart';
 import '../widgets/glassmorphic_card.dart';
 
 class CheckInScannerScreen extends StatefulWidget {
-  final CircleModel circle;
 
   const CheckInScannerScreen({
-    super.key,
-    required this.circle,
+    required this.circle, super.key,
   });
+  final CircleModel circle;
 
   @override
   State<CheckInScannerScreen> createState() => _CheckInScannerScreenState();
@@ -94,8 +94,7 @@ class _CheckInScannerScreenState extends State<CheckInScannerScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       backgroundColor: context.bg,
       appBar: AppBar(
         backgroundColor: context.bg,
@@ -106,7 +105,7 @@ class _CheckInScannerScreenState extends State<CheckInScannerScreen> {
           alignment: Alignment.center,
           children: [
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -184,7 +183,7 @@ class _CheckInScannerScreenState extends State<CheckInScannerScreen> {
                     GlassmorphicCard(
                       borderRadius: 20,
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16),
                         child: Row(
                           children: [
                             Icon(
@@ -243,5 +242,4 @@ class _CheckInScannerScreenState extends State<CheckInScannerScreen> {
         ),
       ),
     );
-  }
 }

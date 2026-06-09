@@ -5,10 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/legal/legal_documents.dart';
 import '../../../../core/providers/legal_provider.dart';
-import '../../../settings/presentation/screens/legal_document_reader_screen.dart';
 import '../../../../core/services/consent_gate_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../compliance/widgets/gotchaa_consent_modal.dart';
+import '../../../settings/presentation/screens/legal_document_reader_screen.dart';
 
 class LegalConsentGateScreen extends ConsumerStatefulWidget {
   const LegalConsentGateScreen({super.key});

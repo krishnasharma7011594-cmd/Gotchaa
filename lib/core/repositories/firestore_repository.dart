@@ -3,8 +3,6 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../utils/distributed_counter.dart';
-
 import '../constants/pagination_constants.dart';
 import '../firebase/firestore_cost_guard.dart';
 import '../firebase/firestore_query_cache.dart';
@@ -15,6 +13,7 @@ import '../models/user_profile.dart';
 import '../models/vybz_model.dart';
 import '../services/device_service.dart';
 import '../services/invite_code_service.dart';
+import '../utils/distributed_counter.dart';
 
 class FirestoreRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

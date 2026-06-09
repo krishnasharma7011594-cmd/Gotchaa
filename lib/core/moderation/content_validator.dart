@@ -12,12 +12,6 @@ class ValidationResult {
     this.maskedText,
   });
 
-  final bool isValid;
-  final String? reason;
-  final ValidationSeverity? severity;
-  final bool warningOnly;
-  final String? maskedText;
-
   factory ValidationResult.valid({String? maskedText}) =>
       ValidationResult(isValid: true, maskedText: maskedText);
 
@@ -29,6 +23,12 @@ class ValidationResult {
         severity: severity,
         warningOnly: warningOnly,
       );
+
+  final bool isValid;
+  final String? reason;
+  final ValidationSeverity? severity;
+  final bool warningOnly;
+  final String? maskedText;
 }
 
 class ContentValidator {

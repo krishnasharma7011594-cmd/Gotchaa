@@ -22,6 +22,9 @@ final ageProvider = StateNotifierProvider<AgeNotifier, AgeStatus>((ref) {
 });
 
 class AgeNotifier extends StateNotifier<AgeStatus> {
+  AgeNotifier(this.ref, this._prefs, this._uid) : super(AgeStatus.initial()) {
+    _loadStatus(null);
+  }
   // Existing constructor and fields remain unchanged.
 
   /// Public helper to refresh age status when profile data changes.
@@ -32,9 +35,6 @@ class AgeNotifier extends StateNotifier<AgeStatus> {
     if (_prefs?.getBool('blocked_under_13') == true) {
       _prefs?.remove('blocked_under_13');
     }
-  }
-  AgeNotifier(this.ref, this._prefs, this._uid) : super(AgeStatus.initial()) {
-    _loadStatus(null);
   }
 
   final Ref ref;
@@ -50,7 +50,7 @@ class AgeNotifier extends StateNotifier<AgeStatus> {
     if (_prefs == null) return;
 
     // 0. Check if locally blocked under 13 *and not verified* (or not adult in profile)
-    if (_prefs!.getBool('blocked_under_13') == true &&
+    if (_prefs.getBool('blocked_under_13') == true &&
         !(profile?.ageVerified ?? false) &&
         !(profile?.ageTier == AgeTier.adult.index)) {
       state = AgeStatus(
@@ -61,9 +61,9 @@ class AgeNotifier extends StateNotifier<AgeStatus> {
     }
 
     // 1. Check SharedPreferences
-    final tierIndex = _prefs!.getInt(_tierKey);
-    final isVerifiedLocal = _prefs!.getBool(_verifiedKey) ?? false;
-    final dobString = _prefs!.getString(_dobKey);
+    final tierIndex = _prefs.getInt(_tierKey);
+    final isVerifiedLocal = _prefs.getBool(_verifiedKey) ?? false;
+    final dobString = _prefs.getString(_dobKey);
 
     // 2. Check Profile (Firestore)
     final isVerifiedCloud = profile?.ageVerified ?? false;
@@ -84,10 +84,10 @@ class AgeNotifier extends StateNotifier<AgeStatus> {
       
       // Sync local prefs if cloud is verified or local is verified
       if (isVerifiedCloud && !isVerifiedLocal) {
-        _prefs!.setInt(_tierKey, tier.index);
-        _prefs!.setBool(_verifiedKey, true);
+        _prefs.setInt(_tierKey, tier.index);
+        _prefs.setBool(_verifiedKey, true);
         if (dobCloud != null) {
-          _prefs!.setString(_dobKey, dobCloud.toIso8601String());
+          _prefs.setString(_dobKey, dobCloud.toIso8601String());
         }
       }
     } else {
@@ -109,9 +109,9 @@ class AgeNotifier extends StateNotifier<AgeStatus> {
           isVerified: true, 
           dateOfBirth: dobCloud,
         );
-        _prefs!.setBool(_verifiedKey, true);
-        _prefs!.setInt(_tierKey, tier.index);
-        _prefs!.setString(_dobKey, dobCloud.toIso8601String());
+        _prefs.setBool(_verifiedKey, true);
+        _prefs.setInt(_tierKey, tier.index);
+        _prefs.setString(_dobKey, dobCloud.toIso8601String());
         
         // Also sync the flag back to firestore just in case it was missing
         if (_uid != null) {

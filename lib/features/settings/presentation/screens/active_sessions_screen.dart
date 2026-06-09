@@ -49,7 +49,7 @@ class ActiveSessionsScreen extends StatelessWidget {
                       Text('No session history yet.',
                           style: GoogleFonts.outfit(color: textPrimary)),
                     ...docs.map((d) {
-                      final data = d.data() as Map<String, dynamic>;
+                      final data = d.data()! as Map<String, dynamic>;
                       final device = data['deviceName'] as String? ?? 'Unknown device';
                       final location = data['location'] as String? ?? 'Unknown';
                       final last = data['lastActive'];

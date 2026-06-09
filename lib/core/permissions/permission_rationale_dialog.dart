@@ -1,29 +1,23 @@
 import 'package:flutter/material.dart';
 
 class PermissionRationaleDialog extends StatelessWidget {
+
+  const PermissionRationaleDialog({
+    required this.title, required this.description, required this.icon, required this.onAllow, required this.onDeny, super.key,
+  });
   final String title;
   final String description;
   final IconData icon;
   final VoidCallback onAllow;
   final VoidCallback onDeny;
 
-  const PermissionRationaleDialog({
-    Key? key,
-    required this.title,
-    required this.description,
-    required this.icon,
-    required this.onAllow,
-    required this.onDeny,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       decoration: const BoxDecoration(
         color: Color(0xFF0D0D1A), // Dark theme color matching the app
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.all(24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -76,7 +70,7 @@ class PermissionRationaleDialog extends StatelessWidget {
                     ),
                   ),
                   child: const Text(
-                    "Not Now",
+                    'Not Now',
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
@@ -93,7 +87,7 @@ class PermissionRationaleDialog extends StatelessWidget {
                     ),
                   ),
                   child: const Text(
-                    "Allow",
+                    'Allow',
                     style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -104,5 +98,4 @@ class PermissionRationaleDialog extends StatelessWidget {
         ],
       ),
     );
-  }
 }

@@ -13,10 +13,10 @@ class VibeTalkGameService {
     "What's the best piece of advice you've ever received?",
     'If you had to eat one meal everyday for the rest of your life, what would it be?',
     "What's your favorite movie of all time?",
-    "If you could have any superpower, what would it be?",
+    'If you could have any superpower, what would it be?',
     "What's the most adventurous thing you've ever done?",
     "What's your dream job?",
-    "If you could meet any historical figure, who would it be?",
+    'If you could meet any historical figure, who would it be?',
   ];
 
   static const List<Map<String, String>> _thisOrThat = [
@@ -78,9 +78,9 @@ class VibeTalkGameService {
     'Dare: Send a voice note doing your best animal impression.',
     "Dare: Close your eyes and type 'I love Gotchaa' without looking.",
     "Truth: What's the biggest lie you've ever told?",
-    "Truth: Have you ever cheated on a test?",
-    "Dare: Speak in a whisper for the next 2 minutes.",
-    "Dare: Tell the other person a cheesy pickup line.",
+    'Truth: Have you ever cheated on a test?',
+    'Dare: Speak in a whisper for the next 2 minutes.',
+    'Dare: Tell the other person a cheesy pickup line.',
   ];
 
   static VibeGameContext getRandomGame(String type, String initiatorId) {

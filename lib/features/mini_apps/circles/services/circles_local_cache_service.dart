@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/circle_model.dart';
+import 'package:path_provider/path_provider.dart';
+
 import '../models/circle_message.dart';
+import '../models/circle_model.dart';
 
 class CirclesLocalCacheService {
-  static final CirclesLocalCacheService instance = CirclesLocalCacheService._internal();
   CirclesLocalCacheService._internal();
+  static final CirclesLocalCacheService instance = CirclesLocalCacheService._internal();
 
   Future<File> _getFile(String filename) async {
     final dir = await getApplicationDocumentsDirectory();
@@ -20,7 +22,7 @@ class CirclesLocalCacheService {
       final file = await _getFile('cached_circles.json');
       final list = circles.map((c) => c.toMap()).toList();
       // Handle Timestamp conversion for serialization
-      for (var map in list) {
+      for (final map in list) {
         if (map['eventDate'] != null) {
           map['eventDate'] = (map['eventDate'] as dynamic).millisecondsSinceEpoch;
         }
@@ -64,7 +66,7 @@ class CirclesLocalCacheService {
     try {
       final file = await _getFile('cached_msgs_$circleId.json');
       final list = messages.map((m) => m.toMap()).toList();
-      for (var map in list) {
+      for (final map in list) {
         if (map['timestamp'] != null) {
           map['timestamp'] = (map['timestamp'] as dynamic).millisecondsSinceEpoch;
         }

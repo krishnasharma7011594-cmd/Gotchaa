@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:gotchaa/features/services/presentation/screens/services_screen.dart';
 import 'package:gotchaa/features/services/providers/services_provider.dart';
-import 'package:gotchaa/features/services/domain/models/service_model.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:integration_test/integration_test.dart';
+
 import '../test/helpers/test_data.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('Complete Services Flow Test', (WidgetTester tester) async {
+  testWidgets('Complete Services Flow Test', (tester) async {
     final service1 = getMockService(id: '1', name: 'Food Delivery');
     final service2 = getMockService(id: '2', name: 'Ride Sharing');
     final mockServices = [service1, service2];

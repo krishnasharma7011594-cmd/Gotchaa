@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../providers/circles_feed_provider.dart';
 import '../providers/circles_onboarding_provider.dart';
+import '../services/circles_notification_service.dart';
 import '../widgets/glassmorphic_card.dart';
-import '../widgets/trust_badge_widget.dart';
 import '../widgets/safety_guidelines_popup.dart';
-import 'circles_onboarding_screen.dart';
+import '../widgets/trust_badge_widget.dart';
 import 'circles_create_screen.dart';
 import 'circles_details_screen.dart';
 import 'circles_filter_dialog.dart';
+import 'circles_onboarding_screen.dart';
 import 'circles_profile_screen.dart';
-
-import '../services/circles_notification_service.dart';
 
 class CirclesFeedScreen extends ConsumerStatefulWidget {
   const CirclesFeedScreen({super.key});
@@ -210,7 +210,7 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                   if (feedState.isThrottled)
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16),
                         child: Center(
                           child: Text(
                             '⚠️ Query throttling active for cost protection.',
@@ -225,7 +225,7 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                     SliverFillRemaining(
                       child: Center(
                         child: Padding(
-                          padding: const EdgeInsets.all(24.0),
+                          padding: const EdgeInsets.all(24),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -278,7 +278,7 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                               child: GlassmorphicCard(
                                 blur: 10,
                                 child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
+                                  padding: const EdgeInsets.all(16),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -345,9 +345,9 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          TrustBadgeWidget(
+                                          const TrustBadgeWidget(
                                             karmaScore: 120, // Mock karma level representing community reliability
-                                            attendanceRate: 95.0,
+                                            attendanceRate: 95,
                                           ),
                                           Text(
                                             '${circle.memberIds.length}/${circle.memberLimit} Members',
@@ -369,7 +369,7 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                   if (feedState.isLoading)
                     const SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.all(16.0),
+                        padding: EdgeInsets.all(16),
                         child: Center(child: CircularProgressIndicator()),
                       ),
                     ),

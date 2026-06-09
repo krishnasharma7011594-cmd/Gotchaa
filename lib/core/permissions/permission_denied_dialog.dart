@@ -2,18 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionDeniedDialog extends StatelessWidget {
+
+  const PermissionDeniedDialog({
+    required this.title, required this.description, super.key,
+  });
   final String title;
   final String description;
 
-  const PermissionDeniedDialog({
-    Key? key,
-    required this.title,
-    required this.description,
-  }) : super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
+  Widget build(BuildContext context) => AlertDialog(
       backgroundColor: const Color(0xFF0D0D1A),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Text(
@@ -27,7 +24,7 @@ class PermissionDeniedDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text("Cancel", style: TextStyle(color: Colors.white54)),
+          child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
         ),
         ElevatedButton(
           onPressed: () {
@@ -38,9 +35,8 @@ class PermissionDeniedDialog extends StatelessWidget {
             backgroundColor: const Color(0xFF6C63FF),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
-          child: const Text("Open Settings", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          child: const Text('Open Settings', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         ),
       ],
     );
-  }
 }

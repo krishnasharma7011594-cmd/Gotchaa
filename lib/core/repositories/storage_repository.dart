@@ -91,7 +91,7 @@ class StorageRepository {
     await GotchaaPerformanceTraces.instance.startImageUpload(kind: 'video');
     try {
       final uploadTask = ref.putData(
-        bytes is Uint8List ? bytes : Uint8List.fromList(bytes),
+        bytes,
         SettableMetadata(contentType: 'video/mp4'),
       );
       if (onProgress != null) {

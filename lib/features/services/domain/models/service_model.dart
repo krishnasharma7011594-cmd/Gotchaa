@@ -16,13 +16,6 @@ enum ServiceCategory {
 }
 
 class GotchaaService {
-  final String id;
-  final String name;
-  final String url;
-  final ServiceCategory category;
-  final Color brandColor;
-  final String description;
-  final String iconAsset;
 
   const GotchaaService({
     required this.id,
@@ -34,8 +27,7 @@ class GotchaaService {
     this.iconAsset = '',
   });
 
-  factory GotchaaService.fromMap(Map<String, dynamic> map) {
-    return GotchaaService(
+  factory GotchaaService.fromMap(Map<String, dynamic> map) => GotchaaService(
       id: map['id'] ?? '',
       name: map['name'] ?? '',
       url: map['url'] ?? '',
@@ -47,10 +39,15 @@ class GotchaaService {
       description: map['description'] ?? '',
       iconAsset: map['iconAsset'] ?? '',
     );
-  }
+  final String id;
+  final String name;
+  final String url;
+  final ServiceCategory category;
+  final Color brandColor;
+  final String description;
+  final String iconAsset;
 
-  Map<String, dynamic> toMap() {
-    return {
+  Map<String, dynamic> toMap() => {
       'id': id,
       'name': name,
       'url': url,
@@ -59,5 +56,4 @@ class GotchaaService {
       'description': description,
       'iconAsset': iconAsset,
     };
-  }
 }

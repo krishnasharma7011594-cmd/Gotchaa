@@ -1,21 +1,20 @@
 import 'dart:io';
-import 'package:image_picker/image_picker.dart';
-
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../core/l10n/app_localizations_x.dart';
 import '../../../../core/models/post_model.dart';
 import '../../../../core/models/spotify_track.dart';
 import '../../../../core/models/user_profile.dart';
+import '../../../../core/moderation/content_validator.dart';
 import '../../../../core/providers/auth_providers.dart';
 import '../../../../core/providers/profile_providers.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/providers/shell_navigation_provider.dart';
-import '../../../../core/moderation/content_validator.dart';
 import '../../../../core/services/analytics_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';

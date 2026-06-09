@@ -2,16 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ReportModel {
   ReportModel({
-    this.id,
-    required this.reportedUserId,
-    required this.reportedByUserId,
-    required this.contentType,
-    required this.contentId,
-    required this.category,
+    required this.reportedUserId, required this.reportedByUserId, required this.contentType, required this.contentId, required this.category, required this.reason, required this.status, required this.timestamp, this.id,
     this.subReason,
-    required this.reason,
-    required this.status,
-    required this.timestamp,
     this.moderatorNote,
     this.severity = 'medium',
     this.isCsamFlag = false,
@@ -21,6 +13,27 @@ class ReportModel {
     this.flags = const [],
     this.reporterCount = 1,
   });
+
+  factory ReportModel.fromMap(Map<String, dynamic> map, String id) => ReportModel(
+        id: id,
+        reportedUserId: map['reportedUserId'] ?? '',
+        reportedByUserId: map['reportedByUserId'] ?? '',
+        contentType: map['contentType'] ?? '',
+        contentId: map['contentId'] ?? '',
+        category: map['category'] ?? map['reason'] ?? '',
+        subReason: map['subReason'],
+        reason: map['reason'] ?? '',
+        status: map['status'] ?? 'pending',
+        timestamp: (map['timestamp'] as Timestamp).toDate(),
+        moderatorNote: map['moderatorNote'],
+        severity: map['severity'] ?? 'medium',
+        isCsamFlag: map['isCsamFlag'] == true,
+        isAutoReport: map['isAutoReport'] == true,
+        contentHidden: map['contentHidden'] == true,
+        contentPreview: map['contentPreview'],
+        flags: List<String>.from(map['flags'] ?? []),
+        reporterCount: (map['reporterCount'] as num?)?.toInt() ?? 1,
+      );
 
   final String? id;
   final String reportedUserId;
@@ -60,25 +73,4 @@ class ReportModel {
         'flags': flags,
         'reporterCount': reporterCount,
       };
-
-  factory ReportModel.fromMap(Map<String, dynamic> map, String id) => ReportModel(
-        id: id,
-        reportedUserId: map['reportedUserId'] ?? '',
-        reportedByUserId: map['reportedByUserId'] ?? '',
-        contentType: map['contentType'] ?? '',
-        contentId: map['contentId'] ?? '',
-        category: map['category'] ?? map['reason'] ?? '',
-        subReason: map['subReason'],
-        reason: map['reason'] ?? '',
-        status: map['status'] ?? 'pending',
-        timestamp: (map['timestamp'] as Timestamp).toDate(),
-        moderatorNote: map['moderatorNote'],
-        severity: map['severity'] ?? 'medium',
-        isCsamFlag: map['isCsamFlag'] == true,
-        isAutoReport: map['isAutoReport'] == true,
-        contentHidden: map['contentHidden'] == true,
-        contentPreview: map['contentPreview'],
-        flags: List<String>.from(map['flags'] ?? []),
-        reporterCount: (map['reporterCount'] as num?)?.toInt() ?? 1,
-      );
 }
