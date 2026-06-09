@@ -32,113 +32,115 @@ class _InterestSelectionScreenState extends State<InterestSelectionScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Colors.white,
-    appBar: AppBar(
-      leading: const BackButton(color: Colors.black),
-      elevation: 0,
-      backgroundColor: Colors.white,
-    ),
-    body: SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Personalize your Vybz',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Select at least 3 interests to help personalize your feed.',
-              style: TextStyle(color: Colors.grey, fontSize: 16),
-            ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: _interests.map((interest) {
-                    final isSelected = _selectedInterests.contains(
-                      interest['name'],
-                    );
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (isSelected) {
-                            _selectedInterests.remove(interest['name']);
-                          } else {
-                            _selectedInterests.add(interest['name']);
-                          }
-                        });
-                      },
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? AppColors.primaryBlue
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(
-                            color: isSelected
-                                ? AppColors.primaryBlue
-                                : Colors.grey.shade300,
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              interest['icon'],
-                              size: 18,
-                              color: isSelected ? Colors.white : Colors.black87,
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          leading: const BackButton(color: Colors.black),
+          elevation: 0,
+          backgroundColor: Colors.white,
+        ),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Personalize your Vybz',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Select at least 3 interests to help personalize your feed.',
+                  style: TextStyle(color: Colors.grey, fontSize: 16),
+                ),
+                const SizedBox(height: 24),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: _interests.map((interest) {
+                        final isSelected = _selectedInterests.contains(
+                          interest['name'],
+                        );
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              if (isSelected) {
+                                _selectedInterests.remove(interest['name']);
+                              } else {
+                                _selectedInterests.add(interest['name']);
+                              }
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              interest['name'],
-                              style: TextStyle(
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? AppColors.primaryBlue
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(
                                 color: isSelected
-                                    ? Colors.white
-                                    : Colors.black87,
-                                fontWeight: FontWeight.bold,
+                                    ? AppColors.primaryBlue
+                                    : Colors.grey.shade300,
+                                width: 1.5,
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  interest['icon'],
+                                  size: 18,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.black87,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  interest['name'],
+                                  style: TextStyle(
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.black87,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: _selectedInterests.length < 3
+                      ? null
+                      : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ProfileSetupScreen(),
+                            ),
+                          );
+                        },
+                  child: Text('Continue (${_selectedInterests.length}/3)'),
+                ),
+                const SizedBox(height: 16),
+              ],
             ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _selectedInterests.length < 3
-                  ? null
-                  : () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ProfileSetupScreen(),
-                        ),
-                      );
-                    },
-              child: Text('Continue (${_selectedInterests.length}/3)'),
-            ),
-            const SizedBox(height: 16),
-          ],
+          ),
         ),
-      ),
-    ),
-  );
+      );
 }

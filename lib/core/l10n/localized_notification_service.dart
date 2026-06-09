@@ -16,22 +16,23 @@ class NotificationLocaleCache {
 
 class LocalizedNotificationService {
   // Simulates handling a background push message in the requested locale
-  static Future<String> getLocalizedTitle(Map<String, dynamic> dataPayload) async {
+  static Future<String> getLocalizedTitle(
+      Map<String, dynamic> dataPayload) async {
     final String locale = await NotificationLocaleCache.getLocale();
-    
+
     // In a real app, you would load the specific ARB file string or use intl messages mapped by type
-    // Since we don't have BuildContext in the background isolate, we would need to manually read the ARB 
+    // Since we don't have BuildContext in the background isolate, we would need to manually read the ARB
     // or register messages in `intl`.
-    
+
     final String type = dataPayload['type'] ?? '';
-    
+
     // Minimal fallback resolution logic for background without BuildContext
     if (type == 'newConnection') {
       if (locale == 'hi') return 'आपका एक नया कनेक्शन इंतज़ार कर रहा है! 💬';
       if (locale == 'ar') return 'لديك اتصال جديد في انتظارك! 💬';
       return 'You have a new connection waiting! 💬';
     }
-    
+
     return 'New Notification';
   }
 }

@@ -11,15 +11,16 @@ class DisappearingMessageService {
     required String recipientId,
   }) async {
     try {
-      await _firestore.collection('chats').doc(chatId).collection('events').add({
+      await _firestore
+          .collection('chats')
+          .doc(chatId)
+          .collection('events')
+          .add({
         'type': 'screenshot',
         'recipientId': recipientId,
         'timestamp': FieldValue.serverTimestamp(),
       });
-      
-    } catch (e) {
-      
-    }
+    } catch (e) {}
   }
 
   /// Report a specific message for violating community guidelines.
@@ -36,9 +37,7 @@ class DisappearingMessageService {
         'status': 'pending',
         'createdAt': FieldValue.serverTimestamp(),
       });
-      
     } catch (e) {
-      
       rethrow;
     }
   }

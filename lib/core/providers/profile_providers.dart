@@ -13,8 +13,7 @@ import 'repository_providers.dart';
 ///   but Firestore write lagged), the provider calls
 ///   `ensureUserDocument` to auto-create one — so the profile screen
 ///   never shows "not found".
-final currentUserProfileProvider =
-    StreamProvider<UserProfile?>((ref) async* {
+final currentUserProfileProvider = StreamProvider<UserProfile?>((ref) async* {
   final user = ref.watch(authStateProvider).asData?.value;
   if (user == null) {
     yield null;
@@ -27,8 +26,7 @@ final currentUserProfileProvider =
   await repo.ensureUserDocument(
     uid: user.uid,
     email: user.email ?? '',
-    displayName:
-        user.displayName ?? user.email?.split('@').first ?? 'User',
+    displayName: user.displayName ?? user.email?.split('@').first ?? 'User',
     photoUrl: user.photoURL ?? '',
   );
 
@@ -36,12 +34,14 @@ final currentUserProfileProvider =
   yield* repo.getUserProfileStream(user.uid);
 });
 
-final userFollowersProvider = StreamProvider.family<List<UserProfile>, String>((ref, uid) {
+final userFollowersProvider =
+    StreamProvider.family<List<UserProfile>, String>((ref, uid) {
   final socialRepo = ref.watch(socialRepositoryProvider);
   return socialRepo.getFollowers(uid);
 });
 
-final userFollowingProvider = StreamProvider.family<List<UserProfile>, String>((ref, uid) {
+final userFollowingProvider =
+    StreamProvider.family<List<UserProfile>, String>((ref, uid) {
   final socialRepo = ref.watch(socialRepositoryProvider);
   return socialRepo.getFollowing(uid);
 });
@@ -49,7 +49,7 @@ final userFollowingProvider = StreamProvider.family<List<UserProfile>, String>((
 final blockedUsersProvider = StreamProvider<List<UserProfile>>((ref) {
   final user = ref.watch(currentUserProvider);
   if (user == null) return Stream.value([]);
-  
+
   final profileAsync = ref.watch(currentUserProfileProvider);
   final socialRepo = ref.watch(socialRepositoryProvider);
 

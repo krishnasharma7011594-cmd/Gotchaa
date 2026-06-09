@@ -29,9 +29,10 @@ import '../widgets/message_bubble.dart';
 import 'safety_number_screen.dart';
 
 class ChatConversationScreen extends ConsumerStatefulWidget {
-  
   const ChatConversationScreen({
-    required this.chatId, required this.userName, super.key, 
+    required this.chatId,
+    required this.userName,
+    super.key,
     this.userAvatar,
   });
   final String chatId;
@@ -39,14 +40,16 @@ class ChatConversationScreen extends ConsumerStatefulWidget {
   final String? userAvatar;
 
   @override
-  ConsumerState<ChatConversationScreen> createState() => _ChatConversationScreenState();
+  ConsumerState<ChatConversationScreen> createState() =>
+      _ChatConversationScreenState();
 }
 
-class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen> {
+class _ChatConversationScreenState
+    extends ConsumerState<ChatConversationScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   String? _recipientUid;
-  
+
   bool _isTyping = false;
   Timer? _typingTimer;
 
@@ -219,10 +222,11 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
   Future<void> _translateMessage(MessageModel msg) async {
     if (msg.type != 'text') return;
     if (msg.isDeletedForEveryone) return;
-    if (_translations.containsKey(msg.id) || _translatingSet.contains(msg.id)) return;
+    if (_translations.containsKey(msg.id) || _translatingSet.contains(msg.id))
+      return;
 
     final svc = ref.read(translationServiceProvider);
-    
+
     _translatingSet.add(msg.id);
     if (mounted) setState(() {});
 
@@ -246,7 +250,7 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
           String errorMsg = 'Could not detect language';
           // Check if it looks like ciphertext (no spaces, long base64)
           if (!text.contains(' ') && text.length > 30) {
-             errorMsg = 'Cannot detect language (Text may be encrypted)';
+            errorMsg = 'Cannot detect language (Text may be encrypted)';
           }
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(errorMsg)),
@@ -254,12 +258,12 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
         }
         return;
       }
-      
+
       final target = svc.preferredLanguage;
       if (source == target) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-             SnackBar(content: Text('Already in ${target.name}')),
+            SnackBar(content: Text('Already in ${target.name}')),
           );
         }
         return;
@@ -304,12 +308,12 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
       final useE2EE = _e2eeEnabled && _isE2EEReady;
 
       await ref.read(chatServiceProvider).sendMessage(
-        chatId: widget.chatId,
-        receiverId: _recipientUid!,
-        text: text,
-        isEncrypted: useE2EE,
-        expiresAt: expiresAt,
-      );
+            chatId: widget.chatId,
+            receiverId: _recipientUid!,
+            text: text,
+            isEncrypted: useE2EE,
+            expiresAt: expiresAt,
+          );
       // Fire analytics — non-blocking
       AnalyticsService.logMessageSent(type: 'text');
     } catch (e) {
@@ -389,8 +393,10 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.check_circle_outline, color: Colors.white70),
-              title: const Text('Select', style: TextStyle(color: Colors.white)),
+              leading:
+                  const Icon(Icons.check_circle_outline, color: Colors.white70),
+              title:
+                  const Text('Select', style: TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pop(ctx);
                 _toggleSelection(msg);
@@ -398,7 +404,8 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
             ),
             ListTile(
               leading: const Icon(Icons.flag_outlined, color: Colors.orange),
-              title: const Text('Report', style: TextStyle(color: Colors.white)),
+              title:
+                  const Text('Report', style: TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pop(ctx);
                 showReportBottomSheet(
@@ -418,11 +425,11 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
 
   Future<void> _handleTranslate() async {
     if (_selectedMessages.isEmpty) return;
-    
+
     // Create a list to avoid issues when clearing selection
     final messagesToTranslate = _selectedMessages.values.toList();
     _clearSelection();
-    
+
     for (final msg in messagesToTranslate) {
       await _translateMessage(msg);
     }
@@ -430,10 +437,10 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
 
   void _handleCopy() async {
     if (_selectedMessages.isEmpty) return;
-    
+
     final texts = _selectedMessages.values.map((m) => m.text).join('\n');
     await Clipboard.setData(ClipboardData(text: texts));
-    
+
     _clearSelection();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -449,7 +456,7 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
   Future<void> _deleteSelectedMessages() async {
     final idsToDelete = _selectedMessages.keys.toList();
     _clearSelection();
-    
+
     for (final id in idsToDelete) {
       await _deleteMessage(id, false);
     }
@@ -472,12 +479,12 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
     if (file != null && mounted) {
       try {
         await ref.read(chatServiceProvider).sendMessage(
-          chatId: widget.chatId,
-          receiverId: _recipientUid!,
-          text: isVideo ? 'Video' : 'Image',
-          type: isVideo ? 'video' : 'image',
-          mediaFile: file,
-        );
+              chatId: widget.chatId,
+              receiverId: _recipientUid!,
+              text: isVideo ? 'Video' : 'Image',
+              type: isVideo ? 'video' : 'image',
+              mediaFile: file,
+            );
       } catch (_) {}
     }
   }
@@ -520,12 +527,11 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
               },
             ),
             ListTile(
-              leading:
-                  const Icon(Icons.timer, color: AppColors.electricBlue),
+              leading: const Icon(Icons.timer, color: AppColors.electricBlue),
               title: const Text('24 Hours'),
               onTap: () {
-                setState(() =>
-                    _disappearingDuration = const Duration(hours: 24));
+                setState(
+                    () => _disappearingDuration = const Duration(hours: 24));
                 Navigator.pop(context);
               },
             ),
@@ -533,8 +539,7 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
               leading: const Icon(Icons.timer, color: AppColors.electricBlue),
               title: const Text('7 Days'),
               onTap: () {
-                setState(
-                    () => _disappearingDuration = const Duration(days: 7));
+                setState(() => _disappearingDuration = const Duration(days: 7));
                 Navigator.pop(context);
               },
             ),
@@ -557,9 +562,12 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (msg.type == 'text' && !msg.isDeletedForEveryone && !_translations.containsKey(msg.id))
+            if (msg.type == 'text' &&
+                !msg.isDeletedForEveryone &&
+                !_translations.containsKey(msg.id))
               ListTile(
-                leading: const Icon(Icons.translate, color: AppColors.electricBlue),
+                leading:
+                    const Icon(Icons.translate, color: AppColors.electricBlue),
                 title: const Text('Translate Message'),
                 onTap: () {
                   Navigator.pop(context);
@@ -646,13 +654,14 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
   PreferredSizeWidget _buildDefaultAppBar(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     return AppBar(
-      backgroundColor: theme.appBarTheme.backgroundColor?.withValues(alpha: 0.9),
+      backgroundColor:
+          theme.appBarTheme.backgroundColor?.withValues(alpha: 0.9),
       elevation: 0,
       centerTitle: false,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded, 
+        icon: Icon(Icons.arrow_back_ios_new_rounded,
             color: theme.colorScheme.onSurface, size: 20),
         onPressed: () => Navigator.pop(context),
       ),
@@ -667,7 +676,8 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
                   ? NetworkImage(widget.userAvatar!)
                   : null,
               child: widget.userAvatar == null
-                  ? Icon(Icons.person, color: theme.colorScheme.onSurfaceVariant, size: 20)
+                  ? Icon(Icons.person,
+                      color: theme.colorScheme.onSurfaceVariant, size: 20)
                   : null,
             ),
           ),
@@ -695,15 +705,18 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.videocam_outlined, color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+          icon: Icon(Icons.videocam_outlined,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
           onPressed: () {},
         ),
         IconButton(
-          icon: Icon(Icons.call_outlined, color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+          icon: Icon(Icons.call_outlined,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
           onPressed: () {},
         ),
         PopupMenuButton<String>(
-          icon: Icon(Icons.more_vert, color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+          icon: Icon(Icons.more_vert,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
           color: theme.colorScheme.surface,
           onSelected: (value) {
             if (value == 'e2ee_toggle') {
@@ -756,7 +769,9 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
                   Icon(
                     _e2eeEnabled ? Icons.lock : Icons.lock_open_outlined,
                     color: _isE2EEReady
-                        ? (_e2eeEnabled ? Colors.greenAccent : theme.colorScheme.onSurface)
+                        ? (_e2eeEnabled
+                            ? Colors.greenAccent
+                            : theme.colorScheme.onSurface)
                         : Colors.grey,
                     size: 20,
                   ),
@@ -764,7 +779,9 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
                   Expanded(
                     child: Text(
                       _isE2EEReady
-                          ? (_e2eeEnabled ? 'Encryption: ON' : 'Encryption: OFF')
+                          ? (_e2eeEnabled
+                              ? 'Encryption: ON'
+                              : 'Encryption: OFF')
                           : 'Encryption unavailable',
                       style: TextStyle(
                         color: _isE2EEReady ? null : Colors.grey,
@@ -778,7 +795,8 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
               value: 'safety_number',
               child: Row(
                 children: [
-                  Icon(Icons.verified_user_outlined, color: theme.colorScheme.primary, size: 20),
+                  Icon(Icons.verified_user_outlined,
+                      color: theme.colorScheme.primary, size: 20),
                   const SizedBox(width: 8),
                   const Text('Safety Number'),
                 ],
@@ -800,157 +818,177 @@ class _ChatConversationScreenState extends ConsumerState<ChatConversationScreen>
       ],
     );
   }
-   @override
+
+  @override
   Widget build(BuildContext context) {
     final messagesAsync = ref.watch(messageStreamProvider(widget.chatId));
     final themeState = ref.watch(themeProvider);
     final customTheme = AppTheme.fromGotchaaTheme(themeState.currentTheme);
     final isDark = customTheme.brightness == Brightness.dark;
-    
-    final bgImage = isDark 
-        ? 'assets/images/chat_bg_custom.png' 
+
+    final bgImage = isDark
+        ? 'assets/images/chat_bg_custom.png'
         : 'assets/images/chat_bg_light.png';
 
     return Theme(
       data: customTheme,
-      child: Builder(builder: (chatContext) => WillPopScope(
-          onWillPop: () async {
-            if (_isSelectionMode) {
-              _clearSelection();
-              return false;
-            }
-            return true;
-          },
-          child: SecureChatWrapper(
-          child: Scaffold(
-            backgroundColor: customTheme.scaffoldBackgroundColor,
-            appBar: _isSelectionMode ? AppBar(
-                    backgroundColor: customTheme.cardTheme.color ?? const Color(0xFF1A1A1A),
-                    leading: IconButton(
-                      icon: Icon(Icons.arrow_back, color: customTheme.colorScheme.onSurface),
-                      onPressed: _clearSelection,
-                    ),
-                    title: Text(
-                      '${_selectedMessages.length}',
-                      style: GoogleFonts.outfit(color: customTheme.colorScheme.onSurface, fontSize: 20),
-                    ),
-                    actions: [
-                      IconButton(
-                        icon: Icon(Icons.copy, color: customTheme.colorScheme.onSurface),
-                        onPressed: _handleCopy,
+      child: Builder(
+          builder: (chatContext) => WillPopScope(
+                onWillPop: () async {
+                  if (_isSelectionMode) {
+                    _clearSelection();
+                    return false;
+                  }
+                  return true;
+                },
+                child: SecureChatWrapper(
+                  child: Scaffold(
+                    backgroundColor: customTheme.scaffoldBackgroundColor,
+                    appBar: _isSelectionMode
+                        ? AppBar(
+                            backgroundColor: customTheme.cardTheme.color ??
+                                const Color(0xFF1A1A1A),
+                            leading: IconButton(
+                              icon: Icon(Icons.arrow_back,
+                                  color: customTheme.colorScheme.onSurface),
+                              onPressed: _clearSelection,
+                            ),
+                            title: Text(
+                              '${_selectedMessages.length}',
+                              style: GoogleFonts.outfit(
+                                  color: customTheme.colorScheme.onSurface,
+                                  fontSize: 20),
+                            ),
+                            actions: [
+                              IconButton(
+                                icon: Icon(Icons.copy,
+                                    color: customTheme.colorScheme.onSurface),
+                                onPressed: _handleCopy,
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.reply,
+                                    color: customTheme.colorScheme.onSurface),
+                                onPressed: _handleReply,
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.report_problem_outlined,
+                                    color: customTheme.colorScheme.onSurface),
+                                onPressed: _handleReport,
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.translate,
+                                    color: customTheme.colorScheme.onSurface),
+                                onPressed: _handleTranslate,
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete_outline,
+                                    color: customTheme.colorScheme.onSurface),
+                                onPressed: _deleteSelectedMessages,
+                              ),
+                            ],
+                          )
+                        : _buildDefaultAppBar(chatContext),
+                    body: Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(bgImage),
+                          fit: BoxFit.cover,
+                          opacity: isDark ? 0.4 : 0.8,
+                          colorFilter: isDark
+                              ? ColorFilter.mode(Colors.black.withOpacity(0.2),
+                                  BlendMode.dstATop)
+                              : null,
+                        ),
                       ),
-                      IconButton(
-                        icon: Icon(Icons.reply, color: customTheme.colorScheme.onSurface),
-                        onPressed: _handleReply,
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.report_problem_outlined, color: customTheme.colorScheme.onSurface),
-                        onPressed: _handleReport,
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.translate, color: customTheme.colorScheme.onSurface),
-                        onPressed: _handleTranslate,
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete_outline, color: customTheme.colorScheme.onSurface),
-                        onPressed: _deleteSelectedMessages,
-                      ),
-                    ],
-                  ) : _buildDefaultAppBar(chatContext),
-            body: Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(bgImage),
-                  fit: BoxFit.cover,
-                  opacity: isDark ? 0.4 : 0.8,
-                  colorFilter: isDark 
-                      ? ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop)
-                      : null,
-                ),
-              ),
-              child: Column(
-              children: [
-                Expanded(
-                  child: messagesAsync.when(
-                    data: (messages) {
-                      if (messages.isEmpty) {
-                        return Center(
-                          child: Text(
-                            'No messages yet. Start the conversation.',
-                            style: GoogleFonts.outfit(
-                              fontSize: 14,
-                              color: chatContext.textSecondary,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: messagesAsync.when(
+                              data: (messages) {
+                                if (messages.isEmpty) {
+                                  return Center(
+                                    child: Text(
+                                      'No messages yet. Start the conversation.',
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 14,
+                                        color: chatContext.textSecondary,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                return ListView.builder(
+                                  reverse: true,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 10),
+                                  itemCount: messages.length + 1,
+                                  itemBuilder: (context, index) {
+                                    if (index == messages.length) {
+                                      return Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            vertical: 20, horizontal: 40),
+                                        child: Text(
+                                          'Messages are end-to-end encrypted. No one outside of this chat can read them.',
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.outfit(
+                                            fontSize: 12,
+                                            color: chatContext.textSecondary
+                                                .withOpacity(0.5),
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    final msg = messages[index];
+                                    final isMe = msg.senderId ==
+                                        ref.read(authStateProvider).value?.uid;
+                                    return _buildMessageBubble(msg, isMe);
+                                  },
+                                );
+                              },
+                              loading: () => const Center(
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2)),
+                              error: (e, st) =>
+                                  Center(child: Text(e.toString())),
                             ),
                           ),
-                        );
-                      }
-                      return ListView.builder(
-                        reverse: true,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 10),
-                        itemCount: messages.length + 1,
-                        itemBuilder: (context, index) {
-                          if (index == messages.length) {
-                            return Container(
-                              margin: const EdgeInsets.symmetric(
-                                  vertical: 20, horizontal: 40),
-                              child: Text(
-                                'Messages are end-to-end encrypted. No one outside of this chat can read them.',
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.outfit(
-                                  fontSize: 12,
-                                  color:
-                                      chatContext.textSecondary.withOpacity(0.5),
-                                ),
-                              ),
-                            );
-                          }
-                          final msg = messages[index];
-                          final isMe = msg.senderId ==
-                              ref.read(authStateProvider).value?.uid;
-                          return _buildMessageBubble(msg, isMe);
-                        },
-                      );
-                    },
-                    loading: () => const Center(
-                        child: CircularProgressIndicator(strokeWidth: 2)),
-                    error: (e, st) => Center(child: Text(e.toString())),
+                          EnhancedChatInput(
+                            controller: _messageController,
+                            replyingTo: _replyingToMessage,
+                            onCancelReply: () =>
+                                setState(() => _replyingToMessage = null),
+                            onTypingChanged: (status) {
+                              ref.read(chatServiceProvider).setTypingStatus(
+                                  widget.chatId, status == 'typing');
+                            },
+                            onSend: (text) {
+                              if (_recipientUid == null) return;
+                              final useE2EE = _e2eeEnabled && _isE2EEReady;
+                              ref.read(chatServiceProvider).sendMessage(
+                                    chatId: widget.chatId,
+                                    receiverId: _recipientUid!,
+                                    text: text,
+                                    isEncrypted: useE2EE,
+                                    replyTo: _replyingToMessage != null
+                                        ? ReplyTo(
+                                            messageId: _replyingToMessage!.id,
+                                            senderId:
+                                                _replyingToMessage!.senderId,
+                                            text: _replyingToMessage!.text,
+                                            type: _replyingToMessage!.type,
+                                          )
+                                        : null,
+                                  );
+                              setState(() => _replyingToMessage = null);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-                EnhancedChatInput(
-                  controller: _messageController,
-                  replyingTo: _replyingToMessage,
-                  onCancelReply: () => setState(() => _replyingToMessage = null),
-                  onTypingChanged: (status) {
-                    ref.read(chatServiceProvider).setTypingStatus(widget.chatId, status == 'typing');
-                  },
-                  onSend: (text) {
-                    if (_recipientUid == null) return;
-                    final useE2EE = _e2eeEnabled && _isE2EEReady;
-                    ref.read(chatServiceProvider).sendMessage(
-                      chatId: widget.chatId,
-                      receiverId: _recipientUid!,
-                      text: text,
-                      isEncrypted: useE2EE,
-                      replyTo: _replyingToMessage != null
-                          ? ReplyTo(
-                              messageId: _replyingToMessage!.id,
-                              senderId: _replyingToMessage!.senderId,
-                              text: _replyingToMessage!.text,
-                              type: _replyingToMessage!.type,
-                            )
-                          : null,
-                    );
-                    setState(() => _replyingToMessage = null);
-                  },
-                ),
-              ],
-            ),
-            ),
-          ),
-        ),)),
+              )),
     );
   }
 }
@@ -999,15 +1037,14 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   @override
   void initState() {
     super.initState();
-    _controller =
-        VideoPlayerController.networkUrl(Uri.parse(widget.url))
-          ..initialize().then((_) {
-            setState(() {
-              _isInitialized = true;
-            });
-            _controller.play();
-            _controller.setLooping(true);
-          });
+    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.url))
+      ..initialize().then((_) {
+        setState(() {
+          _isInitialized = true;
+        });
+        _controller.play();
+        _controller.setLooping(true);
+      });
   }
 
   @override
@@ -1018,13 +1055,13 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   @override
   Widget build(BuildContext context) => Center(
-      child: _isInitialized
-          ? AspectRatio(
-              aspectRatio: _controller.value.aspectRatio,
-              child: VideoPlayer(_controller),
-            )
-          : const CircularProgressIndicator(),
-    );
+        child: _isInitialized
+            ? AspectRatio(
+                aspectRatio: _controller.value.aspectRatio,
+                child: VideoPlayer(_controller),
+              )
+            : const CircularProgressIndicator(),
+      );
 }
 
 class SecureChatWrapper extends StatelessWidget {
@@ -1033,4 +1070,3 @@ class SecureChatWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SecureScreen(child: child);
 }
-

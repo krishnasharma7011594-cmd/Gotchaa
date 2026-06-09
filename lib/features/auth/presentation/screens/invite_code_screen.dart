@@ -154,7 +154,8 @@ class _InviteCodeScreenState extends ConsumerState<InviteCodeScreen> {
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
                     hintText: 'GOTCHAA-XXXXXX',
-                    hintStyle: TextStyle(color: Colors.grey[600], letterSpacing: 2),
+                    hintStyle:
+                        TextStyle(color: Colors.grey[600], letterSpacing: 2),
                     filled: true,
                     fillColor: Colors.white.withOpacity(0.05),
                     border: OutlineInputBorder(
@@ -163,7 +164,8 @@ class _InviteCodeScreenState extends ConsumerState<InviteCodeScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Colors.blueAccent, width: 2),
+                      borderSide:
+                          const BorderSide(color: Colors.blueAccent, width: 2),
                     ),
                     errorText: _errorMessage,
                   ),
@@ -243,7 +245,8 @@ class _InviteCodeScreenState extends ConsumerState<InviteCodeScreen> {
                 ),
                 const SizedBox(height: 32),
                 TextButton(
-                  onPressed: () => ref.read(authControllerProvider.notifier).signOut(),
+                  onPressed: () =>
+                      ref.read(authControllerProvider.notifier).signOut(),
                   child: Text(
                     'Sign Out',
                     style: TextStyle(color: Colors.grey[500]),

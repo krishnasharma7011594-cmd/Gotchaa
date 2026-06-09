@@ -12,7 +12,8 @@ final ageProvider = StateNotifierProvider<AgeNotifier, AgeStatus>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
   final user = ref.watch(currentUserProvider);
   final notifier = AgeNotifier(ref, prefs, user?.uid);
-  ref.listen<AsyncValue<UserProfile?>>(currentUserProfileProvider, (prev, next) {
+  ref.listen<AsyncValue<UserProfile?>>(currentUserProfileProvider,
+      (prev, next) {
     final profile = next.asData?.value;
     if (profile != null) {
       notifier.updateFromProfile(profile);
@@ -42,7 +43,8 @@ class AgeNotifier extends StateNotifier<AgeStatus> {
   final String? _uid;
 
   String get _tierKey => _uid != null ? '${_uid}_age_tier' : 'age_tier';
-  String get _verifiedKey => _uid != null ? '${_uid}_age_verified' : 'age_verified';
+  String get _verifiedKey =>
+      _uid != null ? '${_uid}_age_verified' : 'age_verified';
   String get _dobKey => _uid != null ? '${_uid}_age_dob' : 'age_dob';
 
   void _loadStatus(UserProfile? profile) {
@@ -72,16 +74,17 @@ class AgeNotifier extends StateNotifier<AgeStatus> {
     final isUserDeclaredAdult = tierIndexCloud == AgeTier.adult.index;
 
     if (isVerifiedCloud || isVerifiedLocal || isUserDeclaredAdult) {
-      final tier = tierIndexCloud != null 
-          ? AgeTier.values[tierIndexCloud] 
+      final tier = tierIndexCloud != null
+          ? AgeTier.values[tierIndexCloud]
           : (tierIndex != null ? AgeTier.values[tierIndex] : AgeTier.adult);
-          
+
       state = AgeStatus(
         tier: tier,
         isVerified: true,
-        dateOfBirth: dobCloud ?? (dobString != null ? DateTime.parse(dobString) : null),
+        dateOfBirth:
+            dobCloud ?? (dobString != null ? DateTime.parse(dobString) : null),
       );
-      
+
       // Sync local prefs if cloud is verified or local is verified
       if (isVerifiedCloud && !isVerifiedLocal) {
         _prefs.setInt(_tierKey, tier.index);
@@ -106,16 +109,19 @@ class AgeNotifier extends StateNotifier<AgeStatus> {
         }
         state = AgeStatus(
           tier: tier,
-          isVerified: true, 
+          isVerified: true,
           dateOfBirth: dobCloud,
         );
         _prefs.setBool(_verifiedKey, true);
         _prefs.setInt(_tierKey, tier.index);
         _prefs.setString(_dobKey, dobCloud.toIso8601String());
-        
+
         // Also sync the flag back to firestore just in case it was missing
         if (_uid != null) {
-          FirebaseFirestore.instance.collection('users_private').doc(_uid).update({
+          FirebaseFirestore.instance
+              .collection('users_private')
+              .doc(_uid)
+              .update({
             'ageVerified': true,
           }).catchError((_) => null);
         }
@@ -135,7 +141,7 @@ class AgeNotifier extends StateNotifier<AgeStatus> {
       await _prefs?.setBool('blocked_under_13', true);
       return;
     }
-    
+
     AgeTier tier;
     if (age <= 15) {
       tier = AgeTier.junior;
@@ -162,7 +168,10 @@ class AgeNotifier extends StateNotifier<AgeStatus> {
 
     // 3. Sync to Firestore
     if (_uid != null) {
-      await FirebaseFirestore.instance.collection('users_private').doc(_uid).set({
+      await FirebaseFirestore.instance
+          .collection('users_private')
+          .doc(_uid)
+          .set({
         'ageTier': tier.index,
         'ageVerified': true,
         'birthday': Timestamp.fromDate(dob),
@@ -175,7 +184,10 @@ class AgeNotifier extends StateNotifier<AgeStatus> {
 
   Future<void> submitParentalConsent(String parentEmail) async {
     if (_uid != null) {
-      await FirebaseFirestore.instance.collection('parental_consents').doc(_uid).set({
+      await FirebaseFirestore.instance
+          .collection('parental_consents')
+          .doc(_uid)
+          .set({
         'parentEmail': parentEmail,
         'confirmed': false,
         'createdAt': FieldValue.serverTimestamp(),
@@ -185,7 +197,10 @@ class AgeNotifier extends StateNotifier<AgeStatus> {
 
   Future<bool> checkParentalConsentStatus() async {
     if (_uid == null) return false;
-    final doc = await FirebaseFirestore.instance.collection('parental_consents').doc(_uid).get();
+    final doc = await FirebaseFirestore.instance
+        .collection('parental_consents')
+        .doc(_uid)
+        .get();
     if (doc.exists && doc.data()?['confirmed'] == true) {
       // Consent approved! Update age status to coppaLimited
       state = AgeStatus(
@@ -193,20 +208,23 @@ class AgeNotifier extends StateNotifier<AgeStatus> {
         isVerified: true,
         dateOfBirth: null, // do not store child birthdate PII
       );
-      
+
       // Update local prefs
       await _prefs?.setInt(_tierKey, AgeTier.coppaLimited.index);
       await _prefs?.setBool(_verifiedKey, true);
       await _prefs?.remove('blocked_under_13'); // Clear local blocked flag
-      
+
       // Sync to private Firestore
-      await FirebaseFirestore.instance.collection('users_private').doc(_uid).set({
+      await FirebaseFirestore.instance
+          .collection('users_private')
+          .doc(_uid)
+          .set({
         'ageTier': AgeTier.coppaLimited.index,
         'ageVerified': true,
         'coppaConsentConfirmed': true,
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
-      
+
       return true;
     }
     return false;
@@ -215,15 +233,16 @@ class AgeNotifier extends StateNotifier<AgeStatus> {
   int _calculateAge(DateTime dob) {
     final now = DateTime.now();
     int age = now.year - dob.year;
-    if (now.month < dob.month || (now.month == dob.month && now.day < dob.day)) {
+    if (now.month < dob.month ||
+        (now.month == dob.month && now.day < dob.day)) {
       age--;
     }
     return age;
   }
 
-  bool canAccessSocialFeatures() => 
-      state.tier == AgeTier.junior || 
-      state.tier == AgeTier.teen || 
+  bool canAccessSocialFeatures() =>
+      state.tier == AgeTier.junior ||
+      state.tier == AgeTier.teen ||
       state.tier == AgeTier.adult;
 
   bool canAccessAdultContent() => state.tier == AgeTier.adult;

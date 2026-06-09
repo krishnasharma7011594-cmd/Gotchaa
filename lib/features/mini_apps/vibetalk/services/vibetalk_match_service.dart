@@ -25,84 +25,86 @@ class VibeMatchService {
 
     await GotchaaPerformanceTraces.instance.startVibeTalkMatch();
     try {
-    // 1. Initial attempt to grab an existing waiting user
-    final initialMatch = await _tryToGrabMatch(
-      currentUid: currentUid,
-      languageCode: languageCode,
-      continent: continent,
-      wantsVideo: wantsVideo,
-      strict: true,
-    );
-    if (initialMatch != null) return initialMatch;
-
-    // 2. Not found immediately? Join the queue and wait
-    final queueRef = _db.collection('vibetalk_queue').doc(currentUid);
-    await queueRef.set({
-      'uid': currentUid,
-      'isMatched': false,
-      'matchedWith': null,
-      'roomId': null,
-      'joinedAt': FieldValue.serverTimestamp(),
-      'languageCode': languageCode,
-      'continent': continent,
-      'wantsGames': wantsGames,
-      'wantsVideo': wantsVideo,
-    });
-
-    final completer = Completer<({String roomId, bool isCaller})>();
-    int searchSeconds = 0;
-
-    // 3. Start a timer to periodically try grabbing others while waiting
-    // This handles the case where two people joined almost at the same time
-    Timer.periodic(const Duration(seconds: 3), (timer) async {
-      if (completer.isCompleted) {
-        timer.cancel();
-        return;
-      }
-
-      searchSeconds += 3;
-      
-      // Every 10 seconds, we get less strict
-      final bool isStrict = searchSeconds < 15;
-
-      final grabbedMatch = await _tryToGrabMatch(
+      // 1. Initial attempt to grab an existing waiting user
+      final initialMatch = await _tryToGrabMatch(
         currentUid: currentUid,
         languageCode: languageCode,
         continent: continent,
         wantsVideo: wantsVideo,
-        strict: isStrict,
+        strict: true,
       );
+      if (initialMatch != null) return initialMatch;
 
-      if (grabbedMatch != null && !completer.isCompleted) {
-        timer.cancel();
-        await queueRef.delete().catchError((_) {});
-        completer.complete(grabbedMatch);
-      }
-    });
+      // 2. Not found immediately? Join the queue and wait
+      final queueRef = _db.collection('vibetalk_queue').doc(currentUid);
+      await queueRef.set({
+        'uid': currentUid,
+        'isMatched': false,
+        'matchedWith': null,
+        'roomId': null,
+        'joinedAt': FieldValue.serverTimestamp(),
+        'languageCode': languageCode,
+        'continent': continent,
+        'wantsGames': wantsGames,
+        'wantsVideo': wantsVideo,
+      });
 
-    // 4. Listen for someone ELSE grabbing US
-    _queueSub = queueRef.snapshots().listen((snap) async {
-      if (!snap.exists || completer.isCompleted) return;
-      final data = snap.data();
-      
-      if (data != null && data['isMatched'] == true && data['roomId'] != null) {
-        final roomId = data['roomId'] as String;
-        _queueSub?.cancel();
-        if (!completer.isCompleted) {
-          completer.complete((roomId: roomId, isCaller: false));
+      final completer = Completer<({String roomId, bool isCaller})>();
+      int searchSeconds = 0;
+
+      // 3. Start a timer to periodically try grabbing others while waiting
+      // This handles the case where two people joined almost at the same time
+      Timer.periodic(const Duration(seconds: 3), (timer) async {
+        if (completer.isCompleted) {
+          timer.cancel();
+          return;
         }
-      }
-    });
 
-    try {
-      return await completer.future.timeout(const Duration(seconds: 60));
-    } on TimeoutException {
-      await cancelMatch();
-      throw Exception('No one is online right now. Try again in a minute!');
-    } catch (e) {
-      await cancelMatch();
-      rethrow;
-    }
+        searchSeconds += 3;
+
+        // Every 10 seconds, we get less strict
+        final bool isStrict = searchSeconds < 15;
+
+        final grabbedMatch = await _tryToGrabMatch(
+          currentUid: currentUid,
+          languageCode: languageCode,
+          continent: continent,
+          wantsVideo: wantsVideo,
+          strict: isStrict,
+        );
+
+        if (grabbedMatch != null && !completer.isCompleted) {
+          timer.cancel();
+          await queueRef.delete().catchError((_) {});
+          completer.complete(grabbedMatch);
+        }
+      });
+
+      // 4. Listen for someone ELSE grabbing US
+      _queueSub = queueRef.snapshots().listen((snap) async {
+        if (!snap.exists || completer.isCompleted) return;
+        final data = snap.data();
+
+        if (data != null &&
+            data['isMatched'] == true &&
+            data['roomId'] != null) {
+          final roomId = data['roomId'] as String;
+          _queueSub?.cancel();
+          if (!completer.isCompleted) {
+            completer.complete((roomId: roomId, isCaller: false));
+          }
+        }
+      });
+
+      try {
+        return await completer.future.timeout(const Duration(seconds: 60));
+      } on TimeoutException {
+        await cancelMatch();
+        throw Exception('No one is online right now. Try again in a minute!');
+      } catch (e) {
+        await cancelMatch();
+        rethrow;
+      }
     } finally {
       await GotchaaPerformanceTraces.instance.stopVibeTalkMatch();
     }
@@ -117,7 +119,8 @@ class VibeMatchService {
     required bool strict,
   }) async {
     try {
-      Query query = _db.collection('vibetalk_queue')
+      Query query = _db
+          .collection('vibetalk_queue')
           .where('isMatched', isEqualTo: false)
           .where('wantsVideo', isEqualTo: wantsVideo);
 
@@ -127,7 +130,8 @@ class VibeMatchService {
       }
 
       final snapshot = await query.orderBy('joinedAt').limit(10).get();
-      final candidates = snapshot.docs.where((d) => d.id != currentUid).toList();
+      final candidates =
+          snapshot.docs.where((d) => d.id != currentUid).toList();
 
       if (candidates.isEmpty) return null;
 
@@ -173,9 +177,7 @@ class VibeMatchService {
       if (success) {
         return (roomId: roomId, isCaller: true);
       }
-    } catch (e) {
-      
-    }
+    } catch (e) {}
     return null;
   }
 

@@ -1,5 +1,4 @@
 class LanguageMeta {
-
   const LanguageMeta({
     required this.code,
     required this.nameEn,
@@ -38,4 +37,3 @@ class LanguageMeta {
     'nl': '🇳🇱',
   };
 }
-

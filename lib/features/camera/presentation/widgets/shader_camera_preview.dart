@@ -81,7 +81,6 @@ class _ShaderUniforms {
 /// This avoids the Android black-screen bug caused by using
 /// [ShaderMask] directly over [CameraPreview] (platform texture).
 class _FilterOverlayPainter extends CustomPainter {
-
   _FilterOverlayPainter({
     required this.shader,
     required this.filter,
@@ -108,9 +107,10 @@ class _FilterOverlayPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _FilterOverlayPainter old) => old.sensor != sensor ||
-        old.intensity != intensity ||
-        old.filter.id != filter.id;
+  bool shouldRepaint(covariant _FilterOverlayPainter old) =>
+      old.sensor != sensor ||
+      old.intensity != intensity ||
+      old.filter.id != filter.id;
 }
 
 /// Widget that places a [CameraPreview] with a GLSL shader overlay.
@@ -127,9 +127,11 @@ class _FilterOverlayPainter extends CustomPainter {
 /// )
 /// ```
 class ShaderCameraPreview extends StatefulWidget {
-
   const ShaderCameraPreview({
-    required this.controller, required this.filter, required this.intensity, super.key,
+    required this.controller,
+    required this.filter,
+    required this.intensity,
+    super.key,
   });
   final CameraController controller;
   final FilterDefinition filter;
@@ -164,7 +166,11 @@ class _ShaderCameraPreviewState extends State<ShaderCameraPreview> {
 
   Future<void> _loadShader(String? assetPath) async {
     if (assetPath == null) {
-      if (mounted) setState(() { _shader = null; _loadedAsset = null; });
+      if (mounted)
+        setState(() {
+          _shader = null;
+          _loadedAsset = null;
+        });
       return;
     }
     if (assetPath == _loadedAsset) return; // already loaded
@@ -177,8 +183,11 @@ class _ShaderCameraPreviewState extends State<ShaderCameraPreview> {
         });
       }
     } catch (e) {
-      
-      if (mounted) setState(() { _shader = null; _loadedAsset = null; });
+      if (mounted)
+        setState(() {
+          _shader = null;
+          _loadedAsset = null;
+        });
     }
   }
 
@@ -190,24 +199,24 @@ class _ShaderCameraPreviewState extends State<ShaderCameraPreview> {
 
   @override
   Widget build(BuildContext context) => Stack(
-      fit: StackFit.expand,
-      children: [
-        // Layer 1: Native camera feed — NEVER wrapped by ShaderMask
-        CameraPreview(widget.controller),
+        fit: StackFit.expand,
+        children: [
+          // Layer 1: Native camera feed — NEVER wrapped by ShaderMask
+          CameraPreview(widget.controller),
 
-        // Layer 2: Shader overlay (transparent if shader not loaded)
-        if (_shader != null)
-          RepaintBoundary(
-            child: CustomPaint(
-              painter: _FilterOverlayPainter(
-                shader: _shader!,
-                filter: widget.filter,
-                intensity: widget.intensity,
-                sensor: _sensorState,
+          // Layer 2: Shader overlay (transparent if shader not loaded)
+          if (_shader != null)
+            RepaintBoundary(
+              child: CustomPaint(
+                painter: _FilterOverlayPainter(
+                  shader: _shader!,
+                  filter: widget.filter,
+                  intensity: widget.intensity,
+                  sensor: _sensorState,
+                ),
+                size: Size.infinite,
               ),
-              size: Size.infinite,
             ),
-          ),
-      ],
-    );
+        ],
+      );
 }

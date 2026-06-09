@@ -7,7 +7,7 @@
 /// ```dart
 /// Result<User, AuthFailure> result = await authRepository.login(email, password);
 /// result.when(
-///   success: (user) => 
+///   success: (user) =>
 /// ```
 library;
 

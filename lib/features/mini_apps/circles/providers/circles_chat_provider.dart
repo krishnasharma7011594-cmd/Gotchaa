@@ -6,7 +6,6 @@ import '../services/circles_local_cache_service.dart';
 import 'circles_onboarding_provider.dart';
 
 class CirclesChatState {
-
   CirclesChatState({
     required this.messages,
     required this.isLoading,
@@ -15,10 +14,10 @@ class CirclesChatState {
   });
 
   factory CirclesChatState.initial() => CirclesChatState(
-      messages: [],
-      isLoading: false,
-      isThrottled: false,
-    );
+        messages: [],
+        isLoading: false,
+        isThrottled: false,
+      );
   final List<CircleMessage> messages;
   final bool isLoading;
   final bool isThrottled;
@@ -29,17 +28,18 @@ class CirclesChatState {
     bool? isLoading,
     bool? isThrottled,
     String? error,
-  }) => CirclesChatState(
-      messages: messages ?? this.messages,
-      isLoading: isLoading ?? this.isLoading,
-      isThrottled: isThrottled ?? this.isThrottled,
-      error: error ?? this.error,
-    );
+  }) =>
+      CirclesChatState(
+        messages: messages ?? this.messages,
+        isLoading: isLoading ?? this.isLoading,
+        isThrottled: isThrottled ?? this.isThrottled,
+        error: error ?? this.error,
+      );
 }
 
 class CirclesChatNotifier extends StateNotifier<CirclesChatState> {
-
-  CirclesChatNotifier(this._firestoreService, String circleId) : super(CirclesChatState.initial()) {
+  CirclesChatNotifier(this._firestoreService, String circleId)
+      : super(CirclesChatState.initial()) {
     loadCachedMessages(circleId).then((_) => streamMessages(circleId));
   }
   final CirclesFirestoreService _firestoreService;
@@ -47,7 +47,8 @@ class CirclesChatNotifier extends StateNotifier<CirclesChatState> {
 
   // Load local offline cached messages immediately
   Future<void> loadCachedMessages(String circleId) async {
-    final cached = await CirclesLocalCacheService.instance.getCachedMessages(circleId);
+    final cached =
+        await CirclesLocalCacheService.instance.getCachedMessages(circleId);
     if (cached.isNotEmpty && state.messages.isEmpty) {
       state = state.copyWith(messages: cached);
     }
@@ -58,10 +59,12 @@ class CirclesChatNotifier extends StateNotifier<CirclesChatState> {
     _chatSub?.cancel();
     state = state.copyWith(isLoading: true);
 
-    _chatSub = _firestoreService.streamChatMessages(circleId).listen((rawMsgs) async {
+    _chatSub =
+        _firestoreService.streamChatMessages(circleId).listen((rawMsgs) async {
       // Filter out messages from Blocked Users
       final blocked = await _firestoreService.getBlockedUsers();
-      final filtered = rawMsgs.where((m) => !blocked.contains(m.senderId)).toList();
+      final filtered =
+          rawMsgs.where((m) => !blocked.contains(m.senderId)).toList();
 
       state = state.copyWith(
         messages: filtered,
@@ -82,7 +85,8 @@ class CirclesChatNotifier extends StateNotifier<CirclesChatState> {
   }
 
   // Pin a location
-  Future<void> pinLocation(String circleId, String title, double lat, double lng, String style) async {
+  Future<void> pinLocation(String circleId, String title, double lat,
+      double lng, String style) async {
     final pin = {
       'lat': lat,
       'lng': lng,
@@ -103,7 +107,9 @@ class CirclesChatNotifier extends StateNotifier<CirclesChatState> {
   }
 }
 
-final circlesChatProvider = StateNotifierProvider.family<CirclesChatNotifier, CirclesChatState, String>((ref, circleId) {
+final circlesChatProvider =
+    StateNotifierProvider.family<CirclesChatNotifier, CirclesChatState, String>(
+        (ref, circleId) {
   final service = ref.watch(circlesFirestoreServiceProvider);
   return CirclesChatNotifier(service, circleId);
 });

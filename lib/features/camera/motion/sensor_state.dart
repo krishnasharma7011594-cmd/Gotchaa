@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 class SensorState {
-
   const SensorState({
     required this.tiltX,
     required this.tiltY,

@@ -10,7 +10,7 @@ class SafetyService {
   /// Blocks a user
   Future<void> blockUser(String targetUserId) async {
     if (_currentUserId == 'anonymous') return;
-    
+
     await _firestore
         .collection('users')
         .doc(_currentUserId)

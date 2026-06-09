@@ -8,9 +8,9 @@ import '../services/circles_checkin_service.dart';
 import '../widgets/glassmorphic_card.dart';
 
 class CheckInQrScreen extends StatefulWidget {
-
   const CheckInQrScreen({
-    required this.circle, super.key,
+    required this.circle,
+    super.key,
   });
   final CircleModel circle;
 
@@ -59,87 +59,95 @@ class _CheckInQrScreenState extends State<CheckInQrScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      backgroundColor: context.bg,
-      appBar: AppBar(
         backgroundColor: context.bg,
-        title: Text('Check-In QR Code', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Let your members scan this code to verify their attendance!',
-                style: GoogleFonts.outfit(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              
-              // Custom Glass QR display
-              Center(
-                child: GlassmorphicCard(
-                  borderRadius: 28,
-                  blur: 15,
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          color: Colors.white,
-                          padding: const EdgeInsets.all(12),
-                          child: QrImageView(
-                            data: _token,
-                            version: QrVersions.auto,
-                            size: 200,
-                            gapless: false,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.timer, color: AppColors.karmaOrange, size: 18),
-                            const SizedBox(width: 8),
-                            Text(
-                              'QR Code Expires in: ${_formatTime(_secondsLeft)}',
-                              style: GoogleFonts.outfit(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
+        appBar: AppBar(
+          backgroundColor: context.bg,
+          title: Text('Check-In QR Code',
+              style: GoogleFonts.outfit(
+                  color: Colors.white, fontWeight: FontWeight.bold)),
+        ),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Let your members scan this code to verify their attendance!',
+                  style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+
+                // Custom Glass QR display
+                Center(
+                  child: GlassmorphicCard(
+                    borderRadius: 28,
+                    blur: 15,
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            color: Colors.white,
+                            padding: const EdgeInsets.all(12),
+                            child: QrImageView(
+                              data: _token,
+                              version: QrVersions.auto,
+                              size: 200,
+                              gapless: false,
                             ),
-                          ],
-                        )
-                      ],
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.timer,
+                                  color: AppColors.karmaOrange, size: 18),
+                              const SizedBox(width: 8),
+                              Text(
+                                'QR Code Expires in: ${_formatTime(_secondsLeft)}',
+                                style: GoogleFonts.outfit(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 32),
-              
-              ElevatedButton.icon(
-                onPressed: () {
-                  setState(() {
-                    _secondsLeft = 1800;
-                    _generateToken();
-                  });
-                },
-                icon: const Icon(Icons.refresh, color: Colors.white),
-                label: const Text('Regenerate Token', style: TextStyle(fontWeight: FontWeight.bold)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.electricBlue,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size.fromHeight(50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                ),
-              )
-            ],
+                const SizedBox(height: 32),
+
+                ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _secondsLeft = 1800;
+                      _generateToken();
+                    });
+                  },
+                  icon: const Icon(Icons.refresh, color: Colors.white),
+                  label: const Text('Regenerate Token',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.electricBlue,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size.fromHeight(50),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
 }

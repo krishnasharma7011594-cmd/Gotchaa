@@ -47,7 +47,7 @@ class _GotchaaLikeButtonState extends ConsumerState<GotchaaLikeButton>
   late AnimationController _animController;
   late Animation<double> _scaleAnimation;
   late ConfettiController _confettiController;
-  
+
   bool? _isLikedLocal;
   int _likesCountLocal = 0;
   final bool _isInitialized = false;
@@ -56,7 +56,8 @@ class _GotchaaLikeButtonState extends ConsumerState<GotchaaLikeButton>
   void initState() {
     super.initState();
     _likesCountLocal = widget.initialCount;
-    _confettiController = ConfettiController(duration: const Duration(milliseconds: 500));
+    _confettiController =
+        ConfettiController(duration: const Duration(milliseconds: 500));
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 200),
@@ -64,7 +65,8 @@ class _GotchaaLikeButtonState extends ConsumerState<GotchaaLikeButton>
     _scaleAnimation = TweenSequence<double>([
       TweenSequenceItem(tween: Tween(begin: 1, end: 1.4), weight: 50),
       TweenSequenceItem(tween: Tween(begin: 1.4, end: 1), weight: 50),
-    ]).animate(CurvedAnimation(parent: _animController, curve: Curves.easeInOut));
+    ]).animate(
+        CurvedAnimation(parent: _animController, curve: Curves.easeInOut));
   }
 
   @override
@@ -148,7 +150,7 @@ class _GotchaaLikeButtonState extends ConsumerState<GotchaaLikeButton>
   @override
   Widget build(BuildContext context) {
     final myUid = ref.watch(authStateProvider).value?.uid ?? '';
-    
+
     // Watch the real-time status to sync with backend
     final likedAsync = ref.watch(isContentLikedProvider((
       contentId: widget.contentId,
@@ -161,7 +163,9 @@ class _GotchaaLikeButtonState extends ConsumerState<GotchaaLikeButton>
     final isLiked = _isLikedLocal ?? likedAsync.value ?? false;
 
     // Reset optimistic state if the backend has caught up
-    if (_isLikedLocal != null && likedAsync.hasValue && likedAsync.value == _isLikedLocal) {
+    if (_isLikedLocal != null &&
+        likedAsync.hasValue &&
+        likedAsync.value == _isLikedLocal) {
       // Clear the local override in the next frame to avoid "setState during build"
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) setState(() => _isLikedLocal = null);
@@ -190,7 +194,9 @@ class _GotchaaLikeButtonState extends ConsumerState<GotchaaLikeButton>
               child: IconButton(
                 onPressed: _toggleLike,
                 icon: Icon(
-                  isLiked ? Icons.favorite_rounded : Icons.favorite_outline_rounded,
+                  isLiked
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_outline_rounded,
                   color: isLiked ? Colors.red : context.iconSecondary,
                   size: widget.iconSize,
                 ),

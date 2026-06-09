@@ -32,8 +32,8 @@ class BlockedAccountsScreen extends ConsumerWidget {
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, 
-                color: isDark ? Colors.white : Colors.black, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+              color: isDark ? Colors.white : Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -44,7 +44,8 @@ class BlockedAccountsScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.block_rounded, size: 64, color: Colors.grey.withValues(alpha: 0.3)),
+                  Icon(Icons.block_rounded,
+                      size: 64, color: Colors.grey.withValues(alpha: 0.3)),
                   const SizedBox(height: 16),
                   Text(
                     'No blocked accounts',
@@ -67,11 +68,13 @@ class BlockedAccountsScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   leading: CircleAvatar(
                     backgroundImage: CachedNetworkImageProvider(user.photoUrl),
                     radius: 24,
-                    backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
+                    backgroundColor:
+                        isDark ? Colors.grey[800] : Colors.grey[200],
                   ),
                   title: Text(
                     user.displayName,
@@ -91,9 +94,9 @@ class BlockedAccountsScreen extends ConsumerWidget {
                   trailing: TextButton(
                     onPressed: () {
                       ref.read(profileRepositoryProvider).unblockUser(
-                        currentUid: ref.read(currentUserProvider)!.uid,
-                        targetUid: user.uid,
-                      );
+                            currentUid: ref.read(currentUserProvider)!.uid,
+                            targetUid: user.uid,
+                          );
                     },
                     child: Text(
                       'Unblock',

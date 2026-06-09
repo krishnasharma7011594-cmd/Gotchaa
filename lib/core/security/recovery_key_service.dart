@@ -8,7 +8,7 @@ class RecoveryKeyService {
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
   );
   final _ed25519 = Ed25519();
-  
+
   static const String _kMnemonic = 'e2ee_mnemonic';
   static const String _kIdentityPrivateKey = 'id_priv_';
 
@@ -23,19 +23,21 @@ class RecoveryKeyService {
     final seed = bip39.mnemonicToSeed(mnemonic);
     // Use the first 32 bytes of the seed as the private key for Ed25519
     final privKeyBytes = seed.sublist(0, 32);
-    
+
     final keyPair = await _ed25519.newKeyPairFromSeed(privKeyBytes);
-    
+
     // Persist mnemonic and private key locally
     await _secureStorage.write(key: _kMnemonic, value: mnemonic);
-    await _secureStorage.write(key: '$_kIdentityPrivateKey$uid', value: base64Encode(privKeyBytes));
-    
+    await _secureStorage.write(
+        key: '$_kIdentityPrivateKey$uid', value: base64Encode(privKeyBytes));
+
     return keyPair;
   }
 
   /// 3. Verify Mnemonic matches current key
   Future<bool> verifyMnemonic(String mnemonic, String uid) async {
-    final currentPriv = await _secureStorage.read(key: '$_kIdentityPrivateKey$uid');
+    final currentPriv =
+        await _secureStorage.read(key: '$_kIdentityPrivateKey$uid');
     // Fail-safe: no stored key means we cannot verify. Do NOT trust any mnemonic.
     if (currentPriv == null) return false;
 

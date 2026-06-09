@@ -9,9 +9,11 @@ import '../theme/app_theme.dart';
 /// Used on: home feed (no posts), chat list (no conversations),
 /// notifications (no alerts), explore (no results), followers (no followers).
 class GotchaaEmptyState extends StatelessWidget {
-
   const GotchaaEmptyState({
-    required this.icon, required this.title, required this.subtitle, super.key,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    super.key,
     this.actionLabel,
     this.onAction,
     this.iconColor,
@@ -36,7 +38,8 @@ class GotchaaEmptyState extends StatelessWidget {
     this.onAction,
   })  : icon = Icons.people_outline_rounded,
         title = 'No posts from people you follow',
-        subtitle = 'Discover and follow interesting people to see their posts here.',
+        subtitle =
+            'Discover and follow interesting people to see their posts here.',
         iconColor = null,
         animate = true;
 
@@ -46,7 +49,8 @@ class GotchaaEmptyState extends StatelessWidget {
     this.onAction,
   })  : icon = Icons.chat_bubble_outline_rounded,
         title = 'No conversations yet',
-        subtitle = 'Find someone interesting and start an encrypted conversation.',
+        subtitle =
+            'Find someone interesting and start an encrypted conversation.',
         iconColor = null,
         animate = true;
 
@@ -76,7 +80,8 @@ class GotchaaEmptyState extends StatelessWidget {
     this.onAction,
   })  : icon = Icons.group_add_outlined,
         title = 'No followers yet',
-        subtitle = 'Share your profile and connect with people in your language.',
+        subtitle =
+            'Share your profile and connect with people in your language.',
         iconColor = null,
         animate = true;
 
@@ -134,7 +139,8 @@ class GotchaaEmptyState extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Icon(icon, size: 44, color: color.withValues(alpha: 0.8)),
+                child:
+                    Icon(icon, size: 44, color: color.withValues(alpha: 0.8)),
               ),
             ),
 

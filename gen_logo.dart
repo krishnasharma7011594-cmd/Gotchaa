@@ -13,8 +13,16 @@ void makeLogo(int size, String filename, bool transparentBg) {
 
   for (int y = 0; y < size; y++) {
     for (int x = 0; x < size; x++) {
-      final int dx = x < r ? x : x > size - 1 - r ? size - 1 - x : r;
-      final int dy = y < r ? y : y > size - 1 - r ? size - 1 - y : r;
+      final int dx = x < r
+          ? x
+          : x > size - 1 - r
+              ? size - 1 - x
+              : r;
+      final int dy = y < r
+          ? y
+          : y > size - 1 - r
+              ? size - 1 - y
+              : r;
 
       final double factor = (x + y) / (2.0 * size);
       final int cr = (color1R * (1 - factor) + color2R * factor).toInt();
@@ -32,7 +40,7 @@ void makeLogo(int size, String filename, bool transparentBg) {
       }
 
       if (transparentBg) {
-          // keep alpha as transparent where round corners apply
+        // keep alpha as transparent where round corners apply
       }
 
       if (alpha > 0) {
@@ -56,23 +64,23 @@ void makeLogo(int size, String filename, bool transparentBg) {
       if (d >= gRadius - thickness && d <= gRadius) {
         // Cut out top right quadrant partly
         if (x > cx && y < cy - thickness ~/ 2) {
-            continue;
+          continue;
         }
         image.setPixel(x, y, img.ColorRgba8(255, 255, 255, 255));
       }
-      
+
       // Horizontal bar of G
       if (y >= cy - thickness ~/ 2 && y <= cy + thickness ~/ 2) {
-          if (x >= cx && x <= cx + gRadius) {
-              image.setPixel(x, y, img.ColorRgba8(255, 255, 255, 255));
-          }
+        if (x >= cx && x <= cx + gRadius) {
+          image.setPixel(x, y, img.ColorRgba8(255, 255, 255, 255));
+        }
       }
-      
+
       // Vertical drop of G
       if (x >= cx + gRadius - thickness && x <= cx + gRadius) {
-          if (y >= cy && y <= cy + gRadius) {
-              image.setPixel(x, y, img.ColorRgba8(255, 255, 255, 255));
-          }
+        if (y >= cy && y <= cy + gRadius) {
+          image.setPixel(x, y, img.ColorRgba8(255, 255, 255, 255));
+        }
       }
     }
   }

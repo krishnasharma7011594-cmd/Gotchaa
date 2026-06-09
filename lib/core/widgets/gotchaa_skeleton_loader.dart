@@ -15,7 +15,6 @@ import '../theme/app_theme.dart';
 ///   - [GotchaaSkeletonLoader.card]         — generic content card
 
 class GotchaaSkeletonLoader extends StatelessWidget {
-
   const GotchaaSkeletonLoader.feed({super.key, this.itemCount = 3})
       : type = _SkeletonType.feed;
 
@@ -73,54 +72,54 @@ enum _SkeletonType { feed, chatList, notification, profile, card }
 class _FeedSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Author row
-          Row(
-            children: [
-              _Circle(size: 40),
-              SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _Bar(width: 120, height: 14),
-                  SizedBox(height: 6),
-                  _Bar(width: 80, height: 11),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(height: 14),
-          // Text lines
-          _Bar(width: double.infinity, height: 13),
-          SizedBox(height: 6),
-          _Bar(width: double.infinity, height: 13),
-          SizedBox(height: 6),
-          _Bar(width: 160, height: 13),
-          SizedBox(height: 14),
-          // Image placeholder
-          _Bar(width: double.infinity, height: 180, radius: 12),
-          SizedBox(height: 14),
-          // Action row
-          Row(
-            children: [
-              _Bar(width: 60, height: 12),
-              SizedBox(width: 16),
-              _Bar(width: 60, height: 12),
-              Spacer(),
-              _Bar(width: 40, height: 12),
-            ],
-          ),
-        ],
-      ),
-    );
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Author row
+            Row(
+              children: [
+                _Circle(size: 40),
+                SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _Bar(width: 120, height: 14),
+                    SizedBox(height: 6),
+                    _Bar(width: 80, height: 11),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 14),
+            // Text lines
+            _Bar(width: double.infinity, height: 13),
+            SizedBox(height: 6),
+            _Bar(width: double.infinity, height: 13),
+            SizedBox(height: 6),
+            _Bar(width: 160, height: 13),
+            SizedBox(height: 14),
+            // Image placeholder
+            _Bar(width: double.infinity, height: 180, radius: 12),
+            SizedBox(height: 14),
+            // Action row
+            Row(
+              children: [
+                _Bar(width: 60, height: 12),
+                SizedBox(width: 16),
+                _Bar(width: 60, height: 12),
+                Spacer(),
+                _Bar(width: 40, height: 12),
+              ],
+            ),
+          ],
+        ),
+      );
 }
 
 // ── Chat List Skeleton ─────────────────────────────────────────────────────
@@ -128,30 +127,30 @@ class _FeedSkeleton extends StatelessWidget {
 class _ChatListSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      child: Row(
-        children: [
-          _Circle(size: 56),
-          SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    _Bar(width: 130, height: 14),
-                    Spacer(),
-                    _Bar(width: 45, height: 11),
-                  ],
-                ),
-                SizedBox(height: 8),
-                _Bar(width: double.infinity, height: 12),
-              ],
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Row(
+          children: [
+            _Circle(size: 56),
+            SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      _Bar(width: 130, height: 14),
+                      Spacer(),
+                      _Bar(width: 45, height: 11),
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  _Bar(width: double.infinity, height: 12),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
 }
 
 // ── Notification Skeleton ──────────────────────────────────────────────────
@@ -159,29 +158,29 @@ class _ChatListSkeleton extends StatelessWidget {
 class _NotificationSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _Circle(size: 44),
-          SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _Bar(width: double.infinity, height: 13),
-                SizedBox(height: 6),
-                _Bar(width: 200, height: 13),
-                SizedBox(height: 6),
-                _Bar(width: 80, height: 10),
-              ],
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _Circle(size: 44),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _Bar(width: double.infinity, height: 13),
+                  SizedBox(height: 6),
+                  _Bar(width: 200, height: 13),
+                  SizedBox(height: 6),
+                  _Bar(width: 80, height: 10),
+                ],
+              ),
             ),
-          ),
-          SizedBox(width: 12),
-          _Bar(width: 48, height: 36, radius: 8),
-        ],
-      ),
-    );
+            SizedBox(width: 12),
+            _Bar(width: 48, height: 36, radius: 8),
+          ],
+        ),
+      );
 }
 
 // ── Profile Skeleton ───────────────────────────────────────────────────────
@@ -189,40 +188,41 @@ class _NotificationSkeleton extends StatelessWidget {
 class _ProfileSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          const _Circle(size: 80),
-          const SizedBox(height: 12),
-          const _Bar(width: 140, height: 16),
-          const SizedBox(height: 8),
-          const _Bar(width: 100, height: 12),
-          const SizedBox(height: 16),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _Bar(width: 60, height: 12),
-              SizedBox(width: 24),
-              _Bar(width: 60, height: 12),
-              SizedBox(width: 24),
-              _Bar(width: 60, height: 12),
-            ],
-          ),
-          const SizedBox(height: 20),
-          GridView.count(
-            crossAxisCount: 3,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 2,
-            crossAxisSpacing: 2,
-            children: List.generate(
-              6,
-              (_) => const _Bar(width: double.infinity, height: double.infinity, radius: 0),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            const _Circle(size: 80),
+            const SizedBox(height: 12),
+            const _Bar(width: 140, height: 16),
+            const SizedBox(height: 8),
+            const _Bar(width: 100, height: 12),
+            const SizedBox(height: 16),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _Bar(width: 60, height: 12),
+                SizedBox(width: 24),
+                _Bar(width: 60, height: 12),
+                SizedBox(width: 24),
+                _Bar(width: 60, height: 12),
+              ],
             ),
-          ),
-        ],
-      ),
-    );
+            const SizedBox(height: 20),
+            GridView.count(
+              crossAxisCount: 3,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 2,
+              crossAxisSpacing: 2,
+              children: List.generate(
+                6,
+                (_) => const _Bar(
+                    width: double.infinity, height: double.infinity, radius: 0),
+              ),
+            ),
+          ],
+        ),
+      );
 }
 
 // ── Generic Card Skeleton ──────────────────────────────────────────────────
@@ -230,35 +230,34 @@ class _ProfileSkeleton extends StatelessWidget {
 class _CardSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: const Row(
-        children: [
-          _Circle(size: 48),
-          SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _Bar(width: double.infinity, height: 14),
-                SizedBox(height: 8),
-                _Bar(width: 160, height: 12),
-              ],
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Row(
+          children: [
+            _Circle(size: 48),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _Bar(width: double.infinity, height: 14),
+                  SizedBox(height: 8),
+                  _Bar(width: 160, height: 12),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
 }
 
 // ── Primitive shapes ──────────────────────────────────────────────────────
 
 class _Bar extends StatelessWidget {
-
   const _Bar({
     required this.width,
     required this.height,
@@ -270,13 +269,13 @@ class _Bar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      width: width == double.infinity ? null : width,
-      height: height,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(radius),
-      ),
-    );
+        width: width == double.infinity ? null : width,
+        height: height,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(radius),
+        ),
+      );
 }
 
 class _Circle extends StatelessWidget {
@@ -285,11 +284,11 @@ class _Circle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      width: size,
-      height: size,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-      ),
-    );
+        width: size,
+        height: size,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+        ),
+      );
 }

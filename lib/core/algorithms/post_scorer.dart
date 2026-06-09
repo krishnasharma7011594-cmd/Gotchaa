@@ -11,12 +11,15 @@ class PostScorer {
     // 1. Recency (Highest Weight)
     // Posts decay over time. Fresh posts (last 24h) get a huge boost.
     final ageInHours = DateTime.now().difference(post.createdAt).inHours;
-    final recencyScore = 100 / (ageInHours + 1); // 100 for brand new, 4 for 24h old
+    final recencyScore =
+        100 / (ageInHours + 1); // 100 for brand new, 4 for 24h old
     score += recencyScore * 5.0; // Recency multiplier
 
     // 2. Engagement (Social Proof)
     // Weighted likes and comments. Comments weighted more as they show higher intent.
-    final engagement = (post.likesCount * 1.0) + (post.commentsCount * 2.0) + (post.shareCount * 3.0);
+    final engagement = (post.likesCount * 1.0) +
+        (post.commentsCount * 2.0) +
+        (post.shareCount * 3.0);
     score += engagement * 1.5;
 
     // 3. Geographic Relevance (Nation)

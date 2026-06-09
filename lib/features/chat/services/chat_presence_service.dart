@@ -2,7 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final chatPresenceServiceProvider = Provider<ChatPresenceService>((ref) => ChatPresenceService());
+final chatPresenceServiceProvider =
+    Provider<ChatPresenceService>((ref) => ChatPresenceService());
 
 class ChatPresenceService {
   final FirebaseDatabase _db = FirebaseDatabase.instance;

@@ -10,22 +10,23 @@ class MotionFeedbackService {
   final AudioPlayer _audioPlayer = AudioPlayer();
   StreamSubscription? _sensorSub;
   StreamSubscription? _gestureSub;
-  
+
   bool _isShaking = false;
   double _lastTiltY = 0;
 
-  Future<void> initialize(Stream<SensorState> sensorStream, Stream<MotionGestureEvent> gestureStream) async {
-    // Load simple asset or synthesize tone. 
+  Future<void> initialize(Stream<SensorState> sensorStream,
+      Stream<MotionGestureEvent> gestureStream) async {
+    // Load simple asset or synthesize tone.
     // Usually you'd use _audioPlayer.setAsset('assets/audio/whoosh.mp3');
     // For instrument feel, we can just alter pitch of a looping drone,
     // or trigger short bursts.
 
     _sensorSub = sensorStream.listen((state) {
       if (state.shakeIntensity > 0.8 && !_isShaking) {
-         _isShaking = true;
-         HapticFeedback.heavyImpact();
+        _isShaking = true;
+        HapticFeedback.heavyImpact();
       } else if (state.shakeIntensity < 0.3) {
-         _isShaking = false;
+        _isShaking = false;
       }
 
       // Pitch shift based on tiltY

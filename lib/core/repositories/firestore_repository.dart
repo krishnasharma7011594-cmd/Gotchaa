@@ -26,13 +26,12 @@ class FirestoreRepository {
       final result = await _functions.httpsCallable('deleteUserAccount').call();
       return result.data['success'] == true;
     } catch (e) {
-      
       return false;
     }
   }
 
   // --- USER OPERATIONS ---
-  
+
   Future<void> createUserProfile(UserProfile profile) async {
     final lowerUsername = profile.username.toLowerCase();
     final publicData = _getPublicData(profile.toMap());
@@ -41,19 +40,23 @@ class FirestoreRepository {
     await _firestore.runTransaction((tx) async {
       final usernameRef = _firestore.collection('usernames').doc(lowerUsername);
       final existingUsername = await tx.get(usernameRef);
-      if (existingUsername.exists && existingUsername.data()?['uid'] != profile.uid) {
+      if (existingUsername.exists &&
+          existingUsername.data()?['uid'] != profile.uid) {
         throw Exception('Username is already taken.');
       }
-      
+
       tx.set(_firestore.collection('users').doc(profile.uid), publicData);
-      tx.set(_firestore.collection('users_private').doc(profile.uid), privateData);
+      tx.set(
+          _firestore.collection('users_private').doc(profile.uid), privateData);
       tx.set(usernameRef, {'uid': profile.uid});
 
       // Write a public invite code index for code → uid lookup.
       // The index is keyed by code and only stores uid — no private data.
       if (profile.inviteCode.isNotEmpty) {
         tx.set(
-          _firestore.collection('invite_code_index').doc(profile.inviteCode.toUpperCase()),
+          _firestore
+              .collection('invite_code_index')
+              .doc(profile.inviteCode.toUpperCase()),
           {'uid': profile.uid},
         );
       }
@@ -66,7 +69,8 @@ class FirestoreRepository {
 
     final isOwner = _isCurrentUser(uid);
     if (isOwner) {
-      final privateDoc = await _firestore.collection('users_private').doc(uid).get();
+      final privateDoc =
+          await _firestore.collection('users_private').doc(uid).get();
       if (privateDoc.exists) {
         return UserProfile.fromMergedMaps(
           publicData: publicDoc.data()!,
@@ -82,7 +86,7 @@ class FirestoreRepository {
   /// Real-time stream of a single user profile document.
   Stream<UserProfile?> getUserProfileStream(String uid) {
     final publicStream = _firestore.collection('users').doc(uid).snapshots();
-    
+
     if (!_isCurrentUser(uid)) {
       return publicStream.map((snap) {
         if (snap.exists && snap.data() != null) {
@@ -92,9 +96,11 @@ class FirestoreRepository {
       });
     }
 
-    final privateStream = _firestore.collection('users_private').doc(uid).snapshots();
-    
-    return Rx.combineLatest2<DocumentSnapshot<Map<String, dynamic>>, DocumentSnapshot<Map<String, dynamic>>, UserProfile?>(
+    final privateStream =
+        _firestore.collection('users_private').doc(uid).snapshots();
+
+    return Rx.combineLatest2<DocumentSnapshot<Map<String, dynamic>>,
+        DocumentSnapshot<Map<String, dynamic>>, UserProfile?>(
       publicStream,
       privateStream,
       (publicSnap, privateSnap) {
@@ -108,11 +114,16 @@ class FirestoreRepository {
     );
   }
 
-  bool _isCurrentUser(String uid) => FirebaseAuth.instance.currentUser?.uid == uid;
+  bool _isCurrentUser(String uid) =>
+      FirebaseAuth.instance.currentUser?.uid == uid;
 
-  Map<String, dynamic> _getPublicData(Map<String, dynamic> data) => Map.fromEntries(data.entries.where((e) => UserProfile.publicFields.contains(e.key)));
+  Map<String, dynamic> _getPublicData(Map<String, dynamic> data) =>
+      Map.fromEntries(
+          data.entries.where((e) => UserProfile.publicFields.contains(e.key)));
 
-  Map<String, dynamic> _getPrivateData(Map<String, dynamic> data) => Map.fromEntries(data.entries.where((e) => UserProfile.privateFields.contains(e.key)));
+  Map<String, dynamic> _getPrivateData(Map<String, dynamic> data) =>
+      Map.fromEntries(
+          data.entries.where((e) => UserProfile.privateFields.contains(e.key)));
 
   /// Safety net: if a user is authenticated but has no Firestore doc,
   /// create one with sensible defaults so the profile page never shows
@@ -125,7 +136,7 @@ class FirestoreRepository {
   }) async {
     final docRef = _firestore.collection('users').doc(uid);
     final privateRef = _firestore.collection('users_private').doc(uid);
-    
+
     final snap = await docRef.get();
     if (snap.exists && snap.data() != null) {
       final privateSnap = await privateRef.get();
@@ -187,7 +198,7 @@ class FirestoreRepository {
   }
 
   /// Verifies an invite code and marks the user as verified.
-  /// 
+  ///
   /// Returns 'success' if valid, or an error message.
   Future<String> verifyInviteCode({
     required String code,
@@ -195,15 +206,14 @@ class FirestoreRepository {
   }) async {
     try {
       final codeUpper = code.trim().toUpperCase();
-      
+
       // 1. Rate Limiting Check
-      final rateLimitDoc = await _firestore
-          .collection('rate_limits')
-          .doc(currentUserUid)
-          .get();
-      
+      final rateLimitDoc =
+          await _firestore.collection('rate_limits').doc(currentUserUid).get();
+
       if (rateLimitDoc.exists) {
-        final lastAttempt = (rateLimitDoc.data()!['lastAttempt'] as Timestamp).toDate();
+        final lastAttempt =
+            (rateLimitDoc.data()!['lastAttempt'] as Timestamp).toDate();
         final count = rateLimitDoc.data()!['count'] as int;
         if (DateTime.now().difference(lastAttempt).inHours < 1 && count >= 5) {
           return 'Too many attempts. Please try again in an hour.';
@@ -211,14 +221,15 @@ class FirestoreRepository {
       }
 
       // Check System Invite Codes first (Admin Panel)
-      final systemCodeDoc = await _firestore.collection('invite_codes').doc(codeUpper).get();
+      final systemCodeDoc =
+          await _firestore.collection('invite_codes').doc(codeUpper).get();
 
       if (systemCodeDoc.exists) {
         final data = systemCodeDoc.data()!;
         if (data['status'] == 'disabled' || data['status'] == 'inactive') {
           return 'This invite code is no longer active.';
         }
-        
+
         final usage = (data['usage'] ?? data['uses'] ?? 0) as int;
         final limit = (data['limit'] ?? data['maxUses'] ?? 10) as int;
 
@@ -232,7 +243,8 @@ class FirestoreRepository {
         batch.update(_firestore.collection('users').doc(currentUserUid), {
           'isVerified': true,
         });
-        batch.update(_firestore.collection('users_private').doc(currentUserUid), {
+        batch.update(
+            _firestore.collection('users_private').doc(currentUserUid), {
           'isLimitedUser': false,
           'joinedWithCode': codeUpper,
         });
@@ -240,18 +252,23 @@ class FirestoreRepository {
         // Increment system code usage
         batch.update(systemCodeDoc.reference, {
           'usage': FieldValue.increment(1),
-          'uses': FieldValue.increment(1), // Backwards compatibility depending on what was used
+          'uses': FieldValue.increment(
+              1), // Backwards compatibility depending on what was used
         });
 
         // Update Analytics
-        final analyticsRef = _firestore.collection('inviteAnalytics').doc(codeUpper);
-        batch.set(analyticsRef, {
-          'code': codeUpper,
-          'createdBy': 'admin',
-          'totalUses': FieldValue.increment(1),
-          'successfulJoins': FieldValue.increment(1),
-          'updatedAt': FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
+        final analyticsRef =
+            _firestore.collection('inviteAnalytics').doc(codeUpper);
+        batch.set(
+            analyticsRef,
+            {
+              'code': codeUpper,
+              'createdBy': 'admin',
+              'totalUses': FieldValue.increment(1),
+              'successfulJoins': FieldValue.increment(1),
+              'updatedAt': FieldValue.serverTimestamp(),
+            },
+            SetOptions(merge: true));
 
         await batch.commit();
 
@@ -263,7 +280,8 @@ class FirestoreRepository {
 
       // If not a system code, look up User Invite Codes via the public index.
       // invite_code_index/{code} => {uid} — no private data is exposed.
-      final indexDoc = await _firestore.collection('invite_code_index').doc(codeUpper).get();
+      final indexDoc =
+          await _firestore.collection('invite_code_index').doc(codeUpper).get();
 
       if (!indexDoc.exists || indexDoc.data()?['uid'] == null) {
         // Log failed attempt
@@ -276,14 +294,16 @@ class FirestoreRepository {
 
       final ownerId = indexDoc.data()!['uid'] as String;
       // Load owner's private data to check remaining invites
-      final ownerPrivateDoc = await _firestore.collection('users_private').doc(ownerId).get();
-      
+      final ownerPrivateDoc =
+          await _firestore.collection('users_private').doc(ownerId).get();
+
       if (ownerId == currentUserUid) {
         return 'You cannot use your own invite code.';
       }
 
       // 3. Scarcity Check — read from private doc
-      final remaining = (ownerPrivateDoc.data()?['remainingInvites'] ?? 5) as int;
+      final remaining =
+          (ownerPrivateDoc.data()?['remainingInvites'] ?? 5) as int;
       if (remaining <= 0) {
         return 'This invite code has reached its maximum usage limit.';
       }
@@ -311,14 +331,18 @@ class FirestoreRepository {
       });
 
       // 6. Update Analytics
-      final analyticsRef = _firestore.collection('inviteAnalytics').doc(codeUpper);
-      batch.set(analyticsRef, {
-        'code': codeUpper,
-        'createdBy': ownerId,
-        'totalUses': FieldValue.increment(1),
-        'successfulJoins': FieldValue.increment(1),
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+      final analyticsRef =
+          _firestore.collection('inviteAnalytics').doc(codeUpper);
+      batch.set(
+          analyticsRef,
+          {
+            'code': codeUpper,
+            'createdBy': ownerId,
+            'totalUses': FieldValue.increment(1),
+            'successfulJoins': FieldValue.increment(1),
+            'updatedAt': FieldValue.serverTimestamp(),
+          },
+          SetOptions(merge: true));
 
       await batch.commit();
 
@@ -339,11 +363,11 @@ class FirestoreRepository {
   }) async {
     try {
       final userRef = _firestore.collection('users').doc(uid);
-      
+
       return await _firestore.runTransaction((transaction) async {
         final userSnap = await transaction.get(userRef);
         if (!userSnap.exists) return false;
-        
+
         final profile = UserProfile.fromMap(userSnap.data()!, userSnap.id);
         if (profile.isInviteRewardClaimed) return false;
 
@@ -354,7 +378,9 @@ class FirestoreRepository {
             .get();
 
         if (!indexDoc.exists || indexDoc.data()?['uid'] == null) return false;
-        final inviterRef = _firestore.collection('users').doc(indexDoc.data()!['uid'] as String);
+        final inviterRef = _firestore
+            .collection('users')
+            .doc(indexDoc.data()!['uid'] as String);
 
         // 1. Reward inviter with 100 Karma
         transaction.update(inviterRef, {
@@ -369,7 +395,6 @@ class FirestoreRepository {
         return true;
       });
     } catch (e) {
-      
       return false;
     }
   }
@@ -385,7 +410,7 @@ class FirestoreRepository {
 
   Future<List<UserProfile>> searchUsers(String query) async {
     if (query.trim().isEmpty) return [];
-    
+
     // We will search by username prefix
     final snapshot = await _firestore
         .collection('users')
@@ -401,9 +426,9 @@ class FirestoreRepository {
 
   Future<List<PostModel>> searchPosts(String query) async {
     if (query.trim().isEmpty) return [];
-    
+
     final lowerQuery = query.toLowerCase();
-    
+
     // Search posts where searchKeywords array contains the query
     final snapshot = await _firestore
         .collection('posts')
@@ -419,9 +444,9 @@ class FirestoreRepository {
 
   Future<List<PostModel>> searchHashtags(String hashtag) async {
     if (hashtag.trim().isEmpty) return [];
-    
+
     final tag = hashtag.startsWith('#') ? hashtag.substring(1) : hashtag;
-    
+
     final snapshot = await _firestore
         .collection('posts')
         .where('hashtags', arrayContains: tag.toLowerCase())
@@ -437,18 +462,19 @@ class FirestoreRepository {
   // --- CHAT OPERATIONS ---
 
   Stream<List<ChatModel>> getChats(String uid, {int limit = 20}) => _firestore
-        .collection('chats')
-        .where('participants', arrayContains: uid)
-        .orderBy('updatedAt', descending: true)
-        .limit(limit)
-        .snapshots()
-        .map((snapshot) {
-          FirestoreCostGuard.instance.recordReads(snapshot.docs.length, source: 'getChats');
-          final chats = snapshot.docs
+          .collection('chats')
+          .where('participants', arrayContains: uid)
+          .orderBy('updatedAt', descending: true)
+          .limit(limit)
+          .snapshots()
+          .map((snapshot) {
+        FirestoreCostGuard.instance
+            .recordReads(snapshot.docs.length, source: 'getChats');
+        final chats = snapshot.docs
             .map((doc) => ChatModel.fromMap(doc.data(), doc.id))
             .toList();
-          return chats;
-        });
+        return chats;
+      });
 
   Future<({List<ChatModel> chats, DocumentSnapshot? lastDoc})> getChatsPage(
     String uid, {
@@ -464,7 +490,8 @@ class FirestoreRepository {
       query = query.startAfterDocument(startAfter);
     }
     final snapshot = await FirestoreQueryCache.instance.get(query);
-    FirestoreCostGuard.instance.recordReads(snapshot.docs.length, source: 'getChatsPage');
+    FirestoreCostGuard.instance
+        .recordReads(snapshot.docs.length, source: 'getChatsPage');
     final chats = snapshot.docs
         .map((doc) => ChatModel.fromMap(doc.data(), doc.id))
         .toList();
@@ -489,13 +516,13 @@ class FirestoreRepository {
     final participants = [uid1, uid2]..sort();
     final chatId = participants.join('_');
     final chatRef = _firestore.collection('chats').doc(chatId);
-    
+
     final snap = await chatRef.get();
     if (!snap.exists) {
       // Fetch names and avatars for caching to avoid "Unknown" in lists
       final u1Doc = await _firestore.collection('users').doc(uid1).get();
       final u2Doc = await _firestore.collection('users').doc(uid2).get();
-      
+
       final names = {
         uid1: u1Doc.data()?['displayName'] ?? 'User',
         uid2: u2Doc.data()?['displayName'] ?? 'User',
@@ -531,14 +558,15 @@ class FirestoreRepository {
           .limit(limit)
           .snapshots()
           .map((snapshot) {
-            FirestoreCostGuard.instance
-                .recordReads(snapshot.docs.length, source: 'getMessages');
-            return snapshot.docs
-                .map((doc) => MessageModel.fromMap(doc.data(), doc.id))
-                .toList();
-          });
+        FirestoreCostGuard.instance
+            .recordReads(snapshot.docs.length, source: 'getMessages');
+        return snapshot.docs
+            .map((doc) => MessageModel.fromMap(doc.data(), doc.id))
+            .toList();
+      });
 
-  Future<({List<MessageModel> messages, DocumentSnapshot? lastDoc})> getMessagesPage(
+  Future<({List<MessageModel> messages, DocumentSnapshot? lastDoc})>
+      getMessagesPage(
     String chatId, {
     int limit = PaginationLimits.messagesPageSize,
     DocumentSnapshot? startAfter,
@@ -553,7 +581,8 @@ class FirestoreRepository {
       query = query.startAfterDocument(startAfter);
     }
     final snapshot = await FirestoreQueryCache.instance.get(query);
-    FirestoreCostGuard.instance.recordReads(snapshot.docs.length, source: 'getMessagesPage');
+    FirestoreCostGuard.instance
+        .recordReads(snapshot.docs.length, source: 'getMessagesPage');
     final messages = snapshot.docs
         .map((doc) => MessageModel.fromMap(doc.data(), doc.id))
         .toList();
@@ -565,10 +594,10 @@ class FirestoreRepository {
 
   Future<void> sendMessage(String chatId, MessageModel message) async {
     final batch = _firestore.batch();
-    
+
     final now = DateTime.now();
     final expiresAt = now.add(const Duration(hours: 24));
-    
+
     // Create updated message with expiration and required fields
     final updatedMessage = MessageModel(
       id: message.id,
@@ -583,16 +612,16 @@ class FirestoreRepository {
       timestamp: message.timestamp ?? now,
       expiresAt: expiresAt,
     );
-    
+
     final messageMap = updatedMessage.toMap();
     if (!MessageFactory.isValid(messageMap)) {
-      
       throw Exception('Invalid message schema');
     }
 
-    final msgRef = _firestore.collection('chats').doc(chatId).collection('messages').doc();
+    final msgRef =
+        _firestore.collection('chats').doc(chatId).collection('messages').doc();
     batch.set(msgRef, messageMap);
-    
+
     // C-4 FIX: Never store plaintext or ciphertext in lastMessage preview.
     // Store only safe, non-sensitive metadata so the chat list can render
     // "🔒 Encrypted message" without leaking content.
@@ -607,13 +636,18 @@ class FirestoreRepository {
       },
       'updatedAt': FieldValue.serverTimestamp(),
     });
-    
+
     await batch.commit();
   }
 
-  Future<void> deleteMessage(String chatId, String messageId, {bool forEveryone = false}) async {
-    final msgRef = _firestore.collection('chats').doc(chatId).collection('messages').doc(messageId);
-    
+  Future<void> deleteMessage(String chatId, String messageId,
+      {bool forEveryone = false}) async {
+    final msgRef = _firestore
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId);
+
     if (forEveryone) {
       await msgRef.update({
         'isDeleted': true,
@@ -621,13 +655,14 @@ class FirestoreRepository {
       });
     } else {
       // In a real app, "Delete for me" might involve a list of users who deleted it.
-      // For simplicity here, we'll just delete the document if it's "for everyone" 
+      // For simplicity here, we'll just delete the document if it's "for everyone"
       // or just mark it as deleted for the UI to handle.
       await msgRef.delete();
     }
   }
 
-  Future<void> editMessage(String chatId, String messageId, String newText) async {
+  Future<void> editMessage(
+      String chatId, String messageId, String newText) async {
     await _firestore
         .collection('chats')
         .doc(chatId)
@@ -641,43 +676,48 @@ class FirestoreRepository {
 
   Future<void> deleteChat(String chatId) async {
     // Delete all messages first
-    final messages = await _firestore.collection('chats').doc(chatId).collection('messages').get();
+    final messages = await _firestore
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .get();
     final batch = _firestore.batch();
     for (final doc in messages.docs) {
       batch.delete(doc.reference);
     }
-    
+
     // Delete the chat document
     batch.delete(_firestore.collection('chats').doc(chatId));
-    
+
     await batch.commit();
   }
 
   // --- VYBZ OPERATIONS ---
 
   Stream<List<VybzModel>> getVybzFeed({int limit = 50}) => _firestore
-        .collection('vybz')
-        .orderBy('createdAt', descending: true)
-        .limit(limit)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => VybzModel.fromMap(doc.data(), doc.id))
-            .toList());
+      .collection('vybz')
+      .orderBy('createdAt', descending: true)
+      .limit(limit)
+      .snapshots()
+      .map((snapshot) => snapshot.docs
+          .map((doc) => VybzModel.fromMap(doc.data(), doc.id))
+          .toList());
 
-  Stream<List<VybzModel>> getUserVybz(String uid, {int limit = 50}) => _firestore
-        .collection('vybz')
-        .where('creatorId', isEqualTo: uid)
-        .limit(limit)
-        .snapshots()
-        .map((snapshot) {
-          final items = snapshot.docs
+  Stream<List<VybzModel>> getUserVybz(String uid, {int limit = 50}) =>
+      _firestore
+          .collection('vybz')
+          .where('creatorId', isEqualTo: uid)
+          .limit(limit)
+          .snapshots()
+          .map((snapshot) {
+        final items = snapshot.docs
             .map((doc) => VybzModel.fromMap(doc.data(), doc.id))
             .toList();
-          // Sort locally
-          items.sort((a, b) => (b.createdAt ?? DateTime.now())
-              .compareTo(a.createdAt ?? DateTime.now()));
-          return items;
-        });
+        // Sort locally
+        items.sort((a, b) => (b.createdAt ?? DateTime.now())
+            .compareTo(a.createdAt ?? DateTime.now()));
+        return items;
+      });
 
   Future<void> postVybz(VybzModel vybz) async {
     await _firestore.collection('vybz').add(vybz.toMap());
@@ -694,26 +734,23 @@ class FirestoreRepository {
   }
 
   Stream<List<CommentModel>> getVybzComments(String vybzId) => _firestore
-        .collection('vybz')
-        .doc(vybzId)
-        .collection('comments')
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => CommentModel.fromMap(doc.data(), doc.id))
-            .toList());
+      .collection('vybz')
+      .doc(vybzId)
+      .collection('comments')
+      .orderBy('createdAt', descending: true)
+      .snapshots()
+      .map((snapshot) => snapshot.docs
+          .map((doc) => CommentModel.fromMap(doc.data(), doc.id))
+          .toList());
 
   Future<void> addVybzComment(String vybzId, CommentModel comment) async {
     final batch = _firestore.batch();
-    
-    final commentRef = _firestore
-        .collection('vybz')
-        .doc(vybzId)
-        .collection('comments')
-        .doc();
-    
+
+    final commentRef =
+        _firestore.collection('vybz').doc(vybzId).collection('comments').doc();
+
     batch.set(commentRef, comment.toMap());
-    
+
     final vybzRef = _firestore.collection('vybz').doc(vybzId);
     DistributedCounter.incrementInBatch(batch, vybzRef, 'commentsCount');
 
@@ -729,7 +766,8 @@ class FirestoreRepository {
 
     // 1. Update Receiver's Karma
     batch.update(_firestore.collection('users').doc(receiverId), {
-      'karma': FieldValue.increment(10), // Flat 10 Karma points for an appreciation
+      'karma':
+          FieldValue.increment(10), // Flat 10 Karma points for an appreciation
     });
 
     // 2. Update Vybz appreciate count
@@ -739,7 +777,8 @@ class FirestoreRepository {
     await batch.commit();
   }
 
-  Future<void> requestInviteCode({required String uid, required String email}) async {
+  Future<void> requestInviteCode(
+      {required String uid, required String email}) async {
     await _firestore.collection('inviteRequests').doc(uid).set({
       'uid': uid,
       'email': email,
@@ -748,17 +787,20 @@ class FirestoreRepository {
     });
   }
 
-  Stream<UserPresence?> getUserPresenceStream(String uid) => _firestore.collection('presence').doc(uid).snapshots().map((doc) {
-      if (!doc.exists || doc.data() == null) return null;
-      return UserPresence.fromMap(doc.data()!);
-    });
+  Stream<UserPresence?> getUserPresenceStream(String uid) =>
+      _firestore.collection('presence').doc(uid).snapshots().map((doc) {
+        if (!doc.exists || doc.data() == null) return null;
+        return UserPresence.fromMap(doc.data()!);
+      });
 
-  Stream<Map<String, bool>> getTypingStream(String chatId) => _firestore.collection('chats').doc(chatId).snapshots().map((doc) {
-      if (!doc.exists || doc.data() == null) return {};
-      final data = doc.data()!;
-      if (data['typing'] is Map) {
-        return (data['typing'] as Map).map((k, v) => MapEntry(k.toString(), v == true));
-      }
-      return {};
-    });
+  Stream<Map<String, bool>> getTypingStream(String chatId) =>
+      _firestore.collection('chats').doc(chatId).snapshots().map((doc) {
+        if (!doc.exists || doc.data() == null) return {};
+        final data = doc.data()!;
+        if (data['typing'] is Map) {
+          return (data['typing'] as Map)
+              .map((k, v) => MapEntry(k.toString(), v == true));
+        }
+        return {};
+      });
 }

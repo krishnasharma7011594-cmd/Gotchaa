@@ -98,16 +98,18 @@ extension UseCaseExt<S, F extends Failure> on Future<Result<S, F>> {
   /// Execute a callback if successful.
   Future<Result<S, F>> onSuccess(
     Future<void> Function(S value) callback,
-  ) async => then((result) async {
-    await result.when(success: callback, failure: (_) async {});
-    return result;
-  });
+  ) async =>
+      then((result) async {
+        await result.when(success: callback, failure: (_) async {});
+        return result;
+      });
 
   /// Execute a callback if failed.
   Future<Result<S, F>> onFailure(
     Future<void> Function(F failure) callback,
-  ) async => then((result) async {
-    await result.when(success: (_) async {}, failure: callback);
-    return result;
-  });
+  ) async =>
+      then((result) async {
+        await result.when(success: (_) async {}, failure: callback);
+        return result;
+      });
 }

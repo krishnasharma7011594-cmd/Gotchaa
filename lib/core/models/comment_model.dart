@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CommentModel {
-
   CommentModel({
     required this.id,
     required this.uid,
@@ -12,7 +11,8 @@ class CommentModel {
     this.likesCount = 0,
   });
 
-  factory CommentModel.fromMap(Map<String, dynamic> data, String id) => CommentModel(
+  factory CommentModel.fromMap(Map<String, dynamic> data, String id) =>
+      CommentModel(
         id: id,
         uid: data['uid'] ?? '',
         username: data['username'] ?? '',

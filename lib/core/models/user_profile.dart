@@ -1,32 +1,32 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CustomPrivacyList {
-
   CustomPrivacyList({required this.id, required this.name, required this.uids});
 
-  factory CustomPrivacyList.fromMap(Map<String, dynamic> data) => CustomPrivacyList(
-      id: data['id'] ?? '',
-      name: data['name'] ?? '',
-      uids: List<String>.from(data['uids'] ?? []),
-    );
+  factory CustomPrivacyList.fromMap(Map<String, dynamic> data) =>
+      CustomPrivacyList(
+        id: data['id'] ?? '',
+        name: data['name'] ?? '',
+        uids: List<String>.from(data['uids'] ?? []),
+      );
   final String id;
   final String name;
   final List<String> uids;
 
   Map<String, dynamic> toMap() => {
-      'id': id,
-      'name': name,
-      'uids': uids,
-    };
+        'id': id,
+        'name': name,
+        'uids': uids,
+      };
 }
 
 class UserProfile {
-
   UserProfile({
     required this.uid,
     required this.username,
     required this.displayName,
-    required this.createdAt, this.email = '',
+    required this.createdAt,
+    this.email = '',
     this.photoUrl = '',
     this.bio = '',
     this.karma = 500,
@@ -74,69 +74,72 @@ class UserProfile {
     this.language,
   });
 
-  factory UserProfile.fromMap(Map<String, dynamic> data, String id) => UserProfile(
-      uid: id,
-      username: data['username'] ?? '',
-      displayName: data['displayName'] ?? '',
-      email: data['email'] ?? '',
-      photoUrl: data['photoUrl'] ?? '',
-      bio: data['bio'] ?? '',
-      karma: (data['karma'] ?? 500) as int,
-      lovers: (data['lovers'] ?? 0) as int,
-      lovely: (data['lovely'] ?? 0) as int,
-      followersCount: (data['followersCount'] ?? 0) as int,
-      followingCount: (data['followingCount'] ?? 0) as int,
-      isVerified: data['isVerified'] ?? false,
-      isLimitedUser: data['isLimitedUser'] ?? false,
-      inviteCode: data['inviteCode'] ?? '',
-      joinedWithCode: data['joinedWithCode'] ?? '',
-      inviteLimit: (data['inviteLimit'] ?? 5) as int,
-      invitesUsed: (data['invitesUsed'] ?? 0) as int,
-      remainingInvites: (data['remainingInvites'] ?? 5) as int,
-      deviceId: data['deviceId'],
-      invitedUsers: List<String>.from(data['invitedUsers'] ?? []),
-      blockedUids: List<String>.from(data['blockedUids'] ?? []),
-      mutedUids: List<String>.from(data['mutedUids'] ?? []),
-      ghostUids: List<String>.from(data['ghostUids'] ?? []),
-      friendUids: List<String>.from(data['friendUids'] ?? []),
-      customPrivacyLists: (data['customPrivacyLists'] as List? ?? [])
-          .map((e) => CustomPrivacyList.fromMap(Map<String, dynamic>.from(e)))
-          .toList(),
-      totalInvites: (data['totalInvites'] ?? 0) as int,
-      isInviteRewardClaimed: data['isInviteRewardClaimed'] ?? false,
-      createdAt: data['createdAt'] is Timestamp
-          ? (data['createdAt'] as Timestamp).toDate()
-          : DateTime.now(),
-      phoneNumber: data['phoneNumber'],
-      gender: data['gender'],
-      birthday: data['birthday'] != null && data['birthday'] is Timestamp
-          ? (data['birthday'] as Timestamp).toDate()
-          : null,
-      lastUsernameUpdate: data['lastUsernameUpdate'] != null && data['lastUsernameUpdate'] is Timestamp
-          ? (data['lastUsernameUpdate'] as Timestamp).toDate()
-          : null,
-      isPrivate: data['isPrivate'],
-      showActivityStatus: data['showActivityStatus'],
-      pushNotificationsEnabled: data['pushNotificationsEnabled'],
-      emailNotificationsEnabled: data['emailNotificationsEnabled'],
-      isTwoFactorEnabled: data['isTwoFactorEnabled'],
-      identityPublicKey: data['identityPublicKey'],
-      stayAnonymousInConnections: data['stayAnonymousInConnections'] ?? false,
-      nation: data['nation'] as Map<String, dynamic>?,
-      isOnline: data['isOnline'] ?? false,
-      lastSeen: data['lastSeen'] != null && data['lastSeen'] is Timestamp
-          ? (data['lastSeen'] as Timestamp).toDate()
-          : null,
-      fcmToken: data['fcmToken'],
-      hasPickedLanguage: data['hasPickedLanguage'] ?? false,
-      termsAcceptedVersion: data['termsAcceptedVersion'],
-      privacyAcceptedVersion: data['privacyAcceptedVersion'],
-      legalAcceptedAt: data['legalAcceptedAt'] != null && data['legalAcceptedAt'] is Timestamp
-          ? (data['legalAcceptedAt'] as Timestamp).toDate()
-          : null,
-      ageTier: data['ageTier'] as int?,
-      ageVerified: data['ageVerified'] ?? false,
-    );
+  factory UserProfile.fromMap(Map<String, dynamic> data, String id) =>
+      UserProfile(
+        uid: id,
+        username: data['username'] ?? '',
+        displayName: data['displayName'] ?? '',
+        email: data['email'] ?? '',
+        photoUrl: data['photoUrl'] ?? '',
+        bio: data['bio'] ?? '',
+        karma: (data['karma'] ?? 500) as int,
+        lovers: (data['lovers'] ?? 0) as int,
+        lovely: (data['lovely'] ?? 0) as int,
+        followersCount: (data['followersCount'] ?? 0) as int,
+        followingCount: (data['followingCount'] ?? 0) as int,
+        isVerified: data['isVerified'] ?? false,
+        isLimitedUser: data['isLimitedUser'] ?? false,
+        inviteCode: data['inviteCode'] ?? '',
+        joinedWithCode: data['joinedWithCode'] ?? '',
+        inviteLimit: (data['inviteLimit'] ?? 5) as int,
+        invitesUsed: (data['invitesUsed'] ?? 0) as int,
+        remainingInvites: (data['remainingInvites'] ?? 5) as int,
+        deviceId: data['deviceId'],
+        invitedUsers: List<String>.from(data['invitedUsers'] ?? []),
+        blockedUids: List<String>.from(data['blockedUids'] ?? []),
+        mutedUids: List<String>.from(data['mutedUids'] ?? []),
+        ghostUids: List<String>.from(data['ghostUids'] ?? []),
+        friendUids: List<String>.from(data['friendUids'] ?? []),
+        customPrivacyLists: (data['customPrivacyLists'] as List? ?? [])
+            .map((e) => CustomPrivacyList.fromMap(Map<String, dynamic>.from(e)))
+            .toList(),
+        totalInvites: (data['totalInvites'] ?? 0) as int,
+        isInviteRewardClaimed: data['isInviteRewardClaimed'] ?? false,
+        createdAt: data['createdAt'] is Timestamp
+            ? (data['createdAt'] as Timestamp).toDate()
+            : DateTime.now(),
+        phoneNumber: data['phoneNumber'],
+        gender: data['gender'],
+        birthday: data['birthday'] != null && data['birthday'] is Timestamp
+            ? (data['birthday'] as Timestamp).toDate()
+            : null,
+        lastUsernameUpdate: data['lastUsernameUpdate'] != null &&
+                data['lastUsernameUpdate'] is Timestamp
+            ? (data['lastUsernameUpdate'] as Timestamp).toDate()
+            : null,
+        isPrivate: data['isPrivate'],
+        showActivityStatus: data['showActivityStatus'],
+        pushNotificationsEnabled: data['pushNotificationsEnabled'],
+        emailNotificationsEnabled: data['emailNotificationsEnabled'],
+        isTwoFactorEnabled: data['isTwoFactorEnabled'],
+        identityPublicKey: data['identityPublicKey'],
+        stayAnonymousInConnections: data['stayAnonymousInConnections'] ?? false,
+        nation: data['nation'] as Map<String, dynamic>?,
+        isOnline: data['isOnline'] ?? false,
+        lastSeen: data['lastSeen'] != null && data['lastSeen'] is Timestamp
+            ? (data['lastSeen'] as Timestamp).toDate()
+            : null,
+        fcmToken: data['fcmToken'],
+        hasPickedLanguage: data['hasPickedLanguage'] ?? false,
+        termsAcceptedVersion: data['termsAcceptedVersion'],
+        privacyAcceptedVersion: data['privacyAcceptedVersion'],
+        legalAcceptedAt: data['legalAcceptedAt'] != null &&
+                data['legalAcceptedAt'] is Timestamp
+            ? (data['legalAcceptedAt'] as Timestamp).toDate()
+            : null,
+        ageTier: data['ageTier'] as int?,
+        ageVerified: data['ageVerified'] ?? false,
+      );
 
   /// Merges public and private data into a single UserProfile.
   factory UserProfile.fromMergedMaps({
@@ -200,79 +203,117 @@ class UserProfile {
   final String? language;
 
   static List<String> get publicFields => [
-    'uid', 'username', 'displayName', 'photoUrl', 'bio', 'karma', 'lovers', 
-    'lovely', 'followersCount', 'followingCount', 'isVerified', 'createdAt', 
-    'isOnline', 'lastSeen', 'nation', 'identityPublicKey', 'stayAnonymousInConnections',
-    'isPrivate', 'language'
-  ];
+        'uid',
+        'username',
+        'displayName',
+        'photoUrl',
+        'bio',
+        'karma',
+        'lovers',
+        'lovely',
+        'followersCount',
+        'followingCount',
+        'isVerified',
+        'createdAt',
+        'isOnline',
+        'lastSeen',
+        'nation',
+        'identityPublicKey',
+        'stayAnonymousInConnections',
+        'isPrivate',
+        'language'
+      ];
 
   static List<String> get privateFields => [
-    'email', 'inviteCode', 'joinedWithCode', 'inviteLimit', 
-    'invitesUsed', 'remainingInvites', 'deviceId', 'invitedUsers', 'totalInvites', 
-    'isInviteRewardClaimed', 'phoneNumber', 'gender', 'birthday',
-    'showActivityStatus', 'pushNotificationsEnabled', 'emailNotificationsEnabled', 'isTwoFactorEnabled', 
-    'fcmToken', 'isLimitedUser', 'lastUsernameUpdate', 'hasPickedLanguage',
-    'termsAcceptedVersion', 'privacyAcceptedVersion', 'legalAcceptedAt',
-    'blockedUids', 'mutedUids', 'ghostUids', 'friendUids', 'customPrivacyLists',
-    'ageTier', 'ageVerified'
-  ];
+        'email',
+        'inviteCode',
+        'joinedWithCode',
+        'inviteLimit',
+        'invitesUsed',
+        'remainingInvites',
+        'deviceId',
+        'invitedUsers',
+        'totalInvites',
+        'isInviteRewardClaimed',
+        'phoneNumber',
+        'gender',
+        'birthday',
+        'showActivityStatus',
+        'pushNotificationsEnabled',
+        'emailNotificationsEnabled',
+        'isTwoFactorEnabled',
+        'fcmToken',
+        'isLimitedUser',
+        'lastUsernameUpdate',
+        'hasPickedLanguage',
+        'termsAcceptedVersion',
+        'privacyAcceptedVersion',
+        'legalAcceptedAt',
+        'blockedUids',
+        'mutedUids',
+        'ghostUids',
+        'friendUids',
+        'customPrivacyLists',
+        'ageTier',
+        'ageVerified'
+      ];
 
   Map<String, dynamic> toMap() => {
-      'uid': uid,
-      'username': username,
-      'displayName': displayName,
-      'email': email,
-      'photoUrl': photoUrl,
-      'bio': bio,
-      'karma': karma,
-      'lovers': lovers,
-      'lovely': lovely,
-      'followersCount': followersCount,
-      'followingCount': followingCount,
-      'isVerified': isVerified,
-      'isLimitedUser': isLimitedUser,
-      'inviteCode': inviteCode,
-      'joinedWithCode': joinedWithCode,
-      'inviteLimit': inviteLimit,
-      'invitesUsed': invitesUsed,
-      'remainingInvites': remainingInvites,
-      'deviceId': deviceId,
-      'invitedUsers': invitedUsers,
-      'blockedUids': blockedUids,
-      'mutedUids': mutedUids,
-      'ghostUids': ghostUids,
-      'friendUids': friendUids,
-      'customPrivacyLists': customPrivacyLists.map((e) => e.toMap()).toList(),
-      'totalInvites': totalInvites,
-      'isInviteRewardClaimed': isInviteRewardClaimed,
-      'createdAt': Timestamp.fromDate(createdAt),
-      if (phoneNumber != null) 'phoneNumber': phoneNumber,
-      if (gender != null) 'gender': gender,
-      if (birthday != null) 'birthday': Timestamp.fromDate(birthday!),
-      if (lastUsernameUpdate != null)
-        'lastUsernameUpdate': Timestamp.fromDate(lastUsernameUpdate!),
-      'isPrivate': isPrivate,
-      'showActivityStatus': showActivityStatus,
-      'pushNotificationsEnabled': pushNotificationsEnabled,
-      'emailNotificationsEnabled': emailNotificationsEnabled,
-      'isTwoFactorEnabled': isTwoFactorEnabled,
-      if (identityPublicKey != null) 'identityPublicKey': identityPublicKey,
-      'stayAnonymousInConnections': stayAnonymousInConnections,
-      if (nation != null) 'nation': nation,
-      'isOnline': isOnline,
-      if (lastSeen != null) 'lastSeen': Timestamp.fromDate(lastSeen!),
-      if (fcmToken != null) 'fcmToken': fcmToken,
-      'hasPickedLanguage': hasPickedLanguage,
-      if (termsAcceptedVersion != null)
-        'termsAcceptedVersion': termsAcceptedVersion,
-      if (privacyAcceptedVersion != null)
-        'privacyAcceptedVersion': privacyAcceptedVersion,
-      if (legalAcceptedAt != null)
-        'legalAcceptedAt': Timestamp.fromDate(legalAcceptedAt!),
-      'ageTier': ageTier,
-      'ageVerified': ageVerified,
-      if (language != null) 'language': language,
-    };
+        'uid': uid,
+        'username': username,
+        'displayName': displayName,
+        'email': email,
+        'photoUrl': photoUrl,
+        'bio': bio,
+        'karma': karma,
+        'lovers': lovers,
+        'lovely': lovely,
+        'followersCount': followersCount,
+        'followingCount': followingCount,
+        'isVerified': isVerified,
+        'isLimitedUser': isLimitedUser,
+        'inviteCode': inviteCode,
+        'joinedWithCode': joinedWithCode,
+        'inviteLimit': inviteLimit,
+        'invitesUsed': invitesUsed,
+        'remainingInvites': remainingInvites,
+        'deviceId': deviceId,
+        'invitedUsers': invitedUsers,
+        'blockedUids': blockedUids,
+        'mutedUids': mutedUids,
+        'ghostUids': ghostUids,
+        'friendUids': friendUids,
+        'customPrivacyLists': customPrivacyLists.map((e) => e.toMap()).toList(),
+        'totalInvites': totalInvites,
+        'isInviteRewardClaimed': isInviteRewardClaimed,
+        'createdAt': Timestamp.fromDate(createdAt),
+        if (phoneNumber != null) 'phoneNumber': phoneNumber,
+        if (gender != null) 'gender': gender,
+        if (birthday != null) 'birthday': Timestamp.fromDate(birthday!),
+        if (lastUsernameUpdate != null)
+          'lastUsernameUpdate': Timestamp.fromDate(lastUsernameUpdate!),
+        'isPrivate': isPrivate,
+        'showActivityStatus': showActivityStatus,
+        'pushNotificationsEnabled': pushNotificationsEnabled,
+        'emailNotificationsEnabled': emailNotificationsEnabled,
+        'isTwoFactorEnabled': isTwoFactorEnabled,
+        if (identityPublicKey != null) 'identityPublicKey': identityPublicKey,
+        'stayAnonymousInConnections': stayAnonymousInConnections,
+        if (nation != null) 'nation': nation,
+        'isOnline': isOnline,
+        if (lastSeen != null) 'lastSeen': Timestamp.fromDate(lastSeen!),
+        if (fcmToken != null) 'fcmToken': fcmToken,
+        'hasPickedLanguage': hasPickedLanguage,
+        if (termsAcceptedVersion != null)
+          'termsAcceptedVersion': termsAcceptedVersion,
+        if (privacyAcceptedVersion != null)
+          'privacyAcceptedVersion': privacyAcceptedVersion,
+        if (legalAcceptedAt != null)
+          'legalAcceptedAt': Timestamp.fromDate(legalAcceptedAt!),
+        'ageTier': ageTier,
+        'ageVerified': ageVerified,
+        if (language != null) 'language': language,
+      };
 
   UserProfile copyWith({
     String? username,
@@ -322,56 +363,61 @@ class UserProfile {
     int? ageTier,
     bool? ageVerified,
     String? language,
-  }) => UserProfile(
-      uid: uid,
-      username: username ?? this.username,
-      displayName: displayName ?? this.displayName,
-      email: email ?? this.email,
-      photoUrl: photoUrl ?? this.photoUrl,
-      bio: bio ?? this.bio,
-      karma: karma ?? this.karma,
-      lovers: lovers ?? this.lovers,
-      lovely: lovely ?? this.lovely,
-      followersCount: followersCount ?? this.followersCount,
-      followingCount: followingCount ?? this.followingCount,
-      isVerified: isVerified ?? this.isVerified,
-      isLimitedUser: isLimitedUser ?? this.isLimitedUser,
-      inviteCode: inviteCode ?? this.inviteCode,
-      joinedWithCode: joinedWithCode ?? this.joinedWithCode,
-      inviteLimit: inviteLimit ?? this.inviteLimit,
-      invitesUsed: invitesUsed ?? this.invitesUsed,
-      remainingInvites: remainingInvites ?? this.remainingInvites,
-      deviceId: deviceId ?? this.deviceId,
-      invitedUsers: invitedUsers ?? this.invitedUsers,
-      blockedUids: blockedUids ?? this.blockedUids,
-      mutedUids: mutedUids ?? this.mutedUids,
-      ghostUids: ghostUids ?? this.ghostUids,
-      friendUids: friendUids ?? this.friendUids,
-      customPrivacyLists: customPrivacyLists ?? this.customPrivacyLists,
-      totalInvites: totalInvites ?? this.totalInvites,
-      isInviteRewardClaimed: isInviteRewardClaimed ?? this.isInviteRewardClaimed,
-      createdAt: createdAt,
-      phoneNumber: phoneNumber ?? this.phoneNumber,
-      gender: gender ?? this.gender,
-      birthday: birthday ?? this.birthday,
-      lastUsernameUpdate: lastUsernameUpdate ?? this.lastUsernameUpdate,
-      isPrivate: isPrivate ?? this.isPrivate,
-      showActivityStatus: showActivityStatus ?? this.showActivityStatus,
-      pushNotificationsEnabled: pushNotificationsEnabled ?? this.pushNotificationsEnabled,
-      emailNotificationsEnabled: emailNotificationsEnabled ?? this.emailNotificationsEnabled,
-      isTwoFactorEnabled: isTwoFactorEnabled ?? this.isTwoFactorEnabled,
-      identityPublicKey: identityPublicKey ?? this.identityPublicKey,
-      stayAnonymousInConnections: stayAnonymousInConnections ?? this.stayAnonymousInConnections,
-      isOnline: isOnline ?? this.isOnline,
-      lastSeen: lastSeen ?? this.lastSeen,
-      fcmToken: fcmToken ?? this.fcmToken,
-      hasPickedLanguage: hasPickedLanguage ?? this.hasPickedLanguage,
-      termsAcceptedVersion: termsAcceptedVersion ?? this.termsAcceptedVersion,
-      privacyAcceptedVersion: privacyAcceptedVersion ?? this.privacyAcceptedVersion,
-      legalAcceptedAt: legalAcceptedAt ?? this.legalAcceptedAt,
-      ageTier: ageTier ?? this.ageTier,
-      ageVerified: ageVerified ?? this.ageVerified,
-      language: language ?? this.language,
-    );
+  }) =>
+      UserProfile(
+        uid: uid,
+        username: username ?? this.username,
+        displayName: displayName ?? this.displayName,
+        email: email ?? this.email,
+        photoUrl: photoUrl ?? this.photoUrl,
+        bio: bio ?? this.bio,
+        karma: karma ?? this.karma,
+        lovers: lovers ?? this.lovers,
+        lovely: lovely ?? this.lovely,
+        followersCount: followersCount ?? this.followersCount,
+        followingCount: followingCount ?? this.followingCount,
+        isVerified: isVerified ?? this.isVerified,
+        isLimitedUser: isLimitedUser ?? this.isLimitedUser,
+        inviteCode: inviteCode ?? this.inviteCode,
+        joinedWithCode: joinedWithCode ?? this.joinedWithCode,
+        inviteLimit: inviteLimit ?? this.inviteLimit,
+        invitesUsed: invitesUsed ?? this.invitesUsed,
+        remainingInvites: remainingInvites ?? this.remainingInvites,
+        deviceId: deviceId ?? this.deviceId,
+        invitedUsers: invitedUsers ?? this.invitedUsers,
+        blockedUids: blockedUids ?? this.blockedUids,
+        mutedUids: mutedUids ?? this.mutedUids,
+        ghostUids: ghostUids ?? this.ghostUids,
+        friendUids: friendUids ?? this.friendUids,
+        customPrivacyLists: customPrivacyLists ?? this.customPrivacyLists,
+        totalInvites: totalInvites ?? this.totalInvites,
+        isInviteRewardClaimed:
+            isInviteRewardClaimed ?? this.isInviteRewardClaimed,
+        createdAt: createdAt,
+        phoneNumber: phoneNumber ?? this.phoneNumber,
+        gender: gender ?? this.gender,
+        birthday: birthday ?? this.birthday,
+        lastUsernameUpdate: lastUsernameUpdate ?? this.lastUsernameUpdate,
+        isPrivate: isPrivate ?? this.isPrivate,
+        showActivityStatus: showActivityStatus ?? this.showActivityStatus,
+        pushNotificationsEnabled:
+            pushNotificationsEnabled ?? this.pushNotificationsEnabled,
+        emailNotificationsEnabled:
+            emailNotificationsEnabled ?? this.emailNotificationsEnabled,
+        isTwoFactorEnabled: isTwoFactorEnabled ?? this.isTwoFactorEnabled,
+        identityPublicKey: identityPublicKey ?? this.identityPublicKey,
+        stayAnonymousInConnections:
+            stayAnonymousInConnections ?? this.stayAnonymousInConnections,
+        isOnline: isOnline ?? this.isOnline,
+        lastSeen: lastSeen ?? this.lastSeen,
+        fcmToken: fcmToken ?? this.fcmToken,
+        hasPickedLanguage: hasPickedLanguage ?? this.hasPickedLanguage,
+        termsAcceptedVersion: termsAcceptedVersion ?? this.termsAcceptedVersion,
+        privacyAcceptedVersion:
+            privacyAcceptedVersion ?? this.privacyAcceptedVersion,
+        legalAcceptedAt: legalAcceptedAt ?? this.legalAcceptedAt,
+        ageTier: ageTier ?? this.ageTier,
+        ageVerified: ageVerified ?? this.ageVerified,
+        language: language ?? this.language,
+      );
 }
-

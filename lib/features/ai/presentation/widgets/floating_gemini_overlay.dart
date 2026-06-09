@@ -13,14 +13,16 @@ class FloatingGeminiOverlay extends ConsumerStatefulWidget {
   const FloatingGeminiOverlay({super.key});
 
   @override
-  ConsumerState<FloatingGeminiOverlay> createState() => _FloatingGeminiOverlayState();
+  ConsumerState<FloatingGeminiOverlay> createState() =>
+      _FloatingGeminiOverlayState();
 }
 
-class _FloatingGeminiOverlayState extends ConsumerState<FloatingGeminiOverlay> with SingleTickerProviderStateMixin {
+class _FloatingGeminiOverlayState extends ConsumerState<FloatingGeminiOverlay>
+    with SingleTickerProviderStateMixin {
   bool _isOpen = false;
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
+
   late AnimationController _animationController;
   late Animation<double> _panelAnimation;
   late Animation<double> _fadeAnimation;
@@ -54,24 +56,25 @@ class _FloatingGeminiOverlayState extends ConsumerState<FloatingGeminiOverlay> w
   void _initGemini() {
     const apiKey = AppConfig.geminiApiKey;
     if (apiKey.isEmpty) {
-      _error = 'Gemini API Key is missing. Run with --dart-define=GEMINI_API_KEY=your_key';
+      _error =
+          'Gemini API Key is missing. Run with --dart-define=GEMINI_API_KEY=your_key';
       return;
     }
-    
+
     _model = GenerativeModel(
       model: 'gemini-3-flash-preview',
       apiKey: apiKey,
       systemInstruction: Content.system(
-        'You are the Gotchaa AI Assistant. You must ONLY answer questions related to the Gotchaa app. '
-        'If a user asks about anything else, politely refuse by saying: "I can only help with Gotchaa questions."'
-      ),
+          'You are the Gotchaa AI Assistant. You must ONLY answer questions related to the Gotchaa app. '
+          'If a user asks about anything else, politely refuse by saying: "I can only help with Gotchaa questions."'),
     );
-    
+
     _chatSession = _model!.startChat();
-    
+
     _messages.add({
       'isUser': false,
-      'text': 'Hi! I am your Gotchaa AI Assistant. Ask me anything about the app!',
+      'text':
+          'Hi! I am your Gotchaa AI Assistant. Ask me anything about the app!',
       'time': DateTime.now(),
     });
   }
@@ -120,15 +123,17 @@ class _FloatingGeminiOverlayState extends ConsumerState<FloatingGeminiOverlay> w
       });
       _isLoading = true;
     });
-    
+
     _messageController.clear();
     _scrollToBottom();
 
     try {
-      final wrappedText = 'Only answer if this is about Gotchaa. Otherwise refuse.\n\nUser message: $text';
-      final response = await _chatSession!.sendMessage(Content.text(wrappedText));
+      final wrappedText =
+          'Only answer if this is about Gotchaa. Otherwise refuse.\n\nUser message: $text';
+      final response =
+          await _chatSession!.sendMessage(Content.text(wrappedText));
       final responseText = response.text;
-      
+
       if (responseText != null) {
         setState(() {
           _messages.add({
@@ -176,7 +181,7 @@ class _FloatingGeminiOverlayState extends ConsumerState<FloatingGeminiOverlay> w
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
-    
+
     // Hide if not logged in
     if (authState.asData?.value == null) return const SizedBox.shrink();
 
@@ -213,10 +218,11 @@ class _FloatingGeminiOverlayState extends ConsumerState<FloatingGeminiOverlay> w
 
           // The Floating Bubble
           Positioned(
-            bottom: 110, // Moved up to avoid covering Profile button (WhatsApp Meta AI style)
+            bottom:
+                110, // Moved up to avoid covering Profile button (WhatsApp Meta AI style)
             right: 20,
-            child: _isOpen 
-                ? const SizedBox.shrink() 
+            child: _isOpen
+                ? const SizedBox.shrink()
                 : FadeInUp(
                     duration: const Duration(milliseconds: 500),
                     child: _buildBubble(),
@@ -228,32 +234,32 @@ class _FloatingGeminiOverlayState extends ConsumerState<FloatingGeminiOverlay> w
   }
 
   Widget _buildBubble() => GestureDetector(
-      onTap: _toggleOverlay,
-      child: Container(
-        width: 65,
-        height: 65,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.electricBlue, Color(0xFF9D50BB)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.4),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
+        onTap: _toggleOverlay,
+        child: Container(
+          width: 65,
+          height: 65,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [AppColors.electricBlue, Color(0xFF9D50BB)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-          ],
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primaryBlue.withOpacity(0.4),
+                blurRadius: 15,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: const Icon(
+            Icons.auto_awesome_rounded,
+            color: Colors.white,
+            size: 30,
+          ),
         ),
-        child: const Icon(
-          Icons.auto_awesome_rounded,
-          color: Colors.white,
-          size: 30,
-        ),
-      ),
-    );
+      );
 
   Widget _buildGeminiPanel() {
     final size = MediaQuery.of(context).size;
@@ -301,7 +307,8 @@ class _FloatingGeminiOverlayState extends ConsumerState<FloatingGeminiOverlay> w
                       color: AppColors.electricBlue.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.auto_awesome_rounded, color: AppColors.electricBlue, size: 20),
+                    child: const Icon(Icons.auto_awesome_rounded,
+                        color: AppColors.electricBlue, size: 20),
                   ),
                   const SizedBox(width: 12),
                   Text(
@@ -314,7 +321,8 @@ class _FloatingGeminiOverlayState extends ConsumerState<FloatingGeminiOverlay> w
                   ),
                   const Spacer(),
                   IconButton(
-                    icon: const Icon(Icons.close_rounded, color: Colors.white70),
+                    icon:
+                        const Icon(Icons.close_rounded, color: Colors.white70),
                     onPressed: _closeOverlay,
                   ),
                 ],
@@ -325,9 +333,11 @@ class _FloatingGeminiOverlayState extends ConsumerState<FloatingGeminiOverlay> w
 
             // Chat View
             Expanded(
-              child: _error != null 
-                ? Center(child: Text(_error!, style: const TextStyle(color: Colors.redAccent)))
-                : _buildConversation(),
+              child: _error != null
+                  ? Center(
+                      child: Text(_error!,
+                          style: const TextStyle(color: Colors.redAccent)))
+                  : _buildConversation(),
             ),
 
             // Input
@@ -339,85 +349,92 @@ class _FloatingGeminiOverlayState extends ConsumerState<FloatingGeminiOverlay> w
   }
 
   Widget _buildConversation() => ListView.builder(
-      controller: _scrollController,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      itemCount: _messages.length,
-      itemBuilder: (context, index) {
-        final msg = _messages[index];
-        final isUser = msg['isUser'] as bool;
-        return Align(
-          alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
-            decoration: BoxDecoration(
-              color: isUser ? AppColors.electricBlue : Colors.white.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(18).copyWith(
-                bottomRight: isUser ? Radius.zero : null,
-                bottomLeft: isUser ? null : Radius.zero,
+        controller: _scrollController,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        itemCount: _messages.length,
+        itemBuilder: (context, index) {
+          final msg = _messages[index];
+          final isUser = msg['isUser'] as bool;
+          return Align(
+            alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.75),
+              decoration: BoxDecoration(
+                color: isUser
+                    ? AppColors.electricBlue
+                    : Colors.white.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(18).copyWith(
+                  bottomRight: isUser ? Radius.zero : null,
+                  bottomLeft: isUser ? null : Radius.zero,
+                ),
+              ),
+              child: Text(
+                msg['text'] as String,
+                style: GoogleFonts.outfit(
+                  color: isUser ? Colors.white : Colors.white.withOpacity(0.9),
+                  fontSize: 15,
+                ),
               ),
             ),
-            child: Text(
-              msg['text'] as String,
-              style: GoogleFonts.outfit(
-                color: isUser ? Colors.white : Colors.white.withOpacity(0.9),
-                fontSize: 15,
-              ),
-            ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
 
   Widget _buildInput() => Container(
-      padding: EdgeInsets.fromLTRB(16, 12, 16, MediaQuery.of(context).padding.bottom + 12),
-      decoration: BoxDecoration(
-        color: AppColors.darkSurface,
-        border: Border(top: BorderSide(color: Colors.white.withOpacity(0.05))),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: TextField(
-                controller: _messageController,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  hintText: 'Ask about Gotchaa...',
-                  hintStyle: TextStyle(color: Colors.white38),
-                  border: InputBorder.none,
+        padding: EdgeInsets.fromLTRB(
+            16, 12, 16, MediaQuery.of(context).padding.bottom + 12),
+        decoration: BoxDecoration(
+          color: AppColors.darkSurface,
+          border:
+              Border(top: BorderSide(color: Colors.white.withOpacity(0.05))),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(24),
                 ),
-                onSubmitted: (_) => _sendMessage(),
+                child: TextField(
+                  controller: _messageController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    hintText: 'Ask about Gotchaa...',
+                    hintStyle: TextStyle(color: Colors.white38),
+                    border: InputBorder.none,
+                  ),
+                  onSubmitted: (_) => _sendMessage(),
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 12),
-          GestureDetector(
-            onTap: _sendMessage,
-            child: Container(
-              width: 48,
-              height: 48,
-              decoration: const BoxDecoration(
-                color: AppColors.electricBlue,
-                shape: BoxShape.circle,
+            const SizedBox(width: 12),
+            GestureDetector(
+              onTap: _sendMessage,
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: const BoxDecoration(
+                  color: AppColors.electricBlue,
+                  shape: BoxShape.circle,
+                ),
+                child: _isLoading
+                    ? const Padding(
+                        padding: EdgeInsets.all(12),
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2),
+                      )
+                    : const Icon(Icons.send_rounded,
+                        color: Colors.white, size: 20),
               ),
-              child: _isLoading 
-                ? const Padding(
-                    padding: EdgeInsets.all(12),
-                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                  )
-                : const Icon(Icons.send_rounded, color: Colors.white, size: 20),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
 }
 
 // Extension to help with Colors in the overlay if context properties are hard to reach

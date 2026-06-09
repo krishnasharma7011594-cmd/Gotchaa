@@ -11,7 +11,8 @@ import '../../../profile/presentation/screens/profile_screen.dart';
 import '../../../vybz/presentation/screens/vybz_feed_screen.dart';
 import 'home_feed_screen.dart';
 
-final GlobalKey<ScaffoldState> mainShellScaffoldKey = GlobalKey<ScaffoldState>();
+final GlobalKey<ScaffoldState> mainShellScaffoldKey =
+    GlobalKey<ScaffoldState>();
 
 class MainShell extends ConsumerStatefulWidget {
   const MainShell({super.key});
@@ -42,11 +43,11 @@ class _MainShellState extends ConsumerState<MainShell> {
   }
 
   final List<Widget> _screens = [
-    const HomeFeedScreen(),    // 0 – Feed
-    const ExploreScreen(),     // 1 – Search / Explore
-    const SizedBox.shrink(),   // 2 – Create Placeholder
-    const VybzFeedScreen(),    // 3 – Vybz (Video Feed)
-    const ProfileScreen(),     // 4 – Profile
+    const HomeFeedScreen(), // 0 – Feed
+    const ExploreScreen(), // 1 – Search / Explore
+    const SizedBox.shrink(), // 2 – Create Placeholder
+    const VybzFeedScreen(), // 3 – Vybz (Video Feed)
+    const ProfileScreen(), // 4 – Profile
   ];
 
   @override
@@ -69,10 +70,8 @@ class _MainShellState extends ConsumerState<MainShell> {
   Widget _buildBottomNav(int selectedIndex) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF161921) : Colors.white;
-    final borderColor =
-        isDark ? const Color(0xFF2A2D3A) : Colors.grey.shade200;
-    final activeColor =
-        isDark ? const Color(0xFFE9ECF4) : Colors.black;
+    final borderColor = isDark ? const Color(0xFF2A2D3A) : Colors.grey.shade200;
+    final activeColor = isDark ? const Color(0xFFE9ECF4) : Colors.black;
     final inactiveColor =
         isDark ? const Color(0xFF7A8099) : Colors.grey.shade400;
 
@@ -102,11 +101,14 @@ class _MainShellState extends ConsumerState<MainShell> {
         showUnselectedLabels: false,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(selectedIndex == 0 ? Icons.home_rounded : Icons.home_outlined),
+            icon: Icon(
+                selectedIndex == 0 ? Icons.home_rounded : Icons.home_outlined),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(selectedIndex == 1 ? Icons.explore_rounded : Icons.explore_outlined),
+            icon: Icon(selectedIndex == 1
+                ? Icons.explore_rounded
+                : Icons.explore_outlined),
             label: '',
           ),
           const BottomNavigationBarItem(
@@ -114,11 +116,15 @@ class _MainShellState extends ConsumerState<MainShell> {
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(selectedIndex == 3 ? Icons.play_circle_filled_rounded : Icons.play_circle_outline_rounded),
+            icon: Icon(selectedIndex == 3
+                ? Icons.play_circle_filled_rounded
+                : Icons.play_circle_outline_rounded),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(selectedIndex == 4 ? Icons.person_rounded : Icons.person_outline_rounded),
+            icon: Icon(selectedIndex == 4
+                ? Icons.person_rounded
+                : Icons.person_outline_rounded),
             label: '',
           ),
         ],

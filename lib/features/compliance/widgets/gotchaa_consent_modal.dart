@@ -64,13 +64,17 @@ class _GotchaaConsentModalState extends State<GotchaaConsentModal> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                _bullet('✓', 'App crashes and errors (always on — helps keep app stable)', locked: true),
-                _bullet('○', 'Anonymous usage analytics (optional — helps us improve features)',
+                _bullet('✓',
+                    'App crashes and errors (always on — helps keep app stable)',
+                    locked: true),
+                _bullet('○',
+                    'Anonymous usage analytics (optional — helps us improve features)',
                     value: _manageMode ? _analytics : null,
                     onChanged: _manageMode
                         ? (v) => setState(() => _analytics = v)
                         : null),
-                _bullet('○', 'Performance monitoring (optional — helps us make app faster)',
+                _bullet('○',
+                    'Performance monitoring (optional — helps us make app faster)',
                     value: _manageMode ? _performance : null,
                     onChanged: _manageMode
                         ? (v) => setState(() => _performance = v)
@@ -82,7 +86,8 @@ class _GotchaaConsentModalState extends State<GotchaaConsentModal> {
                     title: Text('Personalization',
                         style: GoogleFonts.outfit(fontSize: 14)),
                     subtitle: Text('Tailored recommendations',
-                        style: GoogleFonts.outfit(fontSize: 12, color: Colors.grey)),
+                        style: GoogleFonts.outfit(
+                            fontSize: 12, color: Colors.grey)),
                     value: _personalization,
                     onChanged: (v) => setState(() => _personalization = v),
                     activeThumbColor: AppColors.primaryBlue,
@@ -100,19 +105,24 @@ class _GotchaaConsentModalState extends State<GotchaaConsentModal> {
                     await _close();
                   }),
                   const SizedBox(height: 8),
-                  _btn('Manage', false, () => setState(() {
-                        _manageMode = true;
-                        _analytics = false;
-                        _performance = false;
-                        _personalization = false;
-                      }),
+                  _btn(
+                      'Manage',
+                      false,
+                      () => setState(() {
+                            _manageMode = true;
+                            _analytics = false;
+                            _performance = false;
+                            _personalization = false;
+                          }),
                       outlined: true),
                 ] else ...[
                   _btn('Save Preferences', true, () async {
                     await ConsentGateService.setPromptedForConsent(true);
                     await ConsentGateService.setAnalyticsConsent(_analytics);
-                    await ConsentGateService.setPerformanceConsent(_performance);
-                    await ConsentGateService.setPersonalizationConsent(_personalization);
+                    await ConsentGateService.setPerformanceConsent(
+                        _performance);
+                    await ConsentGateService.setPersonalizationConsent(
+                        _personalization);
                     await _close();
                   }),
                 ],
@@ -146,27 +156,32 @@ class _GotchaaConsentModalState extends State<GotchaaConsentModal> {
   }
 
   Widget _btn(String label, bool primary, VoidCallback onPressed,
-      {bool outlined = false}) => SizedBox(
-      width: double.infinity,
-      height: 48,
-      child: outlined
-          ? OutlinedButton(
-              onPressed: onPressed,
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.primaryBlue,
-                side: const BorderSide(color: AppColors.primaryBlue),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          {bool outlined = false}) =>
+      SizedBox(
+        width: double.infinity,
+        height: 48,
+        child: outlined
+            ? OutlinedButton(
+                onPressed: onPressed,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primaryBlue,
+                  side: const BorderSide(color: AppColors.primaryBlue),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                child: Text(label,
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+              )
+            : ElevatedButton(
+                onPressed: onPressed,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryBlue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                child: Text(label,
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
               ),
-              child: Text(label, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
-            )
-          : ElevatedButton(
-              onPressed: onPressed,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: Text(label, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
-            ),
-    );
+      );
 }

@@ -15,11 +15,11 @@ class GyroscopeFacePredictor {
   final KalmanFilter _boundsFilterTop = KalmanFilter();
   final KalmanFilter _boundsFilterRight = KalmanFilter();
   final KalmanFilter _boundsFilterBottom = KalmanFilter();
-  
+
   double _lastGyroX = 0;
   double _lastGyroY = 0;
   int _lastTimestamp = 0;
-  
+
   Face? _lastTrueFace;
 
   void pushMLKitFace(Face face) {
@@ -29,7 +29,7 @@ class GyroscopeFacePredictor {
       _boundsFilterTop.y = face.boundingBox.top;
       _boundsFilterRight.x = face.boundingBox.right;
       _boundsFilterBottom.y = face.boundingBox.bottom;
-      
+
       for (final entry in face.landmarks.entries) {
         _landmarkFilters[entry.key] = KalmanFilter()
           ..x = entry.value!.position.x.toDouble()
@@ -41,17 +41,16 @@ class GyroscopeFacePredictor {
       _boundsFilterTop.update(0, face.boundingBox.top);
       _boundsFilterRight.update(face.boundingBox.right, 0);
       _boundsFilterBottom.update(0, face.boundingBox.bottom);
-      
+
       for (final entry in face.landmarks.entries) {
         if (_landmarkFilters[entry.key] != null) {
           _landmarkFilters[entry.key]!.update(
-            entry.value!.position.x.toDouble(), 
-            entry.value!.position.y.toDouble()
-          );
+              entry.value!.position.x.toDouble(),
+              entry.value!.position.y.toDouble());
         }
       }
     }
-    
+
     _lastTrueFace = face;
   }
 
@@ -64,7 +63,7 @@ class GyroscopeFacePredictor {
     // Delta rotation
     final double dX = currentGyroX - _lastGyroX;
     final double dY = currentGyroY - _lastGyroY;
-    
+
     _lastGyroX = currentGyroX;
     _lastGyroY = currentGyroY;
 
@@ -84,11 +83,9 @@ class GyroscopeFacePredictor {
     for (final key in _landmarkFilters.keys) {
       _landmarkFilters[key]!.predict(dt, dY, dX);
       mappedLandmarks[key] = Point<int>(
-        _landmarkFilters[key]!.x.round(),
-        _landmarkFilters[key]!.y.round()
-      );
+          _landmarkFilters[key]!.x.round(), _landmarkFilters[key]!.y.round());
     }
-    
+
     return PredictedFacePose(
       boundingBox: Rect.fromLTRB(
         _boundsFilterLeft.x,

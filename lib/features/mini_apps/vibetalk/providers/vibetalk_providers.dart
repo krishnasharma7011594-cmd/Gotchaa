@@ -16,7 +16,6 @@ import '../services/vibetalk_webrtc_service.dart';
 enum VibeTalkStatus { idle, matching, connected, disconnected }
 
 class VibeTalkState {
-
   const VibeTalkState({
     this.status = VibeTalkStatus.idle,
     this.roomId,
@@ -69,29 +68,32 @@ class VibeTalkState {
     int? lastSessionGamesPlayed,
     DateTime? sessionStartTime,
     int? currentSessionGamesPlayed,
-  }) => VibeTalkState(
-      status: status ?? this.status,
-      roomId: roomId ?? this.roomId,
-      isMuted: isMuted ?? this.isMuted,
-      partnerDisconnected: partnerDisconnected ?? this.partnerDisconnected,
-      currentUserId: currentUserId ?? this.currentUserId,
-      anonymousUsername: anonymousUsername ?? this.anonymousUsername,
-      isCaller: isCaller ?? this.isCaller,
-      activeGame: activeGame ?? this.activeGame,
-      matchCount: matchCount ?? this.matchCount,
-      isOnCooldown: isOnCooldown ?? this.isOnCooldown,
-      isVideo: isVideo ?? this.isVideo,
-      reconnectionState: reconnectionState ?? this.reconnectionState,
-      lastSessionDuration: lastSessionDuration ?? this.lastSessionDuration,
-      lastSessionGamesPlayed: lastSessionGamesPlayed ?? this.lastSessionGamesPlayed,
-      sessionStartTime: sessionStartTime ?? this.sessionStartTime,
-      currentSessionGamesPlayed: currentSessionGamesPlayed ?? this.currentSessionGamesPlayed,
-    );
+  }) =>
+      VibeTalkState(
+        status: status ?? this.status,
+        roomId: roomId ?? this.roomId,
+        isMuted: isMuted ?? this.isMuted,
+        partnerDisconnected: partnerDisconnected ?? this.partnerDisconnected,
+        currentUserId: currentUserId ?? this.currentUserId,
+        anonymousUsername: anonymousUsername ?? this.anonymousUsername,
+        isCaller: isCaller ?? this.isCaller,
+        activeGame: activeGame ?? this.activeGame,
+        matchCount: matchCount ?? this.matchCount,
+        isOnCooldown: isOnCooldown ?? this.isOnCooldown,
+        isVideo: isVideo ?? this.isVideo,
+        reconnectionState: reconnectionState ?? this.reconnectionState,
+        lastSessionDuration: lastSessionDuration ?? this.lastSessionDuration,
+        lastSessionGamesPlayed:
+            lastSessionGamesPlayed ?? this.lastSessionGamesPlayed,
+        sessionStartTime: sessionStartTime ?? this.sessionStartTime,
+        currentSessionGamesPlayed:
+            currentSessionGamesPlayed ?? this.currentSessionGamesPlayed,
+      );
 }
 
 class VibeTalkNotifier extends StateNotifier<VibeTalkState> {
-
-  VibeTalkNotifier(this.ref, this._webRTCService) : super(const VibeTalkState());
+  VibeTalkNotifier(this.ref, this._webRTCService)
+      : super(const VibeTalkState());
   final Ref ref;
   final VibeMatchService _matchService = VibeMatchService();
   final VibeWebRTCService _webRTCService;
@@ -100,7 +102,6 @@ class VibeTalkNotifier extends StateNotifier<VibeTalkState> {
   Future<void> startMatching({bool isVideo = false}) async {
     final currentUid = _matchService.uid;
     if (currentUid == 'unauthenticated') {
-      
       return;
     }
 
@@ -108,12 +109,12 @@ class VibeTalkNotifier extends StateNotifier<VibeTalkState> {
     final userProfile = ref.read(currentUserProfileProvider).asData?.value;
 
     state = state.copyWith(
-      status: VibeTalkStatus.matching, 
+      status: VibeTalkStatus.matching,
       isVideo: isVideo,
       currentUserId: currentUid,
       currentSessionGamesPlayed: 0, // Reset games played
     );
-    
+
     try {
       final result = await _matchService.findMatch(
         languageCode: currentLocale.languageCode,
@@ -123,31 +124,37 @@ class VibeTalkNotifier extends StateNotifier<VibeTalkState> {
         preferSameLanguage: true,
         preferSameContinent: false,
       );
-      
+
       state = state.copyWith(
-        status: VibeTalkStatus.connected, 
+        status: VibeTalkStatus.connected,
         roomId: result.roomId,
         isCaller: result.isCaller,
         sessionStartTime: DateTime.now(), // Set start time
       );
-      
+
       _listenToRoom(result.roomId);
-      await _webRTCService.init(result.roomId, currentUid, result.isCaller, isVideo);
+      await _webRTCService.init(
+          result.roomId, currentUid, result.isCaller, isVideo);
     } catch (e) {
-      
       state = state.copyWith(status: VibeTalkStatus.idle);
     }
   }
 
   void _listenToRoom(String roomId) {
-    _roomSub = FirebaseFirestore.instance.collection('vibetalk_rooms').doc(roomId).snapshots().listen((snap) {
+    _roomSub = FirebaseFirestore.instance
+        .collection('vibetalk_rooms')
+        .doc(roomId)
+        .snapshots()
+        .listen((snap) {
       if (snap.exists) {
         final data = snap.data();
         if (data != null) {
           state = state.copyWith(
             partnerDisconnected: data['status'] == 'ended',
             reconnectionState: data['reconnectionState'] ?? 'stable',
-            activeGame: data['activeGame'] != null ? VibeGameContext.fromMap(data['activeGame']) : null,
+            activeGame: data['activeGame'] != null
+                ? VibeGameContext.fromMap(data['activeGame'])
+                : null,
           );
         }
       } else {
@@ -166,13 +173,13 @@ class VibeTalkNotifier extends StateNotifier<VibeTalkState> {
     _webRTCService.dispose();
     _roomSub?.cancel();
     await _matchService.cancelMatch();
-    
-    final duration = state.sessionStartTime != null 
-        ? DateTime.now().difference(state.sessionStartTime!) 
+
+    final duration = state.sessionStartTime != null
+        ? DateTime.now().difference(state.sessionStartTime!)
         : Duration.zero;
-        
+
     final roomId = state.roomId;
-    
+
     state = state.copyWith(
       status: VibeTalkStatus.disconnected,
       lastSessionDuration: duration,
@@ -187,11 +194,11 @@ class VibeTalkNotifier extends StateNotifier<VibeTalkState> {
             .doc(roomId)
             .collection('messages')
             .get();
-            
+
         for (final doc in messages.docs) {
           await doc.reference.delete();
         }
-        
+
         await FirebaseFirestore.instance
             .collection('vibetalk_rooms')
             .doc(roomId)
@@ -206,7 +213,10 @@ class VibeTalkNotifier extends StateNotifier<VibeTalkState> {
   Future<void> submitGameAnswer(String answer) async {
     if (state.roomId == null) return;
     // Call Cloud Function to submit vote atomically
-    await FirebaseFirestore.instance.collection('vibetalk_rooms').doc(state.roomId).update({
+    await FirebaseFirestore.instance
+        .collection('vibetalk_rooms')
+        .doc(state.roomId)
+        .update({
       'activeGame.userAnswers.${state.currentUserId}': answer,
     });
   }
@@ -215,18 +225,25 @@ class VibeTalkNotifier extends StateNotifier<VibeTalkState> {
     final uid = state.currentUserId;
     if (state.roomId == null || uid == null) return;
     final game = VibeTalkGameService.getRandomGame(type, uid);
-    
+
     // Increment games played
-    state = state.copyWith(currentSessionGamesPlayed: state.currentSessionGamesPlayed + 1);
-    
-    await FirebaseFirestore.instance.collection('vibetalk_rooms').doc(state.roomId).update({
+    state = state.copyWith(
+        currentSessionGamesPlayed: state.currentSessionGamesPlayed + 1);
+
+    await FirebaseFirestore.instance
+        .collection('vibetalk_rooms')
+        .doc(state.roomId)
+        .update({
       'activeGame': game.toMap(),
     });
   }
 
   Future<void> endGame() async {
     if (state.roomId == null) return;
-    await FirebaseFirestore.instance.collection('vibetalk_rooms').doc(state.roomId).update({
+    await FirebaseFirestore.instance
+        .collection('vibetalk_rooms')
+        .doc(state.roomId)
+        .update({
       'activeGame': FieldValue.delete(),
     });
   }
@@ -258,14 +275,23 @@ class VibeTalkNotifier extends StateNotifier<VibeTalkState> {
 
 final vibeWebRTCServiceProvider = Provider((ref) => VibeWebRTCService());
 
-final vibeTalkProvider = StateNotifierProvider<VibeTalkNotifier, VibeTalkState>((ref) {
+final vibeTalkProvider =
+    StateNotifierProvider<VibeTalkNotifier, VibeTalkState>((ref) {
   // Watch auth state to ensure notifier is recreated on account switch
   ref.watch(authStateProvider);
   final service = ref.watch(vibeWebRTCServiceProvider);
   return VibeTalkNotifier(ref, service);
 });
-final vibeMessagesProvider = StreamProvider.autoDispose<List<VibeMessage>>((ref) {
+final vibeMessagesProvider =
+    StreamProvider.autoDispose<List<VibeMessage>>((ref) {
   final state = ref.watch(vibeTalkProvider);
   if (state.roomId == null) return Stream.value([]);
-  return FirebaseFirestore.instance.collection('vibetalk_rooms').doc(state.roomId).collection('messages').orderBy('timestamp', descending: true).snapshots().map((s) => s.docs.map((d) => VibeMessage.fromMap(d.data(), d.id)).toList());
+  return FirebaseFirestore.instance
+      .collection('vibetalk_rooms')
+      .doc(state.roomId)
+      .collection('messages')
+      .orderBy('timestamp', descending: true)
+      .snapshots()
+      .map((s) =>
+          s.docs.map((d) => VibeMessage.fromMap(d.data(), d.id)).toList());
 });

@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 class LocaleFontService {
   static TextStyle getFontStyle(BuildContext context, {TextStyle? baseStyle}) {
     final languageCode = Localizations.localeOf(context).languageCode;
-    
+
     final TextStyle style = baseStyle ?? const TextStyle();
 
     switch (languageCode) {
@@ -52,7 +52,6 @@ class LocaleFontService {
 }
 
 class LocaleAwareText extends StatelessWidget {
-
   const LocaleAwareText(
     this.text, {
     super.key,
@@ -69,10 +68,10 @@ class LocaleAwareText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-      text,
-      style: LocaleFontService.getFontStyle(context, baseStyle: style),
-      textAlign: textAlign,
-      overflow: overflow,
-      maxLines: maxLines,
-    );
+        text,
+        style: LocaleFontService.getFontStyle(context, baseStyle: style),
+        textAlign: textAlign,
+        overflow: overflow,
+        maxLines: maxLines,
+      );
 }

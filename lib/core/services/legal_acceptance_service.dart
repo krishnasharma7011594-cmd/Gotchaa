@@ -18,8 +18,10 @@ class LegalAcceptanceService {
       final data = Map<String, dynamic>.from(result.data as Map);
       return PolicyCheckResult(
         requiresReacceptance: data['requiresReacceptance'] as bool? ?? false,
-        requiredPrivacyVersion: data['requiredPrivacyVersion'] as String? ?? LegalConfig.privacyVersion,
-        requiredTermsVersion: data['requiredTermsVersion'] as String? ?? LegalConfig.termsVersion,
+        requiredPrivacyVersion: data['requiredPrivacyVersion'] as String? ??
+            LegalConfig.privacyVersion,
+        requiredTermsVersion:
+            data['requiredTermsVersion'] as String? ?? LegalConfig.termsVersion,
         acceptedPrivacyVersion: data['acceptedPrivacyVersion'] as String?,
         acceptedTermsVersion: data['acceptedTermsVersion'] as String?,
       );
@@ -38,7 +40,9 @@ class LegalAcceptanceService {
         'termsVersion': LegalConfig.termsVersion,
       });
     } catch (e) {
-      AppLogger.e('LegalAcceptanceService: recordLegalAcceptance failed, using Firestore fallback', e);
+      AppLogger.e(
+          'LegalAcceptanceService: recordLegalAcceptance failed, using Firestore fallback',
+          e);
       await _firestore.collection('users_private').doc(uid).set({
         'privacyPolicyVersion': LegalConfig.privacyVersion,
         'termsVersion': LegalConfig.termsVersion,

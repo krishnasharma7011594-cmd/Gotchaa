@@ -38,7 +38,6 @@ class DisappearingMessageService {
 
     final messageMap = message.toMap();
     if (!MessageFactory.isValid(messageMap)) {
-      
       throw Exception('Invalid message schema');
     }
 
@@ -62,7 +61,6 @@ class DisappearingMessageService {
         'reason': reason,
       });
     } catch (e) {
-      
       rethrow;
     }
   }
@@ -72,7 +70,8 @@ class DisappearingMessageService {
 class CountdownTimerService {
   factory CountdownTimerService() => _instance;
   CountdownTimerService._internal();
-  static final CountdownTimerService _instance = CountdownTimerService._internal();
+  static final CountdownTimerService _instance =
+      CountdownTimerService._internal();
 
   final Map<String, ValueNotifier<Duration>> _countdowns = {};
   Timer? _ticker;
@@ -91,7 +90,8 @@ class CountdownTimerService {
     });
   }
 
-  void registerCountdown(String messageId, DateTime expiresAt, ValueNotifier<Duration> notifier) {
+  void registerCountdown(
+      String messageId, DateTime expiresAt, ValueNotifier<Duration> notifier) {
     _countdowns[messageId] = notifier;
     if (_ticker == null || !_ticker!.isActive) startTicker();
   }
@@ -123,76 +123,84 @@ class MessagePolicyBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-      ),
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 60,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(height: 32),
-          const Text(
-            '🔥 Disappearing Messages',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          const SizedBox(height: 24),
-          const Text(
-            'Messages in Gotchaa automatically disappear after 24 hours.',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, height: 1.5, color: Colors.black87),
-          ),
-          const SizedBox(height: 24),
-          _policyItem(Icons.timer_rounded, 'Sent messages delete after 24 hours permanently'),
-          const SizedBox(height: 16),
-          _policyItem(Icons.security_rounded, 'We may retain data up to 24 hours for safety'),
-          const SizedBox(height: 16),
-          _policyItem(Icons.report_problem_rounded, 'Reported content stored for up to 30 days'),
-          const SizedBox(height: 40),
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.electricBlue,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              ),
-              child: const Text(
-                'Got it ✓',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 60,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
-    );
+            const SizedBox(height: 32),
+            const Text(
+              '🔥 Disappearing Messages',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Messages in Gotchaa automatically disappear after 24 hours.',
+              textAlign: TextAlign.center,
+              style:
+                  TextStyle(fontSize: 16, height: 1.5, color: Colors.black87),
+            ),
+            const SizedBox(height: 24),
+            _policyItem(Icons.timer_rounded,
+                'Sent messages delete after 24 hours permanently'),
+            const SizedBox(height: 16),
+            _policyItem(Icons.security_rounded,
+                'We may retain data up to 24 hours for safety'),
+            const SizedBox(height: 16),
+            _policyItem(Icons.report_problem_rounded,
+                'Reported content stored for up to 30 days'),
+            const SizedBox(height: 40),
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.electricBlue,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
+                ),
+                child: const Text(
+                  'Got it ✓',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.white),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      );
 
   Widget _policyItem(IconData icon, String text) => Row(
-      children: [
-        Icon(icon, size: 20, color: AppColors.electricBlue),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Text(
-            text,
-            style: const TextStyle(fontSize: 14, color: Colors.black54),
+        children: [
+          Icon(icon, size: 20, color: AppColors.electricBlue),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 14, color: Colors.black54),
+            ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
 }
 
 /// Static utility for precise client-side hiding

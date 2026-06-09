@@ -10,12 +10,11 @@ import 'camera_stream_painter.dart';
 
 /// ─────────────────────────────────────────────────────────────────────────────
 /// BeautyStreamPainter
-/// 
+///
 /// The production engine for Gotchaa beauty filters.
 /// Coordinates Face Detection landmarks with canvas-based regional filters.
 /// ─────────────────────────────────────────────────────────────────────────────
 class BeautyStreamPainter extends CameraStreamPainter {
-
   BeautyStreamPainter() {
     _loadShaders();
   }
@@ -31,16 +30,16 @@ class BeautyStreamPainter extends CameraStreamPainter {
 
   Future<void> _loadShaders() async {
     try {
-      final smoothProg = await ui.FragmentProgram.fromAsset('assets/shaders/beauty_smooth.frag');
+      final smoothProg = await ui.FragmentProgram.fromAsset(
+          'assets/shaders/beauty_smooth.frag');
       _smoothShader = smoothProg.fragmentShader();
-      
-      final colorProg = await ui.FragmentProgram.fromAsset('assets/shaders/beauty_color.frag');
+
+      final colorProg = await ui.FragmentProgram.fromAsset(
+          'assets/shaders/beauty_color.frag');
       _colorShader = colorProg.fragmentShader();
-      
+
       notifyListeners();
-    } catch (e) {
-      
-    }
+    } catch (e) {}
   }
 
   void updateSettings(BeautySettings settings) {
@@ -65,19 +64,21 @@ class BeautyStreamPainter extends CameraStreamPainter {
     for (final face in _faces!) {
       _renderFaceBeauty(canvas, frame, size, face);
     }
-    
+
     // 2. Global tone/lighting
     _applyGlobalEnhancements(canvas, size);
   }
 
-  void _renderFaceBeauty(ui.Canvas canvas, ui.Image frame, ui.Size size, Face face) {
+  void _renderFaceBeauty(
+      ui.Canvas canvas, ui.Image frame, ui.Size size, Face face) {
     if (_lastFaceSourceSize == null) return;
-    
+
     // Calculate the cover scale (same as in _DelegatePainter)
     // We assume the canvas is already rotated and translated to center
-    final bool rotated90 = (deviceOrientationDegrees % 180 != 0); // Simplified check
+    final bool rotated90 =
+        (deviceOrientationDegrees % 180 != 0); // Simplified check
     // Actually, we can just use frame and size directly
-    
+
     final double drawWidth = rotated90 ? size.height : size.width;
     final double drawHeight = rotated90 ? size.width : size.height;
 
@@ -128,7 +129,8 @@ class BeautyStreamPainter extends CameraStreamPainter {
     }
   }
 
-  void _applySkinSmoothing(ui.Canvas canvas, ui.Image frame, ui.Size size, Path skinPath, double finalW, double finalH) {
+  void _applySkinSmoothing(ui.Canvas canvas, ui.Image frame, ui.Size size,
+      Path skinPath, double finalW, double finalH) {
     if (_smoothShader == null) return;
 
     // Use a layer to mask the smoothing effect to just the skinPath
@@ -143,12 +145,14 @@ class BeautyStreamPainter extends CameraStreamPainter {
 
     final paint = Paint()..shader = _smoothShader;
     // Draw centered rect
-    canvas.drawRect(Rect.fromLTWH(-finalW / 2, -finalH / 2, finalW, finalH), paint);
-    
+    canvas.drawRect(
+        Rect.fromLTWH(-finalW / 2, -finalH / 2, finalW, finalH), paint);
+
     canvas.restore();
   }
 
-  void _drawMakeup(ui.Canvas canvas, Face face, Offset Function(math.Point<int>) mapPoint) {
+  void _drawMakeup(
+      ui.Canvas canvas, Face face, Offset Function(math.Point<int>) mapPoint) {
     // Lips
     final upperLip = face.contours[FaceContourType.upperLipTop];
     final lowerLip = face.contours[FaceContourType.lowerLipBottom];
@@ -157,7 +161,7 @@ class BeautyStreamPainter extends CameraStreamPainter {
       final lipPath = Path();
       final p1 = upperLip.points;
       final p2 = lowerLip.points;
-      
+
       final start = mapPoint(p1[0]);
       lipPath.moveTo(start.dx, start.dy);
       for (final p in p1) {
@@ -171,26 +175,37 @@ class BeautyStreamPainter extends CameraStreamPainter {
       lipPath.close();
 
       final paint = Paint()
-        ..color = const Color(0xFFFF1493).withValues(alpha: 0.2 * _settings.makeupIntensity)
+        ..color = const Color(0xFFFF1493)
+            .withValues(alpha: 0.2 * _settings.makeupIntensity)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
-      
+
       canvas.drawPath(lipPath, paint);
     }
 
     // Blush (Cheeks)
     final leftCheek = face.landmarks[FaceLandmarkType.leftCheek];
     final rightCheek = face.landmarks[FaceLandmarkType.rightCheek];
-    if (leftCheek != null && rightCheek != null && _settings.makeupIntensity > 0.5) {
+    if (leftCheek != null &&
+        rightCheek != null &&
+        _settings.makeupIntensity > 0.5) {
       final blushPaint = Paint()
-        ..color = const Color(0xFFFFB6C1).withValues(alpha: 0.1 * _settings.makeupIntensity)
+        ..color = const Color(0xFFFFB6C1)
+            .withValues(alpha: 0.1 * _settings.makeupIntensity)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 15);
-      
-      canvas.drawCircle(mapPoint(math.Point(leftCheek.position.x, leftCheek.position.y)), 30, blushPaint);
-      canvas.drawCircle(mapPoint(math.Point(rightCheek.position.x, rightCheek.position.y)), 30, blushPaint);
+
+      canvas.drawCircle(
+          mapPoint(math.Point(leftCheek.position.x, leftCheek.position.y)),
+          30,
+          blushPaint);
+      canvas.drawCircle(
+          mapPoint(math.Point(rightCheek.position.x, rightCheek.position.y)),
+          30,
+          blushPaint);
     }
   }
 
-  void _enhanceEyes(ui.Canvas canvas, Face face, Offset Function(math.Point<int>) mapPoint) {
+  void _enhanceEyes(
+      ui.Canvas canvas, Face face, Offset Function(math.Point<int>) mapPoint) {
     final leftEye = face.landmarks[FaceLandmarkType.leftEye];
     final rightEye = face.landmarks[FaceLandmarkType.rightEye];
 
@@ -201,10 +216,11 @@ class BeautyStreamPainter extends CameraStreamPainter {
     if (leftEye != null) {
       final p = mapPoint(math.Point(leftEye.position.x, leftEye.position.y));
       canvas.drawCircle(p, 8, paint);
-      
+
       // Catch light (Eye Pop)
       if (_settings.sharpness > 0.7) {
-        canvas.drawCircle(p.translate(-2, -2), 2, Paint()..color = Colors.white);
+        canvas.drawCircle(
+            p.translate(-2, -2), 2, Paint()..color = Colors.white);
       }
     }
     if (rightEye != null) {
@@ -212,7 +228,8 @@ class BeautyStreamPainter extends CameraStreamPainter {
       canvas.drawCircle(p, 8, paint);
 
       if (_settings.sharpness > 0.7) {
-        canvas.drawCircle(p.translate(-2, -2), 2, Paint()..color = Colors.white);
+        canvas.drawCircle(
+            p.translate(-2, -2), 2, Paint()..color = Colors.white);
       }
     }
   }
@@ -222,28 +239,50 @@ class BeautyStreamPainter extends CameraStreamPainter {
 
     // We apply distinct color profiles based on tone/lighting
     // Positive tone = Warm/Gold, Negative = Cool/Blue
-    final double rScale = 1.0 + (_settings.lighting * 0.15) + (_settings.tone > 0 ? _settings.tone * 0.2 : 0);
-    final double gScale = 1.0 + (_settings.lighting * 0.1) + (_settings.tone > 0 ? _settings.tone * 0.1 : 0);
-    final double bScale = 1.0 + (_settings.lighting * 0.05) + (_settings.tone < 0 ? _settings.tone.abs() * 0.3 : 0);
+    final double rScale = 1.0 +
+        (_settings.lighting * 0.15) +
+        (_settings.tone > 0 ? _settings.tone * 0.2 : 0);
+    final double gScale = 1.0 +
+        (_settings.lighting * 0.1) +
+        (_settings.tone > 0 ? _settings.tone * 0.1 : 0);
+    final double bScale = 1.0 +
+        (_settings.lighting * 0.05) +
+        (_settings.tone < 0 ? _settings.tone.abs() * 0.3 : 0);
 
     final List<double> matrix = [
-      rScale, 0.0, 0.0, 0.0, 0.0,
-      0.0, gScale, 0.0, 0.0, 0.0,
-      0.0, 0.0, bScale, 0.0, 0.0,
-      0.0, 0.0, 0.0, 1.0, 0.0,
+      rScale,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      gScale,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      bScale,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
     ];
 
     final paint = Paint()
       ..colorFilter = ColorFilter.matrix(matrix)
       ..blendMode = BlendMode.modulate;
-    
+
     // Draw over the whole frame to apply the tone
     // Since we are centered and potentially rotated, drawPaint is safest
     canvas.drawPaint(paint);
   }
 
   void _applyGlobalFallbacks(ui.Canvas canvas, ui.Image frame, ui.Size size) {
-     // If no face, we can apply very minimal global smoothing to stay efficient
-     // but the prompt says NO global filters. So if no face is detected, we draw nothing extra.
+    // If no face, we can apply very minimal global smoothing to stay efficient
+    // but the prompt says NO global filters. So if no face is detected, we draw nothing extra.
   }
 }

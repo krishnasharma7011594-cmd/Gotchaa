@@ -28,7 +28,8 @@ class FirestoreCostGuard {
   }
 
   void logExpensiveQuery(String name, int docCount) {
-    final msg = 'expensive_firestore_query:$name docs=$docCount session=$_sessionReads';
+    final msg =
+        'expensive_firestore_query:$name docs=$docCount session=$_sessionReads';
     AppLogger.i(msg);
     FirebaseCrashlytics.instance.log(msg);
   }

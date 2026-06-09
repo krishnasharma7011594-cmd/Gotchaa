@@ -21,7 +21,8 @@ class CirclesFirestoreService {
   void _incrementReads(int count) {
     _sessionReadCount += count;
     if (_sessionReadCount >= 1000) {
-      debugPrint('WARNING: Circles Firestore reads exceeded 1000! Throttling active.');
+      debugPrint(
+          'WARNING: Circles Firestore reads exceeded 1000! Throttling active.');
     }
   }
 
@@ -31,22 +32,24 @@ class CirclesFirestoreService {
   Future<bool> canCreateCircle() async {
     if (isThrottled) return false;
     final uid = currentUserId;
-    final snap = await _db.collection('circles')
+    final snap = await _db
+        .collection('circles')
         .where('hostId', isEqualTo: uid)
         .where('isActive', isEqualTo: true)
         .get();
-    
+
     _incrementReads(snap.docs.length);
     return snap.docs.length < 3;
   }
 
   // Create circle
   Future<CircleModel> createCircle(CircleModel circle) async {
-    if (isThrottled) throw Exception('Firestore queries throttled. Please try again later.');
+    if (isThrottled)
+      throw Exception('Firestore queries throttled. Please try again later.');
     final docRef = _db.collection('circles').doc();
     final newCircle = circle.copyWith(id: docRef.id, hostId: currentUserId);
     await docRef.set(newCircle.toMap());
-    
+
     // Add host as a confirmed member instantly
     await docRef.update({
       'memberIds': FieldValue.arrayUnion([currentUserId])
@@ -69,7 +72,9 @@ class CirclesFirestoreService {
 
     Query query = _db.collection('circles').where('isActive', isEqualTo: true);
 
-    if (categoryFilter != null && categoryFilter.isNotEmpty && categoryFilter != 'All') {
+    if (categoryFilter != null &&
+        categoryFilter.isNotEmpty &&
+        categoryFilter != 'All') {
       query = query.where('category', isEqualTo: categoryFilter);
     }
     if (cityFilter != null && cityFilter.isNotEmpty) {
@@ -85,7 +90,10 @@ class CirclesFirestoreService {
     final snap = await query.get();
     _incrementReads(snap.docs.length);
 
-    List<CircleModel> circles = snap.docs.map((doc) => CircleModel.fromMap(doc.data()! as Map<String, dynamic>, doc.id)).toList();
+    List<CircleModel> circles = snap.docs
+        .map((doc) =>
+            CircleModel.fromMap(doc.data()! as Map<String, dynamic>, doc.id))
+        .toList();
 
     // Client-side local search / hashtags support
     if (searchQuery != null && searchQuery.isNotEmpty) {
@@ -94,7 +102,8 @@ class CirclesFirestoreService {
       circles = circles.where((c) {
         if (isHashtag) {
           final cleanTag = queryLower.replaceAll('#', '');
-          return c.tags.any((t) => t.toLowerCase() == cleanTag) || c.category.toLowerCase() == cleanTag;
+          return c.tags.any((t) => t.toLowerCase() == cleanTag) ||
+              c.category.toLowerCase() == cleanTag;
         } else {
           return c.title.toLowerCase().contains(queryLower) ||
               c.description.toLowerCase().contains(queryLower) ||
@@ -109,13 +118,23 @@ class CirclesFirestoreService {
   // Onboarding profile storage
   Future<void> saveOnboarding(UserOnboarding onboarding) async {
     if (isThrottled) return;
-    await _db.collection('users').doc(currentUserId).collection('circles_profile').doc('onboarding').set(onboarding.toMap());
+    await _db
+        .collection('users')
+        .doc(currentUserId)
+        .collection('circles_profile')
+        .doc('onboarding')
+        .set(onboarding.toMap());
   }
 
   // Onboarding profile load
   Future<UserOnboarding?> loadOnboarding() async {
     if (isThrottled) return null;
-    final snap = await _db.collection('users').doc(currentUserId).collection('circles_profile').doc('onboarding').get();
+    final snap = await _db
+        .collection('users')
+        .doc(currentUserId)
+        .collection('circles_profile')
+        .doc('onboarding')
+        .get();
     _incrementReads(1);
     if (!snap.exists || snap.data() == null) return null;
     return UserOnboarding.fromMap(snap.data()!, currentUserId);
@@ -129,7 +148,7 @@ class CirclesFirestoreService {
     final userName = userSnap.data()?['displayName'] ?? 'New Member';
     final userAvatar = userSnap.data()?['photoUrl'] ?? '';
     final karma = userSnap.data()?['karmaScore'] ?? 10;
-    
+
     String tier = 'New';
     if (karma > 200) {
       tier = 'Verified';
@@ -173,35 +192,45 @@ class CirclesFirestoreService {
   // Streams join requests for host
   Stream<List<CircleJoinRequest>> streamHostRequests(String circleId) {
     if (isThrottled) return Stream.value([]);
-    return _db.collection('circle_join_requests')
+    return _db
+        .collection('circle_join_requests')
         .where('circleId', isEqualTo: circleId)
         .where('status', isEqualTo: 'pending')
         .snapshots()
         .map((snap) {
-          _incrementReads(snap.docs.length);
-          return snap.docs.map((doc) => CircleJoinRequest.fromMap(doc.data(), doc.id)).toList();
-        });
+      _incrementReads(snap.docs.length);
+      return snap.docs
+          .map((doc) => CircleJoinRequest.fromMap(doc.data(), doc.id))
+          .toList();
+    });
   }
 
   // Stream paginated messages (max 50 messages)
   Stream<List<CircleMessage>> streamChatMessages(String circleId) {
     if (isThrottled) return Stream.value([]);
-    return _db.collection('circles').doc(circleId).collection('messages')
+    return _db
+        .collection('circles')
+        .doc(circleId)
+        .collection('messages')
         .orderBy('timestamp', descending: true)
         .limit(50)
         .snapshots()
         .map((snap) {
-          _incrementReads(snap.docs.length);
-          final now = DateTime.now();
-          // Filter out expired TTL messages client-side
-          return snap.docs.map((doc) => CircleMessage.fromMap(doc.data(), doc.id)).where((m) => m.ttl.isAfter(now)).toList();
-        });
+      _incrementReads(snap.docs.length);
+      final now = DateTime.now();
+      // Filter out expired TTL messages client-side
+      return snap.docs
+          .map((doc) => CircleMessage.fromMap(doc.data(), doc.id))
+          .where((m) => m.ttl.isAfter(now))
+          .toList();
+    });
   }
 
   // Send message
-  Future<void> sendChatMessage(String circleId, String text, {Map<String, dynamic>? pinLocation}) async {
+  Future<void> sendChatMessage(String circleId, String text,
+      {Map<String, dynamic>? pinLocation}) async {
     if (isThrottled) return;
-    
+
     // Get sender info
     final userSnap = await _db.collection('users').doc(currentUserId).get();
     _incrementReads(1);
@@ -211,10 +240,13 @@ class CirclesFirestoreService {
     // Message expires 24 hours after the circle's event ends. Let's get circle details
     final circleSnap = await _db.collection('circles').doc(circleId).get();
     _incrementReads(1);
-    final eventDate = (circleSnap.data()?['eventDate'] as Timestamp?)?.toDate() ?? DateTime.now();
+    final eventDate =
+        (circleSnap.data()?['eventDate'] as Timestamp?)?.toDate() ??
+            DateTime.now();
     final ttl = eventDate.add(const Duration(hours: 24));
 
-    final docRef = _db.collection('circles').doc(circleId).collection('messages').doc();
+    final docRef =
+        _db.collection('circles').doc(circleId).collection('messages').doc();
     final msg = CircleMessage(
       messageId: docRef.id,
       chatId: circleId,

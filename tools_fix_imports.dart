@@ -16,7 +16,8 @@ void main() async {
               lastImportIndex = i;
             }
           }
-          lines.insert(lastImportIndex + 1, "import 'package:gotchaa/core/l10n/app_localizations_x.dart';");
+          lines.insert(lastImportIndex + 1,
+              "import 'package:gotchaa/core/l10n/app_localizations_x.dart';");
           await entity.writeAsString(lines.join('\n'));
           print('Patched: ${entity.path}');
           count++;

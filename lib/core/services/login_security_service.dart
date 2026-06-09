@@ -19,12 +19,16 @@ class LoginSecurityService {
 
     final deviceName = await _deviceName();
     try {
-      await FirebaseFunctions.instance.httpsCallable('recordLoginSession').call({
+      await FirebaseFunctions.instance
+          .httpsCallable('recordLoginSession')
+          .call({
         'deviceName': deviceName,
         'location': 'Detected on sign-in',
         'isCurrent': true,
       });
-      await FirebaseFunctions.instance.httpsCallable('sendLoginNotification').call({
+      await FirebaseFunctions.instance
+          .httpsCallable('sendLoginNotification')
+          .call({
         'deviceName': deviceName,
         'email': user.email,
       });

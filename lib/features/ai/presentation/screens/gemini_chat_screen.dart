@@ -19,10 +19,10 @@ class GeminiChatScreen extends ConsumerStatefulWidget {
 class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
+
   late final GenerativeModel _model;
   late final ChatSession _chatSession;
-  
+
   final List<Map<String, dynamic>> _messages = [];
   bool _isLoading = false;
   String? _error;
@@ -32,14 +32,15 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
     super.initState();
     _initGemini();
   }
-  
+
   void _initGemini() {
     const apiKey = AppConfig.geminiApiKey;
     if (apiKey.isEmpty) {
-      setState(() => _error = 'Gemini API Key missing. Build with --dart-define=GEMINI_API_KEY=your_key');
+      setState(() => _error =
+          'Gemini API Key missing. Build with --dart-define=GEMINI_API_KEY=your_key');
       return;
     }
-    
+
     _model = GenerativeModel(
       model: 'gemini-3-flash-preview',
       apiKey: apiKey,
@@ -48,12 +49,13 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
         'If a user asks about anything else, politely refuse by saying: "I can only help with Gotchaa questions."',
       ),
     );
-    
+
     _chatSession = _model.startChat();
-    
+
     _messages.add({
       'isUser': false,
-      'text': 'Hi there! I am your Gotchaa AI Assistant. How can I help you today?',
+      'text':
+          'Hi there! I am your Gotchaa AI Assistant. How can I help you today?',
       'time': DateTime.now(),
     });
   }
@@ -70,13 +72,14 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
       });
       _isLoading = true;
     });
-    
+
     _controller.clear();
     _scrollToBottom();
 
     try {
       final textLower = text.toLowerCase();
-      if (textLower.contains('open swiggy') || textLower.contains('i want food')) {
+      if (textLower.contains('open swiggy') ||
+          textLower.contains('i want food')) {
         setState(() {
           _messages.add({
             'isUser': false,
@@ -89,7 +92,8 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
         GotchaaRouter.openService(ServiceType.food);
         return;
       }
-      if (textLower.contains('open blinkit') || textLower.contains('groceries')) {
+      if (textLower.contains('open blinkit') ||
+          textLower.contains('groceries')) {
         setState(() {
           _messages.add({
             'isUser': false,
@@ -102,9 +106,12 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
         GotchaaRouter.openService(ServiceType.grocery);
         return;
       }
-      if (textLower.contains('book a ride') || textLower.contains('i need a cab') || 
-          textLower.contains('open uber') || textLower.contains('open rapido') || 
-          textLower.contains('rapido') || textLower.contains('bike taxi')) {
+      if (textLower.contains('book a ride') ||
+          textLower.contains('i need a cab') ||
+          textLower.contains('open uber') ||
+          textLower.contains('open rapido') ||
+          textLower.contains('rapido') ||
+          textLower.contains('bike taxi')) {
         setState(() {
           _messages.add({
             'isUser': false,
@@ -114,7 +121,7 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
           _isLoading = false;
         });
         _scrollToBottom();
-        
+
         if (textLower.contains('rapido')) {
           GotchaaRouter.openServiceById('rapido');
         } else {
@@ -122,7 +129,7 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
         }
         return;
       }
-      
+
       // New Intents
       if (textLower.contains('i want wraps') || textLower.contains('fassos')) {
         setState(() {
@@ -137,7 +144,8 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
         GotchaaRouter.openServiceById('fassos');
         return;
       }
-      if (textLower.contains('i need a doctor') || textLower.contains('practo')) {
+      if (textLower.contains('i need a doctor') ||
+          textLower.contains('practo')) {
         setState(() {
           _messages.add({
             'isUser': false,
@@ -150,7 +158,9 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
         GotchaaRouter.openServiceById('practo');
         return;
       }
-      if (textLower.contains('book a stay') || textLower.contains('oyo') || textLower.contains('airbnb')) {
+      if (textLower.contains('book a stay') ||
+          textLower.contains('oyo') ||
+          textLower.contains('airbnb')) {
         setState(() {
           _messages.add({
             'isUser': false,
@@ -191,10 +201,12 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
         return;
       }
 
-      final wrappedText = 'Only answer if this is about Gotchaa. Otherwise refuse.\n\nUser message: $text';
-      final response = await _chatSession.sendMessage(Content.text(wrappedText));
+      final wrappedText =
+          'Only answer if this is about Gotchaa. Otherwise refuse.\n\nUser message: $text';
+      final response =
+          await _chatSession.sendMessage(Content.text(wrappedText));
       final responseText = response.text;
-      
+
       if (responseText != null) {
         setState(() {
           _messages.add({
@@ -212,7 +224,7 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
       _handleError(e.toString());
     }
   }
-  
+
   void _handleError(String errorMsg) {
     setState(() {
       _messages.add({
@@ -242,7 +254,7 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
   Widget build(BuildContext context) {
     final themeState = ref.watch(themeProvider);
     final customTheme = AppTheme.fromGotchaaTheme(themeState.currentTheme);
-    
+
     return Theme(
       data: customTheme,
       child: Builder(builder: (chatContext) {
@@ -251,21 +263,25 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
             backgroundColor: chatContext.bg,
             appBar: AppBar(
               backgroundColor: chatContext.bg,
-              title: Text('Gotchaa Assistant', style: GoogleFonts.outfit(color: chatContext.textPrimary, fontWeight: FontWeight.bold)),
+              title: Text('Gotchaa Assistant',
+                  style: GoogleFonts.outfit(
+                      color: chatContext.textPrimary,
+                      fontWeight: FontWeight.bold)),
             ),
             body: Center(
               child: Text(_error!, style: const TextStyle(color: Colors.red)),
             ),
           );
         }
-        
+
         return Scaffold(
           backgroundColor: chatContext.bg,
           appBar: AppBar(
             backgroundColor: chatContext.bg,
             elevation: 0,
             leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios_new_rounded, color: chatContext.iconPrimary, size: 20),
+              icon: Icon(Icons.arrow_back_ios_new_rounded,
+                  color: chatContext.iconPrimary, size: 20),
               onPressed: () => Navigator.pop(context),
             ),
             title: Row(
@@ -276,7 +292,8 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
                     color: AppColors.electricBlue.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.auto_awesome_rounded, color: AppColors.electricBlue, size: 20),
+                  child: const Icon(Icons.auto_awesome_rounded,
+                      color: AppColors.electricBlue, size: 20),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -295,15 +312,17 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
               Expanded(
                 child: ListView.builder(
                   controller: _scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   itemCount: _messages.length,
                   itemBuilder: (context, index) {
                     final message = _messages[index];
                     final isUser = message['isUser'] as bool;
                     final text = message['text'] as String;
                     final isError = message['isError'] == true;
-                    
-                    return _buildMessageBubble(chatContext, isUser, text, isError);
+
+                    return _buildMessageBubble(
+                        chatContext, isUser, text, isError);
                   },
                 ),
               ),
@@ -316,10 +335,13 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
                       const SizedBox(
                         width: 16,
                         height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.electricBlue),
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: AppColors.electricBlue),
                       ),
                       const SizedBox(width: 8),
-                      Text('Assistant is thinking...', style: GoogleFonts.outfit(color: chatContext.textSecondary, fontSize: 12)),
+                      Text('Assistant is thinking...',
+                          style: GoogleFonts.outfit(
+                              color: chatContext.textSecondary, fontSize: 12)),
                     ],
                   ),
                 ),
@@ -331,10 +353,11 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
     );
   }
 
-  Widget _buildMessageBubble(BuildContext context, bool isUser, String text, bool isError) {
+  Widget _buildMessageBubble(
+      BuildContext context, bool isUser, String text, bool isError) {
     final themeState = ref.read(themeProvider);
     final radius = themeState.messageCornerRadius;
-    
+
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -344,9 +367,11 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
           maxWidth: MediaQuery.of(context).size.width * 0.75,
         ),
         decoration: BoxDecoration(
-          color: isUser 
-              ? AppColors.electricBlue 
-              : isError ? Colors.red.withValues(alpha: 0.1) : context.inputFill,
+          color: isUser
+              ? AppColors.electricBlue
+              : isError
+                  ? Colors.red.withValues(alpha: 0.1)
+                  : context.inputFill,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(radius),
             topRight: Radius.circular(radius),
@@ -357,9 +382,11 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
         child: Text(
           text,
           style: GoogleFonts.outfit(
-            color: isUser 
-                ? Colors.white 
-                : isError ? Colors.red : context.textPrimary,
+            color: isUser
+                ? Colors.white
+                : isError
+                    ? Colors.red
+                    : context.textPrimary,
             fontSize: 15,
           ),
         ),
@@ -368,56 +395,58 @@ class _GeminiChatScreenState extends ConsumerState<GeminiChatScreen> {
   }
 
   Widget _buildMessageInput(BuildContext context) => Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.bg,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Row(
-          children: [
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: context.inputFill,
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: TextField(
-                  controller: _controller,
-                  style: TextStyle(color: context.textPrimary),
-                  maxLines: 5,
-                  minLines: 1,
-                  decoration: InputDecoration(
-                    hintText: 'Message Assistant...',
-                    hintStyle: TextStyle(color: context.textHint),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  ),
-                  onSubmitted: (_) => _sendMessage(),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            GestureDetector(
-              onTap: _isLoading ? null : _sendMessage,
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: const BoxDecoration(
-                  color: AppColors.electricBlue,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
-              ),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.bg,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
             ),
           ],
         ),
-      ),
-    );
+        child: SafeArea(
+          child: Row(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: context.inputFill,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: TextField(
+                    controller: _controller,
+                    style: TextStyle(color: context.textPrimary),
+                    maxLines: 5,
+                    minLines: 1,
+                    decoration: InputDecoration(
+                      hintText: 'Message Assistant...',
+                      hintStyle: TextStyle(color: context.textHint),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
+                    ),
+                    onSubmitted: (_) => _sendMessage(),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: _isLoading ? null : _sendMessage,
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: const BoxDecoration(
+                    color: AppColors.electricBlue,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.send_rounded,
+                      color: Colors.white, size: 20),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
 }

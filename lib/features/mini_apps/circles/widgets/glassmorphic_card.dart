@@ -2,9 +2,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class GlassmorphicCard extends StatelessWidget {
-
   const GlassmorphicCard({
-    required this.child, super.key,
+    required this.child,
+    super.key,
     this.borderRadius = 24.0,
     this.blur = 15.0,
     this.borderGradients,
@@ -72,7 +72,6 @@ class GlassmorphicCard extends StatelessWidget {
 }
 
 class _GlassBorderPainter extends CustomPainter {
-
   _GlassBorderPainter({
     required this.borderRadius,
     required this.borderWidth,
@@ -86,7 +85,7 @@ class _GlassBorderPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
     final rrect = RRect.fromRectAndRadius(rect, Radius.circular(borderRadius));
-    
+
     final paint = Paint()
       ..strokeWidth = borderWidth
       ..style = PaintingStyle.stroke

@@ -1,17 +1,17 @@
 /// Firebase Remote Config Key: geo_policy_overrides
-/// 
+///
 /// This key allows updating regional policies without an app release.
-/// 
+///
 /// Expected Structure:
 /// {
 ///   "AE": { "allowLGBTQContent": false },
 ///   "US": { "allowLGBTQContent": true }
 /// }
 library;
+
 import 'geo_compliance_service.dart';
 
 class ContentPolicy {
-
   ContentPolicy({
     required this.allowLGBTQContent,
     required this.allowAlcoholReferences,
@@ -29,7 +29,7 @@ class ContentPolicy {
           allowDatingFeatures: false,
           allowGamblingContent: false,
         );
-      
+
       case ContentRegion.southeastAsia:
         // Conservative Southeast Asian countries (ID, MY, BN)
         return ContentPolicy(
@@ -38,7 +38,7 @@ class ContentPolicy {
           allowDatingFeatures: true, // Dating usually allowed but monitored
           allowGamblingContent: false,
         );
-        
+
       case ContentRegion.russia:
         return ContentPolicy(
           allowLGBTQContent: false, // "LGBT propaganda" law
@@ -46,7 +46,7 @@ class ContentPolicy {
           allowDatingFeatures: true,
           allowGamblingContent: false,
         );
-        
+
       case ContentRegion.china:
         return ContentPolicy(
           allowLGBTQContent: false,
@@ -54,7 +54,7 @@ class ContentPolicy {
           allowDatingFeatures: true,
           allowGamblingContent: false, // Gambling is illegal in mainland China
         );
-        
+
       case ContentRegion.global:
       default:
         return ContentPolicy(
@@ -76,10 +76,12 @@ class ContentPolicy {
     bool? allowAlcoholReferences,
     bool? allowDatingFeatures,
     bool? allowGamblingContent,
-  }) => ContentPolicy(
-      allowLGBTQContent: allowLGBTQContent ?? this.allowLGBTQContent,
-      allowAlcoholReferences: allowAlcoholReferences ?? this.allowAlcoholReferences,
-      allowDatingFeatures: allowDatingFeatures ?? this.allowDatingFeatures,
-      allowGamblingContent: allowGamblingContent ?? this.allowGamblingContent,
-    );
+  }) =>
+      ContentPolicy(
+        allowLGBTQContent: allowLGBTQContent ?? this.allowLGBTQContent,
+        allowAlcoholReferences:
+            allowAlcoholReferences ?? this.allowAlcoholReferences,
+        allowDatingFeatures: allowDatingFeatures ?? this.allowDatingFeatures,
+        allowGamblingContent: allowGamblingContent ?? this.allowGamblingContent,
+      );
 }

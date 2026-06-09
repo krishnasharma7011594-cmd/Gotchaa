@@ -7,14 +7,16 @@ library;
 
 /// Input validation result.
 class ValidationResult {
-
   /// Creates a validation result.
   ValidationResult({required this.isValid, this.error, this.sanitizedValue});
+
   /// Factory constructor for success.
-  factory ValidationResult.success({dynamic sanitizedValue}) => ValidationResult(isValid: true, sanitizedValue: sanitizedValue);
+  factory ValidationResult.success({dynamic sanitizedValue}) =>
+      ValidationResult(isValid: true, sanitizedValue: sanitizedValue);
 
   /// Factory constructor for failure.
-  factory ValidationResult.failure(String error) => ValidationResult(isValid: false, error: error);
+  factory ValidationResult.failure(String error) =>
+      ValidationResult(isValid: false, error: error);
 
   /// Whether validation passed.
   final bool isValid;
@@ -45,8 +47,7 @@ class InputValidator {
       return ValidationResult.failure('Email must be at most 254 characters');
     }
 
-    const emailRegex =
-        r'^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9]'
+    const emailRegex = r'^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9]'
         r'(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9]'
         r'(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$';
 
@@ -470,9 +471,8 @@ class PayloadValidator {
     Map<String, dynamic> payload,
     Set<String> allowedFields,
   ) {
-    final extraFields = payload.keys
-        .where((key) => !allowedFields.contains(key))
-        .toList();
+    final extraFields =
+        payload.keys.where((key) => !allowedFields.contains(key)).toList();
 
     if (extraFields.isNotEmpty) {
       return ValidationResult.failure(

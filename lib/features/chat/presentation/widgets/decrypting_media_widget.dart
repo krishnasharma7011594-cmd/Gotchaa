@@ -7,9 +7,13 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/security/encrypted_media_service.dart';
 
 class DecryptingMediaWidget extends StatefulWidget {
-
   const DecryptingMediaWidget({
-    required this.remoteUrl, required this.fileKey, required this.nonce, required this.fileName, required this.builder, super.key,
+    required this.remoteUrl,
+    required this.fileKey,
+    required this.nonce,
+    required this.fileName,
+    required this.builder,
+    super.key,
   });
   final String remoteUrl;
   final String fileKey;

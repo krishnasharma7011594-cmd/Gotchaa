@@ -31,8 +31,8 @@ class SavedPostsScreen extends ConsumerWidget {
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, 
-                color: isDark ? Colors.white : Colors.black, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+              color: isDark ? Colors.white : Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -100,14 +100,16 @@ class SavedPostsScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(context.tr('error_prefix', args: [e.toString()]))),
+        error: (e, _) => Center(
+            child: Text(context.tr('error_prefix', args: [e.toString()]))),
       ),
     );
   }
 
   Widget _buildPostItem(BuildContext context, PostModel post) {
-    final isVideo = post.mediaUrl.contains('.mp4') || post.mediaUrl.contains('video');
-    
+    final isVideo =
+        post.mediaUrl.contains('.mp4') || post.mediaUrl.contains('video');
+
     return GestureDetector(
       onTap: () {
         // Show post detail or navigate to post
@@ -123,14 +125,16 @@ class SavedPostsScreen extends ConsumerWidget {
             ),
             errorWidget: (context, url, error) => Container(
               color: Colors.black87,
-              child: const Icon(Icons.play_circle_outline, color: Colors.white, size: 32),
+              child: const Icon(Icons.play_circle_outline,
+                  color: Colors.white, size: 32),
             ),
           ),
           if (isVideo)
             const Positioned(
               top: 8,
               right: 8,
-              child: Icon(Icons.play_arrow_rounded, color: Colors.white, size: 20),
+              child:
+                  Icon(Icons.play_arrow_rounded, color: Colors.white, size: 20),
             ),
         ],
       ),

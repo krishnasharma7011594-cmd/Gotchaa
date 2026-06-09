@@ -14,7 +14,8 @@ void main() {
 
   setUp(() {
     mockAuthRepository = MockAuthRepository();
-    when(() => mockAuthRepository.authStateChanges).thenAnswer((_) => Stream.value(null));
+    when(() => mockAuthRepository.authStateChanges)
+        .thenAnswer((_) => Stream.value(null));
   });
 
   group('LoginScreen Tests', () {
@@ -25,24 +26,26 @@ void main() {
           authRepositoryProvider.overrideWithValue(mockAuthRepository),
         ],
       );
-      
+
       await tester.pumpAndSettle();
 
-      expect(find.byType(TextFormField), findsNWidgets(2)); // Email and Password
+      expect(
+          find.byType(TextFormField), findsNWidgets(2)); // Email and Password
       expect(find.text('Email address'), findsOneWidget);
       expect(find.text('Password'), findsOneWidget);
       expect(find.text('Google'), findsOneWidget);
       expect(find.text('Try Demo (No Sign In)'), findsOneWidget);
     });
 
-    testWidgets('Validation errors shown on empty submit', (WidgetTester tester) async {
+    testWidgets('Validation errors shown on empty submit',
+        (WidgetTester tester) async {
       await tester.pumpApp(
         const LoginScreen(),
         overrides: [
           authRepositoryProvider.overrideWithValue(mockAuthRepository),
         ],
       );
-      
+
       await tester.pumpAndSettle();
 
       // Tap Sign In
@@ -60,12 +63,12 @@ void main() {
           authRepositoryProvider.overrideWithValue(mockAuthRepository),
         ],
       );
-      
+
       await tester.pumpAndSettle();
 
       // Enter invalid email
       await tester.enterText(find.byType(TextFormField).first, 'invalid-email');
-      
+
       // Tap Sign In
       await tester.tap(find.text('Sign In'));
       await tester.pump();

@@ -9,7 +9,7 @@ export 'app_theme_model.dart';
 class AppTheme {
   static ThemeData fromGotchaaTheme(GotchaaThemeData theme) {
     final isDark = theme.brightness == Brightness.dark;
-    
+
     return ThemeData(
       useMaterial3: true,
       brightness: theme.brightness,
@@ -38,20 +38,24 @@ class AppTheme {
           fontSize: 18,
           fontWeight: FontWeight.w700,
         ),
-        systemOverlayStyle: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+        systemOverlayStyle:
+            isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       ),
       cardTheme: CardThemeData(
         color: theme.cardColor,
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(theme.cornerRadius)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(theme.cornerRadius)),
       ),
       dividerTheme: DividerThemeData(
         color: theme.dividerColor,
         thickness: 0.5,
       ),
       switchTheme: SwitchThemeData(
-        thumbColor: WidgetStateProperty.resolveWith((s) => 
-            s.contains(WidgetState.selected) ? theme.primaryColor : (isDark ? Colors.grey[600] : Colors.grey[400])),
+        thumbColor: WidgetStateProperty.resolveWith((s) =>
+            s.contains(WidgetState.selected)
+                ? theme.primaryColor
+                : (isDark ? Colors.grey[600] : Colors.grey[400])),
         trackColor: WidgetStateProperty.resolveWith((s) =>
             s.contains(WidgetState.selected)
                 ? theme.primaryColor.withValues(alpha: 0.3)
@@ -79,17 +83,25 @@ class AppTheme {
           backgroundColor: theme.primaryColor,
           foregroundColor: Colors.white,
           minimumSize: const Size(double.infinity, 56),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(theme.cornerRadius)),
-          textStyle: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w600),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(theme.cornerRadius)),
+          textStyle:
+              GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w600),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: theme.surfaceColor,
         indicatorColor: theme.primaryColor.withValues(alpha: 0.12),
-        iconTheme: WidgetStateProperty.resolveWith((s) =>
-            IconThemeData(color: s.contains(WidgetState.selected) ? theme.primaryColor : theme.textSecondary)),
+        iconTheme: WidgetStateProperty.resolveWith((s) => IconThemeData(
+            color: s.contains(WidgetState.selected)
+                ? theme.primaryColor
+                : theme.textSecondary)),
         labelTextStyle: WidgetStateProperty.resolveWith((s) =>
-            GoogleFonts.outfit(color: s.contains(WidgetState.selected) ? theme.primaryColor : theme.textSecondary, fontSize: 12)),
+            GoogleFonts.outfit(
+                color: s.contains(WidgetState.selected)
+                    ? theme.primaryColor
+                    : theme.textSecondary,
+                fontSize: 12)),
       ),
       textTheme: GoogleFonts.outfitTextTheme().apply(
         bodyColor: theme.textPrimary,
@@ -97,7 +109,8 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: isDark ? theme.cardColor : theme.textPrimary,
-        contentTextStyle: GoogleFonts.outfit(color: isDark ? theme.textPrimary : theme.backgroundColor),
+        contentTextStyle: GoogleFonts.outfit(
+            color: isDark ? theme.textPrimary : theme.backgroundColor),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         behavior: SnackBarBehavior.floating,
       ),
@@ -114,17 +127,31 @@ extension ThemeContext on BuildContext {
   Color get surface => theme.colorScheme.surface;
   Color get cardBg => theme.cardTheme.color ?? theme.colorScheme.surface;
   Color get divider => theme.dividerTheme.color ?? theme.dividerColor;
-  
-  Color get textPrimary => theme.textTheme.bodyLarge?.color ?? (theme.brightness == Brightness.dark ? Colors.white : Colors.black);
-  Color get textSecondary => theme.textTheme.bodyMedium?.color ?? (theme.brightness == Brightness.dark ? Colors.white70 : Colors.black87);
-  Color get textHint => theme.textTheme.bodySmall?.color ?? (theme.brightness == Brightness.dark ? Colors.white54 : Colors.black54);
-  
-  Color get iconPrimary => theme.iconTheme.color ?? (theme.brightness == Brightness.dark ? Colors.white : Colors.black);
+
+  Color get textPrimary =>
+      theme.textTheme.bodyLarge?.color ??
+      (theme.brightness == Brightness.dark ? Colors.white : Colors.black);
+  Color get textSecondary =>
+      theme.textTheme.bodyMedium?.color ??
+      (theme.brightness == Brightness.dark ? Colors.white70 : Colors.black87);
+  Color get textHint =>
+      theme.textTheme.bodySmall?.color ??
+      (theme.brightness == Brightness.dark ? Colors.white54 : Colors.black54);
+
+  Color get iconPrimary =>
+      theme.iconTheme.color ??
+      (theme.brightness == Brightness.dark ? Colors.white : Colors.black);
   Color get iconSecondary => iconPrimary.withOpacity(0.7);
   Color get iconMuted => iconPrimary.withOpacity(0.4);
-  
-  Color get inputFill => theme.inputDecorationTheme.fillColor ?? (theme.brightness == Brightness.dark ? Colors.white10 : Colors.grey[200]!);
-  
-  Color get shimmerBase => theme.brightness == Brightness.dark ? Colors.white10 : Colors.grey[300]!;
-  Color get shimmerHighlight => theme.brightness == Brightness.dark ? Colors.white24 : Colors.grey[100]!;
+
+  Color get inputFill =>
+      theme.inputDecorationTheme.fillColor ??
+      (theme.brightness == Brightness.dark
+          ? Colors.white10
+          : Colors.grey[200]!);
+
+  Color get shimmerBase =>
+      theme.brightness == Brightness.dark ? Colors.white10 : Colors.grey[300]!;
+  Color get shimmerHighlight =>
+      theme.brightness == Brightness.dark ? Colors.white24 : Colors.grey[100]!;
 }

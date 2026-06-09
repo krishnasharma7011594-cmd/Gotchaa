@@ -18,7 +18,8 @@ class TwoFactorService {
       if (trimmed == expected) return true;
     }
     try {
-      final res = await FirebaseFunctions.instance.httpsCallable('verify2FA').call({
+      final res =
+          await FirebaseFunctions.instance.httpsCallable('verify2FA').call({
         'code': trimmed,
       });
       final data = res.data as Map?;

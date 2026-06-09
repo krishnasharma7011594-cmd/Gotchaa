@@ -7,7 +7,8 @@ import '../../../../core/providers/vybz_providers.dart';
 import '../../../../core/utils/video_manager.dart';
 
 class VybzVideoPlayer extends ConsumerStatefulWidget {
-  const VybzVideoPlayer({required this.videoUrl, required this.vybzId, super.key});
+  const VybzVideoPlayer(
+      {required this.videoUrl, required this.vybzId, super.key});
   final String videoUrl;
   final String vybzId;
 
@@ -26,7 +27,8 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
   }
 
   Future<void> _initController() async {
-    final controller = await FeedVideoManager().getOrCreateController(widget.videoUrl);
+    final controller =
+        await FeedVideoManager().getOrCreateController(widget.videoUrl);
     if (!mounted) return;
     setState(() {
       _controller = controller;
@@ -53,7 +55,7 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
 
   @override
   void dispose() {
-    // ⚠️ CRITICAL: Do NOT dispose the controller here as the lifecycle 
+    // ⚠️ CRITICAL: Do NOT dispose the controller here as the lifecycle
     // is entirely controlled by FeedVideoManager pool to prevent OOM/ANRs
     super.dispose();
   }

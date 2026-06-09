@@ -21,28 +21,38 @@ class MultiverseARCameraScreen extends ConsumerStatefulWidget {
   const MultiverseARCameraScreen({super.key});
 
   @override
-  ConsumerState<MultiverseARCameraScreen> createState() => _MultiverseARCameraScreenState();
+  ConsumerState<MultiverseARCameraScreen> createState() =>
+      _MultiverseARCameraScreenState();
 }
 
-class _MultiverseARCameraScreenState extends ConsumerState<MultiverseARCameraScreen> with SingleTickerProviderStateMixin {
+class _MultiverseARCameraScreenState
+    extends ConsumerState<MultiverseARCameraScreen>
+    with SingleTickerProviderStateMixin {
   CameraController? _cameraController;
   List<CameraDescription> _cameras = [];
   bool _isCameraInitialized = false;
   bool _isRecording = false;
   final ImagePicker _picker = ImagePicker();
   String _activeMode = 'STORY'; // POST, STORY, REEL, LIVE
-  
+
   // Multiverse Styles
-  final List<String> _multiverseStyles = ['Glow Up', 'Dark Mode', 'Anime', 'Royal', 'Cyber'];
+  final List<String> _multiverseStyles = [
+    'Glow Up',
+    'Dark Mode',
+    'Anime',
+    'Royal',
+    'Cyber'
+  ];
   int _activeStyleIndex = 0;
-  
+
   // Animations
   late AnimationController _shutterController;
-  
+
   @override
   void initState() {
     super.initState();
-    _shutterController = AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    _shutterController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
     _initializeCamera();
   }
 
@@ -54,7 +64,7 @@ class _MultiverseARCameraScreenState extends ConsumerState<MultiverseARCameraScr
         final frontCamera = _cameras.firstWhere(
             (c) => c.lensDirection == CameraLensDirection.front,
             orElse: () => _cameras.first);
-            
+
         _cameraController = CameraController(
           frontCamera,
           ResolutionPreset.high,
@@ -71,9 +81,7 @@ class _MultiverseARCameraScreenState extends ConsumerState<MultiverseARCameraScr
           }
         }
       }
-    } catch (e) {
-      
-    }
+    } catch (e) {}
   }
 
   @override
@@ -90,7 +98,7 @@ class _MultiverseARCameraScreenState extends ConsumerState<MultiverseARCameraScr
     });
     // Trigger transition haptics/sounds here
   }
-  
+
   Future<void> _toggleRecording() async {
     final profile = ref.read(currentUserProfileProvider).asData?.value;
     if (profile?.isLimitedUser ?? false) {
@@ -99,26 +107,26 @@ class _MultiverseARCameraScreenState extends ConsumerState<MultiverseARCameraScr
     }
 
     if (_isRecording) {
-      setState(() { _isRecording = false; });
+      setState(() {
+        _isRecording = false;
+      });
       _shutterController.stop();
       _shutterController.reset();
-      
+
       try {
         final XFile? videoFile = await _cameraController?.stopVideoRecording();
         if (videoFile != null) {
-           _processAndUploadVybz(videoFile, profile);
+          _processAndUploadVybz(videoFile, profile);
         }
-      } catch (e) {
-        
-      }
+      } catch (e) {}
     } else {
       try {
         await _cameraController?.startVideoRecording();
-        setState(() { _isRecording = true; });
+        setState(() {
+          _isRecording = true;
+        });
         _shutterController.repeat(reverse: true);
-      } catch (e) {
-        
-      }
+      } catch (e) {}
     }
   }
 
@@ -138,9 +146,7 @@ class _MultiverseARCameraScreenState extends ConsumerState<MultiverseARCameraScr
           _processAndUploadImage(media, profile);
         }
       }
-    } catch (e) {
-      
-    }
+    } catch (e) {}
   }
 
   Future<void> _processAndUploadImage(XFile file, UserProfile? profile) async {
@@ -153,9 +159,11 @@ class _MultiverseARCameraScreenState extends ConsumerState<MultiverseARCameraScr
     );
 
     try {
-      final storageRef = FirebaseStorage.instance.ref().child('vybz/${profile.uid}/${DateTime.now().millisecondsSinceEpoch}.jpg');
+      final storageRef = FirebaseStorage.instance.ref().child(
+          'vybz/${profile.uid}/${DateTime.now().millisecondsSinceEpoch}.jpg');
       final bytes = await file.readAsBytes();
-      await storageRef.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
+      await storageRef.putData(
+          bytes, SettableMetadata(contentType: 'image/jpeg'));
       final downloadUrl = await storageRef.getDownloadURL();
 
       final vybz = VybzModel(
@@ -190,50 +198,50 @@ class _MultiverseARCameraScreenState extends ConsumerState<MultiverseARCameraScr
   }
 
   Widget _buildLoadingOverlay(String message) => Center(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-          child: Container(
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.8),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const CircularProgressIndicator(color: AppColors.primaryGlow),
-                const SizedBox(height: 24),
-                Text(
-                  message,
-                  style: GoogleFonts.outfit(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.none,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+            child: Container(
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: Colors.white.withOpacity(0.1)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(color: AppColors.primaryGlow),
+                  const SizedBox(height: 24),
+                  Text(
+                    message,
+                    style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.none,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Optimizing for the Multiverse',
-                  style: GoogleFonts.inter(
-                    color: Colors.white70,
-                    fontSize: 14,
-                    decoration: TextDecoration.none,
+                  const SizedBox(height: 8),
+                  Text(
+                    'Optimizing for the Multiverse',
+                    style: GoogleFonts.inter(
+                      color: Colors.white70,
+                      fontSize: 14,
+                      decoration: TextDecoration.none,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
 
   Future<void> _processAndUploadVybz(XFile file, UserProfile? profile) async {
     if (profile == null) return;
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -253,8 +261,10 @@ class _MultiverseARCameraScreenState extends ConsumerState<MultiverseARCameraScr
       final bytes = await fileToUpload.readAsBytes();
 
       // 2. Upload to Storage
-      final storageRef = FirebaseStorage.instance.ref().child('vybz/${profile.uid}/${DateTime.now().millisecondsSinceEpoch}.mp4');
-      await storageRef.putData(bytes, SettableMetadata(contentType: 'video/mp4'));
+      final storageRef = FirebaseStorage.instance.ref().child(
+          'vybz/${profile.uid}/${DateTime.now().millisecondsSinceEpoch}.mp4');
+      await storageRef.putData(
+          bytes, SettableMetadata(contentType: 'video/mp4'));
       final downloadUrl = await storageRef.getDownloadURL();
 
       // Cleanup
@@ -266,7 +276,8 @@ class _MultiverseARCameraScreenState extends ConsumerState<MultiverseARCameraScr
         creatorUsername: profile.username,
         creatorPhoto: profile.photoUrl ?? '',
         videoUrl: downloadUrl,
-        caption: 'Exploring the ${_multiverseStyles[_activeStyleIndex]} Multiverse! ✨',
+        caption:
+            'Exploring the ${_multiverseStyles[_activeStyleIndex]} Multiverse! ✨',
         likesCount: 0,
         tips: 0,
         createdAt: DateTime.now(),
@@ -299,7 +310,8 @@ class _MultiverseARCameraScreenState extends ConsumerState<MultiverseARCameraScr
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Recording Restricted',
-          style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
+          style: GoogleFonts.outfit(
+              color: Colors.white, fontWeight: FontWeight.bold),
         ),
         content: Text(
           'AR recording and posting are restricted for limited users. Enter an invite code to unlock!',
@@ -323,7 +335,8 @@ class _MultiverseARCameraScreenState extends ConsumerState<MultiverseARCameraScr
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blueAccent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
             child: const Text('Unlock'),
           ),
@@ -334,303 +347,353 @@ class _MultiverseARCameraScreenState extends ConsumerState<MultiverseARCameraScr
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      backgroundColor: AppColors.black,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // 1. Camera View or Mock AR View
-          if (_isCameraInitialized && _cameraController != null)
-            Transform.scale(
-              scale: _cameraController!.value.isInitialized 
-                ? _cameraController!.value.aspectRatio * MediaQuery.of(context).size.aspectRatio
-                : 1.0,
-              child: Center(
-                child: CameraPreview(_cameraController!),
-              ),
-            )
-          else
-            Container( // Mock View if camera fails or is loading
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    AppColors.darkBg,
-                    _getStyleColor().withOpacity(0.3),
-                  ],
+        backgroundColor: AppColors.black,
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            // 1. Camera View or Mock AR View
+            if (_isCameraInitialized && _cameraController != null)
+              Transform.scale(
+                scale: _cameraController!.value.isInitialized
+                    ? _cameraController!.value.aspectRatio *
+                        MediaQuery.of(context).size.aspectRatio
+                    : 1.0,
+                child: Center(
+                  child: CameraPreview(_cameraController!),
                 ),
-              ),
-              child: const Center(
-                child: CircularProgressIndicator(color: AppColors.primaryGlow),
-              ),
-            ),
-            
-          // AR Effects Overlay Simulation
-          Positioned.fill(
-             child: AnimatedContainer(
-               duration: const Duration(milliseconds: 600),
-               curve: Curves.easeInOutCubic,
-               decoration: BoxDecoration(
-                 boxShadow: [
-                   BoxShadow(
-                     color: _getStyleColor().withOpacity(0.15),
-                     blurRadius: 100,
-                     spreadRadius: 20,
-                   )
-                 ]
-               ),
-             ),
-          ),
-
-          // 2. Top Bar (Controls)
-          Positioned(
-            top: 50,
-            left: 20,
-            right: 20,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white, size: 28),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white.withOpacity(0.2)),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.auto_awesome, color: AppColors.primaryGlow, size: 20),
-                      const SizedBox(width: 8),
-                      Text('Multiverse Mirror', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+              )
+            else
+              Container(
+                // Mock View if camera fails or is loading
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      AppColors.darkBg,
+                      _getStyleColor().withOpacity(0.3),
                     ],
                   ),
-                ).animate().fade().slideY(begin: -0.5),
-                IconButton(
-                  icon: const Icon(Icons.flip_camera_ios, color: Colors.white, size: 28),
-                  onPressed: () {
-                    // Switch camera logic
-                  },
                 ),
-              ],
-            ),
-          ),
-
-          // 3. Interactive Controls Hints
-          Positioned(
-            top: 150,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.2),
-                      border: Border.all(color: Colors.white.withOpacity(0.1)),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Column(
-                      children: [
-                        Text('Blink to switch version', style: GoogleFonts.outfit(color: Colors.white70, fontSize: 14)),
-                        const SizedBox(height: 4),
-                        Text('Smile to transform', style: GoogleFonts.outfit(color: Colors.white70, fontSize: 14)),
-                      ],
-                    ),
-                  ),
+                child: const Center(
+                  child:
+                      CircularProgressIndicator(color: AppColors.primaryGlow),
                 ),
-              ).animate(onPlay: (controller) => controller.repeat(reverse: true))
-               .fadeIn(duration: 1.seconds).then(delay: 2.seconds).fadeOut(duration: 1.seconds),
-            ),
-          ),
+              ),
 
-          // 4. Multiverse Selector Carousel
-          Positioned(
-            bottom: 150,
-            left: 0,
-            right: 0,
-            child: SizedBox(
-              height: 80,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                itemCount: _multiverseStyles.length,
-                itemBuilder: (context, index) {
-                  final isActive = _activeStyleIndex == index;
-                  return GestureDetector(
-                    onTap: () => _switchStyle(index),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                      width: isActive ? 80 : 60,
-                      height: isActive ? 80 : 60,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isActive ? _getStyleColor() : Colors.white.withOpacity(0.3),
-                          width: isActive ? 3 : 1,
-                        ),
-                        boxShadow: isActive ? [
-                          BoxShadow(color: _getStyleColor().withOpacity(0.5), blurRadius: 15, spreadRadius: 5)
-                        ] : [],
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                             _getStyleColor(index).withOpacity(0.8),
-                             Colors.black54,
-                          ]
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          _multiverseStyles[index].split(' ').first,
-                          style: GoogleFonts.outfit(
-                            color: isActive ? Colors.white : Colors.white.withOpacity(0.5),
-                            fontWeight: FontWeight.bold,
-                            fontSize: isActive ? 12 : 10,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  );
-                },
+            // AR Effects Overlay Simulation
+            Positioned.fill(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 600),
+                curve: Curves.easeInOutCubic,
+                decoration: BoxDecoration(boxShadow: [
+                  BoxShadow(
+                    color: _getStyleColor().withOpacity(0.15),
+                    blurRadius: 100,
+                    spreadRadius: 20,
+                  )
+                ]),
               ),
             ),
-          ),
 
-          // 5. Shutter Area & Gallery
-          Positioned(
-            bottom: 60,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                // Gallery Icon
-                GestureDetector(
-                  onTap: _pickFromGallery,
-                  child: Container(
-                    width: 45,
-                    height: 45,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.white.withOpacity(0.3), width: 2),
-                    ),
-                    child: const Icon(Icons.photo_library, color: Colors.white, size: 24),
+            // 2. Top Bar (Controls)
+            Positioned(
+              top: 50,
+              left: 20,
+              right: 20,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon:
+                        const Icon(Icons.close, color: Colors.white, size: 28),
+                    onPressed: () => Navigator.pop(context),
                   ),
-                ),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.4),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.auto_awesome,
+                            color: AppColors.primaryGlow, size: 20),
+                        const SizedBox(width: 8),
+                        Text('Multiverse Mirror',
+                            style: GoogleFonts.outfit(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ).animate().fade().slideY(begin: -0.5),
+                  IconButton(
+                    icon: const Icon(Icons.flip_camera_ios,
+                        color: Colors.white, size: 28),
+                    onPressed: () {
+                      // Switch camera logic
+                    },
+                  ),
+                ],
+              ),
+            ),
 
-                // Shutter Button
-                GestureDetector(
-                  onTap: _toggleRecording,
-                  child: AnimatedBuilder(
-                    animation: _shutterController,
-                    builder: (context, child) => Container(
-                        width: 80 + (_shutterController.value * 10),
-                        height: 80 + (_shutterController.value * 10),
+            // 3. Interactive Controls Hints
+            Positioned(
+              top: 150,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.2),
+                        border:
+                            Border.all(color: Colors.white.withOpacity(0.1)),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Column(
+                        children: [
+                          Text('Blink to switch version',
+                              style: GoogleFonts.outfit(
+                                  color: Colors.white70, fontSize: 14)),
+                          const SizedBox(height: 4),
+                          Text('Smile to transform',
+                              style: GoogleFonts.outfit(
+                                  color: Colors.white70, fontSize: 14)),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+                    .animate(
+                        onPlay: (controller) =>
+                            controller.repeat(reverse: true))
+                    .fadeIn(duration: 1.seconds)
+                    .then(delay: 2.seconds)
+                    .fadeOut(duration: 1.seconds),
+              ),
+            ),
+
+            // 4. Multiverse Selector Carousel
+            Positioned(
+              bottom: 150,
+              left: 0,
+              right: 0,
+              child: SizedBox(
+                height: 80,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  itemCount: _multiverseStyles.length,
+                  itemBuilder: (context, index) {
+                    final isActive = _activeStyleIndex == index;
+                    return GestureDetector(
+                      onTap: () => _switchStyle(index),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        width: isActive ? 80 : 60,
+                        height: isActive ? 80 : 60,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: _isRecording ? AppColors.error : Colors.white, width: 4),
-                          boxShadow: _isRecording ? [
-                            BoxShadow(color: AppColors.error.withOpacity(0.6), blurRadius: 20, spreadRadius: 5)
-                          ] : [],
+                          border: Border.all(
+                            color: isActive
+                                ? _getStyleColor()
+                                : Colors.white.withOpacity(0.3),
+                            width: isActive ? 3 : 1,
+                          ),
+                          boxShadow: isActive
+                              ? [
+                                  BoxShadow(
+                                      color: _getStyleColor().withOpacity(0.5),
+                                      blurRadius: 15,
+                                      spreadRadius: 5)
+                                ]
+                              : [],
+                          gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                _getStyleColor(index).withOpacity(0.8),
+                                Colors.black54,
+                              ]),
                         ),
                         child: Center(
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            width: _isRecording ? 30 : 65,
-                            height: _isRecording ? 30 : 65,
-                            decoration: BoxDecoration(
-                              color: _isRecording ? AppColors.error : AppColors.error.withOpacity(0.8),
-                              borderRadius: BorderRadius.circular(_isRecording ? 8 : 40),
+                          child: Text(
+                            _multiverseStyles[index].split(' ').first,
+                            style: GoogleFonts.outfit(
+                              color: isActive
+                                  ? Colors.white
+                                  : Colors.white.withOpacity(0.5),
+                              fontWeight: FontWeight.bold,
+                              fontSize: isActive ? 12 : 10,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+
+            // 5. Shutter Area & Gallery
+            Positioned(
+              bottom: 60,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Gallery Icon
+                  GestureDetector(
+                    onTap: _pickFromGallery,
+                    child: Container(
+                      width: 45,
+                      height: 45,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                            color: Colors.white.withOpacity(0.3), width: 2),
+                      ),
+                      child: const Icon(Icons.photo_library,
+                          color: Colors.white, size: 24),
+                    ),
+                  ),
+
+                  // Shutter Button
+                  GestureDetector(
+                    onTap: _toggleRecording,
+                    child: AnimatedBuilder(
+                        animation: _shutterController,
+                        builder: (context, child) => Container(
+                              width: 80 + (_shutterController.value * 10),
+                              height: 80 + (_shutterController.value * 10),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                    color: _isRecording
+                                        ? AppColors.error
+                                        : Colors.white,
+                                    width: 4),
+                                boxShadow: _isRecording
+                                    ? [
+                                        BoxShadow(
+                                            color: AppColors.error
+                                                .withOpacity(0.6),
+                                            blurRadius: 20,
+                                            spreadRadius: 5)
+                                      ]
+                                    : [],
+                              ),
+                              child: Center(
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  width: _isRecording ? 30 : 65,
+                                  height: _isRecording ? 30 : 65,
+                                  decoration: BoxDecoration(
+                                    color: _isRecording
+                                        ? AppColors.error
+                                        : AppColors.error.withOpacity(0.8),
+                                    borderRadius: BorderRadius.circular(
+                                        _isRecording ? 8 : 40),
+                                  ),
+                                ),
+                              ),
+                            )),
+                  ),
+
+                  // Flip Camera
+                  GestureDetector(
+                    onTap: () {
+                      // Logic to flip camera
+                    },
+                    child: Container(
+                      width: 45,
+                      height: 45,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.flip_camera_ios,
+                          color: Colors.white, size: 24),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // 6. Instagram Style Mode Selector
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black.withOpacity(0.6)],
+                  ),
+                ),
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  children: ['POST', 'STORY', 'REEL', 'LIVE'].map((mode) {
+                    final isSelected = _activeMode == mode;
+                    return GestureDetector(
+                      onTap: () => setState(() => _activeMode = mode),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Text(
+                            mode,
+                            style: GoogleFonts.outfit(
+                              color: isSelected ? Colors.white : Colors.white60,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              fontSize: 14,
+                              letterSpacing: 1.2,
                             ),
                           ),
                         ),
-                      )
-                  ),
-                ),
-
-                // Flip Camera
-                GestureDetector(
-                  onTap: () {
-                    // Logic to flip camera
-                  },
-                  child: Container(
-                    width: 45,
-                    height: 45,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.flip_camera_ios, color: Colors.white, size: 24),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // 6. Instagram Style Mode Selector
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 50,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.6)],
-                ),
-              ),
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                children: ['POST', 'STORY', 'REEL', 'LIVE'].map((mode) {
-                  final isSelected = _activeMode == mode;
-                  return GestureDetector(
-                    onTap: () => setState(() => _activeMode = mode),
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: Text(
-                          mode,
-                          style: GoogleFonts.outfit(
-                            color: isSelected ? Colors.white : Colors.white60,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            fontSize: 14,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
 
   Color _getStyleColor([int? index]) {
     final styleIndex = index ?? _activeStyleIndex;
     switch (styleIndex) {
-      case 0: return AppColors.karmaAura; // Glow Up
-      case 1: return Colors.deepPurple;    // Dark Mode
-      case 2: return Colors.pinkAccent;    // Anime
-      case 3: return Colors.amber;         // Royal
-      case 4: return AppColors.primaryGlow;// Cyber
-      default: return Colors.white;
+      case 0:
+        return AppColors.karmaAura; // Glow Up
+      case 1:
+        return Colors.deepPurple; // Dark Mode
+      case 2:
+        return Colors.pinkAccent; // Anime
+      case 3:
+        return Colors.amber; // Royal
+      case 4:
+        return AppColors.primaryGlow; // Cyber
+      default:
+        return Colors.white;
     }
   }
 }

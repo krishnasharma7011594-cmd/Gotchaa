@@ -11,9 +11,9 @@ import '../../../core/theme/app_colors.dart';
 // ══════════════════════════════════════════════════════════════════════════════
 
 class CountrySelectorWidget extends ConsumerWidget {
-
   const CountrySelectorWidget({
-    required this.onChanged, super.key,
+    required this.onChanged,
+    super.key,
     this.preselected,
     this.isRequired = true,
   });
@@ -133,7 +133,6 @@ class CountrySelectorWidget extends ConsumerWidget {
 // ══════════════════════════════════════════════════════════════════════════════
 
 class CountryPickerBottomSheet extends StatefulWidget {
-
   const CountryPickerBottomSheet({super.key, this.initialSelection});
   final NationData? initialSelection;
 
@@ -237,8 +236,8 @@ class _CountryPickerBottomSheetState extends State<CountryPickerBottomSheet> {
                     Icon(Icons.search_rounded, color: Colors.grey.shade400),
                 suffixIcon: _query.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear_rounded,
-                            color: Colors.grey),
+                        icon:
+                            const Icon(Icons.clear_rounded, color: Colors.grey),
                         onPressed: () {
                           _searchController.clear();
                           _onSearch('');
@@ -247,8 +246,8 @@ class _CountryPickerBottomSheetState extends State<CountryPickerBottomSheet> {
                     : null,
                 filled: true,
                 fillColor: Colors.grey.shade100,
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 12),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide.none,
@@ -284,7 +283,6 @@ class _CountryPickerBottomSheetState extends State<CountryPickerBottomSheet> {
 }
 
 class _CountryTile extends StatelessWidget {
-
   const _CountryTile({
     required this.nation,
     required this.isSelected,
@@ -296,46 +294,46 @@ class _CountryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        color: isSelected
-            ? AppColors.electricBlue.withOpacity(0.05)
-            : Colors.transparent,
-        child: Row(
-          children: [
-            Text(nation.flag, style: const TextStyle(fontSize: 24)),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    nation.countryName,
-                    style: GoogleFonts.outfit(
-                      fontSize: 15,
-                      fontWeight:
-                          isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected
-                          ? AppColors.electricBlue
-                          : Colors.black87,
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          color: isSelected
+              ? AppColors.electricBlue.withOpacity(0.05)
+              : Colors.transparent,
+          child: Row(
+            children: [
+              Text(nation.flag, style: const TextStyle(fontSize: 24)),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      nation.countryName,
+                      style: GoogleFonts.outfit(
+                        fontSize: 15,
+                        fontWeight:
+                            isSelected ? FontWeight.w700 : FontWeight.w500,
+                        color: isSelected
+                            ? AppColors.electricBlue
+                            : Colors.black87,
+                      ),
                     ),
-                  ),
-                  Text(
-                    nation.continent,
-                    style: GoogleFonts.outfit(
-                        fontSize: 12, color: Colors.grey.shade500),
-                  ),
-                ],
+                    Text(
+                      nation.continent,
+                      style: GoogleFonts.outfit(
+                          fontSize: 12, color: Colors.grey.shade500),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            if (isSelected)
-              const Icon(Icons.check_circle_rounded,
-                  color: AppColors.electricBlue, size: 20),
-          ],
+              if (isSelected)
+                const Icon(Icons.check_circle_rounded,
+                    color: AppColors.electricBlue, size: 20),
+            ],
+          ),
         ),
-      ),
-    );
+      );
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -343,7 +341,6 @@ class _CountryTile extends StatelessWidget {
 // ══════════════════════════════════════════════════════════════════════════════
 
 class NationProfileBadge extends StatelessWidget {
-
   const NationProfileBadge({
     super.key,
     this.homeCountryCode,
@@ -367,7 +364,9 @@ class NationProfileBadge extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         _ContinentChip(nation: home),
-        if (isTravelling && current != null && current.countryCode != home.countryCode) ...[
+        if (isTravelling &&
+            current != null &&
+            current.countryCode != home.countryCode) ...[
           const SizedBox(width: 8),
           _TravellingChip(currentNation: current),
         ],
@@ -382,27 +381,27 @@ class _ContinentChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: _hexToColor(nation.continentColorHex),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(nation.flag, style: const TextStyle(fontSize: 14)),
-          const SizedBox(width: 6),
-          Text(
-            '${nation.countryName} • ${nation.continent}',
-            style: GoogleFonts.outfit(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: _hexToColor(nation.continentColorHex),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(nation.flag, style: const TextStyle(fontSize: 14)),
+            const SizedBox(width: 6),
+            Text(
+              '${nation.countryName} • ${nation.continent}',
+              style: GoogleFonts.outfit(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
 }
 
 class _TravellingChip extends StatelessWidget {
@@ -411,28 +410,28 @@ class _TravellingChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: Colors.orange.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.orange.withOpacity(0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('✈️', style: TextStyle(fontSize: 12)),
-          const SizedBox(width: 4),
-          Text(
-            'In ${currentNation.flag} ${currentNation.countryName}',
-            style: GoogleFonts.outfit(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.orange.shade800,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: Colors.orange.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.orange.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('✈️', style: TextStyle(fontSize: 12)),
+            const SizedBox(width: 4),
+            Text(
+              'In ${currentNation.flag} ${currentNation.countryName}',
+              style: GoogleFonts.outfit(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.orange.shade800,
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -440,7 +439,6 @@ class _TravellingChip extends StatelessWidget {
 // ══════════════════════════════════════════════════════════════════════════════
 
 class NationPostBadge extends StatelessWidget {
-
   const NationPostBadge({super.key, this.countryCode});
   final String? countryCode;
 
@@ -472,12 +470,13 @@ class NationPostBadge extends StatelessWidget {
 // ══════════════════════════════════════════════════════════════════════════════
 
 class StrangerNationBadge extends StatelessWidget {
-
   const StrangerNationBadge({
-    required this.displayData, super.key,
+    required this.displayData,
+    super.key,
     this.myLanguageCode,
     this.theirLanguageCode,
   });
+
   /// Pass the raw display map from NationVisibilityService.applyPrivacy()
   final Map<String, String> displayData;
   final String? myLanguageCode;
@@ -528,9 +527,8 @@ class _LanguageCompatRow extends StatelessWidget {
 
     // Find language name from any country with that language code
     String langName(String code) {
-      final match = NationDatabase.all()
-          .where((n) => n.languageCode == code)
-          .firstOrNull;
+      final match =
+          NationDatabase.all().where((n) => n.languageCode == code).firstOrNull;
       return match?.primaryLanguage ?? code.toUpperCase();
     }
 
@@ -565,7 +563,6 @@ class _LanguageCompatRow extends StatelessWidget {
 // ══════════════════════════════════════════════════════════════════════════════
 
 class VideoNationOverlay extends StatefulWidget {
-
   const VideoNationOverlay({
     super.key,
     this.countryCode,
@@ -606,8 +603,8 @@ class _VideoNationOverlayState extends State<VideoNationOverlay>
   void _hide() {
     if (mounted) {
       _ctrl.reverse().then((_) {
-      if (mounted) setState(() => _visible = false);
-    });
+        if (mounted) setState(() => _visible = false);
+      });
     }
   }
 
@@ -633,8 +630,8 @@ class _VideoNationOverlayState extends State<VideoNationOverlay>
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.55),
                       borderRadius: BorderRadius.circular(20),
@@ -644,8 +641,7 @@ class _VideoNationOverlayState extends State<VideoNationOverlay>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(nation.flag,
-                            style: const TextStyle(fontSize: 14)),
+                        Text(nation.flag, style: const TextStyle(fontSize: 14)),
                         const SizedBox(width: 6),
                         Text(
                           widget.isMe
@@ -707,10 +703,7 @@ class _TravelBannerWidgetState extends State<TravelBannerWidget> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  Colors.orange.shade700,
-                  Colors.deepOrange.shade800
-                ],
+                colors: [Colors.orange.shade700, Colors.deepOrange.shade800],
               ),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
@@ -738,12 +731,13 @@ class _TravelBannerWidgetState extends State<TravelBannerWidget> {
                 IconButton(
                   icon: const Icon(Icons.close_rounded,
                       color: Colors.white70, size: 18),
-                  onPressed: () =>
-                      setState(() => _visible = false),
+                  onPressed: () => setState(() => _visible = false),
                 ),
               ],
             ),
-          ).animate().slideY(begin: -1, duration: 400.ms, curve: Curves.easeOut),
+          )
+              .animate()
+              .slideY(begin: -1, duration: 400.ms, curve: Curves.easeOut),
         ),
       ),
     );

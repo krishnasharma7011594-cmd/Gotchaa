@@ -59,7 +59,7 @@ final mutedUidsProvider = StreamProvider<List<String>>((ref) {
       .where('muterId', isEqualTo: currentUserId)
       .snapshots()
       .map((snapshot) => snapshot.docs
-        .map((doc) => doc.data()['mutedId'] as String?)
-        .whereType<String>()
-        .toList());
+          .map((doc) => doc.data()['mutedId'] as String?)
+          .whereType<String>()
+          .toList());
 });

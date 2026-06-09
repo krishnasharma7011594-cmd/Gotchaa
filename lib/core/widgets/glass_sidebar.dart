@@ -30,7 +30,8 @@ class GlassSidebar extends ConsumerWidget {
         elevation: 0,
         backgroundColor: Colors.transparent,
         child: ClipRRect(
-          borderRadius: const BorderRadius.horizontal(right: Radius.circular(30)),
+          borderRadius:
+              const BorderRadius.horizontal(right: Radius.circular(30)),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
             child: Container(
@@ -71,20 +72,25 @@ class GlassSidebar extends ConsumerWidget {
                                 ),
                                 child: CachedNetworkImage(
                                   imageUrl: profile.photoUrl,
-                                  imageBuilder: (context, imageProvider) => CircleAvatar(
+                                  imageBuilder: (context, imageProvider) =>
+                                      CircleAvatar(
                                     radius: 36,
                                     backgroundColor: Colors.white,
                                     backgroundImage: imageProvider,
                                   ),
-                                  placeholder: (context, url) => const CircleAvatar(
+                                  placeholder: (context, url) =>
+                                      const CircleAvatar(
                                     radius: 36,
                                     backgroundColor: Colors.white,
-                                    child: BlurHash(hash: 'L5H2EC=pPdpWXVJs00QQV_9H00XY'),
+                                    child: BlurHash(
+                                        hash: 'L5H2EC=pPdpWXVJs00QQV_9H00XY'),
                                   ),
-                                  errorWidget: (context, url, error) => const CircleAvatar(
+                                  errorWidget: (context, url, error) =>
+                                      const CircleAvatar(
                                     radius: 36,
                                     backgroundColor: Colors.white,
-                                    child: Icon(Icons.person, size: 36, color: Colors.grey),
+                                    child: Icon(Icons.person,
+                                        size: 36, color: Colors.grey),
                                   ),
                                 ),
                               ),
@@ -102,7 +108,8 @@ class GlassSidebar extends ConsumerWidget {
                               const SizedBox(height: 6),
                               // Karma Badge
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 4),
                                 decoration: BoxDecoration(
                                   gradient: AppColors.electricGradient,
                                   borderRadius: BorderRadius.circular(12),
@@ -110,7 +117,10 @@ class GlassSidebar extends ConsumerWidget {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.local_fire_department_rounded, size: 14, color: Colors.white),
+                                    const Icon(
+                                        Icons.local_fire_department_rounded,
+                                        size: 14,
+                                        color: Colors.white),
                                     const SizedBox(width: 4),
                                     Text(
                                       '${profile.karma} ${context.tr('sidebar_karma_badge')}',
@@ -126,11 +136,12 @@ class GlassSidebar extends ConsumerWidget {
                             ],
                           );
                         },
-                        loading: () => const Center(child: CircularProgressIndicator()),
+                        loading: () =>
+                            const Center(child: CircularProgressIndicator()),
                         error: (_, __) => const SizedBox.shrink(),
                       ),
                     ),
-                    
+
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 24),
                       child: Divider(color: Colors.black12, height: 1),
@@ -152,14 +163,18 @@ class GlassSidebar extends ConsumerWidget {
                                 context: context,
                                 builder: (context) => AlertDialog(
                                   backgroundColor: const Color(0xFF1A1D26),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
                                   title: const Row(
                                     children: [
-                                      Icon(Icons.auto_awesome_rounded, color: Colors.amber, size: 28),
+                                      Icon(Icons.auto_awesome_rounded,
+                                          color: Colors.amber, size: 28),
                                       SizedBox(width: 12),
                                       Text(
                                         'Coming Soon',
-                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ],
                                   ),
@@ -170,33 +185,43 @@ class GlassSidebar extends ConsumerWidget {
                                   actions: [
                                     TextButton(
                                       onPressed: () => Navigator.pop(context),
-                                      child: const Text('OK', style: TextStyle(color: AppColors.electricBlue)),
+                                      child: const Text('OK',
+                                          style: TextStyle(
+                                              color: AppColors.electricBlue)),
                                     ),
                                   ],
                                 ),
                               );
                             },
                           ),
-
                           _MenuItem(
                             icon: Icons.local_fire_department_rounded,
                             title: context.tr('sidebar_karma'),
                             subtitle: context.tr('sidebar_karma_sub'),
-                            isLocked: profileAsync.asData?.value?.isVerified == false && profileAsync.asData?.value?.isLimitedUser != true,
+                            isLocked: profileAsync.asData?.value?.isVerified ==
+                                    false &&
+                                profileAsync.asData?.value?.isLimitedUser !=
+                                    true,
                             onTap: () {
                               final profile = profileAsync.asData?.value;
                               final isLimited = profile?.isLimitedUser == true;
                               if (profile?.isVerified == false && !isLimited) {
-                                  _showLockedFeatureNotice(
-                                    context,
-                                    ref,
-                                    title: context.tr('sidebar_karma_locked_title'),
-                                    message: context.tr('sidebar_karma_locked_desc'),
-                                  );
+                                _showLockedFeatureNotice(
+                                  context,
+                                  ref,
+                                  title:
+                                      context.tr('sidebar_karma_locked_title'),
+                                  message:
+                                      context.tr('sidebar_karma_locked_desc'),
+                                );
                                 return;
                               }
                               Navigator.pop(context);
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => const KarmaDashboardScreen()));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) =>
+                                          const KarmaDashboardScreen()));
                             },
                           ),
                           _MenuItem(
@@ -205,7 +230,10 @@ class GlassSidebar extends ConsumerWidget {
                             subtitle: context.tr('sidebar_settings_sub'),
                             onTap: () {
                               Navigator.pop(context);
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const SettingsScreen()));
                             },
                           ),
                         ],
@@ -234,11 +262,13 @@ class GlassSidebar extends ConsumerWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Row(
           children: [
-            const Icon(Icons.lock_rounded, color: AppColors.electricBlue, size: 24),
+            const Icon(Icons.lock_rounded,
+                color: AppColors.electricBlue, size: 24),
             const SizedBox(width: 12),
             Text(
               title,
-              style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
+              style: GoogleFonts.outfit(
+                  color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -249,12 +279,14 @@ class GlassSidebar extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(context.tr('btn_maybe_later'), style: const TextStyle(color: Colors.grey)),
+            child: Text(context.tr('btn_maybe_later'),
+                style: const TextStyle(color: Colors.grey)),
           ),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(ctx);
-              final profile = ref.read(currentUserProfileProvider).asData?.value;
+              final profile =
+                  ref.read(currentUserProfileProvider).asData?.value;
               if (profile?.uid != null) {
                 await ref.read(firestoreRepositoryProvider).setLimitedAccess(
                       uid: profile!.uid,
@@ -265,9 +297,11 @@ class GlassSidebar extends ConsumerWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.electricBlue,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14)),
             ),
-            child: Text(context.tr('mini_apps_enter_invite'), style: const TextStyle(fontWeight: FontWeight.bold)),
+            child: Text(context.tr('mini_apps_enter_invite'),
+                style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -276,12 +310,12 @@ class GlassSidebar extends ConsumerWidget {
 }
 
 class _MenuItem extends StatefulWidget {
-
   const _MenuItem({
     required this.icon,
     required this.title,
     required this.subtitle,
-    required this.onTap, this.isLocked = false,
+    required this.onTap,
+    this.isLocked = false,
   });
   final IconData icon;
   final String title;
@@ -298,61 +332,67 @@ class _MenuItemState extends State<_MenuItem> {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) {
-        setState(() => _isPressed = false);
-        widget.onTap();
-      },
-      onTapCancel: () => setState(() => _isPressed = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: _isPressed ? Colors.white.withOpacity(0.4) : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(12),
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) {
+          setState(() => _isPressed = false);
+          widget.onTap();
+        },
+        onTapCancel: () => setState(() => _isPressed = false),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color:
+                _isPressed ? Colors.white.withOpacity(0.4) : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child:
+                    Icon(widget.icon, size: 22, color: AppColors.electricBlue),
               ),
-              child: Icon(widget.icon, size: 22, color: AppColors.electricBlue),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.title,
-                    style: GoogleFonts.outfit(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black87,
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.title,
+                      style: GoogleFonts.outfit(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black87,
+                      ),
                     ),
-                  ),
-                  Text(
-                    widget.subtitle,
-                    style: GoogleFonts.outfit(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black54,
+                    Text(
+                      widget.subtitle,
+                      style: GoogleFonts.outfit(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black54,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Icon(
-              widget.isLocked ? Icons.lock_outline_rounded : Icons.chevron_right_rounded,
-              size: 20,
-              color: widget.isLocked ? AppColors.electricBlue.withOpacity(0.5) : Colors.black26,
-            ),
-          ],
+              Icon(
+                widget.isLocked
+                    ? Icons.lock_outline_rounded
+                    : Icons.chevron_right_rounded,
+                size: 20,
+                color: widget.isLocked
+                    ? AppColors.electricBlue.withOpacity(0.5)
+                    : Colors.black26,
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
 }

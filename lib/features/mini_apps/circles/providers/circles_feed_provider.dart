@@ -7,23 +7,25 @@ import '../services/circles_local_cache_service.dart';
 import 'circles_onboarding_provider.dart';
 
 class CirclesFeedState {
-
   CirclesFeedState({
     required this.circles,
     required this.isLoading,
     required this.isThrottled,
-    required this.searchQuery, required this.selectedCategory, required this.hasMore, this.error,
+    required this.searchQuery,
+    required this.selectedCategory,
+    required this.hasMore,
+    this.error,
     this.selectedCity,
   });
 
   factory CirclesFeedState.initial() => CirclesFeedState(
-      circles: [],
-      isLoading: false,
-      isThrottled: false,
-      searchQuery: '',
-      selectedCategory: 'All',
-      hasMore: true,
-    );
+        circles: [],
+        isLoading: false,
+        isThrottled: false,
+        searchQuery: '',
+        selectedCategory: 'All',
+        hasMore: true,
+      );
   final List<CircleModel> circles;
   final bool isLoading;
   final bool isThrottled;
@@ -42,21 +44,22 @@ class CirclesFeedState {
     String? selectedCategory,
     String? selectedCity,
     bool? hasMore,
-  }) => CirclesFeedState(
-      circles: circles ?? this.circles,
-      isLoading: isLoading ?? this.isLoading,
-      isThrottled: isThrottled ?? this.isThrottled,
-      error: error ?? this.error,
-      searchQuery: searchQuery ?? this.searchQuery,
-      selectedCategory: selectedCategory ?? this.selectedCategory,
-      selectedCity: selectedCity ?? this.selectedCity,
-      hasMore: hasMore ?? this.hasMore,
-    );
+  }) =>
+      CirclesFeedState(
+        circles: circles ?? this.circles,
+        isLoading: isLoading ?? this.isLoading,
+        isThrottled: isThrottled ?? this.isThrottled,
+        error: error ?? this.error,
+        searchQuery: searchQuery ?? this.searchQuery,
+        selectedCategory: selectedCategory ?? this.selectedCategory,
+        selectedCity: selectedCity ?? this.selectedCity,
+        hasMore: hasMore ?? this.hasMore,
+      );
 }
 
 class CirclesFeedNotifier extends StateNotifier<CirclesFeedState> {
-
-  CirclesFeedNotifier(this._firestoreService, this._ref) : super(CirclesFeedState.initial()) {
+  CirclesFeedNotifier(this._firestoreService, this._ref)
+      : super(CirclesFeedState.initial()) {
     loadCachedFeed().then((_) => fetchFeed(refresh: true));
   }
   final CirclesFirestoreService _firestoreService;
@@ -75,7 +78,8 @@ class CirclesFeedNotifier extends StateNotifier<CirclesFeedState> {
   Future<void> fetchFeed({bool refresh = false}) async {
     if (state.isLoading || (!state.hasMore && !refresh)) return;
 
-    state = state.copyWith(isLoading: true, isThrottled: _firestoreService.isThrottled);
+    state = state.copyWith(
+        isLoading: true, isThrottled: _firestoreService.isThrottled);
 
     try {
       if (refresh) {
@@ -107,8 +111,9 @@ class CirclesFeedNotifier extends StateNotifier<CirclesFeedState> {
         userPref = onboardingVal.value;
       }
 
-      List<CircleModel> combined = refresh ? results : [...state.circles, ...results];
-      
+      List<CircleModel> combined =
+          refresh ? results : [...state.circles, ...results];
+
       // Filter out duplicates
       final seenIds = <String>{};
       combined = combined.where((c) => seenIds.add(c.id)).toList();
@@ -140,22 +145,26 @@ class CirclesFeedNotifier extends StateNotifier<CirclesFeedState> {
     int score = 0;
 
     // 1. Category Match (+30)
-    if (pref.hobbies.any((h) => h.toLowerCase() == circle.category.toLowerCase())) {
+    if (pref.hobbies
+        .any((h) => h.toLowerCase() == circle.category.toLowerCase())) {
       score += 30;
     }
 
     // 2. Vibe Preference Match (+25)
-    if (pref.vibePreferences.any((v) => circle.tags.any((t) => t.toLowerCase() == v.toLowerCase()))) {
+    if (pref.vibePreferences.any(
+        (v) => circle.tags.any((t) => t.toLowerCase() == v.toLowerCase()))) {
       score += 25;
     }
 
     // 3. Location / Preferred City Match (+20)
-    if (pref.preferredCities.any((c) => c.toLowerCase() == circle.city.toLowerCase())) {
+    if (pref.preferredCities
+        .any((c) => c.toLowerCase() == circle.city.toLowerCase())) {
       score += 20;
     }
 
     // 4. Language overlap (+15)
-    if (pref.languages.any((l) => l.toLowerCase() == circle.language.toLowerCase())) {
+    if (pref.languages
+        .any((l) => l.toLowerCase() == circle.language.toLowerCase())) {
       score += 15;
     }
 
@@ -188,7 +197,8 @@ class CirclesFeedNotifier extends StateNotifier<CirclesFeedState> {
   }
 }
 
-final circlesFeedProvider = StateNotifierProvider<CirclesFeedNotifier, CirclesFeedState>((ref) {
+final circlesFeedProvider =
+    StateNotifierProvider<CirclesFeedNotifier, CirclesFeedState>((ref) {
   final service = ref.watch(circlesFirestoreServiceProvider);
   return CirclesFeedNotifier(service, ref);
 });

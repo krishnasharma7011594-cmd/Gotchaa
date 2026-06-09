@@ -4,9 +4,12 @@ import 'package:flutter/services.dart';
 import '../models/editable_item.dart';
 
 class EditableItemWidget extends StatefulWidget {
-
   const EditableItemWidget({
-    required this.item, required this.onTap, required this.onDoubleTap, required this.onUpdate, super.key,
+    required this.item,
+    required this.onTap,
+    required this.onDoubleTap,
+    required this.onUpdate,
+    super.key,
     this.isSelected = false,
     this.onDelete,
     this.onDragStart,
@@ -64,7 +67,7 @@ class _EditableItemWidgetState extends State<EditableItemWidget> {
           // 3. Instagram-like Snap Physics
           const snapThreshold = 15.0;
           bool snapped = false;
-          
+
           if ((x - screenSize.width / 2).abs() < snapThreshold) {
             x = screenSize.width / 2;
             snapped = true;
@@ -83,7 +86,8 @@ class _EditableItemWidgetState extends State<EditableItemWidget> {
           widget.onUpdate(widget.item.copyWith(
             position: newPosition,
             scale: details.pointerCount > 1 ? newScale : widget.item.scale,
-            rotation: details.pointerCount > 1 ? newRotation : widget.item.rotation,
+            rotation:
+                details.pointerCount > 1 ? newRotation : widget.item.rotation,
           ));
         },
         onScaleEnd: (details) {
@@ -113,7 +117,7 @@ class _EditableItemWidgetState extends State<EditableItemWidget> {
                         ),
                       ),
                     ),
-                  
+
                   // Content
                   _buildContent(),
 
@@ -122,7 +126,8 @@ class _EditableItemWidgetState extends State<EditableItemWidget> {
                     Positioned(
                       top: -25,
                       right: -25,
-                      child: _buildHandle(Icons.close, Colors.black87, widget.onDelete),
+                      child: _buildHandle(
+                          Icons.close, Colors.black87, widget.onDelete),
                     ),
                   ],
                 ],
@@ -134,20 +139,21 @@ class _EditableItemWidgetState extends State<EditableItemWidget> {
     );
   }
 
-  Widget _buildHandle(IconData icon, Color color, VoidCallback? onTap) => GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 4),
-          ],
+  Widget _buildHandle(IconData icon, Color color, VoidCallback? onTap) =>
+      GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 4),
+            ],
+          ),
+          child: Icon(icon, color: Colors.white, size: 18),
         ),
-        child: Icon(icon, color: Colors.white, size: 18),
-      ),
-    );
+      );
 
   Widget _buildContent() {
     switch (widget.item.type) {
@@ -164,11 +170,15 @@ class _EditableItemWidgetState extends State<EditableItemWidget> {
             widget.item.value,
             textAlign: widget.item.textAlign,
             style: widget.item.style?.copyWith(
-                  color: widget.item.hasBackground ? Colors.white : widget.item.color,
+                  color: widget.item.hasBackground
+                      ? Colors.white
+                      : widget.item.color,
                   fontSize: widget.item.fontSize,
                 ) ??
                 TextStyle(
-                  color: widget.item.hasBackground ? Colors.white : (widget.item.color ?? Colors.white),
+                  color: widget.item.hasBackground
+                      ? Colors.white
+                      : (widget.item.color ?? Colors.white),
                   fontSize: widget.item.fontSize,
                   fontWeight: FontWeight.bold,
                 ),
@@ -186,13 +196,17 @@ class _EditableItemWidgetState extends State<EditableItemWidget> {
             color: Colors.white.withOpacity(0.9),
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 2)),
+              BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2)),
             ],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.alternate_email_rounded, size: 16, color: Colors.blue),
+              const Icon(Icons.alternate_email_rounded,
+                  size: 16, color: Colors.blue),
               const SizedBox(width: 6),
               Text(
                 widget.item.value,

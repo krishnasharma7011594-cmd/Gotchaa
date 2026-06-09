@@ -93,9 +93,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       final profile = profileState.asData?.value;
 
       final matchedLocation = state.matchedLocation;
-      final isLegalRoute = matchedLocation == '/legal-consent' || 
-                           matchedLocation == '/privacy' || 
-                           matchedLocation == '/terms';
+      final isLegalRoute = matchedLocation == '/legal-consent' ||
+          matchedLocation == '/privacy' ||
+          matchedLocation == '/terms';
       final isLoggingIn = matchedLocation == '/login';
 
       // 0. Legal Check — force re-acceptance when Privacy/Terms version changes
@@ -115,19 +115,20 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // 2. Profile Check (Wait for profile to load)
       if (profileState.isLoading) return null;
-      if (profile == null) return null; 
+      if (profile == null) return null;
 
       final isGuest = user.isAnonymous;
-      
+
       // 3. Email Verification
       if (!isGuest && !user.emailVerified) {
-        if (state.matchedLocation == '/verify-email' || isLegalRoute) return null;
+        if (state.matchedLocation == '/verify-email' || isLegalRoute)
+          return null;
         return '/verify-email';
       }
-      
+
       // 4. Redirect to home if on a gate screen but all checks passed
-      final isGateRoute = matchedLocation == '/login' ||
-                          matchedLocation == '/verify-email';
+      final isGateRoute =
+          matchedLocation == '/login' || matchedLocation == '/verify-email';
 
       if (isGateRoute) return '/';
 
@@ -137,7 +138,6 @@ final routerProvider = Provider<GoRouter>((ref) {
 });
 
 class RouterNotifier extends ChangeNotifier {
-
   RouterNotifier(this._ref) {
     _ref.listen(authStateProvider, (prev, next) {
       final user = next.asData?.value;
@@ -155,7 +155,6 @@ class RouterNotifier extends ChangeNotifier {
 }
 
 final routerNotifierProvider = Provider<RouterNotifier>(RouterNotifier.new);
-
 
 enum ServiceType {
   all,
@@ -181,13 +180,25 @@ class GotchaaRouter {
         (s) => s.category.name == type.name,
         orElse: () => services.first,
       );
-      
-      AnalyticsService.logEvent(name: 'service_opened', parameters: {'service_id': service.id});
+
+      AnalyticsService.logEvent(
+          name: 'service_opened', parameters: {'service_id': service.id});
       if (service.id == 'uber') {
         AnalyticsService.logEvent(name: 'uber_opened');
       } else if (service.id == 'rapido') {
         AnalyticsService.logEvent(name: 'rapido_opened');
-      } else if (['eatsure', 'fassos', 'zepto', 'flipkart', 'ajio', 'nykaa', 'oyo', 'airbnb', 'district', 'practo'].contains(service.id)) {
+      } else if ([
+        'eatsure',
+        'fassos',
+        'zepto',
+        'flipkart',
+        'ajio',
+        'nykaa',
+        'oyo',
+        'airbnb',
+        'district',
+        'practo'
+      ].contains(service.id)) {
         AnalyticsService.logEvent(name: '${service.id}_opened');
       }
 
@@ -208,13 +219,25 @@ class GotchaaRouter {
         (s) => s.id == id,
         orElse: () => services.first,
       );
-      
-      AnalyticsService.logEvent(name: 'service_opened', parameters: {'service_id': service.id});
+
+      AnalyticsService.logEvent(
+          name: 'service_opened', parameters: {'service_id': service.id});
       if (service.id == 'uber') {
         AnalyticsService.logEvent(name: 'uber_opened');
       } else if (service.id == 'rapido') {
         AnalyticsService.logEvent(name: 'rapido_opened');
-      } else if (['eatsure', 'fassos', 'zepto', 'flipkart', 'ajio', 'nykaa', 'oyo', 'airbnb', 'district', 'practo'].contains(service.id)) {
+      } else if ([
+        'eatsure',
+        'fassos',
+        'zepto',
+        'flipkart',
+        'ajio',
+        'nykaa',
+        'oyo',
+        'airbnb',
+        'district',
+        'practo'
+      ].contains(service.id)) {
         AnalyticsService.logEvent(name: '${service.id}_opened');
       }
 
@@ -226,5 +249,3 @@ class GotchaaRouter {
     }
   }
 }
-
-

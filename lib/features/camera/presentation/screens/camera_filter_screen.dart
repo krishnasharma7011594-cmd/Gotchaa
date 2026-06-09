@@ -20,7 +20,6 @@ import '../../../create/presentation/screens/post_details_screen.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _IsolateMsg {
-
   _IsolateMsg({
     required this.width,
     required this.height,
@@ -55,9 +54,9 @@ void _isolateEntry(SendPort mainSend) {
         final src = msg.planes[0];
         for (int i = 0; i < w * h; i++) {
           final o = i * 4;
-          rgba[o]     = src[o + 2]; // R
+          rgba[o] = src[o + 2]; // R
           rgba[o + 1] = src[o + 1]; // G
-          rgba[o + 2] = src[o];     // B
+          rgba[o + 2] = src[o]; // B
           rgba[o + 3] = 255;
         }
         msg.replyPort.send(rgba);
@@ -78,30 +77,32 @@ void _isolateEntry(SendPort mainSend) {
       final uvPixelStride = msg.pixelStrides[1] ?? 1;
 
       for (int row = 0; row < h; row++) {
-        final yRowOff  = row * yStride;
-        final rgbaOff  = row * w * 4;
+        final yRowOff = row * yStride;
+        final rgbaOff = row * w * 4;
         final uvRowOff = (row >> 1) * uvStride;
 
         for (int col = 0; col < w; col++) {
-          final yIdx  = yRowOff + col;
+          final yIdx = yRowOff + col;
           final uvIdx = uvRowOff + (col >> 1) * uvPixelStride;
 
-          if (yIdx >= yBytes.length || uvIdx >= uBytes.length || uvIdx >= vBytes.length) continue;
+          if (yIdx >= yBytes.length ||
+              uvIdx >= uBytes.length ||
+              uvIdx >= vBytes.length) continue;
 
           final Y = yBytes[yIdx];
           final U = uBytes[uvIdx];
           final V = vBytes[uvIdx];
 
           final yPart = (Y - 16) * 1.164;
-          final uSub  = U - 128;
-          final vSub  = V - 128;
+          final uSub = U - 128;
+          final vSub = V - 128;
 
           final r = (yPart + vSub * 1.596).round().clamp(0, 255);
           final g = (yPart - uSub * 0.392 - vSub * 0.813).round().clamp(0, 255);
           final b = (yPart + uSub * 2.017).round().clamp(0, 255);
 
           final o = rgbaOff + col * 4;
-          rgba[o]     = r;
+          rgba[o] = r;
           rgba[o + 1] = g;
           rgba[o + 2] = b;
           rgba[o + 3] = 255;
@@ -150,7 +151,8 @@ class IsolateWorker {
       replyPort: replyPort.sendPort,
     ));
 
-    final response = await replyPort.first.timeout(const Duration(seconds: 2), onTimeout: () => null);
+    final response = await replyPort.first
+        .timeout(const Duration(seconds: 2), onTimeout: () => null);
     replyPort.close();
 
     if (response is! Uint8List) return null;
@@ -195,34 +197,34 @@ enum FilterType {
 }
 
 const _filterNames = {
-  FilterType.normal:  'Normal',
-  FilterType.noir:    'Noir',
-  FilterType.golden:  'Golden',
-  FilterType.arctic:  'Arctic',
-  FilterType.vivid:   'Vivid',
-  FilterType.faded:   'Faded',
-  FilterType.warm:    'Warm',
-  FilterType.cool:    'Cool',
-  FilterType.retro:   'Retro',
-  FilterType.drama:   'Drama',
-  FilterType.pastel:  'Pastel',
-  FilterType.neon:    'Neon',
+  FilterType.normal: 'Normal',
+  FilterType.noir: 'Noir',
+  FilterType.golden: 'Golden',
+  FilterType.arctic: 'Arctic',
+  FilterType.vivid: 'Vivid',
+  FilterType.faded: 'Faded',
+  FilterType.warm: 'Warm',
+  FilterType.cool: 'Cool',
+  FilterType.retro: 'Retro',
+  FilterType.drama: 'Drama',
+  FilterType.pastel: 'Pastel',
+  FilterType.neon: 'Neon',
   FilterType.vintage: 'Vintage',
 };
 
 const _filterEmojis = {
-  FilterType.normal:  '🎥',
-  FilterType.noir:    '⬛',
-  FilterType.golden:  '🌅',
-  FilterType.arctic:  '❄️',
-  FilterType.vivid:   '🌈',
-  FilterType.faded:   '🌫️',
-  FilterType.warm:    '🔥',
-  FilterType.cool:    '🫐',
-  FilterType.retro:   '📼',
-  FilterType.drama:   '🎭',
-  FilterType.pastel:  '🍬',
-  FilterType.neon:    '💡',
+  FilterType.normal: '🎥',
+  FilterType.noir: '⬛',
+  FilterType.golden: '🌅',
+  FilterType.arctic: '❄️',
+  FilterType.vivid: '🌈',
+  FilterType.faded: '🌫️',
+  FilterType.warm: '🔥',
+  FilterType.cool: '🫐',
+  FilterType.retro: '📼',
+  FilterType.drama: '🎭',
+  FilterType.pastel: '🍬',
+  FilterType.neon: '💡',
   FilterType.vintage: '📷',
 };
 
@@ -231,40 +233,292 @@ Paint _buildFilterPaint(FilterType type) {
   List<double>? matrix;
   switch (type) {
     case FilterType.noir:
-      matrix = [0.33,0.33,0.33,0,0, 0.33,0.33,0.33,0,0, 0.33,0.33,0.33,0,0, 0,0,0,1,0];
+      matrix = [
+        0.33,
+        0.33,
+        0.33,
+        0,
+        0,
+        0.33,
+        0.33,
+        0.33,
+        0,
+        0,
+        0.33,
+        0.33,
+        0.33,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ];
       break;
     case FilterType.golden:
-      matrix = [1.2,0,0,0,15, 0,1.05,0,0,5, 0,0,0.8,0,0, 0,0,0,1,0];
+      matrix = [
+        1.2,
+        0,
+        0,
+        0,
+        15,
+        0,
+        1.05,
+        0,
+        0,
+        5,
+        0,
+        0,
+        0.8,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ];
       break;
     case FilterType.arctic:
-      matrix = [0.85,0,0,0,0, 0,1.1,0,0,5, 0,0,1.3,0,10, 0,0,0,1,0];
+      matrix = [
+        0.85,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.1,
+        0,
+        0,
+        5,
+        0,
+        0,
+        1.3,
+        0,
+        10,
+        0,
+        0,
+        0,
+        1,
+        0
+      ];
       break;
     case FilterType.vivid:
-      matrix = [1.3,0,0,0,0, 0,1.3,0,0,0, 0,0,1.3,0,0, 0,0,0,1,0];
+      matrix = [
+        1.3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ];
       break;
     case FilterType.faded:
-      matrix = [0.85,0,0,0,30, 0,0.85,0,0,30, 0,0,0.85,0,35, 0,0,0,1,0];
+      matrix = [
+        0.85,
+        0,
+        0,
+        0,
+        30,
+        0,
+        0.85,
+        0,
+        0,
+        30,
+        0,
+        0,
+        0.85,
+        0,
+        35,
+        0,
+        0,
+        0,
+        1,
+        0
+      ];
       break;
     case FilterType.warm:
-      matrix = [1.3,0,0,0,10, 0,1.0,0,0,0, 0,0,0.7,0,-10, 0,0,0,1,0];
+      matrix = [
+        1.3,
+        0,
+        0,
+        0,
+        10,
+        0,
+        1.0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.7,
+        0,
+        -10,
+        0,
+        0,
+        0,
+        1,
+        0
+      ];
       break;
     case FilterType.cool:
-      matrix = [0.8,0,0,0,-10, 0,1.0,0,0,0, 0,0,1.3,0,10, 0,0,0,1,0];
+      matrix = [
+        0.8,
+        0,
+        0,
+        0,
+        -10,
+        0,
+        1.0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.3,
+        0,
+        10,
+        0,
+        0,
+        0,
+        1,
+        0
+      ];
       break;
     case FilterType.retro:
-      matrix = [1.2,0,0,0,10, 0,0.9,0,0,5, 0,0,0.6,0,0, 0,0,0,1,0];
+      matrix = [
+        1.2,
+        0,
+        0,
+        0,
+        10,
+        0,
+        0.9,
+        0,
+        0,
+        5,
+        0,
+        0,
+        0.6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ];
       break;
     case FilterType.drama:
-      matrix = [1.4,0,0,0,-20, 0,1.2,0,0,-10, 0,0,1.0,0,-5, 0,0,0,1,0];
+      matrix = [
+        1.4,
+        0,
+        0,
+        0,
+        -20,
+        0,
+        1.2,
+        0,
+        0,
+        -10,
+        0,
+        0,
+        1.0,
+        0,
+        -5,
+        0,
+        0,
+        0,
+        1,
+        0
+      ];
       break;
     case FilterType.pastel:
-      matrix = [0.8,0,0,0,50, 0,0.8,0,0,50, 0,0,0.8,0,60, 0,0,0,1,0];
+      matrix = [
+        0.8,
+        0,
+        0,
+        0,
+        50,
+        0,
+        0.8,
+        0,
+        0,
+        50,
+        0,
+        0,
+        0.8,
+        0,
+        60,
+        0,
+        0,
+        0,
+        1,
+        0
+      ];
       break;
     case FilterType.neon:
-      matrix = [1.5,0,0,0,0, 0,1.5,0,0,0, 0,0,2.0,0,0, 0,0,0,1,0];
+      matrix = [
+        1.5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1.5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2.0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ];
       break;
     case FilterType.vintage:
-      matrix = [1.1,0.1,0,0,10, 0,0.9,0.1,0,5, 0,0.1,0.7,0,0, 0,0,0,1,0];
+      matrix = [
+        1.1,
+        0.1,
+        0,
+        0,
+        10,
+        0,
+        0.9,
+        0.1,
+        0,
+        5,
+        0,
+        0.1,
+        0.7,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ];
       break;
     case FilterType.normal:
       break;
@@ -280,7 +534,6 @@ Paint _buildFilterPaint(FilterType type) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _CameraPainter extends CustomPainter {
-
   _CameraPainter({
     required this.frame,
     required this.sensorOrientation,
@@ -385,13 +638,18 @@ class _CameraFilterScreenState extends State<CameraFilterScreen>
   }
 
   Future<void> _initialize() async {
-    setState(() { _isInitializing = true; _errorMessage = null; });
+    setState(() {
+      _isInitializing = true;
+      _errorMessage = null;
+    });
 
     try {
       // 1. Request permissions
-      final camGranted = await PermissionManager.requestCameraPermission(context);
+      final camGranted =
+          await PermissionManager.requestCameraPermission(context);
       if (!camGranted) {
-        throw Exception('Camera permission denied. Please enable it in Settings.');
+        throw Exception(
+            'Camera permission denied. Please enable it in Settings.');
       }
 
       // 2. Get cameras
@@ -405,7 +663,6 @@ class _CameraFilterScreenState extends State<CameraFilterScreen>
 
       // 4. Init controller
       await _initCamera(_cameras.first);
-
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -421,7 +678,9 @@ class _CameraFilterScreenState extends State<CameraFilterScreen>
     final old = _ctrl;
     _ctrl = null;
     if (old != null) {
-      try { await old.stopImageStream(); } catch (_) {}
+      try {
+        await old.stopImageStream();
+      } catch (_) {}
       await old.dispose();
     }
 
@@ -455,9 +714,7 @@ class _CameraFilterScreenState extends State<CameraFilterScreen>
 
     try {
       await _ctrl!.startImageStream(_onFrame);
-    } catch (e) {
-      
-    }
+    } catch (e) {}
   }
 
   Future<void> _stopStream() async {
@@ -465,9 +722,7 @@ class _CameraFilterScreenState extends State<CameraFilterScreen>
     if (!_ctrl!.value.isStreamingImages) return;
     try {
       await _ctrl!.stopImageStream();
-    } catch (e) {
-      
-    }
+    } catch (e) {}
   }
 
   void _onFrame(CameraImage image) {
@@ -483,7 +738,6 @@ class _CameraFilterScreenState extends State<CameraFilterScreen>
       }
       _isProcessingFrame = false;
     }).catchError((e) {
-      
       _isProcessingFrame = false;
     });
   }
@@ -528,15 +782,16 @@ class _CameraFilterScreenState extends State<CameraFilterScreen>
         await Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (_) => PostDetailsScreen(mediaFile: file, isVideo: false)),
+              builder: (_) =>
+                  PostDetailsScreen(mediaFile: file, isVideo: false)),
         );
         await _startStream();
       }
     } catch (e) {
-      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Capture failed: $e'), backgroundColor: Colors.red),
+          SnackBar(
+              content: Text('Capture failed: $e'), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -556,130 +811,139 @@ class _CameraFilterScreenState extends State<CameraFilterScreen>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Camera view
-          RepaintBoundary(
-            key: _repaintKey,
-            child: CustomPaint(
-              painter: _CameraPainter(
-                frame: _currentFrame,
-                sensorOrientation: _ctrl?.description.sensorOrientation ?? 90,
-                isFront: _isFrontCamera,
-                filter: _activeFilter,
-              ),
-              size: Size.infinite,
-            ),
-          ),
-
-          // Loading overlay
-          if (_isInitializing)
-            Container(
-              color: Colors.black87,
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const CircularProgressIndicator(color: Colors.cyanAccent),
-                    const SizedBox(height: 20),
-                    Text('Starting camera…',
-                        style: GoogleFonts.outfit(color: Colors.white, fontSize: 16)),
-                  ],
+        backgroundColor: Colors.black,
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Camera view
+            RepaintBoundary(
+              key: _repaintKey,
+              child: CustomPaint(
+                painter: _CameraPainter(
+                  frame: _currentFrame,
+                  sensorOrientation: _ctrl?.description.sensorOrientation ?? 90,
+                  isFront: _isFrontCamera,
+                  filter: _activeFilter,
                 ),
+                size: Size.infinite,
               ),
             ),
 
-          // Error overlay
-          if (_errorMessage != null)
-            Container(
-              color: Colors.black,
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.camera_alt_outlined, color: Colors.red, size: 72),
-                  const SizedBox(height: 24),
-                  Text(_errorMessage!,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.outfit(color: Colors.white70, fontSize: 16)),
-                  const SizedBox(height: 32),
-                  ElevatedButton.icon(
-                    onPressed: _initialize,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.cyanAccent,
-                        foregroundColor: Colors.black),
-                  ),
-                  const SizedBox(height: 12),
-                  const TextButton(
-                    onPressed: openAppSettings,
-                    child: Text('Open Settings',
-                        style: TextStyle(color: Colors.white54)),
-                  ),
-                ],
-              ),
-            ),
-
-          // Controls (only shown when camera is live)
-          if (!_isInitializing && _errorMessage == null) ...[
-            // Top bar
-            Positioned(
-              top: 0, left: 0, right: 0,
-              child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // Loading overlay
+            if (_isInitializing)
+              Container(
+                color: Colors.black87,
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      _iconBtn(Icons.close, () => Navigator.pop(context)),
-                      Text('GOTCHAA',
+                      const CircularProgressIndicator(color: Colors.cyanAccent),
+                      const SizedBox(height: 20),
+                      Text('Starting camera…',
                           style: GoogleFonts.outfit(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 3)),
-                      _iconBtn(Icons.flip_camera_android, _flipCamera),
+                              color: Colors.white, fontSize: 16)),
                     ],
                   ),
                 ),
               ),
-            ),
 
-            // Bottom controls
-            Positioned(
-              bottom: 0, left: 0, right: 0,
-              child: SafeArea(
+            // Error overlay
+            if (_errorMessage != null)
+              Container(
+                color: Colors.black,
+                padding: const EdgeInsets.all(32),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _filterCarousel(),
+                    const Icon(Icons.camera_alt_outlined,
+                        color: Colors.red, size: 72),
                     const SizedBox(height: 24),
-                    _captureRow(),
-                    const SizedBox(height: 24),
+                    Text(_errorMessage!,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.outfit(
+                            color: Colors.white70, fontSize: 16)),
+                    const SizedBox(height: 32),
+                    ElevatedButton.icon(
+                      onPressed: _initialize,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry'),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.cyanAccent,
+                          foregroundColor: Colors.black),
+                    ),
+                    const SizedBox(height: 12),
+                    const TextButton(
+                      onPressed: openAppSettings,
+                      child: Text('Open Settings',
+                          style: TextStyle(color: Colors.white54)),
+                    ),
                   ],
                 ),
               ),
-            ),
+
+            // Controls (only shown when camera is live)
+            if (!_isInitializing && _errorMessage == null) ...[
+              // Top bar
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: SafeArea(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _iconBtn(Icons.close, () => Navigator.pop(context)),
+                        Text('GOTCHAA',
+                            style: GoogleFonts.outfit(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 3)),
+                        _iconBtn(Icons.flip_camera_android, _flipCamera),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // Bottom controls
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: SafeArea(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _filterCarousel(),
+                      const SizedBox(height: 24),
+                      _captureRow(),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ],
-        ],
-      ),
-    );
+        ),
+      );
 
   Widget _iconBtn(IconData icon, VoidCallback onTap) => GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 44, height: 44,
-        decoration: BoxDecoration(
-          color: Colors.black45,
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white24),
+        onTap: onTap,
+        child: Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: Colors.black45,
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white24),
+          ),
+          child: Icon(icon, color: Colors.white, size: 22),
         ),
-        child: Icon(icon, color: Colors.white, size: 22),
-      ),
-    );
+      );
 
   Widget _filterCarousel() {
     const filters = FilterType.values;
@@ -740,35 +1004,35 @@ class _CameraFilterScreenState extends State<CameraFilterScreen>
   }
 
   Widget _captureRow() => Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        GestureDetector(
-          onTap: _isCapturing ? null : _capture,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 100),
-            width: _isCapturing ? 72 : 80,
-            height: _isCapturing ? 72 : 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.transparent,
-              border: Border.all(color: Colors.white, width: 4),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.cyanAccent.withOpacity(0.4),
-                  blurRadius: 20,
-                  spreadRadius: 2,
-                ),
-              ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: _isCapturing ? null : _capture,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 100),
+              width: _isCapturing ? 72 : 80,
+              height: _isCapturing ? 72 : 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.transparent,
+                border: Border.all(color: Colors.white, width: 4),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.cyanAccent.withOpacity(0.4),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: _isCapturing
+                  ? const Padding(
+                      padding: EdgeInsets.all(20),
+                      child: CircularProgressIndicator(
+                          color: Colors.cyanAccent, strokeWidth: 3),
+                    )
+                  : const Icon(Icons.circle, color: Colors.white, size: 62),
             ),
-            child: _isCapturing
-                ? const Padding(
-                    padding: EdgeInsets.all(20),
-                    child: CircularProgressIndicator(
-                        color: Colors.cyanAccent, strokeWidth: 3),
-                  )
-                : const Icon(Icons.circle, color: Colors.white, size: 62),
           ),
-        ),
-      ],
-    );
+        ],
+      );
 }

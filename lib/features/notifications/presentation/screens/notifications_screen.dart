@@ -15,7 +15,8 @@ class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
 
   @override
-  ConsumerState<NotificationsScreen> createState() => _NotificationsScreenState();
+  ConsumerState<NotificationsScreen> createState() =>
+      _NotificationsScreenState();
 }
 
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
@@ -34,7 +35,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
       ref.read(userNotificationsNotifierProvider.notifier).fetchNextBatch();
     }
   }
@@ -67,7 +69,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () => ref.read(userNotificationsNotifierProvider.notifier).refresh(),
+        onRefresh: () =>
+            ref.read(userNotificationsNotifierProvider.notifier).refresh(),
         child: Builder(builder: (context) {
           // Show skeleton while initially loading (no data yet)
           if (state.isLoading && state.notifications.isEmpty) {
@@ -97,7 +100,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                   ),
                 );
               }
-              return _buildNotificationTile(context, ref, state.notifications[index]);
+              return _buildNotificationTile(
+                  context, ref, state.notifications[index]);
             },
           );
         }),
@@ -107,7 +111,6 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
 
   Widget _buildNotificationTile(
       BuildContext context, WidgetRef ref, NotificationModel notif) {
-    
     IconData icon;
     Color iconColor;
     String text;
@@ -208,24 +211,26 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                       color: context.textHint, fontSize: 11)),
             ]),
           ),
-          trailing: notif.targetImageUrl != null && notif.targetImageUrl!.isNotEmpty
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: CachedNetworkImage(
-                    imageUrl: notif.targetImageUrl!,
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.cover,
-                  ),
-                )
-              : (!notif.isRead
-                  ? Container(
-                      width: 10,
-                      height: 10,
-                      decoration: const BoxDecoration(
-                          color: AppColors.primaryBlue, shape: BoxShape.circle),
+          trailing:
+              notif.targetImageUrl != null && notif.targetImageUrl!.isNotEmpty
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: CachedNetworkImage(
+                        imageUrl: notif.targetImageUrl!,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                      ),
                     )
-                  : null),
+                  : (!notif.isRead
+                      ? Container(
+                          width: 10,
+                          height: 10,
+                          decoration: const BoxDecoration(
+                              color: AppColors.primaryBlue,
+                              shape: BoxShape.circle),
+                        )
+                      : null),
         ),
       ),
     );
@@ -240,4 +245,3 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     return '${time.month}/${time.day}';
   }
 }
-

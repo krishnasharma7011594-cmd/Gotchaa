@@ -1,7 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
-class SpeedLinesPainter extends CustomPainter { // Seeded for consistent line positions per frame
+class SpeedLinesPainter extends CustomPainter {
+  // Seeded for consistent line positions per frame
 
   SpeedLinesPainter(this.intensity, this.dominantColor);
   final double intensity; // 0.0 to 1.0 (based on tiltVelocity)
@@ -13,8 +14,9 @@ class SpeedLinesPainter extends CustomPainter { // Seeded for consistent line po
     if (intensity < 0.3) return; // Only show at high speeds
 
     final center = Offset(size.width / 2, size.height / 2);
-    final maxRadius = sqrt(size.width * size.width + size.height * size.height) / 2;
-    
+    final maxRadius =
+        sqrt(size.width * size.width + size.height * size.height) / 2;
+
     // Draw radially outward lines
     final int numLines = (intensity * 100).toInt();
     final paint = Paint()
@@ -29,22 +31,21 @@ class SpeedLinesPainter extends CustomPainter { // Seeded for consistent line po
       final double endRadius = maxRadius;
 
       // Add slight jitter for anime effect
-      final double jump = _rand.nextDouble() * 20.0 * sin(DateTime.now().millisecondsSinceEpoch/10.0);
-      
-      final start = Offset(
-        center.dx + cos(angle) * (startRadius + jump),
-        center.dy + sin(angle) * (startRadius + jump)
-      );
-      
-      final end = Offset(
-        center.dx + cos(angle) * endRadius,
-        center.dy + sin(angle) * endRadius
-      );
-      
+      final double jump = _rand.nextDouble() *
+          20.0 *
+          sin(DateTime.now().millisecondsSinceEpoch / 10.0);
+
+      final start = Offset(center.dx + cos(angle) * (startRadius + jump),
+          center.dy + sin(angle) * (startRadius + jump));
+
+      final end = Offset(center.dx + cos(angle) * endRadius,
+          center.dy + sin(angle) * endRadius);
+
       canvas.drawLine(start, end, paint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant SpeedLinesPainter oldDelegate) => oldDelegate.intensity != intensity;
+  bool shouldRepaint(covariant SpeedLinesPainter oldDelegate) =>
+      oldDelegate.intensity != intensity;
 }

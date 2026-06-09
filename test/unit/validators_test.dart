@@ -3,7 +3,6 @@ import 'package:gotchaa/core/security/validators.dart';
 
 void main() {
   group('InputValidator Tests', () {
-    
     group('Email Validation', () {
       // 10 Valid Emails
       final validEmails = [
@@ -18,7 +17,7 @@ void main() {
         'email@domain.co.jp',
         'firstname.lastname@domain.com',
       ];
-      
+
       for (final email in validEmails) {
         test('Valid email: $email', () {
           final result = InputValidator.validateEmail(email);
@@ -141,15 +140,20 @@ void main() {
 
     group('URL Validation', () {
       test('Valid HTTPS URL passes', () {
-        expect(InputValidator.validateUrl('https://example.com').isValid, isTrue);
+        expect(
+            InputValidator.validateUrl('https://example.com').isValid, isTrue);
       });
 
       test('Valid HTTP URL fails by default', () {
-        expect(InputValidator.validateUrl('http://example.com').isValid, isFalse);
+        expect(
+            InputValidator.validateUrl('http://example.com').isValid, isFalse);
       });
 
       test('Valid HTTP URL passes when allowed', () {
-        expect(InputValidator.validateUrl('http://example.com', allowHttp: true).isValid, isTrue);
+        expect(
+            InputValidator.validateUrl('http://example.com', allowHttp: true)
+                .isValid,
+            isTrue);
       });
 
       test('Missing scheme fails', () {
@@ -178,7 +182,8 @@ void main() {
       }
 
       test('Safe input passes XSS check', () {
-        expect(InputValidator.validateAgainstXss('Hello World').isValid, isTrue);
+        expect(
+            InputValidator.validateAgainstXss('Hello World').isValid, isTrue);
       });
     });
 
@@ -199,18 +204,22 @@ void main() {
       }
 
       test('Safe input passes SQLi check', () {
-        expect(InputValidator.validateAgainstSqlInjection('Hello World').isValid, isTrue);
+        expect(
+            InputValidator.validateAgainstSqlInjection('Hello World').isValid,
+            isTrue);
       });
     });
 
     group('Sanitization', () {
       test('Sanitize HTML tags', () {
-        final result = InputValidator.sanitizeHtml('<script>alert(1)</script><b>Hello</b>');
+        final result = InputValidator.sanitizeHtml(
+            '<script>alert(1)</script><b>Hello</b>');
         expect(result, equals('<b>Hello</b>'));
       });
 
       test('Sanitize event handlers', () {
-        final result = InputValidator.sanitizeHtml('<div onclick="alert(1)">Hello</div>');
+        final result =
+            InputValidator.sanitizeHtml('<div onclick="alert(1)">Hello</div>');
         expect(result, equals('<div>Hello</div>'));
       });
     });

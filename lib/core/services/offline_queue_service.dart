@@ -23,7 +23,10 @@ enum OfflineActionType { message, like, post }
 
 class OfflineAction {
   OfflineAction({
-    required this.type, required this.payload, required this.createdAt, String? id,
+    required this.type,
+    required this.payload,
+    required this.createdAt,
+    String? id,
     this.retries = 0,
     this.nextRetryAt,
   }) : id = id ?? const Uuid().v4();

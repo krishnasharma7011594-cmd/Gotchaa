@@ -33,7 +33,8 @@ void main() {
         initialCount: 10,
       ),
       overrides: [
-        currentUserProfileProvider.overrideWith((ref) => AsyncValue.data(mockUser)),
+        currentUserProfileProvider
+            .overrideWith((ref) => AsyncValue.data(mockUser)),
       ],
     );
 
@@ -51,7 +52,7 @@ void main() {
 
     // 4. Optimistic UI: count updates before Firestore confirms
     expect(find.text('11'), findsOneWidget);
-    
+
     // 5. After like: heart is filled red
     expect(find.byIcon(Icons.favorite_rounded), findsOneWidget);
 

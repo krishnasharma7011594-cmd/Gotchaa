@@ -43,8 +43,8 @@ extension StringExtensions on String {
 
   /// Convert to title case (capitalize each word).
   String get toTitleCase => split(
-    ' ',
-  ).map((word) => word.isNotBlank ? word.capitalize : word).join(' ');
+        ' ',
+      ).map((word) => word.isNotBlank ? word.capitalize : word).join(' ');
 
   /// Remove all whitespace from string.
   String get removeWhitespace => replaceAll(RegExp(r'\s+'), '');
@@ -90,12 +90,10 @@ extension StringExtensions on String {
       codeUnits.map((u) => u.toRadixString(16).padLeft(2, '0')).join();
 
   /// Check if string starts with any of the given prefixes.
-  bool startsWithAny(List<String> prefixes) =>
-      prefixes.any(startsWith);
+  bool startsWithAny(List<String> prefixes) => prefixes.any(startsWith);
 
   /// Check if string ends with any of the given suffixes.
-  bool endsWithAny(List<String> suffixes) =>
-      suffixes.any(endsWith);
+  bool endsWithAny(List<String> suffixes) => suffixes.any(endsWith);
 
   /// Get the initials from a name string.
   ///

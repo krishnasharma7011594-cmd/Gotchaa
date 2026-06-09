@@ -4,7 +4,12 @@ class ReportCategories {
 
   static const Map<String, List<String>> categories = {
     'Spam': ['Repetitive content', 'Fake account', 'Bot'],
-    'Hate Speech': ['Race/ethnicity', 'Religion', 'Gender', 'Sexual orientation'],
+    'Hate Speech': [
+      'Race/ethnicity',
+      'Religion',
+      'Gender',
+      'Sexual orientation'
+    ],
     'Nudity': ['Explicit content', 'Partial nudity'],
     'Violence': ['Graphic violence', 'Threats', 'Self harm'],
     'Harassment': ['Bullying', 'Doxxing', 'Stalking'],

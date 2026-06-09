@@ -9,9 +9,13 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class EncryptedTextWidget extends StatefulWidget {
-
   const EncryptedTextWidget({
-    required this.messageId, required this.encryptedText, required this.decryptFn, required this.checkCacheFn, required this.style, super.key,
+    required this.messageId,
+    required this.encryptedText,
+    required this.decryptFn,
+    required this.checkCacheFn,
+    required this.style,
+    super.key,
     this.sharedSecret,
   });
   final String messageId;
@@ -31,7 +35,8 @@ class _EncryptedTextWidgetState extends State<EncryptedTextWidget> {
   @override
   void initState() {
     super.initState();
-    _decrypted = widget.checkCacheFn(widget.messageId) ?? widget.checkCacheFn(widget.encryptedText);
+    _decrypted = widget.checkCacheFn(widget.messageId) ??
+        widget.checkCacheFn(widget.encryptedText);
     if (_decrypted == null) {
       _decrypt();
     }
@@ -41,9 +46,9 @@ class _EncryptedTextWidgetState extends State<EncryptedTextWidget> {
   void didUpdateWidget(EncryptedTextWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     final secretChanged = widget.sharedSecret != oldWidget.sharedSecret;
-    final notYetDecrypted = _decrypted == null ||
-        (_decrypted?.startsWith('[') ?? false);
-        
+    final notYetDecrypted =
+        _decrypted == null || (_decrypted?.startsWith('[') ?? false);
+
     if (secretChanged && notYetDecrypted) {
       setState(() => _decrypted = null);
       _decrypt();
@@ -56,11 +61,12 @@ class _EncryptedTextWidgetState extends State<EncryptedTextWidget> {
 
   Future<void> _decrypt() async {
     if (widget.sharedSecret == null) return;
-    
+
     try {
-      final res = await widget.decryptFn(widget.messageId, widget.encryptedText)
+      final res = await widget
+          .decryptFn(widget.messageId, widget.encryptedText)
           .timeout(const Duration(seconds: 3));
-          
+
       if (mounted) {
         setState(() {
           _decrypted = res;
@@ -80,10 +86,11 @@ class _EncryptedTextWidgetState extends State<EncryptedTextWidget> {
     if (_decrypted == null) {
       return Text(
         '...',
-        style: widget.style.copyWith(color: widget.style.color?.withOpacity(0.3)),
+        style:
+            widget.style.copyWith(color: widget.style.color?.withOpacity(0.3)),
       );
     }
-    
+
     if (_decrypted!.startsWith('[') && _decrypted!.endsWith(']')) {
       return DecryptionErrorBubble(
         errorText: _decrypted!,
@@ -99,75 +106,79 @@ class _EncryptedTextWidgetState extends State<EncryptedTextWidget> {
 }
 
 class DecryptionErrorBubble extends StatelessWidget {
-  const DecryptionErrorBubble({required this.errorText, super.key, this.onRetry});
+  const DecryptionErrorBubble(
+      {required this.errorText, super.key, this.onRetry});
   final VoidCallback? onRetry;
   final String errorText;
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: Text(
-              context.tr('chat_waiting_message_title'),
-              style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  _dialogMessage(errorText),
-                  style: GoogleFonts.outfit(color: context.textSecondary),
-                ),
-                if (onRetry != null) ...[
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        onRetry!();
-                      },
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Try Again'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.electricBlue,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              title: Text(
+                context.tr('chat_waiting_message_title'),
+                style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _dialogMessage(errorText),
+                    style: GoogleFonts.outfit(color: context.textSecondary),
+                  ),
+                  if (onRetry != null) ...[
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          onRetry!();
+                        },
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Try Again'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.electricBlue,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
               ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
+          );
+        },
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.access_time,
+                size: 12, color: context.textSecondary.withOpacity(0.5)),
+            const SizedBox(width: 6),
+            Text(
+              _inlineMessage(errorText),
+              style: GoogleFonts.outfit(
+                fontSize: 14,
+                fontStyle: FontStyle.italic,
+                color: context.textSecondary.withOpacity(0.7),
               ),
-            ],
-          ),
-        );
-      },
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.access_time, size: 12, color: context.textSecondary.withOpacity(0.5)),
-          const SizedBox(width: 6),
-          Text(
-            _inlineMessage(errorText),
-            style: GoogleFonts.outfit(
-              fontSize: 14,
-              fontStyle: FontStyle.italic,
-              color: context.textSecondary.withOpacity(0.7),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
 
   String _inlineMessage(String error) {
     if (error == '[Message format error]') return 'Unsupported format';
@@ -195,33 +206,34 @@ class GhostMessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Align(
-      alignment: AlignmentDirectional.center,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.black12,
-          borderRadius: BorderRadius.circular(12),
+        alignment: AlignmentDirectional.center,
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.black12,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.auto_fix_high, size: 14, color: Colors.white54),
+              const SizedBox(width: 8),
+              Text(
+                'Message vanished',
+                style: GoogleFonts.outfit(color: Colors.white54, fontSize: 13),
+              ),
+            ],
+          ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.auto_fix_high, size: 14, color: Colors.white54),
-            const SizedBox(width: 8),
-            Text(
-              'Message vanished',
-              style: GoogleFonts.outfit(color: Colors.white54, fontSize: 13),
-            ),
-          ],
-        ),
-      ),
-    );
+      );
 }
 
 class MessageCountdownWidget extends StatefulWidget {
-
   const MessageCountdownWidget({
-    required this.expiresAt, required this.onExpired, super.key,
+    required this.expiresAt,
+    required this.onExpired,
+    super.key,
   });
   final DateTime expiresAt;
   final VoidCallback onExpired;
@@ -269,15 +281,14 @@ class _MessageCountdownWidgetState extends State<MessageCountdownWidget> {
 
   @override
   Widget build(BuildContext context) => Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Icon(Icons.timer_outlined, size: 10, color: Colors.white70),
-        const SizedBox(width: 4),
-        Text(
-          _formatDuration(_timeLeft),
-          style: GoogleFonts.outfit(fontSize: 10, color: Colors.white70),
-        ),
-      ],
-    );
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.timer_outlined, size: 10, color: Colors.white70),
+          const SizedBox(width: 4),
+          Text(
+            _formatDuration(_timeLeft),
+            style: GoogleFonts.outfit(fontSize: 10, color: Colors.white70),
+          ),
+        ],
+      );
 }
-

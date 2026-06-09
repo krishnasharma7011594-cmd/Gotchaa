@@ -123,7 +123,6 @@ class RateLimiter {
 
 /// Rate limit check result.
 class RateLimitStatus {
-
   /// Creates a rate limit status.
   RateLimitStatus({
     required this.isAllowed,
@@ -131,6 +130,7 @@ class RateLimitStatus {
     this.requestsInWindow,
     this.maxRequests,
   });
+
   /// Factory constructor for allowed requests.
   factory RateLimitStatus.allowed() => RateLimitStatus(isAllowed: true);
 
@@ -139,12 +139,13 @@ class RateLimitStatus {
     required Duration retryAfter,
     int? requestsInWindow,
     int? maxRequests,
-  }) => RateLimitStatus(
-      isAllowed: false,
-      retryAfter: retryAfter,
-      requestsInWindow: requestsInWindow,
-      maxRequests: maxRequests,
-    );
+  }) =>
+      RateLimitStatus(
+        isAllowed: false,
+        retryAfter: retryAfter,
+        requestsInWindow: requestsInWindow,
+        maxRequests: maxRequests,
+      );
 
   /// Whether request is allowed.
   final bool isAllowed;

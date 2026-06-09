@@ -43,10 +43,10 @@ class VoiceMessageService {
 
       final TaskSnapshot snapshot = await uploadTask;
       final String downloadUrl = await snapshot.ref.getDownloadURL();
-      
+
       // Cleanup local file
       await audioFile.delete();
-      
+
       return downloadUrl;
     }
     return null;

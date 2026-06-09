@@ -7,7 +7,8 @@ import 'package:flutter/foundation.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 // Data class passed to the compute() isolate. Must be plain data (no closures).
 // ─────────────────────────────────────────────────────────────────────────────
-class _ConvertArgs { // 'yuv420' | 'bgra8888' | 'nv21'
+class _ConvertArgs {
+  // 'yuv420' | 'bgra8888' | 'nv21'
 
   const _ConvertArgs({
     required this.width,
@@ -36,8 +37,8 @@ Uint8List _convertInIsolate(_ConvertArgs args) {
           args.strides[0], args.strides[1], w, h, rgba);
 
     case 'nv21':
-      _nv21ToRgba(args.planes[0], args.planes[1],
-          args.strides[0], args.strides[1], w, h, rgba);
+      _nv21ToRgba(args.planes[0], args.planes[1], args.strides[0],
+          args.strides[1], w, h, rgba);
 
     case 'bgra8888': // iOS
       _bgraToRgba(args.planes[0], w, h, rgba);

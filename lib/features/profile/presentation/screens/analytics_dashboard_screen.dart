@@ -48,7 +48,6 @@ class AnalyticsDashboardScreen extends ConsumerWidget {
               const SizedBox(height: 16),
               _OverviewGrid(data: data),
               const SizedBox(height: 32),
-              
               Text(
                 context.tr('analytics_views_trend'),
                 style: GoogleFonts.outfit(
@@ -64,7 +63,6 @@ class AnalyticsDashboardScreen extends ConsumerWidget {
                 child: _ViewsLineChart(history: data.viewsHistory),
               ),
               const SizedBox(height: 32),
-              
               Text(
                 context.tr('analytics_follower_growth'),
                 style: GoogleFonts.outfit(
@@ -84,7 +82,8 @@ class AnalyticsDashboardScreen extends ConsumerWidget {
           ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text(context.tr('error_prefix', args: [err.toString()]))),
+        error: (err, stack) => Center(
+            child: Text(context.tr('error_prefix', args: [err.toString()]))),
       ),
     );
   }
@@ -96,80 +95,110 @@ class _OverviewGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-      children: [
-        Row(
-          children: [
-            Expanded(child: _buildStatCard(context, context.tr('analytics_stat_views'), '👁️', data.totalViews, 23, true)),
-            const SizedBox(width: 16),
-            Expanded(child: _buildStatCard(context, context.tr('analytics_stat_likes'), '❤️', data.totalLikes, 15, true)),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(child: _buildStatCard(context, context.tr('profile_followers'), '👥', data.followersChange, 8, true)),
-            const SizedBox(width: 16),
-            Expanded(child: _buildStatCard(context, context.tr('analytics_stat_shares'), '🔗', 89, -5, false)),
-          ],
-        ),
-      ],
-    );
-
-  Widget _buildStatCard(BuildContext context, String title, String emoji, int value, int change, bool isPositive) => Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.cardBg,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: context.divider, width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Text(emoji, style: const TextStyle(fontSize: 16)),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: GoogleFonts.outfit(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: context.textSecondary,
-                ),
-              ),
+              Expanded(
+                  child: _buildStatCard(
+                      context,
+                      context.tr('analytics_stat_views'),
+                      '👁️',
+                      data.totalViews,
+                      23,
+                      true)),
+              const SizedBox(width: 16),
+              Expanded(
+                  child: _buildStatCard(
+                      context,
+                      context.tr('analytics_stat_likes'),
+                      '❤️',
+                      data.totalLikes,
+                      15,
+                      true)),
             ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            _formatNumber(value),
-            style: GoogleFonts.outfit(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: context.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 16),
           Row(
             children: [
-              Icon(
-                isPositive ? Icons.arrow_upward : Icons.arrow_downward,
-                color: isPositive ? Colors.green : Colors.red,
-                size: 12,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                '${change.abs()}%',
-                style: GoogleFonts.outfit(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: isPositive ? Colors.green : Colors.red,
-                ),
-              ),
+              Expanded(
+                  child: _buildStatCard(
+                      context,
+                      context.tr('profile_followers'),
+                      '👥',
+                      data.followersChange,
+                      8,
+                      true)),
+              const SizedBox(width: 16),
+              Expanded(
+                  child: _buildStatCard(
+                      context,
+                      context.tr('analytics_stat_shares'),
+                      '🔗',
+                      89,
+                      -5,
+                      false)),
             ],
           ),
         ],
-      ),
-    ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.2, end: 0);
+      );
+
+  Widget _buildStatCard(BuildContext context, String title, String emoji,
+          int value, int change, bool isPositive) =>
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.cardBg,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: context.divider, width: 1),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(emoji, style: const TextStyle(fontSize: 16)),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: GoogleFonts.outfit(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: context.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              _formatNumber(value),
+              style: GoogleFonts.outfit(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: context.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Icon(
+                  isPositive ? Icons.arrow_upward : Icons.arrow_downward,
+                  color: isPositive ? Colors.green : Colors.red,
+                  size: 12,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '${change.abs()}%',
+                  style: GoogleFonts.outfit(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: isPositive ? Colors.green : Colors.red,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.2, end: 0);
 
   String _formatNumber(int number) {
     if (number >= 1000000) return '${(number / 1000000).toStringAsFixed(1)}M';
@@ -188,9 +217,17 @@ class _ViewsLineChart extends StatelessWidget {
     for (int i = 0; i < history.length && i < 7; i++) {
       spots.add(FlSpot(i.toDouble(), history[i]));
     }
-    
+
     if (spots.isEmpty) {
-      spots = [const FlSpot(0, 0), const FlSpot(1, 10), const FlSpot(2, 5), const FlSpot(3, 20), const FlSpot(4, 15), const FlSpot(5, 30), const FlSpot(6, 25)];
+      spots = [
+        const FlSpot(0, 0),
+        const FlSpot(1, 10),
+        const FlSpot(2, 5),
+        const FlSpot(3, 20),
+        const FlSpot(4, 15),
+        const FlSpot(5, 30),
+        const FlSpot(6, 25)
+      ];
     }
 
     return Container(
@@ -205,21 +242,33 @@ class _ViewsLineChart extends StatelessWidget {
           gridData: const FlGridData(show: false),
           titlesData: FlTitlesData(
             show: true,
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles:
+                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles:
+                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            leftTitles:
+                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 30,
                 interval: 1,
                 getTitlesWidget: (value, meta) {
-                  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                  const days = [
+                    'Mon',
+                    'Tue',
+                    'Wed',
+                    'Thu',
+                    'Fri',
+                    'Sat',
+                    'Sun'
+                  ];
                   return Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
                       days[value.toInt() % 7],
-                      style: GoogleFonts.outfit(color: context.textSecondary, fontSize: 10),
+                      style: GoogleFonts.outfit(
+                          color: context.textSecondary, fontSize: 10),
                     ),
                   );
                 },
@@ -231,14 +280,18 @@ class _ViewsLineChart extends StatelessWidget {
             LineChartBarData(
               spots: spots,
               isCurved: true,
-              gradient: const LinearGradient(colors: [Colors.purpleAccent, Colors.blueAccent]),
+              gradient: const LinearGradient(
+                  colors: [Colors.purpleAccent, Colors.blueAccent]),
               barWidth: 4,
               isStrokeCapRound: true,
               dotData: const FlDotData(show: false),
               belowBarData: BarAreaData(
                 show: true,
                 gradient: LinearGradient(
-                  colors: [Colors.purpleAccent.withOpacity(0.3), Colors.blueAccent.withOpacity(0)],
+                  colors: [
+                    Colors.purpleAccent.withOpacity(0.3),
+                    Colors.blueAccent.withOpacity(0)
+                  ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
@@ -247,10 +300,14 @@ class _ViewsLineChart extends StatelessWidget {
           ],
           lineTouchData: LineTouchData(
             touchTooltipData: LineTouchTooltipData(
-              getTooltipItems: (touchedSpots) => touchedSpots.map((spot) => LineTooltipItem(
-                    context.tr('analytics_views_count', namedArgs: {'count': spot.y.toInt().toString()}),
-                    GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
-                  )).toList(),
+              getTooltipItems: (touchedSpots) => touchedSpots
+                  .map((spot) => LineTooltipItem(
+                        context.tr('analytics_views_count',
+                            namedArgs: {'count': spot.y.toInt().toString()}),
+                        GoogleFonts.outfit(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ))
+                  .toList(),
             ),
           ),
         ),
@@ -262,28 +319,39 @@ class _ViewsLineChart extends StatelessWidget {
 class _FollowerBarChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.cardBg,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: context.divider, width: 1),
-      ),
-      child: BarChart(
-        BarChartData(
-          gridData: const FlGridData(show: false),
-          titlesData: const FlTitlesData(show: false),
-          borderData: FlBorderData(show: false),
-          barGroups: [
-            BarChartGroupData(x: 0, barRods: [BarChartRodData(toY: 10, color: Colors.green)]),
-            BarChartGroupData(x: 1, barRods: [BarChartRodData(toY: -5, color: Colors.red)]),
-            BarChartGroupData(x: 2, barRods: [BarChartRodData(toY: 15, color: Colors.green)]),
-            BarChartGroupData(x: 3, barRods: [BarChartRodData(toY: 8, color: Colors.green)]),
-            BarChartGroupData(x: 4, barRods: [BarChartRodData(toY: -2, color: Colors.red)]),
-            BarChartGroupData(x: 5, barRods: [BarChartRodData(toY: 20, color: Colors.green)]),
-            BarChartGroupData(x: 6, barRods: [BarChartRodData(toY: 25, color: Colors.green)]),
-          ],
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.cardBg,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: context.divider, width: 1),
         ),
-      ),
-    ).animate().fadeIn(duration: 800.ms);
+        child: BarChart(
+          BarChartData(
+            gridData: const FlGridData(show: false),
+            titlesData: const FlTitlesData(show: false),
+            borderData: FlBorderData(show: false),
+            barGroups: [
+              BarChartGroupData(
+                  x: 0,
+                  barRods: [BarChartRodData(toY: 10, color: Colors.green)]),
+              BarChartGroupData(
+                  x: 1, barRods: [BarChartRodData(toY: -5, color: Colors.red)]),
+              BarChartGroupData(
+                  x: 2,
+                  barRods: [BarChartRodData(toY: 15, color: Colors.green)]),
+              BarChartGroupData(
+                  x: 3,
+                  barRods: [BarChartRodData(toY: 8, color: Colors.green)]),
+              BarChartGroupData(
+                  x: 4, barRods: [BarChartRodData(toY: -2, color: Colors.red)]),
+              BarChartGroupData(
+                  x: 5,
+                  barRods: [BarChartRodData(toY: 20, color: Colors.green)]),
+              BarChartGroupData(
+                  x: 6,
+                  barRods: [BarChartRodData(toY: 25, color: Colors.green)]),
+            ],
+          ),
+        ),
+      ).animate().fadeIn(duration: 800.ms);
 }
-

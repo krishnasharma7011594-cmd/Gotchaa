@@ -21,7 +21,8 @@ class PermissionManager {
     final bool userAgreed = await _showRationale(
       context,
       title: 'Camera Access',
-      description: 'GOTCHAA uses your camera for AR filters, Vybz content creation, and profile photos. Your camera is only active when you choose to use these features.',
+      description:
+          'GOTCHAA uses your camera for AR filters, Vybz content creation, and profile photos. Your camera is only active when you choose to use these features.',
       icon: Icons.camera_alt,
     );
 
@@ -49,7 +50,8 @@ class PermissionManager {
     final bool userAgreed = await _showRationale(
       context,
       title: 'Microphone Access',
-      description: 'GOTCHAA uses your microphone for voice messages, voice chat, and video calls. Audio is never recorded without your knowledge.',
+      description:
+          'GOTCHAA uses your microphone for voice messages, voice chat, and video calls. Audio is never recorded without your knowledge.',
       icon: Icons.mic,
     );
 
@@ -77,7 +79,8 @@ class PermissionManager {
     final bool userAgreed = await _showRationale(
       context,
       title: 'Location Access',
-      description: 'GOTCHAA uses your approximate (coarse) location to help you connect with people nearby at a city level. We never track your precise GPS coordinates.',
+      description:
+          'GOTCHAA uses your approximate (coarse) location to help you connect with people nearby at a city level. We never track your precise GPS coordinates.',
       icon: Icons.location_on,
     );
 

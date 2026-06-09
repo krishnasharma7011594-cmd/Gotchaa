@@ -16,10 +16,12 @@ class ProfilePictureUploadScreen extends ConsumerStatefulWidget {
   const ProfilePictureUploadScreen({super.key});
 
   @override
-  ConsumerState<ProfilePictureUploadScreen> createState() => _ProfilePictureUploadScreenState();
+  ConsumerState<ProfilePictureUploadScreen> createState() =>
+      _ProfilePictureUploadScreenState();
 }
 
-class _ProfilePictureUploadScreenState extends ConsumerState<ProfilePictureUploadScreen> {
+class _ProfilePictureUploadScreenState
+    extends ConsumerState<ProfilePictureUploadScreen> {
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
   Uint8List? _imageBytes;
@@ -55,7 +57,8 @@ class _ProfilePictureUploadScreenState extends ConsumerState<ProfilePictureUploa
         final profile = await firestoreRepo.getUserProfile(user.uid);
         if (profile != null) {
           final updatedProfile = profile.copyWith(photoUrl: photoUrl);
-          await firestoreRepo.createUserProfile(updatedProfile); // set logic handles update
+          await firestoreRepo
+              .createUserProfile(updatedProfile); // set logic handles update
         }
       }
 
@@ -69,113 +72,118 @@ class _ProfilePictureUploadScreenState extends ConsumerState<ProfilePictureUploa
     } catch (e) {
       if (mounted) {
         setState(() => _isUploading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('error_prefix', args: [e.toString()]))));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(context.tr('error_prefix', args: [e.toString()]))));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: const Icon(Icons.arrow_back_ios_new_rounded),
-              ),
-              const SizedBox(height: 40),
-              Text(
-                context.tr('pfp_upload_title'),
-                style: GoogleFonts.outfit(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -1,
+        backgroundColor: AppColors.white,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: const Icon(Icons.arrow_back_ios_new_rounded),
                 ),
-              ).animate().fadeIn().slideY(begin: 0.1),
-              const SizedBox(height: 12),
-              Text(
-                context.tr('pfp_upload_subtitle'),
-                style: GoogleFonts.outfit(
-                  fontSize: 16,
-                  color: Colors.grey.shade600,
-                ),
-              ).animate().fadeIn(delay: 200.ms),
-              const SizedBox(height: 60),
-              
-              Center(
-                child: Stack(
-                  children: [
-                    Container(
-                      width: 180,
-                      height: 180,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.grey.shade200, width: 4),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: _imageBytes != null 
-                        ? ClipOval(child: Image.memory(_imageBytes!, fit: BoxFit.cover))
-                        : Icon(Icons.person_outline_rounded, size: 80, color: Colors.grey.shade400),
-                    ),
-                    Positioned(
-                      bottom: 5,
-                      right: 5,
-                      child: GestureDetector(
-                        onTap: _pickImage,
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: const BoxDecoration(
-                            color: AppColors.electricBlue,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 24),
-                        ),
-                      ),
-                    ),
-                  ],
-                ).animate().scale(curve: Curves.elasticOut, duration: 800.ms),
-              ),
-
-              const Spacer(),
-              
-              SizedBox(
-                width: double.infinity,
-                height: 60,
-                child: ElevatedButton(
-                  onPressed: _isUploading ? null : _handleFinish,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.black,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                const SizedBox(height: 40),
+                Text(
+                  context.tr('pfp_upload_title'),
+                  style: GoogleFonts.outfit(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -1,
                   ),
-                  child: _isUploading 
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text(
-                        _imageFile != null ? context.tr('pfp_finish') : context.tr('pfp_skip'),
-                        style: GoogleFonts.outfit(
-                          fontSize: 18, 
-                          fontWeight: FontWeight.bold, 
-                          color: Colors.white,
+                ).animate().fadeIn().slideY(begin: 0.1),
+                const SizedBox(height: 12),
+                Text(
+                  context.tr('pfp_upload_subtitle'),
+                  style: GoogleFonts.outfit(
+                    fontSize: 16,
+                    color: Colors.grey.shade600,
+                  ),
+                ).animate().fadeIn(delay: 200.ms),
+                const SizedBox(height: 60),
+                Center(
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 180,
+                        height: 180,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          shape: BoxShape.circle,
+                          border:
+                              Border.all(color: Colors.grey.shade200, width: 4),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: _imageBytes != null
+                            ? ClipOval(
+                                child: Image.memory(_imageBytes!,
+                                    fit: BoxFit.cover))
+                            : Icon(Icons.person_outline_rounded,
+                                size: 80, color: Colors.grey.shade400),
+                      ),
+                      Positioned(
+                        bottom: 5,
+                        right: 5,
+                        child: GestureDetector(
+                          onTap: _pickImage,
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: const BoxDecoration(
+                              color: AppColors.electricBlue,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.camera_alt_rounded,
+                                color: Colors.white, size: 24),
+                          ),
                         ),
                       ),
+                    ],
+                  ).animate().scale(curve: Curves.elasticOut, duration: 800.ms),
                 ),
-              ).animate().fadeIn(delay: 600.ms),
-              
-              const SizedBox(height: 20),
-            ],
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  height: 60,
+                  child: ElevatedButton(
+                    onPressed: _isUploading ? null : _handleFinish,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.black,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                    ),
+                    child: _isUploading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : Text(
+                            _imageFile != null
+                                ? context.tr('pfp_finish')
+                                : context.tr('pfp_skip'),
+                            style: GoogleFonts.outfit(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                  ),
+                ).animate().fadeIn(delay: 600.ms),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
 }

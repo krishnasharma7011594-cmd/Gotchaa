@@ -61,49 +61,54 @@ class _GotchaaLikesScreenState extends ConsumerState<GotchaaLikesScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      backgroundColor: context.bg,
-      appBar: AppBar(
         backgroundColor: context.bg,
-        elevation: 0,
-        title: Text(
-          'Likes',
-          style: GoogleFonts.outfit(
-            fontWeight: FontWeight.bold,
-            color: context.textPrimary,
+        appBar: AppBar(
+          backgroundColor: context.bg,
+          elevation: 0,
+          title: Text(
+            'Likes',
+            style: GoogleFonts.outfit(
+              fontWeight: FontWeight.bold,
+              color: context.textPrimary,
+            ),
+          ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios_new_rounded,
+                color: context.iconPrimary),
+            onPressed: () => Navigator.pop(context),
           ),
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: context.iconPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? Center(child: Text('Error: $_error'))
-              : _likers.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.favorite_border_rounded, size: 64, color: context.iconSecondary.withOpacity(0.5)),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No likes yet',
-                            style: GoogleFonts.outfit(color: context.textSecondary, fontSize: 16),
-                          ),
-                        ],
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _error != null
+                ? Center(child: Text('Error: $_error'))
+                : _likers.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.favorite_border_rounded,
+                                size: 64,
+                                color: context.iconSecondary.withOpacity(0.5)),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No likes yet',
+                              style: GoogleFonts.outfit(
+                                  color: context.textSecondary, fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: _likers.length,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        itemBuilder: (context, index) {
+                          final liker = _likers[index];
+                          return _LikerTile(liker: liker);
+                        },
                       ),
-                    )
-                  : ListView.builder(
-                      itemCount: _likers.length,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      itemBuilder: (context, index) {
-                        final liker = _likers[index];
-                        return _LikerTile(liker: liker);
-                      },
-                    ),
-    );
+      );
 }
 
 class _LikerTile extends StatelessWidget {
@@ -129,7 +134,8 @@ class _LikerTile extends StatelessWidget {
       leading: CircleAvatar(
         radius: 24,
         backgroundColor: context.shimmerBase,
-        backgroundImage: photoUrl.isNotEmpty ? CachedNetworkImageProvider(photoUrl) : null,
+        backgroundImage:
+            photoUrl.isNotEmpty ? CachedNetworkImageProvider(photoUrl) : null,
         child: photoUrl.isEmpty
             ? Text(
                 displayName.isNotEmpty ? displayName[0].toUpperCase() : '?',

@@ -2,7 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ReportModel {
   ReportModel({
-    required this.reportedUserId, required this.reportedByUserId, required this.contentType, required this.contentId, required this.category, required this.reason, required this.status, required this.timestamp, this.id,
+    required this.reportedUserId,
+    required this.reportedByUserId,
+    required this.contentType,
+    required this.contentId,
+    required this.category,
+    required this.reason,
+    required this.status,
+    required this.timestamp,
+    this.id,
     this.subReason,
     this.moderatorNote,
     this.severity = 'medium',
@@ -14,7 +22,8 @@ class ReportModel {
     this.reporterCount = 1,
   });
 
-  factory ReportModel.fromMap(Map<String, dynamic> map, String id) => ReportModel(
+  factory ReportModel.fromMap(Map<String, dynamic> map, String id) =>
+      ReportModel(
         id: id,
         reportedUserId: map['reportedUserId'] ?? '',
         reportedByUserId: map['reportedByUserId'] ?? '',

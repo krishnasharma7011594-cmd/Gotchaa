@@ -20,7 +20,8 @@ class StreamLoopGuard {
     _emissions.add(now);
     if (_emissions.length > maxPerMinute) {
       _broken = true;
-      _breakReason = label ?? 'Stream emitted more than $maxPerMinute times per minute';
+      _breakReason =
+          label ?? 'Stream emitted more than $maxPerMinute times per minute';
       AppLogger.e('StreamLoopGuard: $_breakReason');
       return false;
     }

@@ -3,18 +3,18 @@ import 'package:cloud_functions/cloud_functions.dart';
 import '../logging/app_logger.dart';
 
 class ModerationResult {
-
   ModerationResult({
     required this.approved,
     required this.confidence,
     required this.flaggedCategories,
   });
 
-  factory ModerationResult.fromMap(Map<String, dynamic> map) => ModerationResult(
-      approved: map['approved'] ?? true,
-      confidence: (map['confidence'] as num?)?.toDouble() ?? 1.0,
-      flaggedCategories: List<String>.from(map['flaggedCategories'] ?? []),
-    );
+  factory ModerationResult.fromMap(Map<String, dynamic> map) =>
+      ModerationResult(
+        approved: map['approved'] ?? true,
+        confidence: (map['confidence'] as num?)?.toDouble() ?? 1.0,
+        flaggedCategories: List<String>.from(map['flaggedCategories'] ?? []),
+      );
   final bool approved;
   final double confidence;
   final List<String> flaggedCategories;
@@ -37,7 +37,8 @@ class GeminiModerationService implements AIModerationService {
       });
 
       if (response.data != null) {
-        return ModerationResult.fromMap(Map<String, dynamic>.from(response.data));
+        return ModerationResult.fromMap(
+            Map<String, dynamic>.from(response.data));
       }
     } catch (e) {
       AppLogger.e('GeminiModerationService analyze failed', e);
@@ -45,6 +46,7 @@ class GeminiModerationService implements AIModerationService {
 
     // Fallback: approve if AI check fails (or fail closed depending on policy)
     // Here we fail open to not block users if the service is down, but in high-security apps you might fail closed.
-    return ModerationResult(approved: true, confidence: 1, flaggedCategories: []);
+    return ModerationResult(
+        approved: true, confidence: 1, flaggedCategories: []);
   }
 }

@@ -8,7 +8,9 @@ import '../../features/safety/emergency_safety_service.dart';
 /// Listens for device shake and triggers emergency report callback.
 class ShakeReportListener extends StatefulWidget {
   const ShakeReportListener({
-    required this.child, required this.enabled, super.key,
+    required this.child,
+    required this.enabled,
+    super.key,
     this.onShake,
   });
 

@@ -44,10 +44,12 @@ class MediaCompressionService {
       maintainAspect: true,
     );
 
-    final fullBytes = Uint8List.fromList(img.encodeJpg(resized, quality: quality));
+    final fullBytes =
+        Uint8List.fromList(img.encodeJpg(resized, quality: quality));
     Uint8List? thumbBytes;
     if (kind != MediaUploadKind.thumbnail && kind != MediaUploadKind.profile) {
-      final thumb = img.copyResize(decoded, width: 200, height: 200, maintainAspect: true);
+      final thumb = img.copyResize(decoded,
+          width: 200, height: 200, maintainAspect: true);
       thumbBytes = Uint8List.fromList(img.encodeJpg(thumb, quality: 60));
     }
 

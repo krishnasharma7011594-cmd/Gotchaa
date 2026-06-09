@@ -47,58 +47,63 @@ class VibeTalkSummaryScreen extends ConsumerWidget {
               'Spam / Scam / Phishing',
               'Other Violation'
             ].map((reason) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: InkWell(
-                onTap: () async {
-                  Navigator.pop(ctx);
-                  
-                  final state = ref.read(vibeTalkProvider);
-                  final reporterId = state.currentUserId ?? '';
-                  final reportedUsername = state.anonymousUsername ?? 'anonymous';
-                  final roomId = state.roomId ?? 'unknown';
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: InkWell(
+                    onTap: () async {
+                      Navigator.pop(ctx);
 
-                  // Ensure chat session is ended on notifier
-                  await ref.read(vibeTalkProvider.notifier).endChat();
+                      final state = ref.read(vibeTalkProvider);
+                      final reporterId = state.currentUserId ?? '';
+                      final reportedUsername =
+                          state.anonymousUsername ?? 'anonymous';
+                      final roomId = state.roomId ?? 'unknown';
 
-                  try {
-                    await FirebaseFirestore.instance.collection('reports').add({
-                      'reporterId': reporterId,
-                      'reportedUsername': reportedUsername,
-                      'roomId': roomId,
-                      'reason': reason,
-                      'timestamp': FieldValue.serverTimestamp(),
-                      'type': 'vibetalk',
-                    });
-                    
-                    // Reset to idle view
-                    ref.read(vibeTalkProvider.notifier).resetToIdle();
+                      // Ensure chat session is ended on notifier
+                      await ref.read(vibeTalkProvider.notifier).endChat();
 
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Report submitted. Thank you for helping keep our community safe.'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    // Silently handle
-                  }
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: context.divider),
-                    borderRadius: BorderRadius.circular(12),
+                      try {
+                        await FirebaseFirestore.instance
+                            .collection('reports')
+                            .add({
+                          'reporterId': reporterId,
+                          'reportedUsername': reportedUsername,
+                          'roomId': roomId,
+                          'reason': reason,
+                          'timestamp': FieldValue.serverTimestamp(),
+                          'type': 'vibetalk',
+                        });
+
+                        // Reset to idle view
+                        ref.read(vibeTalkProvider.notifier).resetToIdle();
+
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Report submitted. Thank you for helping keep our community safe.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        // Silently handle
+                      }
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: context.divider),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        reason,
+                        style: TextStyle(color: context.textPrimary),
+                      ),
+                    ),
                   ),
-                  child: Text(
-                    reason,
-                    style: TextStyle(color: context.textPrimary),
-                  ),
-                ),
-              ),
-            )),
+                )),
           ],
         ),
         actions: [
@@ -117,12 +122,12 @@ class VibeTalkSummaryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final vibeState = ref.watch(vibeTalkProvider);
-    
+
     final duration = vibeState.lastSessionDuration;
-    final durationStr = duration != null 
+    final durationStr = duration != null
         ? '${duration.inMinutes}m ${duration.inSeconds % 60}s'
         : '0m 0s';
-        
+
     final gamesPlayed = vibeState.lastSessionGamesPlayed;
 
     return SafeArea(
@@ -131,7 +136,8 @@ class VibeTalkSummaryScreen extends ConsumerWidget {
         child: Column(
           children: [
             const Spacer(),
-            const Icon(Icons.check_circle_outline, size: 100, color: Color(0xFF10B981))
+            const Icon(Icons.check_circle_outline,
+                    size: 100, color: Color(0xFF10B981))
                 .animate()
                 .scale(duration: 600.ms, curve: Curves.elasticOut),
             const SizedBox(height: 24),
@@ -149,15 +155,16 @@ class VibeTalkSummaryScreen extends ConsumerWidget {
               textAlign: TextAlign.center,
               style: TextStyle(color: context.textSecondary),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             _StatRow(label: 'Duration', value: durationStr, delay: 200.ms),
-            _StatRow(label: 'Games played', value: '$gamesPlayed', delay: 400.ms),
+            _StatRow(
+                label: 'Games played', value: '$gamesPlayed', delay: 400.ms),
             _StatRow(label: 'Connection', value: 'Excellent', delay: 600.ms),
 
             const SizedBox(height: 24),
-            
+
             // Premium post-session feedback card
             Container(
               padding: const EdgeInsets.all(20),
@@ -191,12 +198,15 @@ class VibeTalkSummaryScreen extends ConsumerWidget {
                           onPressed: () {
                             ref.read(vibeTalkProvider.notifier).resetToIdle();
                           },
-                          icon: const Icon(Icons.sentiment_very_satisfied_rounded, color: Color(0xFF10B981)),
+                          icon: const Icon(
+                              Icons.sentiment_very_satisfied_rounded,
+                              color: Color(0xFF10B981)),
                           label: const Text('Yes'),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF10B981),
                             side: const BorderSide(color: Color(0xFF10B981)),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                           ),
                         ),
@@ -207,12 +217,14 @@ class VibeTalkSummaryScreen extends ConsumerWidget {
                           onPressed: () {
                             _showReportDialog(context, ref);
                           },
-                          icon: const Icon(Icons.flag_rounded, color: Colors.white),
+                          icon: const Icon(Icons.flag_rounded,
+                              color: Colors.white),
                           label: const Text('Report'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
                             foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             elevation: 0,
                           ),
@@ -225,10 +237,12 @@ class VibeTalkSummaryScreen extends ConsumerWidget {
             ),
 
             const Spacer(),
-            
+
             ElevatedButton(
               onPressed: () async {
-                final micGranted = await PermissionManager.requestMicrophonePermission(context);
+                final micGranted =
+                    await PermissionManager.requestMicrophonePermission(
+                        context);
                 if (micGranted) {
                   await ref.read(vibeTalkProvider.notifier).startMatching();
                 }
@@ -237,9 +251,11 @@ class VibeTalkSummaryScreen extends ConsumerWidget {
                 backgroundColor: context.accent,
                 foregroundColor: Colors.white,
                 minimumSize: const Size(double.infinity, 56),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
               ),
-              child: const Text('Start New Session 💬', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              child: const Text('Start New Session 💬',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(height: 16),
             TextButton(
@@ -247,7 +263,8 @@ class VibeTalkSummaryScreen extends ConsumerWidget {
                 ref.read(vibeTalkProvider.notifier).resetToIdle();
                 Navigator.pop(context);
               },
-              child: Text('Back to Home', style: TextStyle(color: context.textSecondary)),
+              child: Text('Back to Home',
+                  style: TextStyle(color: context.textSecondary)),
             ),
           ],
         ),
@@ -257,20 +274,23 @@ class VibeTalkSummaryScreen extends ConsumerWidget {
 }
 
 class _StatRow extends StatelessWidget {
-  const _StatRow({required this.label, required this.value, required this.delay});
+  const _StatRow(
+      {required this.label, required this.value, required this.delay});
   final String label;
   final String value;
   final Duration delay;
 
   @override
   Widget build(BuildContext context) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: TextStyle(color: context.textSecondary)),
-          Text(value, style: TextStyle(color: context.textPrimary, fontWeight: FontWeight.bold)),
-        ],
-      ),
-    ).animate().fadeIn(delay: delay).slideX();
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: TextStyle(color: context.textSecondary)),
+            Text(value,
+                style: TextStyle(
+                    color: context.textPrimary, fontWeight: FontWeight.bold)),
+          ],
+        ),
+      ).animate().fadeIn(delay: delay).slideX();
 }

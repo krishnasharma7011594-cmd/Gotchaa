@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import '../filter_manager.dart';
 
 class AdvancedParticleSystem extends StatefulWidget {
-
   const AdvancedParticleSystem({
-    required this.filter, required this.intensity, super.key,
+    required this.filter,
+    required this.intensity,
+    super.key,
   });
   final FilterDefinition filter;
   final double intensity;
@@ -14,7 +15,8 @@ class AdvancedParticleSystem extends StatefulWidget {
   State<AdvancedParticleSystem> createState() => _AdvancedParticleSystemState();
 }
 
-class _AdvancedParticleSystemState extends State<AdvancedParticleSystem> with SingleTickerProviderStateMixin {
+class _AdvancedParticleSystemState extends State<AdvancedParticleSystem>
+    with SingleTickerProviderStateMixin {
   late AnimationController _ticker;
   List<_Particle> _particles = [];
   final Random _rand = Random();
@@ -22,27 +24,29 @@ class _AdvancedParticleSystemState extends State<AdvancedParticleSystem> with Si
   @override
   void initState() {
     super.initState();
-    _ticker = AnimationController(vsync: this, duration: const Duration(hours: 1))..forward();
+    _ticker =
+        AnimationController(vsync: this, duration: const Duration(hours: 1))
+          ..forward();
     _ticker.addListener(_updatePhysics);
   }
 
   void _updatePhysics() {
     if (!mounted) return;
-    
+
     // Scale count by intensity
     int baseCount = 100;
     if (widget.filter.id == 'p_galaxy') baseCount = 300;
     if (widget.filter.id == 'p_fire') baseCount = 200;
-    
+
     final targetCount = (baseCount * widget.intensity).toInt();
     final Size size = MediaQuery.of(context).size;
 
     final List<_Particle> active = [];
-    
+
     // Physics Step
     for (final p in _particles) {
       p.lifetime -= 0.016; // 60fps delta
-      
+
       switch (widget.filter.id) {
         case 'p_sakura':
         case 'p_snow':
@@ -77,14 +81,18 @@ class _AdvancedParticleSystemState extends State<AdvancedParticleSystem> with Si
           final double cy = size.height / 2;
           final double dx = p.x - cx;
           final double dy = p.y - cy;
-          final double dist = sqrt(dx*dx + dy*dy);
+          final double dist = sqrt(dx * dx + dy * dy);
           final double angle = atan2(dy, dx) + 0.05; // orbit speed
           p.x = cx + cos(angle) * dist * 0.99; // pull in
           p.y = cy + sin(angle) * dist * 0.99;
           break;
       }
 
-      if (p.lifetime > 0 && p.y < size.height + 50 && p.y > -50 && p.x > -50 && p.x < size.width + 50) {
+      if (p.lifetime > 0 &&
+          p.y < size.height + 50 &&
+          p.y > -50 &&
+          p.x > -50 &&
+          p.x < size.width + 50) {
         active.add(p);
       }
     }
@@ -126,7 +134,13 @@ class _AdvancedParticleSystemState extends State<AdvancedParticleSystem> with Si
         x = size.width / 2; // Explode from center
         vx = (_rand.nextDouble() - 0.5) * 20;
         gravity = -(_rand.nextDouble() * 15 + 5); // shoots up
-        final colors = [Colors.red, Colors.blue, Colors.yellow, Colors.green, Colors.purple];
+        final colors = [
+          Colors.red,
+          Colors.blue,
+          Colors.yellow,
+          Colors.green,
+          Colors.purple
+        ];
         color = colors[_rand.nextInt(colors.length)];
         rotForce = (_rand.nextDouble() - 0.5) * 0.5;
         pSize = 6;
@@ -136,7 +150,9 @@ class _AdvancedParticleSystemState extends State<AdvancedParticleSystem> with Si
       case 'p_bubbles':
         y = size.height + 20; // spawns bottom
         gravity = _rand.nextDouble() * 3 + 2; // rises fast
-        color = widget.filter.id == 'p_hearts' ? Colors.redAccent : Colors.cyanAccent.withOpacity(0.5);
+        color = widget.filter.id == 'p_hearts'
+            ? Colors.redAccent
+            : Colors.cyanAccent.withOpacity(0.5);
         pSize = _rand.nextDouble() * 10 + 5;
         break;
       case 'p_fire':
@@ -144,14 +160,23 @@ class _AdvancedParticleSystemState extends State<AdvancedParticleSystem> with Si
         y = size.height + 10;
         gravity = _rand.nextDouble() * 5 + 3;
         final cIndex = _rand.nextInt(3);
-        color = cIndex == 0 ? Colors.red : cIndex == 1 ? Colors.orange : Colors.yellow;
+        color = cIndex == 0
+            ? Colors.red
+            : cIndex == 1
+                ? Colors.orange
+                : Colors.yellow;
         lifetime = _rand.nextDouble() * 1.5 + 0.5;
         pSize = 10 * (_rand.nextDouble() + 0.5);
         break;
       case 'p_galaxy':
         x = _rand.nextDouble() * size.width;
         y = _rand.nextDouble() * size.height; // spawn anywhere
-        final colors = [Colors.deepPurple, Colors.indigo, Colors.lightBlueAccent, Colors.white];
+        final colors = [
+          Colors.deepPurple,
+          Colors.indigo,
+          Colors.lightBlueAccent,
+          Colors.white
+        ];
         color = colors[_rand.nextInt(colors.length)];
         pSize = _rand.nextDouble() * 3 + 1;
         lifetime = _rand.nextDouble() * 3 + 2;
@@ -159,11 +184,20 @@ class _AdvancedParticleSystemState extends State<AdvancedParticleSystem> with Si
       case 'p_matrix':
         color = Colors.greenAccent;
         gravity = _rand.nextDouble() * 5 + 5; // falls fast
-        pSize = 14; 
+        pSize = 14;
         break;
     }
 
-    return _Particle(x: x, y: y, vx: vx, gravity: gravity, rotForce: rotForce, size: pSize, color: color, lifetime: lifetime, angle: 0);
+    return _Particle(
+        x: x,
+        y: y,
+        vx: vx,
+        gravity: gravity,
+        rotForce: rotForce,
+        size: pSize,
+        color: color,
+        lifetime: lifetime,
+        angle: 0);
   }
 
   @override
@@ -209,19 +243,26 @@ class _MultiParticlePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     for (final p in ps) {
-      final paint = Paint()..color = p.color.withOpacity((p.lifetime / 3.0).clamp(0.0, 1.0));
-      
+      final paint = Paint()
+        ..color = p.color.withOpacity((p.lifetime / 3.0).clamp(0.0, 1.0));
+
       canvas.save();
       canvas.translate(p.x, p.y);
       canvas.rotate(p.rotation);
 
       if (mode == 'p_sakura') {
-        canvas.drawOval(Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size * 1.5), paint);
+        canvas.drawOval(
+            Rect.fromCenter(
+                center: Offset.zero, width: p.size, height: p.size * 1.5),
+            paint);
       } else if (mode == 'p_confetti') {
-        canvas.drawRect(Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size), paint);
+        canvas.drawRect(
+            Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size),
+            paint);
       } else if (mode == 'p_matrix') {
         // Simple representation of characters
-        _drawText(canvas, String.fromCharCode(0x30A0 + Random().nextInt(96)), paint.color, p.size);
+        _drawText(canvas, String.fromCharCode(0x30A0 + Random().nextInt(96)),
+            paint.color, p.size);
       } else if (mode == 'p_hearts') {
         _drawHeart(canvas, p.size, paint);
       } else if (mode == 'p_bubbles') {
@@ -237,9 +278,13 @@ class _MultiParticlePainter extends CustomPainter {
   }
 
   void _drawText(Canvas c, String t, Color col, double s) {
-    final tp = TextPainter(text: TextSpan(text: t, style: TextStyle(color: col, fontSize: s, fontFamily: 'Courier')), textDirection: TextDirection.ltr);
+    final tp = TextPainter(
+        text: TextSpan(
+            text: t,
+            style: TextStyle(color: col, fontSize: s, fontFamily: 'Courier')),
+        textDirection: TextDirection.ltr);
     tp.layout();
-    tp.paint(c, Offset(-s/2, -s/2));
+    tp.paint(c, Offset(-s / 2, -s / 2));
   }
 
   void _drawHeart(Canvas canvas, double size, Paint paint) {

@@ -29,7 +29,8 @@ class FilmGrainPainter extends CustomPainter {
     final random = Random(42);
     for (int i = 0; i < 2000; i++) {
       canvas.drawCircle(
-        Offset(random.nextDouble() * size.width, random.nextDouble() * size.height),
+        Offset(random.nextDouble() * size.width,
+            random.nextDouble() * size.height),
         random.nextDouble() * 1.2,
         paint,
       );
@@ -41,12 +42,12 @@ class FilmGrainPainter extends CustomPainter {
 }
 
 class AROverlaysWidget extends StatelessWidget {
-  
-  const AROverlaysWidget({
-    required this.filter, required this.intensity, super.key,
-    this.face,
-    this.imageSize
-  });
+  const AROverlaysWidget(
+      {required this.filter,
+      required this.intensity,
+      super.key,
+      this.face,
+      this.imageSize});
   final FilterDefinition filter;
   final double intensity;
   final Face? face;
@@ -75,17 +76,17 @@ class AROverlaysWidget extends StatelessWidget {
     double faceX = size.width / 2;
     double faceY = size.height / 2;
     double faceWidth = 200;
-    
+
     if (face != null && imageSize != null) {
       final rect = face!.boundingBox;
-      
+
       // ML Kit coordinates are in image space (usually 720x1280)
       // On Android front camera, X 0 is the RIGHT of the person.
       // We need to mirror if front camera
-      
+
       double relativeX = (rect.left + rect.width / 2) / imageSize!.height;
       final double relativeY = (rect.top + rect.height / 2) / imageSize!.width;
-      
+
       // Front camera fix (mirroring)
       relativeX = 1.0 - relativeX;
 
@@ -147,17 +148,24 @@ class AROverlaysWidget extends StatelessWidget {
       case 'v_cyber':
         return Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.cyanAccent.withOpacity(0.5 * intensity), width: 4),
+            border: Border.all(
+                color: Colors.cyanAccent.withOpacity(0.5 * intensity),
+                width: 4),
           ),
           child: Center(
             child: Container(
               height: 300,
               width: 250,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.cyanAccent.withOpacity(0.6 * intensity), width: 2),
+                border: Border.all(
+                    color: Colors.cyanAccent.withOpacity(0.6 * intensity),
+                    width: 2),
                 borderRadius: BorderRadius.circular(150),
                 boxShadow: [
-                  BoxShadow(color: Colors.pinkAccent.withOpacity(0.3 * intensity), blurRadius: 40, spreadRadius: 10)
+                  BoxShadow(
+                      color: Colors.pinkAccent.withOpacity(0.3 * intensity),
+                      blurRadius: 40,
+                      spreadRadius: 10)
                 ],
               ),
             ),
@@ -172,9 +180,11 @@ class AROverlaysWidget extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('🔥', style: TextStyle(fontSize: (faceWidth / 4) * intensity)),
+              Text('🔥',
+                  style: TextStyle(fontSize: (faceWidth / 4) * intensity)),
               SizedBox(width: faceWidth / 3),
-              Text('🔥', style: TextStyle(fontSize: (faceWidth / 4) * intensity)),
+              Text('🔥',
+                  style: TextStyle(fontSize: (faceWidth / 4) * intensity)),
             ],
           ),
         );
@@ -188,21 +198,23 @@ class AROverlaysWidget extends StatelessWidget {
           child: Center(
             child: Text(
               filter.id == 'f_crown' ? '👑' : '😇',
-              style: TextStyle(
-                fontSize: faceWidth * 0.8 * intensity, 
-                shadows: [Shadow(color: Colors.yellowAccent.withOpacity(intensity), blurRadius: 20)]
-              ),
+              style: TextStyle(fontSize: faceWidth * 0.8 * intensity, shadows: [
+                Shadow(
+                    color: Colors.yellowAccent.withOpacity(intensity),
+                    blurRadius: 20)
+              ]),
             ),
           ),
         );
 
       case 'f_glasses':
-         return Positioned(
+        return Positioned(
           top: faceY - (faceWidth / 6),
           left: faceX - faceWidth / 2,
           width: faceWidth,
           child: Center(
-            child: Text('🕶️', style: TextStyle(fontSize: faceWidth * 0.6 * intensity)),
+            child: Text('🕶️',
+                style: TextStyle(fontSize: faceWidth * 0.6 * intensity)),
           ),
         );
 
@@ -211,7 +223,7 @@ class AROverlaysWidget extends StatelessWidget {
         final leftEye = face!.landmarks[FaceLandmarkType.leftEye];
         final rightEye = face!.landmarks[FaceLandmarkType.rightEye];
         if (leftEye == null || rightEye == null) return const SizedBox.shrink();
-        
+
         final lX = leftEye.position.x * (size.width / imageSize!.width);
         final lY = leftEye.position.y * (size.height / imageSize!.height);
         final rX = rightEye.position.x * (size.width / imageSize!.width);
@@ -220,11 +232,13 @@ class AROverlaysWidget extends StatelessWidget {
         return Stack(
           children: [
             Positioned(
-              left: lX - 15, top: lY - 15,
+              left: lX - 15,
+              top: lY - 15,
               child: _buildEmber(intensity),
             ),
             Positioned(
-              left: rX - 15, top: rY - 15,
+              left: rX - 15,
+              top: rY - 15,
               child: _buildEmber(intensity),
             ),
           ],
@@ -232,25 +246,26 @@ class AROverlaysWidget extends StatelessWidget {
 
       case 'f_glam':
         return Container(
-           decoration: BoxDecoration(
-             gradient: LinearGradient(
-               colors: [Colors.pink.withOpacity(0.1 * intensity), Colors.transparent],
-               begin: Alignment.topCenter, end: Alignment.bottomCenter
-             )
-           ),
+          decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [
+            Colors.pink.withOpacity(0.1 * intensity),
+            Colors.transparent
+          ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
         );
 
       case 'f_horns':
-         return Positioned(
+        return Positioned(
           top: faceY - faceWidth * 0.5,
           left: faceX - faceWidth / 2,
           width: faceWidth,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('😈', style: TextStyle(fontSize: (faceWidth / 3) * intensity)),
+              Text('😈',
+                  style: TextStyle(fontSize: (faceWidth / 3) * intensity)),
               SizedBox(width: faceWidth / 2),
-              Text('😈', style: TextStyle(fontSize: (faceWidth / 3) * intensity)),
+              Text('😈',
+                  style: TextStyle(fontSize: (faceWidth / 3) * intensity)),
             ],
           ),
         );
@@ -261,15 +276,19 @@ class AROverlaysWidget extends StatelessWidget {
   }
 
   Widget _buildEmber(double intensity) => Container(
-      width: 30, height: 30,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(color: Colors.orangeAccent.withOpacity(0.8 * intensity), blurRadius: 15, spreadRadius: 5),
-          BoxShadow(color: Colors.redAccent.withOpacity(0.5 * intensity), blurRadius: 25, spreadRadius: 2),
-        ]
-      ),
-    );
+        width: 30,
+        height: 30,
+        decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [
+          BoxShadow(
+              color: Colors.orangeAccent.withOpacity(0.8 * intensity),
+              blurRadius: 15,
+              spreadRadius: 5),
+          BoxShadow(
+              color: Colors.redAccent.withOpacity(0.5 * intensity),
+              blurRadius: 25,
+              spreadRadius: 2),
+        ]),
+      );
 }
 
 class SnapchatBeautyLayer extends StatelessWidget {
@@ -278,54 +297,55 @@ class SnapchatBeautyLayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Stack(
-      children: [
-        // Premium Color Matrix: Pinkish glow, bright highlights, soft shadows
-        ColorFiltered(
-          colorFilter: ColorFilter.matrix([
-            1.25, 0, 0, 0, 25 * intensity,  // Red (Skin warmth)
-            0, 1.15, 0, 0, 15 * intensity,  // Green
-            0, 0, 1.2, 0, 20 * intensity,   // Blue (Clean look)
-            0, 0, 0, 1.0, 0,               // Alpha
-          ]),
-          child: BackdropFilter(
-            // Premium Skin Smoothing (Snapchat Soft Focus)
-            filter: ui.ImageFilter.blur(sigmaX: 1.2 * intensity, sigmaY: 1.2 * intensity),
-            child: Container(color: Colors.transparent),
+        children: [
+          // Premium Color Matrix: Pinkish glow, bright highlights, soft shadows
+          ColorFiltered(
+            colorFilter: ColorFilter.matrix([
+              1.25, 0, 0, 0, 25 * intensity, // Red (Skin warmth)
+              0, 1.15, 0, 0, 15 * intensity, // Green
+              0, 0, 1.2, 0, 20 * intensity, // Blue (Clean look)
+              0, 0, 0, 1.0, 0, // Alpha
+            ]),
+            child: BackdropFilter(
+              // Premium Skin Smoothing (Snapchat Soft Focus)
+              filter: ui.ImageFilter.blur(
+                  sigmaX: 1.2 * intensity, sigmaY: 1.2 * intensity),
+              child: Container(color: Colors.transparent),
+            ),
           ),
-        ),
-        
-        // Bloom Overlay (Soft Center Glow)
-        IgnorePointer(
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: RadialGradient(
-                center: const Alignment(0, -0.2),
-                colors: [
-                  Colors.white.withOpacity(0.18 * intensity),
-                  Colors.transparent,
-                ],
-                radius: 1.3,
+
+          // Bloom Overlay (Soft Center Glow)
+          IgnorePointer(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: const Alignment(0, -0.2),
+                  colors: [
+                    Colors.white.withOpacity(0.18 * intensity),
+                    Colors.transparent,
+                  ],
+                  radius: 1.3,
+                ),
               ),
             ),
           ),
-        ),
-        
-        // Slight Vignette for cinematic focus
-        IgnorePointer(
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: RadialGradient(
-                radius: 1.8,
-                colors: [
-                  Colors.transparent,
-                  Colors.black.withOpacity(0.15 * intensity),
-                ],
+
+          // Slight Vignette for cinematic focus
+          IgnorePointer(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  radius: 1.8,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.15 * intensity),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
 }
 
 class AIGlowUpOverlay extends StatefulWidget {
@@ -333,64 +353,71 @@ class AIGlowUpOverlay extends StatefulWidget {
   @override
   State<AIGlowUpOverlay> createState() => _AIGlowUpOverlayState();
 }
-class _AIGlowUpOverlayState extends State<AIGlowUpOverlay> with SingleTickerProviderStateMixin {
+
+class _AIGlowUpOverlayState extends State<AIGlowUpOverlay>
+    with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(seconds: 1))..forward();
+    _ctrl =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1))
+          ..forward();
   }
+
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) => FadeTransition(
       opacity: _ctrl,
-      child: Stack(
-        children: [
-          Container(
+      child: Stack(children: [
+        Container(
             decoration: BoxDecoration(
-              gradient: RadialGradient(
-                colors: [Colors.yellowAccent.withOpacity(0.15), Colors.transparent],
-                radius: 0.8,
-              )
-            )
-          ),
-          Center(
-             child: Container(
-               width: 200, height: 280,
-               decoration: BoxDecoration(
-                 color: Colors.transparent,
-                 borderRadius: BorderRadius.circular(140),
-                 boxShadow: [BoxShadow(color: Colors.white.withOpacity(0.3), blurRadius: 40, spreadRadius: 10)]
-               )
-             )
-          )
-        ]
-      )
-    );
+                gradient: RadialGradient(
+          colors: [Colors.yellowAccent.withOpacity(0.15), Colors.transparent],
+          radius: 0.8,
+        ))),
+        Center(
+            child: Container(
+                width: 200,
+                height: 280,
+                decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(140),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.white.withOpacity(0.3),
+                          blurRadius: 40,
+                          spreadRadius: 10)
+                    ])))
+      ]));
 }
 
 class AnimeFaceOverlay extends StatelessWidget {
   const AnimeFaceOverlay({super.key});
   @override
-  Widget build(BuildContext context) => Stack(
-      children: [
+  Widget build(BuildContext context) => Stack(children: [
         Container(color: Colors.pinkAccent.withOpacity(0.1)),
         const Center(
-          child: Padding(
-            padding: EdgeInsets.only(bottom: 50),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                 Text('✨', style: TextStyle(fontSize: 60, shadows: [Shadow(color: Colors.white, blurRadius: 20)])),
-                 SizedBox(width: 80),
-                 Text('✨', style: TextStyle(fontSize: 60, shadows: [Shadow(color: Colors.white, blurRadius: 20)])),
-              ]
-            )
-          )
-        )
-      ]
-    );
+            child: Padding(
+                padding: EdgeInsets.only(bottom: 50),
+                child:
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Text('✨',
+                      style: TextStyle(fontSize: 60, shadows: [
+                        Shadow(color: Colors.white, blurRadius: 20)
+                      ])),
+                  SizedBox(width: 80),
+                  Text('✨',
+                      style: TextStyle(fontSize: 60, shadows: [
+                        Shadow(color: Colors.white, blurRadius: 20)
+                      ])),
+                ])))
+      ]);
 }
 
 class ElementControlOverlay extends StatefulWidget {
@@ -398,27 +425,32 @@ class ElementControlOverlay extends StatefulWidget {
   @override
   State<ElementControlOverlay> createState() => _ElementControlOverlayState();
 }
+
 class _ElementControlOverlayState extends State<ElementControlOverlay> {
   bool isFire = true;
   @override
   Widget build(BuildContext context) => GestureDetector(
       onTap: () => setState(() => isFire = !isFire),
       behavior: HitTestBehavior.opaque,
-      child: Stack(
-        children: [
-          Container(
-            color: isFire ? Colors.deepOrange.withOpacity(0.15) : Colors.lightBlue.withOpacity(0.15)
-          ),
-          Center(
-             child: Text(isFire ? '🔥🔥🔥' : '❄️❄️❄️', style: const TextStyle(fontSize: 60))
-          ),
-          Positioned(
-            top: 100, left: 0, right: 0,
-            child: Text(isFire ? 'FIRE MODE (Tap)' : 'ICE MODE (Tap)', textAlign: TextAlign.center, style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))
-          )
-        ]
-      )
-    );
+      child: Stack(children: [
+        Container(
+            color: isFire
+                ? Colors.deepOrange.withOpacity(0.15)
+                : Colors.lightBlue.withOpacity(0.15)),
+        Center(
+            child: Text(isFire ? '🔥🔥🔥' : '❄️❄️❄️',
+                style: const TextStyle(fontSize: 60))),
+        Positioned(
+            top: 100,
+            left: 0,
+            right: 0,
+            child: Text(isFire ? 'FIRE MODE (Tap)' : 'ICE MODE (Tap)',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold)))
+      ]));
 }
 
 class EnvSwitcherOverlay extends StatefulWidget {
@@ -426,6 +458,7 @@ class EnvSwitcherOverlay extends StatefulWidget {
   @override
   State<EnvSwitcherOverlay> createState() => _EnvSwitcherOverlayState();
 }
+
 class _EnvSwitcherOverlayState extends State<EnvSwitcherOverlay> {
   int bgIndex = 0;
   final List<List<Color>> bgs = [
@@ -437,30 +470,37 @@ class _EnvSwitcherOverlayState extends State<EnvSwitcherOverlay> {
   Widget build(BuildContext context) => GestureDetector(
       onTap: () => setState(() => bgIndex = (bgIndex + 1) % bgs.length),
       behavior: HitTestBehavior.opaque,
-      child: Stack(
-        children: [
-          Container(
-             decoration: BoxDecoration(
-                gradient: LinearGradient(colors: bgs[bgIndex], begin: Alignment.topLeft, end: Alignment.bottomRight)
-             )
-          ),
-          Center(
-             child: Container(
-                width: 300, height: 500,
+      child: Stack(children: [
+        Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    colors: bgs[bgIndex],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight))),
+        Center(
+            child: Container(
+                width: 300,
+                height: 500,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(150),
-                  color: Colors.transparent,
-                  boxShadow: const [BoxShadow(color: Colors.black54, spreadRadius: 100, blurRadius: 100)]
-                )
-             )
-          ),
-          Positioned(
-            top: 100, left: 0, right: 0,
-            child: Text('Tap to change Env', textAlign: TextAlign.center, style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))
-          )
-        ]
-      )
-    );
+                    borderRadius: BorderRadius.circular(150),
+                    color: Colors.transparent,
+                    boxShadow: const [
+                      BoxShadow(
+                          color: Colors.black54,
+                          spreadRadius: 100,
+                          blurRadius: 100)
+                    ]))),
+        Positioned(
+            top: 100,
+            left: 0,
+            right: 0,
+            child: Text('Tap to change Env',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold)))
+      ]));
 }
 
 class ARGameOverlay extends StatefulWidget {
@@ -468,51 +508,60 @@ class ARGameOverlay extends StatefulWidget {
   @override
   State<ARGameOverlay> createState() => _ARGameOverlayState();
 }
-class _ARGameOverlayState extends State<ARGameOverlay> with SingleTickerProviderStateMixin {
+
+class _ARGameOverlayState extends State<ARGameOverlay>
+    with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
   int score = 0;
   double heartY = -0.2;
   double heartX = 0.5;
-  
+
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat();
+    _ctrl =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2))
+          ..repeat();
     _ctrl.addListener(() {
-       setState(() {
-         heartY = -0.2 + (_ctrl.value * 1.4);
-         if (heartY > 1.1) {
-            heartX = Random().nextDouble() * 0.8 + 0.1;
-         }
-       });
+      setState(() {
+        heartY = -0.2 + (_ctrl.value * 1.4);
+        if (heartY > 1.1) {
+          heartX = Random().nextDouble() * 0.8 + 0.1;
+        }
+      });
     });
   }
+
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
   @override
-  Widget build(BuildContext context) => Stack(
-      children: [
+  Widget build(BuildContext context) => Stack(children: [
         Positioned(
-           top: 80, left: 20,
-           child: Text('Score: $score', style: GoogleFonts.outfit(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold))
-        ),
+            top: 80,
+            left: 20,
+            child: Text('Score: $score',
+                style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold))),
         Positioned(
-           top: MediaQuery.of(context).size.height * heartY,
-           left: MediaQuery.of(context).size.width * heartX,
-           child: GestureDetector(
-              onTap: () {
-                 if (!mounted) return;
-                 setState(() {
-                   score++;
-                   heartY = -0.2;
-                   heartX = Random().nextDouble() * 0.8 + 0.1;
-                   _ctrl.forward(from: 0);
-                   HapticFeedback.heavyImpact();
-                 });
-              },
-              child: const Text('💖', style: TextStyle(fontSize: 60))
-           )
-        )
-      ]
-    );
+            top: MediaQuery.of(context).size.height * heartY,
+            left: MediaQuery.of(context).size.width * heartX,
+            child: GestureDetector(
+                onTap: () {
+                  if (!mounted) return;
+                  setState(() {
+                    score++;
+                    heartY = -0.2;
+                    heartX = Random().nextDouble() * 0.8 + 0.1;
+                    _ctrl.forward(from: 0);
+                    HapticFeedback.heavyImpact();
+                  });
+                },
+                child: const Text('💖', style: TextStyle(fontSize: 60))))
+      ]);
 }

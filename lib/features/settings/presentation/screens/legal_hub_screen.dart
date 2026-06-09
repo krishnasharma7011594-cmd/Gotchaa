@@ -58,8 +58,10 @@ class _LegalHubScreenState extends State<LegalHubScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppColors.darkBg : const Color(0xFFF8F9FB);
     final card = isDark ? AppColors.darkSurface : Colors.white;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : const Color(0xFF0D0D0D);
-    final textSecondary = isDark ? AppColors.darkTextSecondary : Colors.grey.shade600;
+    final textPrimary =
+        isDark ? AppColors.darkTextPrimary : const Color(0xFF0D0D0D);
+    final textSecondary =
+        isDark ? AppColors.darkTextSecondary : Colors.grey.shade600;
 
     final needsReaccept = (_acceptedPrivacy != LegalConfig.privacyVersion) ||
         (_acceptedTerms != LegalConfig.termsVersion);
@@ -74,7 +76,8 @@ class _LegalHubScreenState extends State<LegalHubScreen> {
             style: GoogleFonts.outfit(
                 fontWeight: FontWeight.w700, fontSize: 18, color: textPrimary)),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: textPrimary, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+              color: textPrimary, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -88,17 +91,20 @@ class _LegalHubScreenState extends State<LegalHubScreen> {
               decoration: BoxDecoration(
                 color: AppColors.error.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.error.withValues(alpha: 0.35)),
+                border:
+                    Border.all(color: AppColors.error.withValues(alpha: 0.35)),
               ),
               child: Text(
                 'Our legal documents were updated to Version ${LegalDocuments.bundleVersion} (${LegalConfig.effectiveLabel}). '
                 'Please review and accept the Privacy Policy and Terms of Service.',
-                style: GoogleFonts.outfit(fontSize: 13, color: textPrimary, height: 1.4),
+                style: GoogleFonts.outfit(
+                    fontSize: 13, color: textPrimary, height: 1.4),
               ),
             ),
           Text(
             'All documents are stored on your device and available offline.',
-            style: GoogleFonts.outfit(fontSize: 12, color: textSecondary, height: 1.4),
+            style: GoogleFonts.outfit(
+                fontSize: 12, color: textSecondary, height: 1.4),
           ),
           const SizedBox(height: 16),
           ...LegalDocuments.all.map((doc) {
@@ -121,7 +127,8 @@ class _LegalHubScreenState extends State<LegalHubScreen> {
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
                     child: Row(
                       children: [
                         Icon(
@@ -148,7 +155,8 @@ class _LegalHubScreenState extends State<LegalHubScreen> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 2),
                                       decoration: BoxDecoration(
-                                        color: AppColors.primaryBlue.withValues(alpha: 0.15),
+                                        color: AppColors.primaryBlue
+                                            .withValues(alpha: 0.15),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text('Updated',

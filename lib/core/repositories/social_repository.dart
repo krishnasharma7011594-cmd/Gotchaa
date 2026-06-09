@@ -101,13 +101,14 @@ class SocialRepository {
   Stream<bool> isFollowingStream({
     required String myUid,
     required String targetUid,
-  }) => _db
-        .collection('following')
-        .doc(myUid)
-        .collection('userFollowing')
-        .doc(targetUid)
-        .snapshots()
-        .map((snap) => snap.exists);
+  }) =>
+      _db
+          .collection('following')
+          .doc(myUid)
+          .collection('userFollowing')
+          .doc(targetUid)
+          .snapshots()
+          .map((snap) => snap.exists);
 
   // ═══════════════════════════════════════════════════════════════════════
   // LIKE SYSTEM
@@ -157,7 +158,8 @@ class SocialRepository {
       'photoUrl': likerPhotoUrl ?? '',
     });
 
-    DistributedCounter.incrementInBatch(batch, contentRef, 'likesCount', value: 1);
+    DistributedCounter.incrementInBatch(batch, contentRef, 'likesCount',
+        value: 1);
 
     // Update global activity if needed
     if (contentOwnerId != null && contentOwnerId != uid) {
@@ -166,7 +168,7 @@ class SocialRepository {
           .doc(contentOwnerId)
           .collection('userNotifications')
           .doc();
-      
+
       batch.set(notifRef, {
         'type': contentType == 'comments' ? 'commentLike' : 'like',
         'fromUid': uid,
@@ -176,7 +178,9 @@ class SocialRepository {
         'parentId': parentId,
         'isRead': false,
         'createdAt': FieldValue.serverTimestamp(),
-        'message': contentType == 'comments' ? 'liked your comment' : 'liked your post',
+        'message': contentType == 'comments'
+            ? 'liked your comment'
+            : 'liked your post',
       });
     }
 
@@ -209,7 +213,8 @@ class SocialRepository {
 
     batch.delete(likeRef);
 
-    DistributedCounter.incrementInBatch(batch, contentRef, 'likesCount', value: -1);
+    DistributedCounter.incrementInBatch(batch, contentRef, 'likesCount',
+        value: -1);
 
     await batch.commit();
   }
@@ -238,7 +243,9 @@ class SocialRepository {
         .map((snap) => snap.exists);
   }
 
-  Future<List<Map<String, dynamic>>> getLikers(String contentId, String contentType, {String? parentId}) async {
+  Future<List<Map<String, dynamic>>> getLikers(
+      String contentId, String contentType,
+      {String? parentId}) async {
     final DocumentReference contentRef;
     if (contentType == 'comments' && parentId != null) {
       contentRef = _db
@@ -250,7 +257,10 @@ class SocialRepository {
       contentRef = _db.collection(contentType).doc(contentId);
     }
 
-    final query = await contentRef.collection('likes').orderBy('likedAt', descending: true).get();
+    final query = await contentRef
+        .collection('likes')
+        .orderBy('likedAt', descending: true)
+        .get();
     return query.docs.map((doc) => doc.data()).toList();
   }
 
@@ -264,15 +274,14 @@ class SocialRepository {
   }) async {
     final batch = _db.batch();
 
-    final commentRef = _db
-        .collection('posts')
-        .doc(postId)
-        .collection('comments')
-        .doc();
+    final commentRef =
+        _db.collection('posts').doc(postId).collection('comments').doc();
 
     batch.set(commentRef, comment.toMap());
 
-    DistributedCounter.incrementInBatch(batch, _db.collection('posts').doc(postId), 'commentsCount', value: 1);
+    DistributedCounter.incrementInBatch(
+        batch, _db.collection('posts').doc(postId), 'commentsCount',
+        value: 1);
 
     await batch.commit();
   }
@@ -280,16 +289,17 @@ class SocialRepository {
   Stream<List<CommentModel>> getComments(
     String postId, {
     int limit = 20,
-  }) => _db
-        .collection('posts')
-        .doc(postId)
-        .collection('comments')
-        .orderBy('createdAt', descending: true)
-        .limit(limit)
-        .snapshots()
-        .map((snap) => snap.docs
-            .map((doc) => CommentModel.fromMap(doc.data(), doc.id))
-            .toList());
+  }) =>
+      _db
+          .collection('posts')
+          .doc(postId)
+          .collection('comments')
+          .orderBy('createdAt', descending: true)
+          .limit(limit)
+          .snapshots()
+          .map((snap) => snap.docs
+              .map((doc) => CommentModel.fromMap(doc.data(), doc.id))
+              .toList());
 
   Future<void> deleteComment({
     required String postId,
@@ -298,14 +308,12 @@ class SocialRepository {
     final batch = _db.batch();
 
     batch.delete(
-      _db
-          .collection('posts')
-          .doc(postId)
-          .collection('comments')
-          .doc(commentId),
+      _db.collection('posts').doc(postId).collection('comments').doc(commentId),
     );
 
-    DistributedCounter.incrementInBatch(batch, _db.collection('posts').doc(postId), 'commentsCount', value: -1);
+    DistributedCounter.incrementInBatch(
+        batch, _db.collection('posts').doc(postId), 'commentsCount',
+        value: -1);
 
     await batch.commit();
   }
@@ -344,66 +352,69 @@ class SocialRepository {
   Stream<bool> isBookmarkedStream({
     required String postId,
     required String uid,
-  }) => _db
-        .collection('users')
-        .doc(uid)
-        .collection('bookmarks')
-        .doc(postId)
-        .snapshots()
-        .map((snap) => snap.exists);
+  }) =>
+      _db
+          .collection('users')
+          .doc(uid)
+          .collection('bookmarks')
+          .doc(postId)
+          .snapshots()
+          .map((snap) => snap.exists);
 
   Stream<List<String>> getBookmarkedPostIds(String uid) => _db
-        .collection('users')
-        .doc(uid)
-        .collection('bookmarks')
-        .orderBy('bookmarkedAt', descending: true)
-        .snapshots()
-        .map((snap) => snap.docs.map((doc) => doc.id).toList());
+      .collection('users')
+      .doc(uid)
+      .collection('bookmarks')
+      .orderBy('bookmarkedAt', descending: true)
+      .snapshots()
+      .map((snap) => snap.docs.map((doc) => doc.id).toList());
 
   // ═══════════════════════════════════════════════════════════════════════
   // FOLLOW RETRIEVAL
   // ═══════════════════════════════════════════════════════════════════════
 
   Stream<List<UserProfile>> getFollowers(String uid, {int limit = 20}) => _db
-        .collection('followers')
-        .doc(uid)
-        .collection('userFollowers')
-        .orderBy('followedAt', descending: true)
-        .limit(limit)
-        .snapshots()
-        .asyncMap((snap) async {
-      final uids = snap.docs.map((doc) => doc.id).toList();
-      if (uids.isEmpty) return [];
-      
-      final profiles = await Future.wait(
-        uids.map((uid) => _db.collection('users').doc(uid).get().then((d) => 
-          UserProfile.fromMap(d.data() ?? {}, d.id)))
-      );
-      return profiles;
-    });
+          .collection('followers')
+          .doc(uid)
+          .collection('userFollowers')
+          .orderBy('followedAt', descending: true)
+          .limit(limit)
+          .snapshots()
+          .asyncMap((snap) async {
+        final uids = snap.docs.map((doc) => doc.id).toList();
+        if (uids.isEmpty) return [];
+
+        final profiles = await Future.wait(uids.map((uid) => _db
+            .collection('users')
+            .doc(uid)
+            .get()
+            .then((d) => UserProfile.fromMap(d.data() ?? {}, d.id))));
+        return profiles;
+      });
 
   Stream<List<UserProfile>> getFollowing(String uid, {int limit = 20}) => _db
-        .collection('following')
-        .doc(uid)
-        .collection('userFollowing')
-        .orderBy('followedAt', descending: true)
-        .limit(limit)
-        .snapshots()
-        .asyncMap((snap) async {
-      final uids = snap.docs.map((doc) => doc.id).toList();
-      if (uids.isEmpty) return [];
+          .collection('following')
+          .doc(uid)
+          .collection('userFollowing')
+          .orderBy('followedAt', descending: true)
+          .limit(limit)
+          .snapshots()
+          .asyncMap((snap) async {
+        final uids = snap.docs.map((doc) => doc.id).toList();
+        if (uids.isEmpty) return [];
 
-      final profiles = await Future.wait(
-        uids.map((uid) => _db.collection('users').doc(uid).get().then((d) => 
-          UserProfile.fromMap(d.data() ?? {}, d.id)))
-      );
-      return profiles;
-    });
+        final profiles = await Future.wait(uids.map((uid) => _db
+            .collection('users')
+            .doc(uid)
+            .get()
+            .then((d) => UserProfile.fromMap(d.data() ?? {}, d.id))));
+        return profiles;
+      });
 
   Stream<List<UserProfile>> getUsersByUids(List<String> uids) {
     if (uids.isEmpty) return Stream.value([]);
-    
-    // Firestore whereIn limit is 30. If more, we'd need to batch. 
+
+    // Firestore whereIn limit is 30. If more, we'd need to batch.
     // For blocked users, 30 is usually enough for a simple demo/impl.
     return _db
         .collection('users')

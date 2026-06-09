@@ -17,7 +17,8 @@ class TwoFactorSetupScreen extends ConsumerStatefulWidget {
   const TwoFactorSetupScreen({super.key});
 
   @override
-  ConsumerState<TwoFactorSetupScreen> createState() => _TwoFactorSetupScreenState();
+  ConsumerState<TwoFactorSetupScreen> createState() =>
+      _TwoFactorSetupScreenState();
 }
 
 class _TwoFactorSetupScreenState extends ConsumerState<TwoFactorSetupScreen> {
@@ -41,7 +42,8 @@ class _TwoFactorSetupScreenState extends ConsumerState<TwoFactorSetupScreen> {
   void _generateSecret() {
     final rand = Random.secure();
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-    _secret = List.generate(32, (_) => chars[rand.nextInt(chars.length)]).join();
+    _secret =
+        List.generate(32, (_) => chars[rand.nextInt(chars.length)]).join();
     _backupCodes = List.generate(8, (_) => _randomBackupCode());
   }
 
@@ -82,9 +84,9 @@ class _TwoFactorSetupScreenState extends ConsumerState<TwoFactorSetupScreen> {
     }, SetOptions(merge: true));
 
     await ref.read(profileRepositoryProvider).updatePrivacySettings(
-          uid: uid,
-          settings: {'isTwoFactorEnabled': true},
-        );
+      uid: uid,
+      settings: {'isTwoFactorEnabled': true},
+    );
 
     setState(() => _verified = true);
     if (mounted) {
@@ -119,7 +121,8 @@ class _TwoFactorSetupScreenState extends ConsumerState<TwoFactorSetupScreen> {
               ),
             ),
           const SizedBox(height: 12),
-          SelectableText('Secret: $_secret', style: GoogleFonts.outfit(fontSize: 12)),
+          SelectableText('Secret: $_secret',
+              style: GoogleFonts.outfit(fontSize: 12)),
           const SizedBox(height: 24),
           TextField(
             controller: _codeController,
@@ -132,14 +135,16 @@ class _TwoFactorSetupScreenState extends ConsumerState<TwoFactorSetupScreen> {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _enable2FA,
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryBlue),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryBlue),
             child: const Text('Verify & Enable'),
           ),
           if (_backupCodes != null && !_verified) ...[
             const SizedBox(height: 24),
             Text('Backup codes (save once):',
                 style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
-            ..._backupCodes!.map((c) => Text(c, style: GoogleFonts.robotoMono())),
+            ..._backupCodes!
+                .map((c) => Text(c, style: GoogleFonts.robotoMono())),
           ],
         ],
       ),

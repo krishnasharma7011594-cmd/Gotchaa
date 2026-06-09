@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class VybzModel {
-
   VybzModel({
     required this.id,
     required this.creatorId,
@@ -18,19 +17,21 @@ class VybzModel {
   });
 
   factory VybzModel.fromMap(Map<String, dynamic> data, String id) => VybzModel(
-      id: id,
-      creatorId: data['creatorId'] ?? '',
-      videoUrl: data['videoUrl'] ?? '',
-      caption: data['caption'] ?? '',
-      hashtags: List<String>.from(data['hashtags'] ?? []),
-      likesCount: data['likesCount'] ?? (data['likes'] ?? 0),
-      commentsCount: data['commentsCount'] ?? 0,
-      viewsCount: data['viewsCount'] ?? 0,
-      tips: (data['tips'] ?? 0.0).toDouble(),
-      creatorUsername: data['creatorUsername'] ?? '',
-      creatorPhoto: data['creatorPhoto'] ?? '',
-      createdAt: data['createdAt'] != null ? (data['createdAt'] as Timestamp).toDate() : null,
-    );
+        id: id,
+        creatorId: data['creatorId'] ?? '',
+        videoUrl: data['videoUrl'] ?? '',
+        caption: data['caption'] ?? '',
+        hashtags: List<String>.from(data['hashtags'] ?? []),
+        likesCount: data['likesCount'] ?? (data['likes'] ?? 0),
+        commentsCount: data['commentsCount'] ?? 0,
+        viewsCount: data['viewsCount'] ?? 0,
+        tips: (data['tips'] ?? 0.0).toDouble(),
+        creatorUsername: data['creatorUsername'] ?? '',
+        creatorPhoto: data['creatorPhoto'] ?? '',
+        createdAt: data['createdAt'] != null
+            ? (data['createdAt'] as Timestamp).toDate()
+            : null,
+      );
   final String id;
   final String creatorId;
   final String videoUrl;
@@ -45,16 +46,18 @@ class VybzModel {
   final DateTime? createdAt;
 
   Map<String, dynamic> toMap() => {
-      'creatorId': creatorId,
-      'videoUrl': videoUrl,
-      'caption': caption,
-      'hashtags': hashtags,
-      'likesCount': likesCount,
-      'commentsCount': commentsCount,
-      'viewsCount': viewsCount,
-      'tips': tips,
-      'creatorUsername': creatorUsername,
-      'creatorPhoto': creatorPhoto,
-      'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : FieldValue.serverTimestamp(),
-    };
+        'creatorId': creatorId,
+        'videoUrl': videoUrl,
+        'caption': caption,
+        'hashtags': hashtags,
+        'likesCount': likesCount,
+        'commentsCount': commentsCount,
+        'viewsCount': viewsCount,
+        'tips': tips,
+        'creatorUsername': creatorUsername,
+        'creatorPhoto': creatorPhoto,
+        'createdAt': createdAt != null
+            ? Timestamp.fromDate(createdAt!)
+            : FieldValue.serverTimestamp(),
+      };
 }

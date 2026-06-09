@@ -14,13 +14,14 @@ class UsernameSetupScreen extends ConsumerStatefulWidget {
   const UsernameSetupScreen({super.key});
 
   @override
-  ConsumerState<UsernameSetupScreen> createState() => _UsernameSetupScreenState();
+  ConsumerState<UsernameSetupScreen> createState() =>
+      _UsernameSetupScreenState();
 }
 
 class _UsernameSetupScreenState extends ConsumerState<UsernameSetupScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-  
+
   bool _isAvailable = false;
   bool _isChecking = false;
   String? _errorMessage;
@@ -37,11 +38,11 @@ class _UsernameSetupScreenState extends ConsumerState<UsernameSetupScreen> {
 
   void _onUsernameChanged(String val) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    
+
     // Quick local validation before hitting DB
     final service = ref.read(usernameServiceProvider);
     final error = service.validateUsername(val);
-    
+
     if (error != null) {
       setState(() {
         _errorMessage = error;
@@ -66,10 +67,10 @@ class _UsernameSetupScreenState extends ConsumerState<UsernameSetupScreen> {
 
   Future<void> _checkAvailability(String username) async {
     final service = ref.read(usernameServiceProvider);
-    
+
     try {
       final available = await service.isUsernameAvailable(username);
-      
+
       if (!mounted || _usernameController.text != username) return;
 
       if (available) {
@@ -80,9 +81,9 @@ class _UsernameSetupScreenState extends ConsumerState<UsernameSetupScreen> {
       } else {
         // Taken! Generate suggestions
         final suggestions = await service.generateSuggestions(username);
-        
+
         if (!mounted || _usernameController.text != username) return;
-        
+
         setState(() {
           _isAvailable = false;
           _isChecking = false;
@@ -118,7 +119,7 @@ class _UsernameSetupScreenState extends ConsumerState<UsernameSetupScreen> {
         displayName: username,
       );
       AnalyticsService.logProfileCompleted();
-      
+
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -155,14 +156,16 @@ class _UsernameSetupScreenState extends ConsumerState<UsernameSetupScreen> {
         elevation: 0,
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
-          child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
+          child:
+              const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
         ),
         actions: [
           TextButton(
             onPressed: _generateRandom,
             child: Text(
               'Skip & Auto-generate',
-              style: GoogleFonts.outfit(color: AppColors.electricBlue, fontWeight: FontWeight.bold),
+              style: GoogleFonts.outfit(
+                  color: AppColors.electricBlue, fontWeight: FontWeight.bold),
             ),
           )
         ],
@@ -193,10 +196,11 @@ class _UsernameSetupScreenState extends ConsumerState<UsernameSetupScreen> {
                 ),
               ).animate().fadeIn(delay: 200.ms),
               const SizedBox(height: 40),
-              
+
               // Input Field
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(20),
@@ -218,7 +222,10 @@ class _UsernameSetupScreenState extends ConsumerState<UsernameSetupScreen> {
                         controller: _usernameController,
                         focusNode: _focusNode,
                         onChanged: _onUsernameChanged,
-                        style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black),
+                        style: GoogleFonts.outfit(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black),
                         decoration: const InputDecoration(
                           hintText: 'username',
                           border: InputBorder.none,
@@ -230,16 +237,20 @@ class _UsernameSetupScreenState extends ConsumerState<UsernameSetupScreen> {
                       const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.electricBlue),
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: AppColors.electricBlue),
                       )
                     else if (_isAvailable)
-                      const Icon(Icons.check_circle_rounded, color: Colors.green)
-                    else if (_errorMessage != null && !_isAvailable && _usernameController.text.isNotEmpty)
+                      const Icon(Icons.check_circle_rounded,
+                          color: Colors.green)
+                    else if (_errorMessage != null &&
+                        !_isAvailable &&
+                        _usernameController.text.isNotEmpty)
                       const Icon(Icons.cancel_rounded, color: Colors.red),
                   ],
                 ),
               ).animate().fadeIn(delay: 400.ms),
-              
+
               const SizedBox(height: 10),
 
               // Status / Error message
@@ -248,7 +259,10 @@ class _UsernameSetupScreenState extends ConsumerState<UsernameSetupScreen> {
                   padding: const EdgeInsets.only(left: 10),
                   child: Text(
                     'Username is available!',
-                    style: GoogleFonts.outfit(color: Colors.green, fontSize: 13, fontWeight: FontWeight.w500),
+                    style: GoogleFonts.outfit(
+                        color: Colors.green,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500),
                   ),
                 ).animate().fadeIn()
               else if (_errorMessage != null)
@@ -256,7 +270,10 @@ class _UsernameSetupScreenState extends ConsumerState<UsernameSetupScreen> {
                   padding: const EdgeInsets.only(left: 10),
                   child: Text(
                     _errorMessage!,
-                    style: GoogleFonts.outfit(color: Colors.red, fontSize: 13, fontWeight: FontWeight.w500),
+                    style: GoogleFonts.outfit(
+                        color: Colors.red,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500),
                   ),
                 ).animate().fadeIn(),
 
@@ -266,27 +283,37 @@ class _UsernameSetupScreenState extends ConsumerState<UsernameSetupScreen> {
               if (_suggestions.isNotEmpty) ...[
                 Text(
                   'Suggestions:',
-                  style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey.shade700),
+                  style: GoogleFonts.outfit(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade700),
                 ).animate().fadeIn(),
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 10,
                   runSpacing: 10,
-                  children: _suggestions.map((sug) => ActionChip(
-                    label: Text('@$sug', style: GoogleFonts.outfit(color: AppColors.electricBlue, fontWeight: FontWeight.bold)),
-                    backgroundColor: AppColors.electricBlue.withValues(alpha: 0.1),
-                    side: BorderSide.none,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    onPressed: () {
-                      _usernameController.text = sug;
-                      _onUsernameChanged(sug);
-                    },
-                  )).toList(),
+                  children: _suggestions
+                      .map((sug) => ActionChip(
+                            label: Text('@$sug',
+                                style: GoogleFonts.outfit(
+                                    color: AppColors.electricBlue,
+                                    fontWeight: FontWeight.bold)),
+                            backgroundColor:
+                                AppColors.electricBlue.withValues(alpha: 0.1),
+                            side: BorderSide.none,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
+                            onPressed: () {
+                              _usernameController.text = sug;
+                              _onUsernameChanged(sug);
+                            },
+                          ))
+                      .toList(),
                 ).animate().fadeIn(),
               ],
 
               const Spacer(),
-              
+
               SizedBox(
                 width: double.infinity,
                 height: 60,
@@ -295,19 +322,20 @@ class _UsernameSetupScreenState extends ConsumerState<UsernameSetupScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.black,
                     disabledBackgroundColor: Colors.grey.shade300,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
                   ),
                   child: Text(
                     'Confirm and Next',
                     style: GoogleFonts.outfit(
-                      fontSize: 18, 
-                      fontWeight: FontWeight.bold, 
-                      color: _isAvailable ? Colors.white : Colors.grey.shade500
-                    ),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color:
+                            _isAvailable ? Colors.white : Colors.grey.shade500),
                   ),
                 ),
               ).animate().fadeIn(delay: 600.ms),
-              
+
               const SizedBox(height: 30),
             ],
           ),

@@ -34,7 +34,7 @@ class _ChatHomeScreenState extends ConsumerState<ChatHomeScreen> {
     final profileAsync = ref.watch(currentUserProfileProvider);
     final chatsAsync = ref.watch(chatListProvider);
     final themeState = ref.watch(themeProvider);
-    
+
     // Automatically clean up E2EE keys for chats that no longer exist
     ref.listen(chatListProvider, (previous, next) {
       if (next.hasValue) {
@@ -47,189 +47,209 @@ class _ChatHomeScreenState extends ConsumerState<ChatHomeScreen> {
 
     return Theme(
       data: customTheme,
-      child: Builder(builder: (chatContext) => Scaffold(
-          backgroundColor: customTheme.scaffoldBackgroundColor,
-          body: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                  child: Row(
+      child: Builder(
+          builder: (chatContext) => Scaffold(
+                backgroundColor: customTheme.scaffoldBackgroundColor,
+                body: SafeArea(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                           mainShellScaffoldKey.currentState?.openDrawer();
-                        },
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          margin: const EdgeInsets.only(right: 12),
-                          decoration: BoxDecoration(
-                            color: chatContext.inputFill,
-                            shape: BoxShape.circle,
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                mainShellScaffoldKey.currentState?.openDrawer();
+                              },
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                margin: const EdgeInsets.only(right: 12),
+                                decoration: BoxDecoration(
+                                  color: chatContext.inputFill,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(Icons.menu_rounded,
+                                    color: chatContext.iconPrimary, size: 20),
+                              ),
+                            ),
+                            profileAsync.when(
+                              data: (profile) => CircleAvatar(
+                                radius: 20,
+                                backgroundImage: profile != null &&
+                                        profile.photoUrl.isNotEmpty
+                                    ? CachedNetworkImageProvider(
+                                        profile.photoUrl)
+                                    : null,
+                                backgroundColor: chatContext.shimmerBase,
+                                child:
+                                    profile == null || profile.photoUrl.isEmpty
+                                        ? Icon(Icons.person_rounded,
+                                            color: chatContext.iconSecondary)
+                                        : null,
+                              ),
+                              loading: () => CircleAvatar(
+                                  radius: 20,
+                                  backgroundColor: chatContext.shimmerBase),
+                              error: (_, __) => CircleAvatar(
+                                  radius: 20,
+                                  backgroundColor: chatContext.shimmerBase,
+                                  child: Icon(Icons.person_rounded,
+                                      color: chatContext.iconSecondary)),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              chatContext.tr('chat_title'),
+                              style: GoogleFonts.outfit(
+                                fontSize: 28,
+                                fontWeight: FontWeight.w800,
+                                color: chatContext.textPrimary,
+                              ),
+                            ),
+                            const Spacer(),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Expanded(
+                        child: chatsAsync.when(
+                          data: (chats) {
+                            if (chats.isEmpty)
+                              return _buildEmptyChatState(chatContext);
+                            return ListView.builder(
+                              padding:
+                                  const EdgeInsets.only(top: 4, bottom: 100),
+                              itemCount: chats.length + 1,
+                              itemBuilder: (context, i) {
+                                if (i == 0)
+                                  return _buildE2EENotice(chatContext);
+                                return _ChatTile(
+                                  chat: chats[i - 1],
+                                  currentUid: currentUser?.uid ?? '',
+                                );
+                              },
+                            );
+                          },
+                          loading: () => const GotchaaSkeletonLoader.chatList(
+                              itemCount: 5),
+                          error: (e, _) => Center(
+                            child: Text(
+                              chatContext.tr('error_load_failed',
+                                  args: [e.toString()]),
+                            ),
                           ),
-                          child: Icon(Icons.menu_rounded,
-                              color: chatContext.iconPrimary, size: 20),
                         ),
                       ),
-                      profileAsync.when(
-                        data: (profile) => CircleAvatar(
-                          radius: 20,
-                          backgroundImage: profile != null && profile.photoUrl.isNotEmpty
-                              ? CachedNetworkImageProvider(profile.photoUrl)
-                              : null,
-                          backgroundColor: chatContext.shimmerBase,
-                          child: profile == null || profile.photoUrl.isEmpty
-                              ? Icon(Icons.person_rounded, color: chatContext.iconSecondary)
-                              : null,
-                        ),
-                        loading: () => CircleAvatar(radius: 20, backgroundColor: chatContext.shimmerBase),
-                        error: (_, __) => CircleAvatar(
-                            radius: 20,
-                            backgroundColor: chatContext.shimmerBase,
-                            child: Icon(Icons.person_rounded, color: chatContext.iconSecondary)),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        chatContext.tr('chat_title'),
-                        style: GoogleFonts.outfit(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          color: chatContext.textPrimary,
-                        ),
-                      ),
-                      const Spacer(),
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
-                Expanded(
-                  child: chatsAsync.when(
-                    data: (chats) {
-                      if (chats.isEmpty) return _buildEmptyChatState(chatContext);
-                      return ListView.builder(
-                        padding: const EdgeInsets.only(top: 4, bottom: 100),
-                        itemCount: chats.length + 1,
-                        itemBuilder: (context, i) {
-                          if (i == 0) return _buildE2EENotice(chatContext);
-                          return _ChatTile(
-                            chat: chats[i - 1],
-                            currentUid: currentUser?.uid ?? '',
-                          );
-                        },
-                      );
-                    },
-                    loading: () => const GotchaaSkeletonLoader.chatList(itemCount: 5),
-                    error: (e, _) => Center(
-                      child: Text(
-                        chatContext.tr('error_load_failed', args: [e.toString()]),
-                      ),
+                floatingActionButton: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    FloatingActionButton(
+                      heroTag: 'gemini_fab',
+                      onPressed: () {
+                        Navigator.push(
+                            chatContext,
+                            MaterialPageRoute(
+                                builder: (_) => const GeminiChatScreen()));
+                      },
+                      backgroundColor: chatContext.inputFill,
+                      elevation: 2,
+                      child: const Icon(Icons.auto_awesome_rounded,
+                          color: AppColors.electricBlue),
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    FloatingActionButton(
+                      heroTag: 'chat_fab',
+                      onPressed: () {},
+                      backgroundColor: chatContext.primary,
+                      child: const Icon(Icons.chat_bubble_rounded,
+                          color: Colors.white),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          floatingActionButton: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              FloatingActionButton(
-                heroTag: 'gemini_fab',
-                onPressed: () {
-                  Navigator.push(chatContext, MaterialPageRoute(builder: (_) => const GeminiChatScreen()));
-                },
-                backgroundColor: chatContext.inputFill,
-                elevation: 2,
-                child: const Icon(Icons.auto_awesome_rounded, color: AppColors.electricBlue),
-              ),
-              const SizedBox(height: 16),
-              FloatingActionButton(
-                heroTag: 'chat_fab',
-                onPressed: () {
-                },
-                backgroundColor: chatContext.primary,
-                child: const Icon(Icons.chat_bubble_rounded, color: Colors.white),
-              ),
-            ],
-          ),
-        )),
+              )),
     );
   }
 
   Widget _buildE2EENotice(BuildContext context) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                context.tr('chat_e2ee_notice'),
-                textAlign: TextAlign.center,
-                style: GoogleFonts.outfit(
-                  fontSize: 12,
-                  color: context.textSecondary.withOpacity(0.5),
-                  fontWeight: FontWeight.w600,
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  context.tr('chat_e2ee_notice'),
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.outfit(
+                    fontSize: 12,
+                    color: context.textSecondary.withOpacity(0.5),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            context.tr('chat_e2ee_subtitle'),
-            textAlign: TextAlign.center,
-            style: GoogleFonts.outfit(
-              fontSize: 11,
-              color: AppColors.electricBlue.withOpacity(0.6),
-              fontWeight: FontWeight.w500,
+              ],
             ),
-          ),
-        ],
-      ),
-    );
+            const SizedBox(height: 4),
+            Text(
+              context.tr('chat_e2ee_subtitle'),
+              textAlign: TextAlign.center,
+              style: GoogleFonts.outfit(
+                fontSize: 11,
+                color: AppColors.electricBlue.withOpacity(0.6),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
 
   Widget _buildEmptyChatState(BuildContext context) => GotchaaEmptyState.chat(
-      actionLabel: 'Find Someone to Chat',
-      onAction: () {
-        ref.read(shellPageControllerProvider).animateToPage(
-          3, // Explore tab
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      },
-    );
+        actionLabel: 'Find Someone to Chat',
+        onAction: () {
+          ref.read(shellPageControllerProvider).animateToPage(
+                3, // Explore tab
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+        },
+      );
 }
 
 class _ChatTile extends ConsumerWidget {
-
   const _ChatTile({required this.chat, required this.currentUid});
   final ChatModel chat;
   final String currentUid;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final otherUid = chat.participants.firstWhere((p) => p != currentUid, orElse: () => '');
+    final otherUid =
+        chat.participants.firstWhere((p) => p != currentUid, orElse: () => '');
     if (otherUid.isEmpty) return const SizedBox.shrink();
 
     final otherUserAsync = ref.watch(userPresenceProvider(otherUid));
     final isOnline = otherUserAsync.value?.isOnline ?? false;
-    
+
     final otherName = otherUserAsync.when(
       data: (user) {
         final displayName = user?.displayName ?? '';
         final username = user?.username ?? '';
         final cachedName = chat.participantNames[otherUid] ?? '';
-        
-        if (displayName.isNotEmpty && displayName != 'Unknown') return displayName;
+
+        if (displayName.isNotEmpty && displayName != 'Unknown')
+          return displayName;
         if (username.isNotEmpty && username != 'Unknown') return username;
         if (cachedName.isNotEmpty && cachedName != 'Unknown') return cachedName;
-        return otherUid.length > 8 ? 'User ${otherUid.substring(0, 6)}' : 'User';
+        return otherUid.length > 8
+            ? 'User ${otherUid.substring(0, 6)}'
+            : 'User';
       },
       loading: () => chat.participantNames[otherUid] ?? '...',
       error: (_, __) => chat.participantNames[otherUid] ?? 'User',
     );
-        
+
     final otherAvatar = (chat.participantAvatars[otherUid]?.isNotEmpty ?? false)
         ? chat.participantAvatars[otherUid]!
         : (otherUserAsync.value?.photoUrl ?? '');
@@ -245,13 +265,14 @@ class _ChatTile extends ConsumerWidget {
 
     return InkWell(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(
-          builder: (_) => ChatConversationScreen(
-            chatId: chat.id, 
-            userName: otherName, 
-            userAvatar: otherAvatar
-          ),
-        ));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ChatConversationScreen(
+                  chatId: chat.id,
+                  userName: otherName,
+                  userAvatar: otherAvatar),
+            ));
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -261,11 +282,19 @@ class _ChatTile extends ConsumerWidget {
               children: [
                 CircleAvatar(
                   radius: 28,
-                  backgroundImage: otherAvatar.isNotEmpty ? CachedNetworkImageProvider(otherAvatar) : null,
+                  backgroundImage: otherAvatar.isNotEmpty
+                      ? CachedNetworkImageProvider(otherAvatar)
+                      : null,
                   backgroundColor: context.shimmerBase,
                   child: otherAvatar.isEmpty
-                      ? Text(otherName.isNotEmpty ? otherName[0].toUpperCase() : '?',
-                          style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w700, color: context.textSecondary))
+                      ? Text(
+                          otherName.isNotEmpty
+                              ? otherName[0].toUpperCase()
+                              : '?',
+                          style: GoogleFonts.outfit(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: context.textSecondary))
                       : null,
                 ),
               ],
@@ -283,36 +312,51 @@ class _ChatTile extends ConsumerWidget {
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.outfit(
                                 fontSize: 16,
-                                fontWeight: unreadCount > 0 ? FontWeight.w800 : FontWeight.w600,
+                                fontWeight: unreadCount > 0
+                                    ? FontWeight.w800
+                                    : FontWeight.w600,
                                 color: context.textPrimary)),
                       ),
                       if (isMuted)
                         Padding(
                           padding: const EdgeInsets.only(left: 4),
-                          child: Icon(Icons.volume_off_rounded, size: 14, color: context.iconMuted),
+                          child: Icon(Icons.volume_off_rounded,
+                              size: 14, color: context.iconMuted),
                         ),
                     ],
                   ),
                   const SizedBox(height: 4),
                   if (isTyping)
-                    Text('typing...', style: GoogleFonts.outfit(color: Colors.green, fontSize: 13, fontStyle: FontStyle.italic))
+                    Text('typing...',
+                        style: GoogleFonts.outfit(
+                            color: Colors.green,
+                            fontSize: 13,
+                            fontStyle: FontStyle.italic))
                   else ...[
                     if (chat.lastMessageType == 'image')
-                       Text('$prefix Photo',
+                      Text('$prefix Photo',
                           maxLines: maxLines,
                           overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.outfit(
                               fontSize: 14,
-                              color: unreadCount > 0 ? context.textPrimary : context.textSecondary,
-                              fontWeight: unreadCount > 0 ? FontWeight.w600 : FontWeight.w400))
+                              color: unreadCount > 0
+                                  ? context.textPrimary
+                                  : context.textSecondary,
+                              fontWeight: unreadCount > 0
+                                  ? FontWeight.w600
+                                  : FontWeight.w400))
                     else if (chat.lastMessageType == 'audio')
-                       Text('$prefix Audio',
+                      Text('$prefix Audio',
                           maxLines: maxLines,
                           overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.outfit(
                               fontSize: 14,
-                              color: unreadCount > 0 ? context.textPrimary : context.textSecondary,
-                              fontWeight: unreadCount > 0 ? FontWeight.w600 : FontWeight.w400))
+                              color: unreadCount > 0
+                                  ? context.textPrimary
+                                  : context.textSecondary,
+                              fontWeight: unreadCount > 0
+                                  ? FontWeight.w600
+                                  : FontWeight.w400))
                     else
                       DecryptedPreviewWidget(
                         lastMessage: chat.lastMessage,
@@ -320,8 +364,12 @@ class _ChatTile extends ConsumerWidget {
                         otherUserId: otherUid,
                         style: GoogleFonts.outfit(
                             fontSize: 14,
-                            color: unreadCount > 0 ? context.textPrimary : context.textSecondary,
-                            fontWeight: unreadCount > 0 ? FontWeight.w600 : FontWeight.w400),
+                            color: unreadCount > 0
+                                ? context.textPrimary
+                                : context.textSecondary,
+                            fontWeight: unreadCount > 0
+                                ? FontWeight.w600
+                                : FontWeight.w400),
                         prefix: prefix,
                         status: chat.lastMessageStatus,
                         isMe: isMe,
@@ -338,19 +386,27 @@ class _ChatTile extends ConsumerWidget {
                   Text(DateFormat.jm().format(chat.lastMessageTime!),
                       style: GoogleFonts.outfit(
                           fontSize: 12,
-                          color: unreadCount > 0 ? AppColors.electricBlue : context.textHint,
-                          fontWeight: unreadCount > 0 ? FontWeight.w700 : FontWeight.w500)),
+                          color: unreadCount > 0
+                              ? AppColors.electricBlue
+                              : context.textHint,
+                          fontWeight: unreadCount > 0
+                              ? FontWeight.w700
+                              : FontWeight.w500)),
                 const SizedBox(height: 6),
                 if (unreadCount > 0)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: AppColors.electricBlue,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
                       unreadCount.toString(),
-                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
               ],
@@ -363,9 +419,13 @@ class _ChatTile extends ConsumerWidget {
 }
 
 class DecryptedPreviewWidget extends ConsumerStatefulWidget {
-
   const DecryptedPreviewWidget({
-    required this.lastMessage, required this.chatId, required this.otherUserId, required this.style, required this.prefix, super.key,
+    required this.lastMessage,
+    required this.chatId,
+    required this.otherUserId,
+    required this.style,
+    required this.prefix,
+    super.key,
     this.maxLines = 1,
     this.status = 'sent',
     this.isMe = false,

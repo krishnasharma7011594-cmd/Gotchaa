@@ -13,14 +13,15 @@ import '../widgets/trust_badge_widget.dart';
 import 'circles_chat_screen.dart';
 
 class CirclesDetailsScreen extends ConsumerStatefulWidget {
-
   const CirclesDetailsScreen({
-    required this.circle, super.key,
+    required this.circle,
+    super.key,
   });
   final CircleModel circle;
 
   @override
-  ConsumerState<CirclesDetailsScreen> createState() => _CirclesDetailsScreenState();
+  ConsumerState<CirclesDetailsScreen> createState() =>
+      _CirclesDetailsScreenState();
 }
 
 class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
@@ -35,22 +36,29 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
 
   Future<void> _sendJoinRequest() async {
     final service = ref.read(circlesFirestoreServiceProvider);
-    
+
     if (widget.circle.isApprovalRequired) {
       await service.sendJoinRequest(widget.circle.id, _introController.text);
       setState(() => _isRequestSent = true);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('🎉 Join request sent successfully! Host will review your trust metrics.')),
+        const SnackBar(
+            content: Text(
+                '🎉 Join request sent successfully! Host will review your trust metrics.')),
       );
     } else {
       // Direct join
-      await FirebaseFirestore.instance.collection('circles').doc(widget.circle.id).update({
+      await FirebaseFirestore.instance
+          .collection('circles')
+          .doc(widget.circle.id)
+          .update({
         'memberIds': FieldValue.arrayUnion([service.currentUserId])
       });
       // Award direct karma
       await service.updateUserKarma(service.currentUserId, 10);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('🎉 Joined circle! You gained +10 Participation Karma.')),
+        const SnackBar(
+            content:
+                Text('🎉 Joined circle! You gained +10 Participation Karma.')),
       );
       Navigator.of(context).pop();
     }
@@ -60,13 +68,16 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
   Widget build(BuildContext context) {
     final service = ref.read(circlesFirestoreServiceProvider);
     final isHost = widget.circle.hostId == service.currentUserId;
-    final isMember = widget.circle.memberIds.contains(service.currentUserId) || isHost;
+    final isMember =
+        widget.circle.memberIds.contains(service.currentUserId) || isHost;
 
     return Scaffold(
       backgroundColor: context.bg,
       appBar: AppBar(
         backgroundColor: context.bg,
-        title: Text(widget.circle.title, style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(widget.circle.title,
+            style: GoogleFonts.outfit(
+                color: Colors.white, fontWeight: FontWeight.bold)),
       ),
       body: SafeArea(
         child: ListView(
@@ -76,8 +87,8 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
             ClipRRect(
               borderRadius: BorderRadius.circular(24),
               child: Image.network(
-                widget.circle.coverImageUrl.isNotEmpty 
-                    ? widget.circle.coverImageUrl 
+                widget.circle.coverImageUrl.isNotEmpty
+                    ? widget.circle.coverImageUrl
                     : 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500',
                 height: 200,
                 width: double.infinity,
@@ -85,7 +96,8 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
                 errorBuilder: (_, __, ___) => Container(
                   height: 200,
                   color: Colors.purple.withOpacity(0.2),
-                  child: const Icon(Icons.image, color: Colors.white54, size: 50),
+                  child:
+                      const Icon(Icons.image, color: Colors.white54, size: 50),
                 ),
               ),
             ),
@@ -100,15 +112,20 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
                     color: AppColors.electricBlue.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   child: Text(
                     widget.circle.category,
-                    style: GoogleFonts.outfit(color: AppColors.primaryGlow, fontSize: 13, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.outfit(
+                        color: AppColors.primaryGlow,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
                 Text(
                   widget.circle.city,
-                  style: GoogleFonts.inter(color: context.textSecondary, fontSize: 14),
+                  style: GoogleFonts.inter(
+                      color: context.textSecondary, fontSize: 14),
                 ),
               ],
             ),
@@ -117,12 +134,16 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
             // Title & Host Badge
             Text(
               widget.circle.title,
-              style: GoogleFonts.outfit(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+              style: GoogleFonts.outfit(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
               widget.circle.description,
-              style: GoogleFonts.inter(color: Colors.white70, fontSize: 14, height: 1.5),
+              style: GoogleFonts.inter(
+                  color: Colors.white70, fontSize: 14, height: 1.5),
             ),
             const SizedBox(height: 20),
 
@@ -144,23 +165,33 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
                     Row(
                       children: [
                         Icon(
-                          isMember ? Icons.location_on : Icons.lock_outline_rounded,
-                          color: isMember ? AppColors.primaryGlow : AppColors.karmaOrange,
+                          isMember
+                              ? Icons.location_on
+                              : Icons.lock_outline_rounded,
+                          color: isMember
+                              ? AppColors.primaryGlow
+                              : AppColors.karmaOrange,
                           size: 20,
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          isMember ? 'Meetup Location Details' : 'Location Locked',
-                          style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                          isMember
+                              ? 'Meetup Location Details'
+                              : 'Location Locked',
+                          style: GoogleFonts.outfit(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      isMember 
+                      isMember
                           ? '${widget.circle.locationName} (${widget.circle.locationLatLng?.latitude}, ${widget.circle.locationLatLng?.longitude})'
                           : '${widget.circle.locationName} • Delhi (Exact GPS locked until you join.)',
-                      style: GoogleFonts.inter(color: Colors.white70, fontSize: 13),
+                      style: GoogleFonts.inter(
+                          color: Colors.white70, fontSize: 13),
                     ),
                   ],
                 ),
@@ -174,17 +205,21 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => CirclesChatScreen(circleId: widget.circle.id, circleTitle: widget.circle.title),
+                      builder: (_) => CirclesChatScreen(
+                          circleId: widget.circle.id,
+                          circleTitle: widget.circle.title),
                     ),
                   );
                 },
                 icon: const Icon(Icons.forum_rounded, color: Colors.white),
-                label: Text('Enter Group Chat', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+                label: Text('Enter Group Chat',
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.electricBlue,
                   foregroundColor: Colors.white,
                   minimumSize: const Size.fromHeight(54),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                 ),
               ),
             ] else if (_isRequestSent) ...[
@@ -197,7 +232,9 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
                 child: Center(
                   child: Text(
                     '⏳ Pending Host Approval',
-                    style: GoogleFonts.outfit(color: AppColors.karmaOrange, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.outfit(
+                        color: AppColors.karmaOrange,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               )
@@ -205,7 +242,10 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
               if (widget.circle.isApprovalRequired) ...[
                 Text(
                   'Introduction message',
-                  style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                  style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14),
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -216,7 +256,9 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
                     hintStyle: TextStyle(color: context.textSecondary),
                     filled: true,
                     fillColor: context.surface,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -227,10 +269,13 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
                   backgroundColor: AppColors.vibrantPurple,
                   foregroundColor: Colors.white,
                   minimumSize: const Size.fromHeight(54),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                 ),
                 child: Text(
-                  widget.circle.isApprovalRequired ? 'Request to Join Vibe' : 'Join Circle Direct',
+                  widget.circle.isApprovalRequired
+                      ? 'Request to Join Vibe'
+                      : 'Join Circle Direct',
                   style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -241,7 +286,10 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
               const SizedBox(height: 32),
               Text(
                 'Pending Join Requests',
-                style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               StreamBuilder<List<CircleJoinRequest>>(
@@ -273,21 +321,29 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       req.userName,
-                                      style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
+                                      style: GoogleFonts.outfit(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     Container(
                                       decoration: BoxDecoration(
-                                        color: AppColors.karmaOrange.withOpacity(0.2),
+                                        color: AppColors.karmaOrange
+                                            .withOpacity(0.2),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
                                       child: Text(
                                         'Karma: ${req.karmaScore} (${req.trustTier})',
-                                        style: GoogleFonts.outfit(color: AppColors.karmaOrange, fontSize: 11, fontWeight: FontWeight.bold),
+                                        style: GoogleFonts.outfit(
+                                            color: AppColors.karmaOrange,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                   ],
@@ -296,21 +352,33 @@ class _CirclesDetailsScreenState extends ConsumerState<CirclesDetailsScreen> {
                                 if (req.introMessage.isNotEmpty)
                                   Text(
                                     '"${req.introMessage}"',
-                                    style: GoogleFonts.inter(color: Colors.white70, fontStyle: FontStyle.italic, fontSize: 13),
+                                    style: GoogleFonts.inter(
+                                        color: Colors.white70,
+                                        fontStyle: FontStyle.italic,
+                                        fontSize: 13),
                                   ),
                                 const SizedBox(height: 12),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     TextButton(
-                                      onPressed: () => service.updateJoinRequest(req, false),
-                                      child: const Text('Reject', style: TextStyle(color: AppColors.error)),
+                                      onPressed: () =>
+                                          service.updateJoinRequest(req, false),
+                                      child: const Text('Reject',
+                                          style: TextStyle(
+                                              color: AppColors.error)),
                                     ),
                                     const SizedBox(width: 8),
                                     ElevatedButton(
-                                      onPressed: () => service.updateJoinRequest(req, true),
-                                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryGlow),
-                                      child: const Text('Accept', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                                      onPressed: () =>
+                                          service.updateJoinRequest(req, true),
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              AppColors.primaryGlow),
+                                      child: const Text('Accept',
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold)),
                                     ),
                                   ],
                                 )

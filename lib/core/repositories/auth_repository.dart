@@ -12,7 +12,6 @@ import '../services/invite_code_service.dart';
 import 'firestore_repository.dart';
 
 class AuthRepository {
-
   AuthRepository(this._firestoreRepository, this._e2eeService);
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -29,12 +28,11 @@ class AuthRepository {
 
   // ── Email / Password ─────────────────────────────────────────────────────────
 
-  Future<UserCredential> signInWithEmail(
-      String email, String password) async => _auth.signInWithEmailAndPassword(
-        email: email.trim(), password: password);
+  Future<UserCredential> signInWithEmail(String email, String password) async =>
+      _auth.signInWithEmailAndPassword(email: email.trim(), password: password);
 
-  Future<UserCredential> signUpWithEmail(
-      String email, String password, {NationData? nation}) async {
+  Future<UserCredential> signUpWithEmail(String email, String password,
+      {NationData? nation}) async {
     final credential = await _auth.createUserWithEmailAndPassword(
         email: email.trim(), password: password);
 
@@ -120,7 +118,7 @@ class AuthRepository {
 
   Future<UserCredential> signInAnonymously() async {
     final credential = await _auth.signInAnonymously();
-    
+
     // Create Firestore document only if this is a NEW user
     if (credential.additionalUserInfo?.isNewUser ?? false) {
       final user = credential.user!;
@@ -131,20 +129,18 @@ class AuthRepository {
         photoUrl: '',
       );
     }
-    
+
     return credential;
   }
 
   // ── Sign-Out ─────────────────────────────────────────────────────────────────
-  
+
   Future<void> signOut() async {
-    // SECURITY: Clear E2EE in-memory cache. 
+    // SECURITY: Clear E2EE in-memory cache.
     // We do NOT clear secure storage here so keys persist for the next login.
     try {
       _e2eeService.clearMemoryCache();
-    } catch (e) {
-      
-    }
+    } catch (e) {}
 
     if (!kIsWeb) {
       // Also sign out from Google on mobile so the account picker shows next time
@@ -169,7 +165,8 @@ class AuthRepository {
     final user = _auth.currentUser;
     if (user == null) throw Exception('No user logged in');
 
-    final credential = EmailAuthProvider.credential(email: email, password: password);
+    final credential =
+        EmailAuthProvider.credential(email: email, password: password);
     await user.reauthenticateWithCredential(credential);
   }
 
@@ -195,7 +192,7 @@ class AuthRepository {
     // Note: We use httpsCallable from cloud_functions package
     // Since I don't see cloud_functions provider here, I'll assume it's available via FirebaseFunctions.instance
     final result = await _firestoreRepository.callDeleteAccountFunction();
-    
+
     if (!result) {
       throw Exception('Failed to delete account data on server');
     }
@@ -273,7 +270,8 @@ class AuthRepository {
             'lastSeenAt': DateTime.now(),
           };
 
-    final identityPublicKey = await _e2eeService.generateAndStoreIdentityKeyPair(uid);
+    final identityPublicKey =
+        await _e2eeService.generateAndStoreIdentityKeyPair(uid);
 
     final profile = UserProfile(
       uid: uid,

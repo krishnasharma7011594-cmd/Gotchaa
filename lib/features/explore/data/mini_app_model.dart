@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 enum MiniAppCategory { all, games, utility, social }
 
 class MiniApp {
-
   const MiniApp({
     required this.id,
     required this.name,
@@ -43,8 +42,7 @@ const List<MiniApp> gotchaMiniApps = [
     id: 'cabgo',
     name: 'CabGo',
     tagline: 'Ride anywhere, anytime',
-    description:
-        'Book rides seamlessly inside Gotchaa. Earn Karma for every'
+    description: 'Book rides seamlessly inside Gotchaa. Earn Karma for every'
         ' trip and tip your driver directly through the app.',
     icon: Icons.local_taxi_rounded,
     category: MiniAppCategory.utility,
@@ -59,8 +57,7 @@ const List<MiniApp> gotchaMiniApps = [
     id: 'paywave',
     name: 'PayWave',
     tagline: 'Instant UPI payments',
-    description:
-        'Send and receive payments in a flash. Integrated with your'
+    description: 'Send and receive payments in a flash. Integrated with your'
         ' Gotchaa for a seamless experience.',
     icon: Icons.contactless_rounded,
     category: MiniAppCategory.utility,
@@ -75,8 +72,7 @@ const List<MiniApp> gotchaMiniApps = [
     id: 'quizbattle',
     name: 'QuizBattle',
     tagline: 'Challenge your Hommies',
-    description:
-        'Go head-to-head in real-time trivia. Win Karma, climb'
+    description: 'Go head-to-head in real-time trivia. Win Karma, climb'
         ' leaderboards, and flaunt your brainpower.',
     icon: Icons.quiz_rounded,
     category: MiniAppCategory.games,
@@ -91,8 +87,7 @@ const List<MiniApp> gotchaMiniApps = [
     id: 'pollarena',
     name: 'PollArena',
     tagline: 'Create & vote on polls',
-    description:
-        'Gauge the vibe — create polls on anything, share them'
+    description: 'Gauge the vibe — create polls on anything, share them'
         ' with friends, and watch the results roll in live.',
     icon: Icons.poll_rounded,
     category: MiniAppCategory.social,
@@ -107,8 +102,7 @@ const List<MiniApp> gotchaMiniApps = [
     id: 'quickmap',
     name: 'QuickMap',
     tagline: 'Find places, fast',
-    description:
-        'Lightweight maps built into Gotchaa. Find restaurants,'
+    description: 'Lightweight maps built into Gotchaa. Find restaurants,'
         ' events, and friends nearby in one tap.',
     icon: Icons.map_rounded,
     category: MiniAppCategory.utility,
@@ -123,8 +117,7 @@ const List<MiniApp> gotchaMiniApps = [
     id: 'taskmate',
     name: 'TaskMate',
     tagline: 'Shared to-dos with friends',
-    description:
-        'Plan events, trips, and projects with your crew. Assign'
+    description: 'Plan events, trips, and projects with your crew. Assign'
         ' tasks, set reminders, and earn Karma for completing them.',
     icon: Icons.task_alt_rounded,
     category: MiniAppCategory.social,

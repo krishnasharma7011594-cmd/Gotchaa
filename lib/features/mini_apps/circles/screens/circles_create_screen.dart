@@ -13,7 +13,8 @@ class CirclesCreateScreen extends ConsumerStatefulWidget {
   const CirclesCreateScreen({super.key});
 
   @override
-  ConsumerState<CirclesCreateScreen> createState() => _CirclesCreateScreenState();
+  ConsumerState<CirclesCreateScreen> createState() =>
+      _CirclesCreateScreenState();
 }
 
 class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
@@ -32,8 +33,17 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
   bool _canCreate = false;
 
   final List<String> _categories = [
-    'Parties', 'Pickleball', 'Gaming', 'Study Groups', 'Travelers',
-    'Language Exchange', 'Music', 'Fitness', 'Startups', 'Anime', 'Photography'
+    'Parties',
+    'Pickleball',
+    'Gaming',
+    'Study Groups',
+    'Travelers',
+    'Language Exchange',
+    'Music',
+    'Fitness',
+    'Startups',
+    'Anime',
+    'Photography'
   ];
 
   @override
@@ -64,7 +74,7 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final service = ref.read(circlesFirestoreServiceProvider);
-    
+
     // Exact GPS coordinates are masked/stored in GeoPoint
     final newCircle = CircleModel(
       id: '',
@@ -72,12 +82,14 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
       description: _descController.text,
       category: _selectedCategory,
       city: _selectedCity,
-      coverImageUrl: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=500', // Default gorgeous meetup cover
+      coverImageUrl:
+          'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=500', // Default gorgeous meetup cover
       hostId: '',
       eventDate: DateTime.now().add(const Duration(days: 2)),
       memberLimit: _memberLimit,
       locationName: _locationNameController.text,
-      locationLatLng: const GeoPoint(28.6139, 77.2090), // Connaught Place general coordinates
+      locationLatLng: const GeoPoint(
+          28.6139, 77.2090), // Connaught Place general coordinates
       ageGroup: 'Any',
       language: 'English',
       isPrivate: _isPrivate,
@@ -92,9 +104,11 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
       await service.createCircle(newCircle);
       // Refresh feed
       ref.read(circlesFeedProvider.notifier).fetchFeed(refresh: true);
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('🎉 Circle created successfully! You gained +20 Host Karma.')),
+        const SnackBar(
+            content: Text(
+                '🎉 Circle created successfully! You gained +20 Host Karma.')),
       );
       Navigator.of(context).pop();
     } catch (e) {
@@ -118,7 +132,8 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
         backgroundColor: context.bg,
         appBar: AppBar(
           backgroundColor: context.bg,
-          title: Text('Create Circle', style: GoogleFonts.outfit(color: Colors.white)),
+          title: Text('Create Circle',
+              style: GoogleFonts.outfit(color: Colors.white)),
         ),
         body: Center(
           child: Padding(
@@ -126,11 +141,15 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.warning_amber_rounded, color: AppColors.karmaOrange, size: 64),
+                const Icon(Icons.warning_amber_rounded,
+                    color: AppColors.karmaOrange, size: 64),
                 const SizedBox(height: 16),
                 Text(
                   'Creation Cap Reached!',
-                  style: GoogleFonts.outfit(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -149,7 +168,9 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
       backgroundColor: context.bg,
       appBar: AppBar(
         backgroundColor: context.bg,
-        title: Text('New Circle Vibe', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text('New Circle Vibe',
+            style: GoogleFonts.outfit(
+                color: Colors.white, fontWeight: FontWeight.bold)),
       ),
       body: SafeArea(
         child: Form(
@@ -166,9 +187,12 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
                   labelStyle: TextStyle(color: context.textSecondary),
                   filled: true,
                   fillColor: context.surface,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none),
                 ),
-                validator: (val) => val == null || val.isEmpty ? 'Title is required' : null,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Title is required' : null,
               ),
               const SizedBox(height: 16),
 
@@ -182,9 +206,13 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
                   labelStyle: TextStyle(color: context.textSecondary),
                   filled: true,
                   fillColor: context.surface,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none),
                 ),
-                validator: (val) => val == null || val.isEmpty ? 'Description is required' : null,
+                validator: (val) => val == null || val.isEmpty
+                    ? 'Description is required'
+                    : null,
               ),
               const SizedBox(height: 16),
 
@@ -192,7 +220,12 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
               DropdownButtonFormField<String>(
                 dropdownColor: context.surface,
                 initialValue: _selectedCategory,
-                items: _categories.map((c) => DropdownMenuItem(value: c, child: Text(c, style: const TextStyle(color: Colors.white)))).toList(),
+                items: _categories
+                    .map((c) => DropdownMenuItem(
+                        value: c,
+                        child: Text(c,
+                            style: const TextStyle(color: Colors.white))))
+                    .toList(),
                 onChanged: (val) {
                   if (val != null) setState(() => _selectedCategory = val);
                 },
@@ -201,7 +234,9 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
                   labelStyle: TextStyle(color: context.textSecondary),
                   filled: true,
                   fillColor: context.surface,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none),
                 ),
               ),
               const SizedBox(height: 16),
@@ -213,13 +248,18 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
                 decoration: InputDecoration(
                   labelText: 'Meetup Location Name (Public Info)',
                   labelStyle: TextStyle(color: context.textSecondary),
-                  helperText: 'e.g. "Connaught Place Coffee, Delhi". Exact GPS points are hidden from non-members.',
+                  helperText:
+                      'e.g. "Connaught Place Coffee, Delhi". Exact GPS points are hidden from non-members.',
                   helperStyle: TextStyle(color: context.textSecondary),
                   filled: true,
                   fillColor: context.surface,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none),
                 ),
-                validator: (val) => val == null || val.isEmpty ? 'Location name is required' : null,
+                validator: (val) => val == null || val.isEmpty
+                    ? 'Location name is required'
+                    : null,
               ),
               const SizedBox(height: 16),
 
@@ -234,7 +274,9 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
                   hintStyle: TextStyle(color: context.textSecondary),
                   filled: true,
                   fillColor: context.surface,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none),
                 ),
               ),
               const SizedBox(height: 16),
@@ -242,7 +284,8 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
               // Member limit slider
               Text(
                 'Member Limit: $_memberLimit people',
-                style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
+                style: GoogleFonts.outfit(
+                    color: Colors.white, fontWeight: FontWeight.bold),
               ),
               Slider(
                 value: _memberLimit.toDouble(),
@@ -260,8 +303,12 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
               SwitchListTile(
                 value: _isPrivate,
                 onChanged: (val) => setState(() => _isPrivate = val),
-                title: Text('Private Circle', style: GoogleFonts.outfit(color: Colors.white)),
-                subtitle: Text('Search engine will hide this circle from public discover feeds.', style: GoogleFonts.inter(color: context.textSecondary, fontSize: 11)),
+                title: Text('Private Circle',
+                    style: GoogleFonts.outfit(color: Colors.white)),
+                subtitle: Text(
+                    'Search engine will hide this circle from public discover feeds.',
+                    style: GoogleFonts.inter(
+                        color: context.textSecondary, fontSize: 11)),
                 activeThumbColor: AppColors.electricBlue,
               ),
 
@@ -269,8 +316,12 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
               SwitchListTile(
                 value: _isApprovalRequired,
                 onChanged: (val) => setState(() => _isApprovalRequired = val),
-                title: Text('Require host approval to join', style: GoogleFonts.outfit(color: Colors.white)),
-                subtitle: Text('New applicants must be accepted by you to view precise coordinates.', style: GoogleFonts.inter(color: context.textSecondary, fontSize: 11)),
+                title: Text('Require host approval to join',
+                    style: GoogleFonts.outfit(color: Colors.white)),
+                subtitle: Text(
+                    'New applicants must be accepted by you to view precise coordinates.',
+                    style: GoogleFonts.inter(
+                        color: context.textSecondary, fontSize: 11)),
                 activeThumbColor: AppColors.electricBlue,
               ),
               const SizedBox(height: 24),
@@ -281,9 +332,12 @@ class _CirclesCreateScreenState extends ConsumerState<CirclesCreateScreen> {
                   backgroundColor: AppColors.electricBlue,
                   foregroundColor: Colors.white,
                   minimumSize: const Size.fromHeight(54),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                 ),
-                child: Text('Launch Circle', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold)),
+                child: Text('Launch Circle',
+                    style: GoogleFonts.outfit(
+                        fontSize: 16, fontWeight: FontWeight.bold)),
               )
             ],
           ),

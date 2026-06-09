@@ -13,7 +13,8 @@ import '../screens/circles_details_screen.dart';
 
 class CirclesNotificationService {
   CirclesNotificationService._internal();
-  static final CirclesNotificationService instance = CirclesNotificationService._internal();
+  static final CirclesNotificationService instance =
+      CirclesNotificationService._internal();
 
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -75,11 +76,13 @@ class CirclesNotificationService {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Row(
           children: [
-            const Icon(Icons.notifications_active_rounded, color: AppColors.primaryGlow),
+            const Icon(Icons.notifications_active_rounded,
+                color: AppColors.primaryGlow),
             const SizedBox(width: 10),
             Text(
               'Stay Synced!',
-              style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
+              style: GoogleFonts.outfit(
+                  color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -95,7 +98,8 @@ class CirclesNotificationService {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.electricBlue,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
             onPressed: () async {
               Navigator.of(ctx).pop();
@@ -104,11 +108,14 @@ class CirclesNotificationService {
                 badge: true,
                 sound: true,
               );
-              if (status.authorizationStatus == AuthorizationStatus.authorized) {
+              if (status.authorizationStatus ==
+                  AuthorizationStatus.authorized) {
                 await registerFcmToken();
               }
             },
-            child: const Text('Enable', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            child: const Text('Enable',
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -143,8 +150,12 @@ class CirclesNotificationService {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
-                    Text(body, style: GoogleFonts.inter(color: Colors.white70, fontSize: 12)),
+                    Text(title,
+                        style: GoogleFonts.outfit(
+                            color: Colors.white, fontWeight: FontWeight.bold)),
+                    Text(body,
+                        style: GoogleFonts.inter(
+                            color: Colors.white70, fontSize: 12)),
                   ],
                 ),
               ),
@@ -157,10 +168,11 @@ class CirclesNotificationService {
   }
 
   // 5. Deep Link router on push notification tap
-  void _handleNotificationTap(BuildContext context, Map<String, dynamic> data) async {
+  void _handleNotificationTap(
+      BuildContext context, Map<String, dynamic> data) async {
     final type = data['type'] as String?;
     final circleId = data['circleId'] as String?;
-    
+
     if (circleId == null) return;
 
     try {
@@ -172,7 +184,8 @@ class CirclesNotificationService {
         // Deep link directly into group chat
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => CirclesChatScreen(circleId: circle.id, circleTitle: circle.title),
+            builder: (_) => CirclesChatScreen(
+                circleId: circle.id, circleTitle: circle.title),
           ),
         );
       } else {

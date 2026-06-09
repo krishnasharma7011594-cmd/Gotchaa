@@ -105,12 +105,20 @@ class VibeTalkGameService {
       );
     } else {
       String prompt = '';
-      if (type == 'icebreaker') prompt = _icebreakers[_random.nextInt(_icebreakers.length)];
-      if (type == 'tongue_twister') prompt = 'Voice Challenge: Say this fast 3 times!\n${_tongueTwisters[_random.nextInt(_tongueTwisters.length)]}';
-      if (type == 'voice_story') prompt = 'Voice Challenge!\n${_voiceStories[_random.nextInt(_voiceStories.length)]}';
-      if (type == 'voice_dare') prompt = 'Voice Dare!\n${_voiceDares[_random.nextInt(_voiceDares.length)]}';
-      if (type == 'truth_or_dare') prompt = _truthOrDare[_random.nextInt(_truthOrDare.length)];
-      
+      if (type == 'icebreaker')
+        prompt = _icebreakers[_random.nextInt(_icebreakers.length)];
+      if (type == 'tongue_twister')
+        prompt =
+            'Voice Challenge: Say this fast 3 times!\n${_tongueTwisters[_random.nextInt(_tongueTwisters.length)]}';
+      if (type == 'voice_story')
+        prompt =
+            'Voice Challenge!\n${_voiceStories[_random.nextInt(_voiceStories.length)]}';
+      if (type == 'voice_dare')
+        prompt =
+            'Voice Dare!\n${_voiceDares[_random.nextInt(_voiceDares.length)]}';
+      if (type == 'truth_or_dare')
+        prompt = _truthOrDare[_random.nextInt(_truthOrDare.length)];
+
       return VibeGameContext(
         id: _uuid.v4(),
         type: type,
@@ -121,25 +129,33 @@ class VibeTalkGameService {
   }
 
   static List<String> get availableGameTypes => [
-    'icebreaker',
-    'this_or_that',
-    'emoji_guess',
-    'truth_or_dare',
-    'tongue_twister',
-    'voice_story',
-    'voice_dare',
-  ];
+        'icebreaker',
+        'this_or_that',
+        'emoji_guess',
+        'truth_or_dare',
+        'tongue_twister',
+        'voice_story',
+        'voice_dare',
+      ];
 
   static String getLabelForType(String type) {
-    switch(type) {
-      case 'icebreaker': return 'Icebreaker 🧊';
-      case 'this_or_that': return 'This or That ⚖️';
-      case 'emoji_guess': return 'Emoji Guess 🤔';
-      case 'truth_or_dare': return 'Truth or Dare 😈';
-      case 'tongue_twister': return 'Tongue Twister 👅';
-      case 'voice_story': return '30s Story 📖';
-      case 'voice_dare': return 'Voice Dare 🎤';
-      default: return 'Game 🎮';
+    switch (type) {
+      case 'icebreaker':
+        return 'Icebreaker 🧊';
+      case 'this_or_that':
+        return 'This or That ⚖️';
+      case 'emoji_guess':
+        return 'Emoji Guess 🤔';
+      case 'truth_or_dare':
+        return 'Truth or Dare 😈';
+      case 'tongue_twister':
+        return 'Tongue Twister 👅';
+      case 'voice_story':
+        return '30s Story 📖';
+      case 'voice_dare':
+        return 'Voice Dare 🎤';
+      default:
+        return 'Game 🎮';
     }
   }
 }

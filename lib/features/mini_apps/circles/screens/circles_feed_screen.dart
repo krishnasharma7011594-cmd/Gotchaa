@@ -30,15 +30,17 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     // Initialize push notifications and show permission explain dialog on launch
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await CirclesNotificationService.instance.initialize(context);
-      await CirclesNotificationService.instance.requestPermissionWithExplanation(context);
+      await CirclesNotificationService.instance
+          .requestPermissionWithExplanation(context);
     });
 
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
         ref.read(circlesFeedProvider.notifier).fetchFeed();
       }
     });
@@ -74,7 +76,9 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
           backgroundColor: context.bg,
           body: SafeArea(
             child: RefreshIndicator(
-              onRefresh: () => ref.read(circlesFeedProvider.notifier).fetchFeed(refresh: true),
+              onRefresh: () => ref
+                  .read(circlesFeedProvider.notifier)
+                  .fetchFeed(refresh: true),
               child: CustomScrollView(
                 controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -82,7 +86,8 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                   // Branded Header
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -108,10 +113,13 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                             ],
                           ),
                           IconButton(
-                            icon: const Icon(Icons.account_circle, color: Colors.white, size: 30),
+                            icon: const Icon(Icons.account_circle,
+                                color: Colors.white, size: 30),
                             onPressed: () {
                               Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => const CirclesProfileScreen()),
+                                MaterialPageRoute(
+                                    builder: (_) =>
+                                        const CirclesProfileScreen()),
                               );
                             },
                           )
@@ -123,7 +131,8 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                   // Search Bar & Filter Button
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 8),
                       child: Row(
                         children: [
                           Expanded(
@@ -131,12 +140,16 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                               controller: _searchController,
                               style: const TextStyle(color: Colors.white),
                               onChanged: (val) {
-                                ref.read(circlesFeedProvider.notifier).updateFilters(search: val);
+                                ref
+                                    .read(circlesFeedProvider.notifier)
+                                    .updateFilters(search: val);
                               },
                               decoration: InputDecoration(
                                 hintText: 'Search hashtags, groups...',
-                                hintStyle: TextStyle(color: context.textSecondary),
-                                prefixIcon: Icon(Icons.search, color: context.textSecondary),
+                                hintStyle:
+                                    TextStyle(color: context.textSecondary),
+                                prefixIcon: Icon(Icons.search,
+                                    color: context.textSecondary),
                                 filled: true,
                                 fillColor: context.surface,
                                 border: OutlineInputBorder(
@@ -148,7 +161,8 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                           ),
                           const SizedBox(width: 12),
                           IconButton(
-                            icon: const Icon(Icons.tune_rounded, color: Colors.white),
+                            icon: const Icon(Icons.tune_rounded,
+                                color: Colors.white),
                             onPressed: () {
                               showModalBottomSheet(
                                 context: context,
@@ -166,7 +180,8 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                   if (onboarding.hobbies.isEmpty)
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 8),
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: AppColors.electricGradientDark,
@@ -175,7 +190,8 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                           padding: const EdgeInsets.all(16),
                           child: Row(
                             children: [
-                              const Icon(Icons.interests_rounded, color: Colors.white),
+                              const Icon(Icons.interests_rounded,
+                                  color: Colors.white),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
@@ -183,11 +199,14 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                                   children: [
                                     Text(
                                       'Personalize your feed',
-                                      style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
+                                      style: GoogleFonts.outfit(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     Text(
                                       'Take onboarding to unlock customized matches.',
-                                      style: GoogleFonts.inter(color: Colors.white70, fontSize: 11),
+                                      style: GoogleFonts.inter(
+                                          color: Colors.white70, fontSize: 11),
                                     ),
                                   ],
                                 ),
@@ -195,10 +214,15 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                               TextButton(
                                 onPressed: () {
                                   Navigator.of(context).push(
-                                    MaterialPageRoute(builder: (_) => const CirclesOnboardingScreen()),
+                                    MaterialPageRoute(
+                                        builder: (_) =>
+                                            const CirclesOnboardingScreen()),
                                   );
                                 },
-                                child: const Text('Do it!', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                child: const Text('Do it!',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold)),
                               ),
                             ],
                           ),
@@ -214,7 +238,9 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                         child: Center(
                           child: Text(
                             '⚠️ Query throttling active for cost protection.',
-                            style: GoogleFonts.outfit(color: AppColors.error, fontWeight: FontWeight.bold),
+                            style: GoogleFonts.outfit(
+                                color: AppColors.error,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
@@ -231,22 +257,30 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                             children: [
                               Text(
                                 'No circles near you yet.',
-                                style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                                style: GoogleFonts.outfit(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 'Be the first to create one and invite your friends!',
-                                style: GoogleFonts.inter(color: context.textSecondary),
+                                style: GoogleFonts.inter(
+                                    color: context.textSecondary),
                               ),
                               const SizedBox(height: 20),
                               ElevatedButton(
                                 onPressed: () {
                                   Navigator.of(context).push(
-                                    MaterialPageRoute(builder: (_) => const CirclesCreateScreen()),
+                                    MaterialPageRoute(
+                                        builder: (_) =>
+                                            const CirclesCreateScreen()),
                                   );
                                 },
-                                style: ElevatedButton.styleFrom(backgroundColor: AppColors.electricBlue),
-                                child: const Text('Create a Circle', style: TextStyle(color: Colors.white)),
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.electricBlue),
+                                child: const Text('Create a Circle',
+                                    style: TextStyle(color: Colors.white)),
                               )
                             ],
                           ),
@@ -259,7 +293,8 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                         (context, index) {
                           final circle = feedState.circles[index];
                           return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 8),
                             child: GestureDetector(
                               onTap: () {
                                 showDialog(
@@ -268,7 +303,8 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                                     onAccepted: () {
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
-                                          builder: (_) => CirclesDetailsScreen(circle: circle),
+                                          builder: (_) => CirclesDetailsScreen(
+                                              circle: circle),
                                         ),
                                       );
                                     },
@@ -280,50 +316,64 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(16),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       // Image
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(16),
                                         child: Image.network(
-                                          circle.coverImageUrl.isNotEmpty 
-                                              ? circle.coverImageUrl 
+                                          circle.coverImageUrl.isNotEmpty
+                                              ? circle.coverImageUrl
                                               : 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500',
                                           height: 160,
                                           width: double.infinity,
                                           fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) => Container(
+                                          errorBuilder: (_, __, ___) =>
+                                              Container(
                                             height: 160,
-                                            color: Colors.purple.withOpacity(0.2),
-                                            child: const Icon(Icons.image, color: Colors.white54, size: 40),
+                                            color:
+                                                Colors.purple.withOpacity(0.2),
+                                            child: const Icon(Icons.image,
+                                                color: Colors.white54,
+                                                size: 40),
                                           ),
                                         ),
                                       ),
                                       const SizedBox(height: 12),
-                                      
+
                                       // Header
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Container(
                                             decoration: BoxDecoration(
-                                              color: AppColors.electricBlue.withOpacity(0.2),
-                                              borderRadius: BorderRadius.circular(8),
+                                              color: AppColors.electricBlue
+                                                  .withOpacity(0.2),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
-                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 4),
                                             child: Text(
                                               circle.category,
-                                              style: GoogleFonts.outfit(color: AppColors.primaryGlow, fontSize: 11, fontWeight: FontWeight.bold),
+                                              style: GoogleFonts.outfit(
+                                                  color: AppColors.primaryGlow,
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold),
                                             ),
                                           ),
                                           Text(
                                             circle.city,
-                                            style: GoogleFonts.inter(color: context.textSecondary, fontSize: 12),
+                                            style: GoogleFonts.inter(
+                                                color: context.textSecondary,
+                                                fontSize: 12),
                                           ),
                                         ],
                                       ),
                                       const SizedBox(height: 8),
-                                      
+
                                       Text(
                                         circle.title,
                                         style: GoogleFonts.outfit(
@@ -335,23 +385,29 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                                       const SizedBox(height: 4),
                                       Text(
                                         circle.description,
-                                        style: GoogleFonts.inter(color: Colors.white70, fontSize: 13),
+                                        style: GoogleFonts.inter(
+                                            color: Colors.white70,
+                                            fontSize: 13),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       const SizedBox(height: 12),
-                                      
+
                                       // Stats
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           const TrustBadgeWidget(
-                                            karmaScore: 120, // Mock karma level representing community reliability
+                                            karmaScore:
+                                                120, // Mock karma level representing community reliability
                                             attendanceRate: 95,
                                           ),
                                           Text(
                                             '${circle.memberIds.length}/${circle.memberLimit} Members',
-                                            style: GoogleFonts.inter(color: Colors.white70, fontSize: 12),
+                                            style: GoogleFonts.inter(
+                                                color: Colors.white70,
+                                                fontSize: 12),
                                           ),
                                         ],
                                       )
@@ -365,7 +421,7 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
                         childCount: feedState.circles.length,
                       ),
                     ),
-                  
+
                   if (feedState.isLoading)
                     const SliverToBoxAdapter(
                       child: Padding(
@@ -385,7 +441,9 @@ class _CirclesFeedScreenState extends ConsumerState<CirclesFeedScreen> {
               );
             },
             icon: const Icon(Icons.add, color: Colors.white),
-            label: Text('Create Circle', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+            label: Text('Create Circle',
+                style: GoogleFonts.outfit(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         );
       },

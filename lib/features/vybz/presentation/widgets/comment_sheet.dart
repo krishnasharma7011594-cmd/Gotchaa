@@ -14,9 +14,9 @@ import '../../../../core/providers/vybz_providers.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class CommentSheet extends ConsumerStatefulWidget {
-
   const CommentSheet({
-    required this.vybzId, super.key,
+    required this.vybzId,
+    super.key,
     this.onCommentAdded,
     this.onCommentDeleted,
   });
@@ -44,7 +44,7 @@ class _CommentSheetState extends ConsumerState<CommentSheet> {
 
     final user = ref.read(authStateProvider).value;
     if (user == null) return;
-    
+
     final profile = ref.read(currentUserProfileProvider).value;
 
     setState(() {
@@ -61,7 +61,9 @@ class _CommentSheetState extends ConsumerState<CommentSheet> {
         createdAt: DateTime.now(),
       );
 
-      await ref.read(firestoreRepositoryProvider).addVybzComment(widget.vybzId, comment);
+      await ref
+          .read(firestoreRepositoryProvider)
+          .addVybzComment(widget.vybzId, comment);
       _commentController.clear();
       widget.onCommentAdded?.call();
       FocusScope.of(context).unfocus();
@@ -133,16 +135,21 @@ class _CommentSheetState extends ConsumerState<CommentSheet> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CachedNetworkImage(
-                            imageUrl: comment.userPhoto.isNotEmpty ? comment.userPhoto : 'https://i.pravatar.cc/150',
-                            imageBuilder: (context, imageProvider) => CircleAvatar(
+                            imageUrl: comment.userPhoto.isNotEmpty
+                                ? comment.userPhoto
+                                : 'https://i.pravatar.cc/150',
+                            imageBuilder: (context, imageProvider) =>
+                                CircleAvatar(
                               radius: 18,
                               backgroundImage: imageProvider,
                             ),
                             placeholder: (context, url) => const CircleAvatar(
                               radius: 18,
-                              child: BlurHash(hash: 'L5H2EC=pPdpWXVJs00QQV_9H00XY'),
+                              child: BlurHash(
+                                  hash: 'L5H2EC=pPdpWXVJs00QQV_9H00XY'),
                             ),
-                            errorWidget: (context, url, error) => const CircleAvatar(
+                            errorWidget: (context, url, error) =>
+                                const CircleAvatar(
                               radius: 18,
                               child: Icon(Icons.person),
                             ),
@@ -189,8 +196,12 @@ class _CommentSheetState extends ConsumerState<CommentSheet> {
                   },
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primaryGlow)),
-              error: (e, st) => Center(child: Text(context.tr('error_prefix', args: [e.toString()]), style: const TextStyle(color: Colors.white))),
+              loading: () => const Center(
+                  child:
+                      CircularProgressIndicator(color: AppColors.primaryGlow)),
+              error: (e, st) => Center(
+                  child: Text(context.tr('error_prefix', args: [e.toString()]),
+                      style: const TextStyle(color: Colors.white))),
             ),
           ),
           Container(
@@ -216,7 +227,8 @@ class _CommentSheetState extends ConsumerState<CommentSheet> {
                       border: InputBorder.none,
                       filled: true,
                       fillColor: Colors.white10,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
                         borderSide: BorderSide.none,
@@ -232,17 +244,22 @@ class _CommentSheetState extends ConsumerState<CommentSheet> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                if (_isSubmitting) const Padding(
-                        padding: EdgeInsets.all(12),
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.electricBlue),
-                        ),
-                      ) else IconButton(
-                        icon: const Icon(Icons.send_rounded, color: AppColors.electricBlue),
-                        onPressed: _submitComment,
-                      ),
+                if (_isSubmitting)
+                  const Padding(
+                    padding: EdgeInsets.all(12),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: AppColors.electricBlue),
+                    ),
+                  )
+                else
+                  IconButton(
+                    icon: const Icon(Icons.send_rounded,
+                        color: AppColors.electricBlue),
+                    onPressed: _submitComment,
+                  ),
               ],
             ),
           ),

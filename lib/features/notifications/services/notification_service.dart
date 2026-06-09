@@ -3,18 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/auth_providers.dart';
 import '../models/notification_model.dart';
 
-final notificationServiceProvider = Provider<NotificationService>((ref) => NotificationService(FirebaseFirestore.instance));
+final notificationServiceProvider = Provider<NotificationService>(
+    (ref) => NotificationService(FirebaseFirestore.instance));
 
 final unreadNotificationsCountProvider = StreamProvider<int>((ref) {
   final user = ref.watch(currentUserProvider);
   if (user == null) return Stream.value(0);
-  
+
   final service = ref.watch(notificationServiceProvider);
   return service.getUnreadCount(user.uid);
 });
 
 class NotificationsState {
-
   NotificationsState({
     this.notifications = const [],
     this.isLoading = false,
@@ -31,15 +31,18 @@ class NotificationsState {
     bool? isLoading,
     bool? hasMore,
     DocumentSnapshot? lastDoc,
-  }) => NotificationsState(
-      notifications: notifications ?? this.notifications,
-      isLoading: isLoading ?? this.isLoading,
-      hasMore: hasMore ?? this.hasMore,
-      lastDoc: lastDoc ?? this.lastDoc,
-    );
+  }) =>
+      NotificationsState(
+        notifications: notifications ?? this.notifications,
+        isLoading: isLoading ?? this.isLoading,
+        hasMore: hasMore ?? this.hasMore,
+        lastDoc: lastDoc ?? this.lastDoc,
+      );
 }
 
-final userNotificationsNotifierProvider = StateNotifierProvider<UserNotificationsNotifier, NotificationsState>(UserNotificationsNotifier.new);
+final userNotificationsNotifierProvider =
+    StateNotifierProvider<UserNotificationsNotifier, NotificationsState>(
+        UserNotificationsNotifier.new);
 
 class UserNotificationsNotifier extends StateNotifier<NotificationsState> {
   UserNotificationsNotifier(this._ref) : super(NotificationsState()) {
@@ -60,10 +63,14 @@ class UserNotificationsNotifier extends StateNotifier<NotificationsState> {
 
     try {
       final service = _ref.read(notificationServiceProvider);
-      final result = await service.getNotificationsPaged(user.uid, lastDoc: state.lastDoc);
-      
-      final newNotifications = result.docs.map((doc) => NotificationModel.fromMap(doc.id, doc.data()! as Map<String, dynamic>)).toList();
-      
+      final result =
+          await service.getNotificationsPaged(user.uid, lastDoc: state.lastDoc);
+
+      final newNotifications = result.docs
+          .map((doc) => NotificationModel.fromMap(
+              doc.id, doc.data()! as Map<String, dynamic>))
+          .toList();
+
       state = state.copyWith(
         notifications: [...state.notifications, ...newNotifications],
         isLoading: false,
@@ -82,11 +89,11 @@ class UserNotificationsNotifier extends StateNotifier<NotificationsState> {
 }
 
 class NotificationService {
-
   NotificationService(this._firestore);
   final FirebaseFirestore _firestore;
 
-  Future<QuerySnapshot> getNotificationsPaged(String uid, {DocumentSnapshot? lastDoc}) async {
+  Future<QuerySnapshot> getNotificationsPaged(String uid,
+      {DocumentSnapshot? lastDoc}) async {
     var query = _firestore
         .collection('notifications')
         .doc(uid)
@@ -102,10 +109,10 @@ class NotificationService {
   }
 
   Stream<int> getUnreadCount(String uid) => _firestore
-        .collection('users')
-        .doc(uid)
-        .snapshots()
-        .map((snap) => (snap.data()?['unreadNotificationsCount'] as int?) ?? 0);
+      .collection('users')
+      .doc(uid)
+      .snapshots()
+      .map((snap) => (snap.data()?['unreadNotificationsCount'] as int?) ?? 0);
 
   Future<void> markAsRead(String uid, String notificationId) async {
     await _firestore
