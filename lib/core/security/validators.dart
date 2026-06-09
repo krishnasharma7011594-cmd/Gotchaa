@@ -406,7 +406,8 @@ class InputValidator {
 
     // Remove event handlers
     result = result.replaceAll(
-      RegExp(r'''\s*on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)''', caseSensitive: false),
+      RegExp(r'''\s*on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)''',
+          caseSensitive: false),
       '',
     );
 

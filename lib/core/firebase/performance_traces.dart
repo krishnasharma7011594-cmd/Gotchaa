@@ -20,7 +20,8 @@ class GotchaaPerformanceTraces {
   Future<void> stopFeedLoad() async {
     try {
       await _feedTrace?.stop();
-    } catch (_) {} finally {
+    } catch (_) {
+    } finally {
       _feedTrace = null;
     }
   }
@@ -35,7 +36,8 @@ class GotchaaPerformanceTraces {
   Future<void> stopChatOpen() async {
     try {
       await _chatTrace?.stop();
-    } catch (_) {} finally {
+    } catch (_) {
+    } finally {
       _chatTrace = null;
     }
   }
@@ -50,14 +52,16 @@ class GotchaaPerformanceTraces {
   Future<void> stopVibeTalkMatch() async {
     try {
       await _vibetalkTrace?.stop();
-    } catch (_) {} finally {
+    } catch (_) {
+    } finally {
       _vibetalkTrace = null;
     }
   }
 
   Future<void> startImageUpload({String kind = 'image'}) async {
     try {
-      _uploadTrace = FirebasePerformance.instance.newTrace('image_upload_$kind');
+      _uploadTrace =
+          FirebasePerformance.instance.newTrace('image_upload_$kind');
       await _uploadTrace!.start();
     } catch (_) {}
   }
@@ -65,7 +69,8 @@ class GotchaaPerformanceTraces {
   Future<void> stopImageUpload() async {
     try {
       await _uploadTrace?.stop();
-    } catch (_) {} finally {
+    } catch (_) {
+    } finally {
       _uploadTrace = null;
     }
   }

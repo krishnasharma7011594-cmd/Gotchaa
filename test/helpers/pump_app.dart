@@ -41,8 +41,10 @@ extension PumpApp on WidgetTester {
           sharedPreferencesProvider.overrideWithValue(prefs),
           firestoreProvider.overrideWithValue(fakeFirestore),
           firebaseAuthProvider.overrideWithValue(mockAuth),
-          authStateProvider.overrideWith((ref) => Stream.value(mockAuth.currentUser)),
-          socialRepositoryProvider.overrideWithValue(SocialRepository(db: fakeFirestore)),
+          authStateProvider
+              .overrideWith((ref) => Stream.value(mockAuth.currentUser)),
+          socialRepositoryProvider
+              .overrideWithValue(SocialRepository(db: fakeFirestore)),
           ...overrides,
         ],
         child: MaterialApp.router(
