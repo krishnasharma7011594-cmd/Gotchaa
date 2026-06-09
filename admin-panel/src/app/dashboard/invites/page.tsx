@@ -276,7 +276,9 @@ export default function InvitesPage() {
   );
 }
 
-function clsx(...args: any[]) {
+type ClassValue = string | undefined | null | boolean | number;
+
+function clsx(...args: ClassValue[]) {
   return args.filter(Boolean).join(" ");
 }
 
