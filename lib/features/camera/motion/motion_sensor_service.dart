@@ -41,7 +41,7 @@ class MotionSensorService with WidgetsBindingObserver {
   bool _isLowPowerMode = false;
 
   Duration get _sensorInterval => _isLowPowerMode
-      ? const Duration(milliseconds: 33)  // ~30 Hz when still
+      ? const Duration(milliseconds: 33) // ~30 Hz when still
       : const Duration(milliseconds: 10); // ~100 Hz when moving
 
   bool _initialized = false;
@@ -87,7 +87,8 @@ class MotionSensorService with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
       _pauseSensors();
     } else if (state == AppLifecycleState.resumed) {
       _resumeSensors();
@@ -101,19 +102,17 @@ class MotionSensorService with WidgetsBindingObserver {
     _gyroSub?.cancel();
     _accelSub = null;
     _gyroSub = null;
-    
   }
 
   void _resumeSensors() {
     if (!_isPaused || !_initialized) return;
     _isPaused = false;
     _startSensorListening();
-    
   }
 
   void _startSensorListening() {
     if (_isPaused) return;
-    
+
     _accelSub?.cancel();
     _gyroSub?.cancel();
 
@@ -166,9 +165,9 @@ void _sensorProcessingIsolate(SendPort mainSendPort) {
   mainSendPort.send(port.sendPort);
 
   // ── Complementary filter state (all angles in degrees) ──────────────────
-  double roll = 0;   // tiltX
-  double pitch = 0;  // tiltY
-  double yaw = 0;    // rotationZ (gyro only — no magnetometer)
+  double roll = 0; // tiltX
+  double pitch = 0; // tiltY
+  double yaw = 0; // rotationZ (gyro only — no magnetometer)
 
   // ── Accelerometer snapshot (needed for gravity-based correction) ─────────
   double accelX = 0, accelY = 0, accelZ = 0;
@@ -196,7 +195,8 @@ void _sensorProcessingIsolate(SendPort mainSendPort) {
 
     // ── Δt computation (Rule 3) ─────────────────────────────────────────────
     final nowMs = DateTime.now().millisecondsSinceEpoch;
-    final double dt = ((nowMs - lastTimestampMs) / 1000.0).clamp(0.001, maxDtSeconds);
+    final double dt =
+        ((nowMs - lastTimestampMs) / 1000.0).clamp(0.001, maxDtSeconds);
     lastTimestampMs = nowMs;
 
     if (type == 'accel') {
@@ -224,13 +224,12 @@ void _sensorProcessingIsolate(SendPort mainSendPort) {
     } else if (type == 'gyro') {
       // ── Complementary filter (Rule 3 exact pattern) ──────────────────────
       // Gravity vector → accelerometer-derived roll & pitch
-      final double accelRoll =
-          atan2(accelY, accelZ) * 180.0 / pi;
+      final double accelRoll = atan2(accelY, accelZ) * 180.0 / pi;
       final double accelPitch =
           atan2(-accelX, sqrt(accelY * accelY + accelZ * accelZ)) * 180.0 / pi;
 
       // Gyroscope integration with Δt — gyro values are in rad/s
-      final double gyroRoll  = roll  + (x * 180.0 / pi) * dt;
+      final double gyroRoll = roll + (x * 180.0 / pi) * dt;
       final double gyroPitch = pitch + (y * 180.0 / pi) * dt;
       yaw = yaw + (z * 180.0 / pi) * dt;
 
@@ -238,18 +237,19 @@ void _sensorProcessingIsolate(SendPort mainSendPort) {
       final double oldRoll = roll;
       final double oldPitch = pitch;
 
-      roll  = alpha * gyroRoll  + (1.0 - alpha) * accelRoll;
+      roll = alpha * gyroRoll + (1.0 - alpha) * accelRoll;
       pitch = alpha * gyroPitch + (1.0 - alpha) * accelPitch;
 
       // ── Derived quantities ───────────────────────────────────────────────
-      final double dRoll  = roll  - oldRoll;
+      final double dRoll = roll - oldRoll;
       final double dPitch = pitch - oldPitch;
       final double tiltVelocity =
           dt > 0 ? sqrt(dRoll * dRoll + dPitch * dPitch) / dt : 0.0;
 
       // Motion blur vector: proportional to angular velocity in gyro
-      final double blurX = -y * 12.0; // pitch angular velocity → horizontal blur
-      final double blurY =  x * 12.0; // roll angular velocity  → vertical blur
+      final double blurX =
+          -y * 12.0; // pitch angular velocity → horizontal blur
+      final double blurY = x * 12.0; // roll angular velocity  → vertical blur
 
       mainSendPort.send({
         'tiltX': roll,

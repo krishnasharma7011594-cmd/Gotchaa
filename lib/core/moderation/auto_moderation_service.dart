@@ -67,7 +67,8 @@ class AutoModerationService {
           severity = 'low';
         case FilterSeverity.medium:
           action = ModerationActionType.allowWithWarning;
-          reason = 'Your content may contain language that violates our guidelines.';
+          reason =
+              'Your content may contain language that violates our guidelines.';
           severity = 'medium';
         case FilterSeverity.high:
           action = ModerationActionType.blockAndReport;
@@ -159,8 +160,10 @@ class AutoModerationService {
         flags: result.flags,
       );
       await ReportRepository().submitReport(report);
-      final callable = FirebaseFunctions.instance.httpsCallable('notifyAdminModeration');
-      await callable.call({'contentId': contentId, 'severity': result.severity});
+      final callable =
+          FirebaseFunctions.instance.httpsCallable('notifyAdminModeration');
+      await callable
+          .call({'contentId': contentId, 'severity': result.severity});
     } catch (e) {
       AppLogger.e('AutoModeration auto-report failed', e);
     }

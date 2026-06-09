@@ -21,7 +21,7 @@ class KalmanFilter {
   void predict(double dt, double gyroDeltaX, double gyroDeltaY) {
     // We update velocity based on gyro (delta angle creates lateral shift)
     // Scale factor maps angle delta to pixel delta
-    vx = gyroDeltaX * 15.0; 
+    vx = gyroDeltaX * 15.0;
     vy = gyroDeltaY * 15.0;
 
     // State Transition Matrix

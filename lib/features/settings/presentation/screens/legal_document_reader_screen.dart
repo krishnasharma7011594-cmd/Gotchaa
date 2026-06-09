@@ -10,7 +10,8 @@ import '../../../../core/theme/app_colors.dart';
 
 class LegalDocumentReaderScreen extends StatefulWidget {
   const LegalDocumentReaderScreen({
-    required this.document, super.key,
+    required this.document,
+    super.key,
     this.showChangeBanner = false,
     this.previousAcceptedVersion,
   });
@@ -20,7 +21,8 @@ class LegalDocumentReaderScreen extends StatefulWidget {
   final String? previousAcceptedVersion;
 
   @override
-  State<LegalDocumentReaderScreen> createState() => _LegalDocumentReaderScreenState();
+  State<LegalDocumentReaderScreen> createState() =>
+      _LegalDocumentReaderScreenState();
 }
 
 class _LegalDocumentReaderScreenState extends State<LegalDocumentReaderScreen> {
@@ -65,7 +67,8 @@ class _LegalDocumentReaderScreenState extends State<LegalDocumentReaderScreen> {
     if (_query.isEmpty) return _content;
     final lower = _query.toLowerCase();
     final lines = _content.split('\n');
-    final matches = lines.where((l) => l.toLowerCase().contains(lower)).toList();
+    final matches =
+        lines.where((l) => l.toLowerCase().contains(lower)).toList();
     if (matches.isEmpty) return 'No matches for "$_query" in this document.';
     return matches.map((l) => '• $l').join('\n\n');
   }
@@ -92,7 +95,8 @@ class _LegalDocumentReaderScreenState extends State<LegalDocumentReaderScreen> {
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: textPrimary, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+              color: textPrimary, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
@@ -115,7 +119,8 @@ class _LegalDocumentReaderScreenState extends State<LegalDocumentReaderScreen> {
               decoration: InputDecoration(
                 hintText: 'Search in document…',
                 hintStyle: GoogleFonts.outfit(color: textSecondary),
-                prefixIcon: Icon(Icons.search_rounded, color: textSecondary, size: 20),
+                prefixIcon:
+                    Icon(Icons.search_rounded, color: textSecondary, size: 20),
                 filled: true,
                 fillColor: isDark ? Colors.white10 : Colors.grey.shade100,
                 border: OutlineInputBorder(
@@ -134,7 +139,8 @@ class _LegalDocumentReaderScreenState extends State<LegalDocumentReaderScreen> {
               decoration: BoxDecoration(
                 color: AppColors.primaryBlue.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.3)),
+                border: Border.all(
+                    color: AppColors.primaryBlue.withValues(alpha: 0.3)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,13 +157,15 @@ class _LegalDocumentReaderScreenState extends State<LegalDocumentReaderScreen> {
                     const SizedBox(height: 4),
                     Text(
                       'You previously accepted ${widget.previousAcceptedVersion}.',
-                      style: GoogleFonts.outfit(fontSize: 11, color: textSecondary),
+                      style: GoogleFonts.outfit(
+                          fontSize: 11, color: textSecondary),
                     ),
                   ],
                   const SizedBox(height: 6),
                   Text(
                     widget.document.changeSummary!,
-                    style: GoogleFonts.outfit(fontSize: 12, color: textPrimary, height: 1.35),
+                    style: GoogleFonts.outfit(
+                        fontSize: 12, color: textPrimary, height: 1.35),
                   ),
                 ],
               ),
@@ -178,7 +186,9 @@ class _LegalDocumentReaderScreenState extends State<LegalDocumentReaderScreen> {
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _error != null
-                    ? Center(child: Text(_error!, style: GoogleFonts.outfit(color: textSecondary)))
+                    ? Center(
+                        child: Text(_error!,
+                            style: GoogleFonts.outfit(color: textSecondary)))
                     : Markdown(
                         data: _displayContent,
                         styleSheet: MarkdownStyleSheet(

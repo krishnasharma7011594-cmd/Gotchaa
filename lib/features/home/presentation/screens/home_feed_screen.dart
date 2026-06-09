@@ -15,12 +15,12 @@ class HomeFeedScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => DefaultTabController(
-      length: 3,
-      initialIndex: 1, // Start on 'For You'
-      child: Scaffold(
-        backgroundColor: context.bg,
-        body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) => [
+        length: 3,
+        initialIndex: 1, // Start on 'For You'
+        child: Scaffold(
+          backgroundColor: context.bg,
+          body: NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) => [
               SliverAppBar(
                 floating: true,
                 pinned: false, // App bar hides on scroll for immersive feel
@@ -32,12 +32,13 @@ class HomeFeedScreen extends ConsumerWidget {
                   onPressed: () {
                     HapticFeedback.lightImpact();
                     ref.read(shellPageControllerProvider).animateToPage(
-                      0,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
+                          0,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
                   },
-                  icon: Icon(Icons.camera_alt_outlined, color: context.iconPrimary, size: 26),
+                  icon: Icon(Icons.camera_alt_outlined,
+                      color: context.iconPrimary, size: 26),
                 ),
                 title: Text(
                   'GOTCHAA',
@@ -52,12 +53,13 @@ class HomeFeedScreen extends ConsumerWidget {
                     onPressed: () {
                       HapticFeedback.lightImpact();
                       ref.read(shellPageControllerProvider).animateToPage(
-                        2,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
+                            2,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
                     },
-                    icon: Icon(Icons.chat_bubble_outline_rounded, color: context.iconPrimary, size: 24),
+                    icon: Icon(Icons.chat_bubble_outline_rounded,
+                        color: context.iconPrimary, size: 24),
                   ),
                   const SizedBox(width: 4),
                 ],
@@ -70,10 +72,13 @@ class HomeFeedScreen extends ConsumerWidget {
                       isScrollable: true,
                       labelColor: context.textPrimary,
                       unselectedLabelColor: context.textSecondary,
-                      labelStyle: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16),
-                      unselectedLabelStyle: GoogleFonts.outfit(fontWeight: FontWeight.w500, fontSize: 16),
+                      labelStyle: GoogleFonts.outfit(
+                          fontWeight: FontWeight.bold, fontSize: 16),
+                      unselectedLabelStyle: GoogleFonts.outfit(
+                          fontWeight: FontWeight.w500, fontSize: 16),
                       indicator: const UnderlineTabIndicator(
-                        borderSide: BorderSide(width: 3, color: AppColors.electricBlue),
+                        borderSide:
+                            BorderSide(width: 3, color: AppColors.electricBlue),
                         insets: EdgeInsets.symmetric(horizontal: 16),
                       ),
                       dividerColor: Colors.transparent,
@@ -93,42 +98,48 @@ class HomeFeedScreen extends ConsumerWidget {
                 ),
               ),
             ],
-          body: TabBarView(
-            children: [
-              // Following Feed
-              FeedListView(
-                feedAsync: ref.watch(followingFeedProvider),
-                onRefresh: () => ref.invalidate(followingFeedProvider),
-                onLoadMore: () => ref.read(postsFeedLimitProvider.notifier).state += 10,
-                emptyTitle: 'No posts from people you follow',
-                emptySubtitle: 'Discover interesting people and follow them to see their posts here.',
-                emptyActionLabel: 'Explore People',
-                onEmptyAction: () => ref.read(shellPageControllerProvider).animateToPage(
-                  3,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
+            body: TabBarView(
+              children: [
+                // Following Feed
+                FeedListView(
+                  feedAsync: ref.watch(followingFeedProvider),
+                  onRefresh: () => ref.invalidate(followingFeedProvider),
+                  onLoadMore: () =>
+                      ref.read(postsFeedLimitProvider.notifier).state += 10,
+                  emptyTitle: 'No posts from people you follow',
+                  emptySubtitle:
+                      'Discover interesting people and follow them to see their posts here.',
+                  emptyActionLabel: 'Explore People',
+                  onEmptyAction: () =>
+                      ref.read(shellPageControllerProvider).animateToPage(
+                            3,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          ),
                 ),
-              ),
-              // For You Feed
-              FeedListView(
-                feedAsync: ref.watch(forYouFeedProvider),
-                onRefresh: () => ref.invalidate(forYouFeedProvider),
-                onLoadMore: () => ref.read(postsFeedLimitProvider.notifier).state += 10,
-                emptyTitle: 'Building your feed...',
-                emptySubtitle: 'The more you interact, the better your feed gets. Go explore something!',
-              ),
-              // Nearby Feed
-              FeedListView(
-                feedAsync: ref.watch(nearbyFeedProvider),
-                onRefresh: () => ref.invalidate(nearbyFeedProvider),
-                onLoadMore: () => ref.read(postsFeedLimitProvider.notifier).state += 10,
-                emptyTitle: 'No posts nearby',
-                emptySubtitle: 'Nobody has posted from your area yet. Be the first!',
-              ),
-            ],
+                // For You Feed
+                FeedListView(
+                  feedAsync: ref.watch(forYouFeedProvider),
+                  onRefresh: () => ref.invalidate(forYouFeedProvider),
+                  onLoadMore: () =>
+                      ref.read(postsFeedLimitProvider.notifier).state += 10,
+                  emptyTitle: 'Building your feed...',
+                  emptySubtitle:
+                      'The more you interact, the better your feed gets. Go explore something!',
+                ),
+                // Nearby Feed
+                FeedListView(
+                  feedAsync: ref.watch(nearbyFeedProvider),
+                  onRefresh: () => ref.invalidate(nearbyFeedProvider),
+                  onLoadMore: () =>
+                      ref.read(postsFeedLimitProvider.notifier).state += 10,
+                  emptyTitle: 'No posts nearby',
+                  emptySubtitle:
+                      'Nobody has posted from your area yet. Be the first!',
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
 }
-

@@ -62,7 +62,8 @@ class VerifyEmailScreen extends ConsumerWidget {
                   onPressed: () {
                     user?.sendEmailVerification();
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(context.tr('auth_verification_sent'))),
+                      SnackBar(
+                          content: Text(context.tr('auth_verification_sent'))),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -99,7 +100,8 @@ class VerifyEmailScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 24),
                 TextButton(
-                  onPressed: () => ref.read(authControllerProvider.notifier).signOut(),
+                  onPressed: () =>
+                      ref.read(authControllerProvider.notifier).signOut(),
                   child: Text(
                     context.tr('auth_sign_out'),
                     style: GoogleFonts.outfit(

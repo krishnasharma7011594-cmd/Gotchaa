@@ -11,7 +11,8 @@ class ResolveUsernameScreen extends ConsumerStatefulWidget {
   final String username;
 
   @override
-  ConsumerState<ResolveUsernameScreen> createState() => _ResolveUsernameScreenState();
+  ConsumerState<ResolveUsernameScreen> createState() =>
+      _ResolveUsernameScreenState();
 }
 
 class _ResolveUsernameScreenState extends ConsumerState<ResolveUsernameScreen> {

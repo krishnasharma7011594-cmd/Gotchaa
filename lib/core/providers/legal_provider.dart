@@ -30,8 +30,10 @@ class LegalNotifier extends StateNotifier<bool> {
   void _init(UserProfile? profile) {
     if (_prefs == null) return;
 
-    final acceptedTermsLocal = _prefs.getString(StorageKeys.termsAcceptedVersion);
-    final acceptedPrivacyLocal = _prefs.getString(StorageKeys.privacyAcceptedVersion);
+    final acceptedTermsLocal =
+        _prefs.getString(StorageKeys.termsAcceptedVersion);
+    final acceptedPrivacyLocal =
+        _prefs.getString(StorageKeys.privacyAcceptedVersion);
     final acceptedTermsCloud = profile?.termsAcceptedVersion;
     final acceptedPrivacyCloud = profile?.privacyAcceptedVersion;
 
@@ -43,9 +45,12 @@ class LegalNotifier extends StateNotifier<bool> {
     if (isLocalAccepted || isCloudAccepted) {
       state = true;
       if (isCloudAccepted && !isLocalAccepted) {
-        _prefs.setString(StorageKeys.termsAcceptedVersion, LegalConfig.termsVersion);
-        _prefs.setString(StorageKeys.privacyAcceptedVersion, LegalConfig.privacyVersion);
-        _prefs.setString(StorageKeys.legalAcceptedTimestamp, DateTime.now().toIso8601String());
+        _prefs.setString(
+            StorageKeys.termsAcceptedVersion, LegalConfig.termsVersion);
+        _prefs.setString(
+            StorageKeys.privacyAcceptedVersion, LegalConfig.privacyVersion);
+        _prefs.setString(StorageKeys.legalAcceptedTimestamp,
+            DateTime.now().toIso8601String());
       }
     } else {
       state = false;
@@ -63,8 +68,10 @@ class LegalNotifier extends StateNotifier<bool> {
       state = false;
       _ref.read(legalReacceptanceRequiredProvider.notifier).state = true;
     } else if (_prefs != null) {
-      final localOk = _prefs.getString(StorageKeys.termsAcceptedVersion) == LegalConfig.termsVersion &&
-          _prefs.getString(StorageKeys.privacyAcceptedVersion) == LegalConfig.privacyVersion;
+      final localOk = _prefs.getString(StorageKeys.termsAcceptedVersion) ==
+              LegalConfig.termsVersion &&
+          _prefs.getString(StorageKeys.privacyAcceptedVersion) ==
+              LegalConfig.privacyVersion;
       state = localOk;
     }
   }
@@ -74,15 +81,21 @@ class LegalNotifier extends StateNotifier<bool> {
 
     final now = DateTime.now();
 
-    await _prefs.setString(StorageKeys.termsAcceptedVersion, LegalConfig.termsVersion);
-    await _prefs.setString(StorageKeys.privacyAcceptedVersion, LegalConfig.privacyVersion);
-    await _prefs.setString(StorageKeys.legalAcceptedTimestamp, now.toIso8601String());
+    await _prefs.setString(
+        StorageKeys.termsAcceptedVersion, LegalConfig.termsVersion);
+    await _prefs.setString(
+        StorageKeys.privacyAcceptedVersion, LegalConfig.privacyVersion);
+    await _prefs.setString(
+        StorageKeys.legalAcceptedTimestamp, now.toIso8601String());
 
     final user = _ref.read(authStateProvider).asData?.value;
     if (user != null) {
       await LegalAcceptanceService.recordAcceptance(uid: user.uid);
       try {
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({
           'termsAcceptedVersion': LegalConfig.termsVersion,
           'privacyAcceptedVersion': LegalConfig.privacyVersion,
           'legalAcceptedAt': FieldValue.serverTimestamp(),

@@ -83,5 +83,4 @@ class DefaultFirebaseOptions {
     projectId: 'studio-1284397718-50704',
     storageBucket: 'studio-1284397718-50704.firebasestorage.app',
   );
-
 }

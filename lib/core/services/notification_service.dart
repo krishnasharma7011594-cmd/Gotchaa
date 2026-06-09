@@ -38,12 +38,9 @@ class NotificationService {
       AppLogger.i('NotificationService: foreground message received');
       AppLogger.i('  data: ${message.data}');
       if (message.notification != null) {
-        AppLogger.i(
-          'NotificationService: notification — '
-          'title=${message.notification?.title}, '
-          'body=${message.notification?.body}'
-        );
-        
+        AppLogger.i('NotificationService: notification — '
+            'title=${message.notification?.title}, '
+            'body=${message.notification?.body}');
       }
     });
   }
@@ -59,17 +56,15 @@ class NotificationService {
     if (user == null) return;
 
     try {
-      await _firestore
-          .collection('users_private')
-          .doc(user.uid)
-          .set(
+      await _firestore.collection('users_private').doc(user.uid).set(
         {
           'fcmToken': token,
           'lastTokenUpdate': FieldValue.serverTimestamp(),
         },
         SetOptions(merge: true),
       );
-      AppLogger.i('NotificationService: FCM token saved to users_private/${user.uid}');
+      AppLogger.i(
+          'NotificationService: FCM token saved to users_private/${user.uid}');
     } catch (e) {
       AppLogger.e('NotificationService: failed to save FCM token', e);
     }

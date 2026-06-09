@@ -14,14 +14,16 @@ void main() {
   testWidgets('Complete Chat Flow Test', (tester) async {
     final controller = StreamController<List<MessageModel>>();
     const testChatId = 'test_chat_id';
-    
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          messageStreamProvider(testChatId).overrideWith((ref) => controller.stream),
+          messageStreamProvider(testChatId)
+              .overrideWith((ref) => controller.stream),
         ],
         child: const MaterialApp(
-          home: ChatConversationScreen(chatId: testChatId, userName: 'Test User'),
+          home:
+              ChatConversationScreen(chatId: testChatId, userName: 'Test User'),
         ),
       ),
     );
@@ -31,11 +33,12 @@ void main() {
     // Initial state: empty
     controller.add([]);
     await tester.pumpAndSettle();
-    expect(find.text('No messages yet. Start the conversation.'), findsOneWidget);
+    expect(
+        find.text('No messages yet. Start the conversation.'), findsOneWidget);
 
     // Type message
     await tester.enterText(find.byType(TextField), 'Hello Integration');
-    
+
     // Tap Send (assuming icon is Icons.send_rounded or similar)
     // Let's find the send button.
     // In ChatConversationScreen lines 25, 44, it uses EnhancedChatInput.
@@ -55,13 +58,13 @@ void main() {
       timestamp: DateTime.now(),
       type: 'text',
     );
-    
+
     controller.add([newMessage]);
     await tester.pumpAndSettle();
 
     // Verify message appears in list
     expect(find.text('Hello Integration'), findsOneWidget);
-    
+
     controller.close();
   });
 }

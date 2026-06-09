@@ -2,7 +2,7 @@ import 'beauty_models.dart';
 
 /// ─────────────────────────────────────────────────────────────────────────────
 /// BeautyPresetRegistry
-/// 
+///
 /// Preset logic for the 10 production beauty filters.
 /// ─────────────────────────────────────────────────────────────────────────────
 class BeautyPresetRegistry {

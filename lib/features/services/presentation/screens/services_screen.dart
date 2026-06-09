@@ -26,7 +26,8 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
 
   void _openService(GotchaaService service) {
     Navigator.of(context, rootNavigator: true).push(
-      MaterialPageRoute(builder: (_) => GotchaaWebBrowserScreen(service: service)),
+      MaterialPageRoute(
+          builder: (_) => GotchaaWebBrowserScreen(service: service)),
     );
   }
 
@@ -39,7 +40,9 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: Text('Gotchaa Services', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text('Gotchaa Services',
+            style: GoogleFonts.outfit(
+                color: Colors.white, fontWeight: FontWeight.bold)),
       ),
       body: Column(
         children: [
@@ -77,21 +80,27 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                   padding: const EdgeInsets.only(right: 8),
                   child: ChoiceChip(
                     label: Text(
-                      category.name.substring(0, 1).toUpperCase() + category.name.substring(1),
+                      category.name.substring(0, 1).toUpperCase() +
+                          category.name.substring(1),
                       style: GoogleFonts.outfit(
                         color: isSelected ? Colors.white : Colors.white54,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
                       ),
                     ),
                     selected: isSelected,
                     onSelected: (selected) {
                       if (selected) {
-                        ref.read(servicesSelectedCategoryProvider.notifier).state = category;
+                        ref
+                            .read(servicesSelectedCategoryProvider.notifier)
+                            .state = category;
                       }
                     },
                     backgroundColor: const Color(0xFF1A1D26),
                     selectedColor: AppColors.electricBlue,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide.none),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        side: BorderSide.none),
                   ),
                 );
               },

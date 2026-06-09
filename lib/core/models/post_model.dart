@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PostModel {
-
   PostModel({
     required this.postId,
     required this.uid,
-    required this.createdAt, 
+    required this.createdAt,
     this.username = '',
     this.userPhoto = '',
     this.caption = '',
@@ -70,7 +69,6 @@ class PostModel {
         customListUids: List<String>.from(data['customListUids'] ?? []),
       );
     } catch (e) {
-      
       return PostModel(
         postId: id,
         uid: 'error',
@@ -110,32 +108,34 @@ class PostModel {
   final List<String> customListUids;
 
   Map<String, dynamic> toMap() => {
-      'uid': uid,
-      'username': username,
-      'userPhoto': userPhoto,
-      'caption': caption,
-      'mediaUrl': mediaUrl,
-      if (mediaThumbnailUrl.isNotEmpty) 'mediaThumbnailUrl': mediaThumbnailUrl,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'likesCount': likesCount,
-      'commentsCount': commentsCount,
-      'shareCount': shareCount,
-      'viewsCount': viewsCount,
-      if (spotifyTrackId != null) 'spotifyTrackId': spotifyTrackId,
-      if (spotifyTrackName != null) 'spotifyTrackName': spotifyTrackName,
-      if (spotifyArtistName != null) 'spotifyArtistName': spotifyArtistName,
-      if (spotifyAlbumArtUrl != null) 'spotifyAlbumArtUrl': spotifyAlbumArtUrl,
-      if (spotifyPreviewUrl != null) 'spotifyPreviewUrl': spotifyPreviewUrl,
-      if (overlays != null) 'overlays': overlays,
-      if (authorNation != null) 'authorNation': authorNation,
-      if (authorLanguage != null) 'authorLanguage': authorLanguage,
-      'hashtags': hashtags,
-      'searchKeywords': searchKeywords,
-      if (blurHash != null) 'blurHash': blurHash,
-      'isPrivate': isPrivate,
-      'visibility': visibility,
-      'authorGhostUids': authorGhostUids,
-      'authorFriendUids': authorFriendUids,
-      'customListUids': customListUids,
-    };
+        'uid': uid,
+        'username': username,
+        'userPhoto': userPhoto,
+        'caption': caption,
+        'mediaUrl': mediaUrl,
+        if (mediaThumbnailUrl.isNotEmpty)
+          'mediaThumbnailUrl': mediaThumbnailUrl,
+        'createdAt': Timestamp.fromDate(createdAt),
+        'likesCount': likesCount,
+        'commentsCount': commentsCount,
+        'shareCount': shareCount,
+        'viewsCount': viewsCount,
+        if (spotifyTrackId != null) 'spotifyTrackId': spotifyTrackId,
+        if (spotifyTrackName != null) 'spotifyTrackName': spotifyTrackName,
+        if (spotifyArtistName != null) 'spotifyArtistName': spotifyArtistName,
+        if (spotifyAlbumArtUrl != null)
+          'spotifyAlbumArtUrl': spotifyAlbumArtUrl,
+        if (spotifyPreviewUrl != null) 'spotifyPreviewUrl': spotifyPreviewUrl,
+        if (overlays != null) 'overlays': overlays,
+        if (authorNation != null) 'authorNation': authorNation,
+        if (authorLanguage != null) 'authorLanguage': authorLanguage,
+        'hashtags': hashtags,
+        'searchKeywords': searchKeywords,
+        if (blurHash != null) 'blurHash': blurHash,
+        'isPrivate': isPrivate,
+        'visibility': visibility,
+        'authorGhostUids': authorGhostUids,
+        'authorFriendUids': authorFriendUids,
+        'customListUids': customListUids,
+      };
 }

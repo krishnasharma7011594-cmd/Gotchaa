@@ -177,9 +177,7 @@ class BearerTokenInterceptor extends Interceptor {
           return true;
         }
       }
-    } catch (e) {
-      
-    }
+    } catch (e) {}
 
     return false;
   }
@@ -353,19 +351,20 @@ class ResponseValidatorInterceptor extends Interceptor {
 
   /// Get safe error message for exception type.
   String _getSafeErrorMessage(DioExceptionType type) => switch (type) {
-    DioExceptionType.badCertificate =>
-      'Security error: Unable to verify server certificate',
-    DioExceptionType.badResponse =>
-      'Server returned an error. Please try again.',
-    DioExceptionType.cancel => 'Request was cancelled',
-    DioExceptionType.connectionTimeout =>
-      'Connection timeout. Check your internet connection.',
-    DioExceptionType.receiveTimeout => 'Request timeout. Please try again.',
-    DioExceptionType.sendTimeout => 'Request timeout. Please try again.',
-    DioExceptionType.unknown => 'An error occurred. Please try again later.',
-    DioExceptionType.connectionError =>
-      'Connection failed. Check your internet connection.',
-  };
+        DioExceptionType.badCertificate =>
+          'Security error: Unable to verify server certificate',
+        DioExceptionType.badResponse =>
+          'Server returned an error. Please try again.',
+        DioExceptionType.cancel => 'Request was cancelled',
+        DioExceptionType.connectionTimeout =>
+          'Connection timeout. Check your internet connection.',
+        DioExceptionType.receiveTimeout => 'Request timeout. Please try again.',
+        DioExceptionType.sendTimeout => 'Request timeout. Please try again.',
+        DioExceptionType.unknown =>
+          'An error occurred. Please try again later.',
+        DioExceptionType.connectionError =>
+          'Connection failed. Check your internet connection.',
+      };
 }
 
 /// Pending request wrapper.
@@ -401,14 +400,11 @@ class SecureLoggingInterceptor extends Interceptor {
 
     // Log headers (without sensitive ones)
     final safeHeaders = _sanitizeHeaders(options.headers);
-    if (safeHeaders.isNotEmpty) {
-      
-    }
+    if (safeHeaders.isNotEmpty) {}
 
     // Log body if present (without sensitive fields)
     if (options.data != null) {
       final safeData = _sanitizeData(options.data);
-      
     }
 
     return handler.next(options);
@@ -424,7 +420,6 @@ class SecureLoggingInterceptor extends Interceptor {
     // Never log response data in production
     if (kDebugMode && response.data != null) {
       final safeData = _sanitizeData(response.data);
-      
     }
 
     return handler.next(response);

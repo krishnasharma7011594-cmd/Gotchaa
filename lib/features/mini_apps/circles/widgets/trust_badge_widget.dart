@@ -3,9 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class TrustBadgeWidget extends StatelessWidget {
-
   const TrustBadgeWidget({
-    required this.karmaScore, required this.attendanceRate, super.key,
+    required this.karmaScore,
+    required this.attendanceRate,
+    super.key,
     this.showLabel = true,
   });
   final int karmaScore;

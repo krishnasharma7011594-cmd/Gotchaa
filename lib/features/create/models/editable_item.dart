@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 enum EditableItemType { text, sticker, tag }
 
 class EditableItem {
-
   EditableItem({
     required this.id,
     required this.type,

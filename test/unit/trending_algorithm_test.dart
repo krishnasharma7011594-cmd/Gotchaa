@@ -17,17 +17,19 @@ void main() {
       expect(score, closeTo(19.24, 0.01));
     });
 
-    test('Post with 100 likes at 1 hour scores higher than 100 likes at 24 hours', () {
+    test(
+        'Post with 100 likes at 1 hour scores higher than 100 likes at 24 hours',
+        () {
       final score1 = calculateTrendingScore(engagement: 100, ageHours: 1);
       final score2 = calculateTrendingScore(engagement: 100, ageHours: 24);
-      
+
       expect(score1, greaterThan(score2));
     });
 
     test('Post with 1000 likes beats post with 100 likes at same age', () {
       final score1 = calculateTrendingScore(engagement: 1000, ageHours: 5);
       final score2 = calculateTrendingScore(engagement: 100, ageHours: 5);
-      
+
       expect(score1, greaterThan(score2));
     });
 

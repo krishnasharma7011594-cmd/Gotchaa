@@ -4,7 +4,6 @@ import 'vybz_model.dart';
 enum FeedItemType { image, video, vybz, musicPost }
 
 sealed class FeedItem {
-
   FeedItem({
     required this.id,
     required this.createdAt,
@@ -16,7 +15,6 @@ sealed class FeedItem {
 }
 
 class PostFeedItem extends FeedItem {
-
   PostFeedItem(this.post)
       : super(
           id: post.postId,
@@ -31,7 +29,6 @@ class PostFeedItem extends FeedItem {
 }
 
 class VybzFeedItem extends FeedItem {
-
   VybzFeedItem(this.vybz)
       : super(
           id: vybz.id,

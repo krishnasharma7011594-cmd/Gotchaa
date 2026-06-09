@@ -52,7 +52,8 @@ class E2EEService {
   // 2. Shared Secret Generation (Per Conversation)
   // ---------------------------------------------------------------------------
 
-  Future<SecretKey> getOrCreateChatKey(String chatId, String otherUserId) async {
+  Future<SecretKey> getOrCreateChatKey(
+      String chatId, String otherUserId) async {
     // Guard: do not attempt key derivation if either ID is missing.
     if (chatId.isEmpty || otherUserId.isEmpty) {
       throw Exception('getOrCreateChatKey: chatId or otherUserId is empty');
@@ -77,7 +78,8 @@ class E2EEService {
     final myPrivKeyBase64 =
         await _secureStorage.read(key: 'x25519_private_key_$myUid');
     if (myPrivKeyBase64 == null) {
-      throw Exception('Private key not found. Call generateAndStoreIdentityKeyPair first.');
+      throw Exception(
+          'Private key not found. Call generateAndStoreIdentityKeyPair first.');
     }
 
     final myPrivKeyBytes = base64Decode(myPrivKeyBase64);
@@ -88,12 +90,14 @@ class E2EEService {
         .doc(otherUserId)
         .get()
         .timeout(const Duration(seconds: 10),
-            onTimeout: () => throw Exception('Timed out fetching recipient public key'));
+            onTimeout: () =>
+                throw Exception('Timed out fetching recipient public key'));
     if (!doc.exists) throw Exception('User not found: $otherUserId');
 
     final otherPubKeyBase64 = doc.data()?['identityPublicKey'] as String?;
     if (otherPubKeyBase64 == null) {
-      throw Exception('Recipient has not set up E2EE yet. Ask them to open the app.');
+      throw Exception(
+          'Recipient has not set up E2EE yet. Ask them to open the app.');
     }
 
     final otherPubKeyBytes = base64Decode(otherPubKeyBase64);
@@ -157,7 +161,8 @@ class E2EEService {
     }
   }
 
-  Future<String> encryptForChat(String plaintext, String chatId, String otherUserId) async {
+  Future<String> encryptForChat(
+      String plaintext, String chatId, String otherUserId) async {
     try {
       final key = await getOrCreateChatKey(chatId, otherUserId);
       final nonce = _aesGcm.newNonce();
@@ -175,7 +180,8 @@ class E2EEService {
     }
   }
 
-  Future<String> decryptForChat(String encryptedBase64, String chatId, String otherUserId) async {
+  Future<String> decryptForChat(
+      String encryptedBase64, String chatId, String otherUserId) async {
     try {
       final key = await getOrCreateChatKey(chatId, otherUserId);
       final data = _tryBase64Decode(encryptedBase64);
@@ -196,14 +202,18 @@ class E2EEService {
     }
   }
 
-  Future<Uint8List> encryptFile(Uint8List fileBytes, String chatId, String otherUserId) async {
+  Future<Uint8List> encryptFile(
+      Uint8List fileBytes, String chatId, String otherUserId) async {
     final key = await getOrCreateChatKey(chatId, otherUserId);
     final nonce = _aesGcm.newNonce();
-    final secretBox = await _aesGcm.encrypt(fileBytes, secretKey: key, nonce: nonce);
-    return Uint8List.fromList(nonce + secretBox.cipherText + secretBox.mac.bytes);
+    final secretBox =
+        await _aesGcm.encrypt(fileBytes, secretKey: key, nonce: nonce);
+    return Uint8List.fromList(
+        nonce + secretBox.cipherText + secretBox.mac.bytes);
   }
 
-  Future<Uint8List> decryptFile(Uint8List encryptedBytes, String chatId, String otherUserId) async {
+  Future<Uint8List> decryptFile(
+      Uint8List encryptedBytes, String chatId, String otherUserId) async {
     final key = await getOrCreateChatKey(chatId, otherUserId);
     final nonce = encryptedBytes.sublist(0, 12);
     final macBytes = encryptedBytes.sublist(encryptedBytes.length - 16);
@@ -225,16 +235,20 @@ class E2EEService {
   Future<void> rotateKeys() async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) throw Exception('No user logged in');
-    
+
     // Generate new key pair on new device or manual rotation
-    final newPubKeyBase64 = await generateAndStoreIdentityKeyPair(currentUser.uid);
-    
+    final newPubKeyBase64 =
+        await generateAndStoreIdentityKeyPair(currentUser.uid);
+
     // Update public key in Firestore
-    await FirebaseFirestore.instance.collection('users').doc(currentUser.uid).update({
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.uid)
+        .update({
       'identityPublicKey': newPubKeyBase64,
       'keyRotationDate': FieldValue.serverTimestamp(),
     });
-    
+
     clearMemoryCache();
   }
 
@@ -242,63 +256,68 @@ class E2EEService {
   Future<String> exportKeyBackup(String passphrase) async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) throw Exception('No user logged in');
-    
-    final privKeyBase64 = await _secureStorage.read(key: 'x25519_private_key_${currentUser.uid}');
+
+    final privKeyBase64 =
+        await _secureStorage.read(key: 'x25519_private_key_${currentUser.uid}');
     if (privKeyBase64 == null) throw Exception('No private key to backup');
-    
-    final pbkdf2 = Pbkdf2(macAlgorithm: Hmac.sha256(), iterations: 100000, bits: 256);
-    final salt = _aesGcm.newNonce(); 
+
+    final pbkdf2 =
+        Pbkdf2(macAlgorithm: Hmac.sha256(), iterations: 100000, bits: 256);
+    final salt = _aesGcm.newNonce();
     final derivedKey = await pbkdf2.deriveKey(
       secretKey: SecretKey(utf8.encode(passphrase)),
       nonce: salt,
     );
-    
+
     final nonce = _aesGcm.newNonce();
     final secretBox = await _aesGcm.encrypt(
       utf8.encode(privKeyBase64),
       secretKey: derivedKey,
       nonce: nonce,
     );
-    
-    final combined = Uint8List.fromList(salt + nonce + secretBox.cipherText + secretBox.mac.bytes);
+
+    final combined = Uint8List.fromList(
+        salt + nonce + secretBox.cipherText + secretBox.mac.bytes);
     return base64Encode(combined);
   }
 
   Future<void> importKeyBackup(String backupBase64, String passphrase) async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) throw Exception('No user logged in');
-    
+
     final data = base64Decode(backupBase64);
     if (data.length < 12 + 12 + 16) throw Exception('Invalid backup format');
-    
+
     final salt = data.sublist(0, 12);
     final nonce = data.sublist(12, 24);
     final macBytes = data.sublist(data.length - 16);
     final cipherText = data.sublist(24, data.length - 16);
-    
-    final pbkdf2 = Pbkdf2(macAlgorithm: Hmac.sha256(), iterations: 100000, bits: 256);
+
+    final pbkdf2 =
+        Pbkdf2(macAlgorithm: Hmac.sha256(), iterations: 100000, bits: 256);
     final derivedKey = await pbkdf2.deriveKey(
       secretKey: SecretKey(utf8.encode(passphrase)),
       nonce: salt,
     );
-    
+
     final secretBox = SecretBox(cipherText, nonce: nonce, mac: Mac(macBytes));
     final clearBytes = await _aesGcm.decrypt(secretBox, secretKey: derivedKey);
     final privKeyBase64 = utf8.decode(clearBytes);
-    
+
     await _secureStorage.write(
       key: 'x25519_private_key_${currentUser.uid}',
       value: privKeyBase64,
     );
-    
+
     clearMemoryCache();
   }
 
   Future<void> cleanupOrphanedKeys(List<String> activeChatIds) async {
     try {
       final all = await _secureStorage.readAll();
-      final activeKeys = activeChatIds.map((id) => 'v2_shared_secret_$id').toSet();
-      
+      final activeKeys =
+          activeChatIds.map((id) => 'v2_shared_secret_$id').toSet();
+
       for (final k in all.keys) {
         if (k.startsWith('v2_shared_secret_') && !activeKeys.contains(k)) {
           await _secureStorage.delete(key: k);
@@ -311,7 +330,7 @@ class E2EEService {
     try {
       final keys = await _secureStorage.readAll();
       for (final key in keys.keys) {
-        if (key.startsWith('shared_secret_') || 
+        if (key.startsWith('shared_secret_') ||
             key.startsWith('v2_shared_secret_') ||
             key.startsWith('chat_key_') ||
             key.startsWith('x25519_private_key_')) {
@@ -323,21 +342,28 @@ class E2EEService {
   }
 
   // Task 5: Safety Number Verification
-  Future<String> calculateSafetyNumber(String chatId, String otherUserId) async {
+  Future<String> calculateSafetyNumber(
+      String chatId, String otherUserId) async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) throw Exception('No user logged in');
     final myUid = currentUser.uid;
 
-    final myPrivKeyBase64 = await _secureStorage.read(key: 'x25519_private_key_$myUid');
-    if (myPrivKeyBase64 == null) throw Exception('Private key not found for current user');
+    final myPrivKeyBase64 =
+        await _secureStorage.read(key: 'x25519_private_key_$myUid');
+    if (myPrivKeyBase64 == null)
+      throw Exception('Private key not found for current user');
     final myPrivKeyBytes = base64Decode(myPrivKeyBase64);
     final myKeyPair = await _x25519.newKeyPairFromSeed(myPrivKeyBytes);
     final myPubKey = await myKeyPair.extractPublicKey();
 
-    final doc = await FirebaseFirestore.instance.collection('users').doc(otherUserId).get();
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(otherUserId)
+        .get();
     if (!doc.exists) throw Exception('User not found');
     final otherPubKeyBase64 = doc.data()?['identityPublicKey'] as String?;
-    if (otherPubKeyBase64 == null) throw Exception('Other user does not have a public key');
+    if (otherPubKeyBase64 == null)
+      throw Exception('Other user does not have a public key');
     final otherPubKeyBytes = base64Decode(otherPubKeyBase64);
 
     final combinedKeys = [
@@ -351,8 +377,10 @@ class E2EEService {
     sink.close();
 
     final hash = await sink.hash();
-    final hexHash = hash.bytes.map((b) => b.toRadixString(16).padLeft(2, '0').toUpperCase()).join();
-    
+    final hexHash = hash.bytes
+        .map((b) => b.toRadixString(16).padLeft(2, '0').toUpperCase())
+        .join();
+
     // First 40 chars of the SHA-256 hex
     final clean = hexHash.substring(0, 40);
     final groups = <String>[];
@@ -378,12 +406,13 @@ class E2EEService {
   /// even if one key is compromised, past/future messages stay secure.
   Future<RatchetState> createInitialRatchetState(
     SecretKey sharedSecret,
-  ) async => RatchetState(
-      rootKey: sharedSecret,
-      chainKey: sharedSecret,
-      messageKeys: {},
-      messageNumber: 0,
-    );
+  ) async =>
+      RatchetState(
+        rootKey: sharedSecret,
+        chainKey: sharedSecret,
+        messageKeys: {},
+        messageNumber: 0,
+      );
 
   /// Perform a symmetric-key ratchet step (Signal Protocol / Double Ratchet).
   /// Derives a unique Message Key per message and advances the Chain Key.
@@ -431,7 +460,6 @@ class E2EEService {
 }
 
 class RatchetState {
-
   RatchetState({
     required this.rootKey,
     required this.chainKey,

@@ -10,9 +10,13 @@ import '../../../../core/theme/app_theme.dart';
 import '../../providers/chat_providers.dart';
 
 class ChatAppBar extends ConsumerWidget implements PreferredSizeWidget {
-
   const ChatAppBar({
-    required this.recipientUid, required this.chatId, required this.userName, required this.isE2EEReady, required this.onTimerTap, super.key,
+    required this.recipientUid,
+    required this.chatId,
+    required this.userName,
+    required this.isE2EEReady,
+    required this.onTimerTap,
+    super.key,
     this.userAvatar,
     this.disappearingDuration,
   });
@@ -29,9 +33,11 @@ class ChatAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final presenceAsync = recipientUid != null ? ref.watch(userPresenceProvider(recipientUid!)) : null;
+    final presenceAsync = recipientUid != null
+        ? ref.watch(userPresenceProvider(recipientUid!))
+        : null;
     final typingMapAsync = ref.watch(typingProvider(chatId));
-    
+
     bool isTyping = false;
     if (recipientUid != null) {
       isTyping = typingMapAsync.value?[recipientUid!] ?? false;
@@ -61,7 +67,10 @@ class ChatAppBar extends ConsumerWidget implements PreferredSizeWidget {
               backgroundColor: context.shimmerBase,
               child: Text(
                 userName.isNotEmpty ? userName[0].toUpperCase() : '?',
-                style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16, color: context.textPrimary),
+                style: GoogleFonts.outfit(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: context.textPrimary),
               ),
             ),
           ),
@@ -73,11 +82,19 @@ class ChatAppBar extends ConsumerWidget implements PreferredSizeWidget {
               children: [
                 Row(
                   children: [
-                    Flexible(child: Text(userName, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis)),
+                    Flexible(
+                        child: Text(userName,
+                            style: GoogleFonts.outfit(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                            overflow: TextOverflow.ellipsis)),
                   ],
                 ),
                 if (isTyping)
-                  Text(context.tr('chat_typing'), style: GoogleFonts.outfit(fontSize: 12, color: AppColors.electricBlue, fontWeight: FontWeight.w500)),
+                  Text(context.tr('chat_typing'),
+                      style: GoogleFonts.outfit(
+                          fontSize: 12,
+                          color: AppColors.electricBlue,
+                          fontWeight: FontWeight.w500)),
               ],
             ),
           ),
@@ -85,11 +102,15 @@ class ChatAppBar extends ConsumerWidget implements PreferredSizeWidget {
       ),
       actions: [
         IconButton(
-          onPressed: onTimerTap, 
-          icon: Icon(disappearingDuration != null ? Icons.timer : Icons.timer_off_outlined, color: disappearingDuration != null ? AppColors.electricBlue : null)
-        ),
+            onPressed: onTimerTap,
+            icon: Icon(
+                disappearingDuration != null
+                    ? Icons.timer
+                    : Icons.timer_off_outlined,
+                color: disappearingDuration != null
+                    ? AppColors.electricBlue
+                    : null)),
       ],
     );
   }
 }
-

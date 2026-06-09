@@ -36,10 +36,13 @@ class ContentValidator {
 
   ValidationResult validateUsername(String name) {
     if (name.isEmpty) {
-      return ValidationResult.invalid('Username cannot be empty', ValidationSeverity.low);
+      return ValidationResult.invalid(
+          'Username cannot be empty', ValidationSeverity.low);
     }
     if (name.length < 3 || name.length > 30) {
-      return ValidationResult.invalid('Username must be between 3 and 30 characters', ValidationSeverity.low);
+      return ValidationResult.invalid(
+          'Username must be between 3 and 30 characters',
+          ValidationSeverity.low);
     }
     final scan = _auto.scanText(
       text: name,
@@ -48,7 +51,8 @@ class ContentValidator {
       contentKey: name,
     );
     if (scan.isBlocked) {
-      return ValidationResult.invalid(scan.reason ?? 'Inappropriate username', ValidationSeverity.high);
+      return ValidationResult.invalid(
+          scan.reason ?? 'Inappropriate username', ValidationSeverity.high);
     }
     final validChars = RegExp(r'^[a-zA-Z0-9._]+$');
     if (!validChars.hasMatch(name)) {
@@ -61,7 +65,8 @@ class ContentValidator {
 
   ValidationResult validateBio(String bio) {
     if (bio.length > 150) {
-      return ValidationResult.invalid('Bio cannot exceed 150 characters', ValidationSeverity.low);
+      return ValidationResult.invalid(
+          'Bio cannot exceed 150 characters', ValidationSeverity.low);
     }
     return _fromScan(_auto.scanText(
       text: bio,
@@ -73,10 +78,12 @@ class ContentValidator {
 
   ValidationResult validatePostText(String text, {required String userId}) {
     if (text.isEmpty) {
-      return ValidationResult.invalid('Post content cannot be empty', ValidationSeverity.low);
+      return ValidationResult.invalid(
+          'Post content cannot be empty', ValidationSeverity.low);
     }
     if (text.length > 500) {
-      return ValidationResult.invalid('Post content cannot exceed 500 characters', ValidationSeverity.low);
+      return ValidationResult.invalid(
+          'Post content cannot exceed 500 characters', ValidationSeverity.low);
     }
     return _fromScan(_auto.scanText(
       text: text,
@@ -89,10 +96,12 @@ class ContentValidator {
 
   ValidationResult validateMessageText(String text, {required String userId}) {
     if (text.isEmpty) {
-      return ValidationResult.invalid('Message cannot be empty', ValidationSeverity.low);
+      return ValidationResult.invalid(
+          'Message cannot be empty', ValidationSeverity.low);
     }
     if (text.length > 1000) {
-      return ValidationResult.invalid('Message cannot exceed 1000 characters', ValidationSeverity.low);
+      return ValidationResult.invalid(
+          'Message cannot exceed 1000 characters', ValidationSeverity.low);
     }
     return _fromScan(_auto.scanText(
       text: text,

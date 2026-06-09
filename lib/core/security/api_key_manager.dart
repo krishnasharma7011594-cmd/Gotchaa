@@ -20,17 +20,17 @@ class ApiKeyManager {
   factory ApiKeyManager() => _instance;
 
   ApiKeyManager._internal()
-    : _secureStorage = const FlutterSecureStorage(
-        aOptions: AndroidOptions(
-          keyCipherAlgorithm:
-              KeyCipherAlgorithm.RSA_ECB_OAEPwithSHA_256andMGF1Padding,
-          storageCipherAlgorithm: StorageCipherAlgorithm.AES_GCM_NoPadding,
-          encryptedSharedPreferences: true,
-        ),
-        iOptions: IOSOptions(
-          accessibility: KeychainAccessibility.first_unlock,
-        ),
-      );
+      : _secureStorage = const FlutterSecureStorage(
+          aOptions: AndroidOptions(
+            keyCipherAlgorithm:
+                KeyCipherAlgorithm.RSA_ECB_OAEPwithSHA_256andMGF1Padding,
+            storageCipherAlgorithm: StorageCipherAlgorithm.AES_GCM_NoPadding,
+            encryptedSharedPreferences: true,
+          ),
+          iOptions: IOSOptions(
+            accessibility: KeychainAccessibility.first_unlock,
+          ),
+        );
 
   /// Singleton instance
   static final ApiKeyManager _instance = ApiKeyManager._internal();
@@ -122,7 +122,6 @@ class ApiKeyManager {
       await _secureStorage.deleteAll();
     } catch (e) {
       // Log error but don't fail
-      
     }
   }
 
@@ -157,7 +156,6 @@ class ApiKeyManager {
       }
       return value;
     } on Exception {
-      
       return null;
     }
   }
@@ -169,9 +167,7 @@ class ApiKeyManager {
       if (value != null) {
         _secretCache[key] = _CachedSecret(value);
       }
-    } catch (e) {
-      
-    }
+    } catch (e) {}
   }
 
   /// Set a secret in secure storage.
@@ -179,7 +175,6 @@ class ApiKeyManager {
     try {
       await _secureStorage.write(key: key, value: value);
     } on Exception {
-      
       rethrow;
     }
   }
@@ -255,7 +250,6 @@ class BearerTokenManager {
         );
       }
     } catch (e) {
-      
       rethrow;
     }
   }
@@ -289,9 +283,7 @@ class BearerTokenManager {
       if (_currentToken != null && !_isTokenExpired()) {
         return _currentToken;
       }
-    } catch (e) {
-      
-    }
+    } catch (e) {}
 
     return null;
   }
@@ -309,7 +301,6 @@ class BearerTokenManager {
       _refreshToken = await secureStorage.read(key: _refreshTokenKey);
       return _refreshToken;
     } catch (e) {
-      
       return null;
     }
   }
@@ -327,9 +318,7 @@ class BearerTokenManager {
       await secureStorage.delete(key: _bearerTokenKey);
       await secureStorage.delete(key: _refreshTokenKey);
       await secureStorage.delete(key: _tokenExpiresKey);
-    } catch (e) {
-      
-    }
+    } catch (e) {}
   }
 
   /// Check if access token is expired.

@@ -22,9 +22,11 @@ import '../widgets/user_search_sheet.dart';
 import 'post_details_screen.dart';
 
 class PreviewScreen extends StatefulWidget {
-
   const PreviewScreen({
-    required this.file, required this.isVideo, required this.appliedFilter, super.key,
+    required this.file,
+    required this.isVideo,
+    required this.appliedFilter,
+    super.key,
     this.colorMatrix,
     this.isFrontCamera = false,
   });
@@ -94,7 +96,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
           // Trash position: Bottom Center
           final trashPos = Offset(size.width / 2, size.height - 100);
           final dist = (updatedItem.position - trashPos).distance;
-          
+
           if (dist < 80 && !_isOverTrash) {
             _isOverTrash = true;
             HapticFeedback.mediumImpact();
@@ -193,257 +195,277 @@ class _PreviewScreenState extends State<PreviewScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      backgroundColor: Colors.black,
-      body: GestureDetector(
-        onTap: () => setState(() => _selectedItemId = null),
-        child: Stack(
-          fit: StackFit.expand,
-        children: [
-          // 1. Media Preview with Matrix Overlay
-          Center(
-            child: Transform.scale(
-              scaleX: widget.isFrontCamera ? -1.0 : 1.0,
-              alignment: Alignment.center,
-              child: ColorFiltered(
-                colorFilter: widget.colorMatrix != null 
-                    ? ColorFilter.matrix(widget.colorMatrix!)
-                    : const ColorFilter.mode(Colors.transparent, BlendMode.multiply),
-                child: widget.isVideo
-                    ? (_videoController != null && _videoController!.value.isInitialized)
-                        ? AspectRatio(
-                            aspectRatio: _videoController!.value.aspectRatio,
-                            child: VideoPlayer(_videoController!),
-                          )
-                        : const CircularProgressIndicator(color: AppColors.electricBlue)
-                    : Image.file(widget.file, fit: BoxFit.cover),
-              ),
-            ),
-          ),
-          
-          if (widget.appliedFilter != null)
-             SizedBox.expand(child: AROverlaysWidget(filter: widget.appliedFilter!, intensity: 1)),
-
-          // 2. Editable Items Overlays
-          ..._items.map((item) => EditableItemWidget(
-                item: item,
-                isSelected: _selectedItemId == item.id,
-                onTap: () {
-                  setState(() {
-                    _selectedItemId = item.id;
-                    final idx = _items.indexOf(item);
-                    if (idx != -1) {
-                      _items.add(_items.removeAt(idx));
-                    }
-                  });
-                },
-                onDoubleTap: () {
-                  if (item.type == EditableItemType.text) {
-                    _onAddText(existingItem: item);
-                  }
-                },
-                onDelete: () => setState(() => _items.removeWhere((i) => i.id == item.id)),
-                onUpdate: _onUpdateItem,
-                onDragStart: () => setState(() => _isDragging = true),
-                onDragEnd: () {
-                  if (_isOverTrash) {
-                    setState(() {
-                      _items.removeWhere((i) => i.id == _selectedItemId);
-                      _selectedItemId = null;
-                    });
-                    HapticFeedback.heavyImpact();
-                  }
-                  setState(() {
-                    _isDragging = false;
-                    _isOverTrash = false;
-                  });
-                },
-              )),
-
-          // 2.1 Alignment Guides
-          if (_isDragging && _selectedItemId != null) ...[
-            _buildAlignmentGuides(),
-          ],
-
-          // 3. Instagram-like Trash Zone
-          if (_isDragging)
-            _buildTrashZone(),
-
-          // 3. Instagram-like Text Toolbar (only if text item selected)
-          if (_selectedItemId != null)
-             _buildTextEditingToolbar(),
-
-          // 4. Selected Music Indicator (Top)
-          if (_selectedTrack != null)
-            Positioned(
-              top: 50,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.black45,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.music_note_rounded, color: Colors.white, size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        '${_selectedTrack!.name} • ${_selectedTrack!.artist}',
-                        style: GoogleFonts.outfit(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(width: 8),
-                      GestureDetector(
-                        onTap: () {
-                          _audioPlayer.stop();
-                          setState(() => _selectedTrack = null);
-                        },
-                        child: const Icon(Icons.close, color: Colors.white, size: 16),
-                      ),
-                    ],
+        backgroundColor: Colors.black,
+        body: GestureDetector(
+          onTap: () => setState(() => _selectedItemId = null),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // 1. Media Preview with Matrix Overlay
+              Center(
+                child: Transform.scale(
+                  scaleX: widget.isFrontCamera ? -1.0 : 1.0,
+                  alignment: Alignment.center,
+                  child: ColorFiltered(
+                    colorFilter: widget.colorMatrix != null
+                        ? ColorFilter.matrix(widget.colorMatrix!)
+                        : const ColorFilter.mode(
+                            Colors.transparent, BlendMode.multiply),
+                    child: widget.isVideo
+                        ? (_videoController != null &&
+                                _videoController!.value.isInitialized)
+                            ? AspectRatio(
+                                aspectRatio:
+                                    _videoController!.value.aspectRatio,
+                                child: VideoPlayer(_videoController!),
+                              )
+                            : const CircularProgressIndicator(
+                                color: AppColors.electricBlue)
+                        : Image.file(widget.file, fit: BoxFit.cover),
                   ),
                 ),
               ),
-            ),
 
-          // Top Back Button
-          Positioned(
-            top: 50,
-            left: 20,
-            child: GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: Container(
-                width: 45,
-                height: 45,
-                decoration: const BoxDecoration(
-                  color: Colors.black45,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white, size: 20),
-              ),
-            ),
-          ),
+              if (widget.appliedFilter != null)
+                SizedBox.expand(
+                    child: AROverlaysWidget(
+                        filter: widget.appliedFilter!, intensity: 1)),
 
-          Positioned(
-            top: 100,
-            right: 20,
-            child: Column(
-              children: [
-                _buildSidebarItem(Icons.music_note_rounded, 'Music', onTap: () {
-                  HapticFeedback.selectionClick();
-                  _onAddMusic();
-                }),
-                const SizedBox(height: 24),
-                _buildSidebarItem(Icons.text_fields_rounded, 'Text', onTap: () {
-                  HapticFeedback.selectionClick();
-                  _onAddText();
-                }),
-                const SizedBox(height: 24),
-                _buildSidebarItem(Icons.emoji_emotions_rounded, 'Stickers', onTap: () {
-                  HapticFeedback.selectionClick();
-                  _onAddSticker();
-                }),
-                const SizedBox(height: 24),
-                _buildSidebarItem(Icons.person_add_rounded, 'Tag', onTap: () {
-                  HapticFeedback.selectionClick();
-                  _onAddTag();
-                }),
-                const SizedBox(height: 24),
-                if (widget.isVideo)
-                  _buildSidebarItem(Icons.cut_rounded, 'Trim'),
+              // 2. Editable Items Overlays
+              ..._items.map((item) => EditableItemWidget(
+                    item: item,
+                    isSelected: _selectedItemId == item.id,
+                    onTap: () {
+                      setState(() {
+                        _selectedItemId = item.id;
+                        final idx = _items.indexOf(item);
+                        if (idx != -1) {
+                          _items.add(_items.removeAt(idx));
+                        }
+                      });
+                    },
+                    onDoubleTap: () {
+                      if (item.type == EditableItemType.text) {
+                        _onAddText(existingItem: item);
+                      }
+                    },
+                    onDelete: () => setState(
+                        () => _items.removeWhere((i) => i.id == item.id)),
+                    onUpdate: _onUpdateItem,
+                    onDragStart: () => setState(() => _isDragging = true),
+                    onDragEnd: () {
+                      if (_isOverTrash) {
+                        setState(() {
+                          _items.removeWhere((i) => i.id == _selectedItemId);
+                          _selectedItemId = null;
+                        });
+                        HapticFeedback.heavyImpact();
+                      }
+                      setState(() {
+                        _isDragging = false;
+                        _isOverTrash = false;
+                      });
+                    },
+                  )),
+
+              // 2.1 Alignment Guides
+              if (_isDragging && _selectedItemId != null) ...[
+                _buildAlignmentGuides(),
               ],
-            ),
-          ),
 
-          // Bottom Bar (Next)
-          Positioned(
-            bottom: 40,
-            right: 20,
-            child: GestureDetector(
-              onTap: () {
-                HapticFeedback.mediumImpact();
-                _onNext();
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                decoration: BoxDecoration(
-                  color: AppColors.electricBlue,
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.electricBlue.withOpacity(0.4),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Next',
-                      style: GoogleFonts.outfit(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
+              // 3. Instagram-like Trash Zone
+              if (_isDragging) _buildTrashZone(),
+
+              // 3. Instagram-like Text Toolbar (only if text item selected)
+              if (_selectedItemId != null) _buildTextEditingToolbar(),
+
+              // 4. Selected Music Indicator (Top)
+              if (_selectedTrack != null)
+                Positioned(
+                  top: 50,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.black45,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.music_note_rounded,
+                              color: Colors.white, size: 16),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${_selectedTrack!.name} • ${_selectedTrack!.artist}',
+                            style: GoogleFonts.outfit(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () {
+                              _audioPlayer.stop();
+                              setState(() => _selectedTrack = null);
+                            },
+                            child: const Icon(Icons.close,
+                                color: Colors.white, size: 16),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.arrow_forward_ios_rounded,
-                        color: Colors.white, size: 16),
+                  ),
+                ),
+
+              // Top Back Button
+              Positioned(
+                top: 50,
+                left: 20,
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    width: 45,
+                    height: 45,
+                    decoration: const BoxDecoration(
+                      color: Colors.black45,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white, size: 20),
+                  ),
+                ),
+              ),
+
+              Positioned(
+                top: 100,
+                right: 20,
+                child: Column(
+                  children: [
+                    _buildSidebarItem(Icons.music_note_rounded, 'Music',
+                        onTap: () {
+                      HapticFeedback.selectionClick();
+                      _onAddMusic();
+                    }),
+                    const SizedBox(height: 24),
+                    _buildSidebarItem(Icons.text_fields_rounded, 'Text',
+                        onTap: () {
+                      HapticFeedback.selectionClick();
+                      _onAddText();
+                    }),
+                    const SizedBox(height: 24),
+                    _buildSidebarItem(Icons.emoji_emotions_rounded, 'Stickers',
+                        onTap: () {
+                      HapticFeedback.selectionClick();
+                      _onAddSticker();
+                    }),
+                    const SizedBox(height: 24),
+                    _buildSidebarItem(Icons.person_add_rounded, 'Tag',
+                        onTap: () {
+                      HapticFeedback.selectionClick();
+                      _onAddTag();
+                    }),
+                    const SizedBox(height: 24),
+                    if (widget.isVideo)
+                      _buildSidebarItem(Icons.cut_rounded, 'Trim'),
                   ],
                 ),
               ),
-            ),
+
+              // Bottom Bar (Next)
+              Positioned(
+                bottom: 40,
+                right: 20,
+                child: GestureDetector(
+                  onTap: () {
+                    HapticFeedback.mediumImpact();
+                    _onNext();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.electricBlue,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.electricBlue.withOpacity(0.4),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Next',
+                          style: GoogleFonts.outfit(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Icon(Icons.arrow_forward_ios_rounded,
+                            color: Colors.white, size: 16),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 
   Widget _buildTrashZone() => Positioned(
-      bottom: 50,
-      left: 0,
-      right: 0,
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width: _isOverTrash ? 80 : 60,
-              height: _isOverTrash ? 80 : 60,
-              decoration: BoxDecoration(
-                color: _isOverTrash ? Colors.red.withOpacity(0.8) : Colors.black38,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: _isOverTrash ? Colors.white : Colors.white24,
-                  width: 2,
+        bottom: 50,
+        left: 0,
+        right: 0,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: _isOverTrash ? 80 : 60,
+                height: _isOverTrash ? 80 : 60,
+                decoration: BoxDecoration(
+                  color: _isOverTrash
+                      ? Colors.red.withOpacity(0.8)
+                      : Colors.black38,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: _isOverTrash ? Colors.white : Colors.white24,
+                    width: 2,
+                  ),
+                ),
+                child: Icon(
+                  _isOverTrash
+                      ? Icons.delete_forever_rounded
+                      : Icons.delete_outline_rounded,
+                  color: Colors.white,
+                  size: _isOverTrash ? 32 : 28,
                 ),
               ),
-              child: Icon(
-                _isOverTrash ? Icons.delete_forever_rounded : Icons.delete_outline_rounded,
-                color: Colors.white,
-                size: _isOverTrash ? 32 : 28,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Drag here to remove',
-              style: GoogleFonts.outfit(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                shadows: [const Shadow(color: Colors.black, blurRadius: 4)],
-              ),
-            ).animate().fadeIn(),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                'Drag here to remove',
+                style: GoogleFonts.outfit(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  shadows: [const Shadow(color: Colors.black, blurRadius: 4)],
+                ),
+              ).animate().fadeIn(),
+            ],
+          ),
         ),
-      ),
-    ).animate().slideY(begin: 1, end: 0, curve: Curves.easeOutBack);
+      ).animate().slideY(begin: 1, end: 0, curve: Curves.easeOutBack);
 
   Widget _buildAlignmentGuides() {
     final item = _items.firstWhere((i) => i.id == _selectedItemId);
@@ -474,7 +496,8 @@ class _PreviewScreenState extends State<PreviewScreen> {
   }
 
   Widget _buildTextEditingToolbar() {
-    final item = _items.firstWhere((i) => i.id == _selectedItemId, orElse: () => _items.first);
+    final item = _items.firstWhere((i) => i.id == _selectedItemId,
+        orElse: () => _items.first);
     if (item.type != EditableItemType.text) return const SizedBox.shrink();
 
     return Positioned(
@@ -491,23 +514,38 @@ class _PreviewScreenState extends State<PreviewScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             _buildToolbarBtn(
-              item.hasBackground ? Icons.font_download_rounded : Icons.font_download_outlined,
-              () => _onUpdateItem(item.copyWith(hasBackground: !item.hasBackground)),
+              item.hasBackground
+                  ? Icons.font_download_rounded
+                  : Icons.font_download_outlined,
+              () => _onUpdateItem(
+                  item.copyWith(hasBackground: !item.hasBackground)),
             ),
             _buildToolbarBtn(
-              item.textAlign == TextAlign.left ? Icons.format_align_left :
-              item.textAlign == TextAlign.center ? Icons.format_align_center : Icons.format_align_right,
+              item.textAlign == TextAlign.left
+                  ? Icons.format_align_left
+                  : item.textAlign == TextAlign.center
+                      ? Icons.format_align_center
+                      : Icons.format_align_right,
               () {
-                final next = item.textAlign == TextAlign.left 
-                    ? TextAlign.center 
-                    : item.textAlign == TextAlign.center ? TextAlign.right : TextAlign.left;
+                final next = item.textAlign == TextAlign.left
+                    ? TextAlign.center
+                    : item.textAlign == TextAlign.center
+                        ? TextAlign.right
+                        : TextAlign.left;
                 _onUpdateItem(item.copyWith(textAlign: next));
               },
             ),
             // Color Cycle Button
             GestureDetector(
               onTap: () {
-                final colors = [Colors.white, Colors.black, Colors.red, Colors.yellow, Colors.blue, Colors.green];
+                final colors = [
+                  Colors.white,
+                  Colors.black,
+                  Colors.red,
+                  Colors.yellow,
+                  Colors.blue,
+                  Colors.green
+                ];
                 final currentIdx = colors.indexOf(item.color ?? Colors.white);
                 final next = colors[(currentIdx + 1) % colors.length];
                 _onUpdateItem(item.copyWith(color: next));
@@ -527,14 +565,16 @@ class _PreviewScreenState extends State<PreviewScreen> {
               child: SliderTheme(
                 data: SliderTheme.of(context).copyWith(
                   trackHeight: 2,
-                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                  thumbShape:
+                      const RoundSliderThumbShape(enabledThumbRadius: 6),
                 ),
                 child: Slider(
                   value: item.fontSize,
                   min: 12,
                   max: 72,
                   activeColor: AppColors.electricBlue,
-                  onChanged: (val) => _onUpdateItem(item.copyWith(fontSize: val)),
+                  onChanged: (val) =>
+                      _onUpdateItem(item.copyWith(fontSize: val)),
                 ),
               ),
             ),
@@ -545,26 +585,28 @@ class _PreviewScreenState extends State<PreviewScreen> {
   }
 
   Widget _buildToolbarBtn(IconData icon, VoidCallback onTap) => GestureDetector(
-      onTap: onTap,
-      child: Icon(icon, color: Colors.white, size: 22),
-    );
+        onTap: onTap,
+        child: Icon(icon, color: Colors.white, size: 22),
+      );
 
-  Widget _buildSidebarItem(IconData icon, String label, {VoidCallback? onTap}) => GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Icon(icon, color: Colors.white, size: 30),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: GoogleFonts.outfit(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              shadows: [const Shadow(color: Colors.black, blurRadius: 4)],
+  Widget _buildSidebarItem(IconData icon, String label,
+          {VoidCallback? onTap}) =>
+      GestureDetector(
+        onTap: onTap,
+        child: Column(
+          children: [
+            Icon(icon, color: Colors.white, size: 30),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: GoogleFonts.outfit(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                shadows: [const Shadow(color: Colors.black, blurRadius: 4)],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
 }

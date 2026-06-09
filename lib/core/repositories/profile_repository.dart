@@ -25,21 +25,25 @@ class ProfileRepository {
     };
     if (photoUrl != null) publicData['photoUrl'] = photoUrl;
     if (language != null) publicData['language'] = language;
-    if (hasPickedLanguage != null) publicData['hasPickedLanguage'] = hasPickedLanguage;
+    if (hasPickedLanguage != null)
+      publicData['hasPickedLanguage'] = hasPickedLanguage;
 
     final Map<String, dynamic> privateData = {
       'updatedAt': FieldValue.serverTimestamp(),
     };
-    if (birthday != null) privateData['birthday'] = Timestamp.fromDate(birthday);
+    if (birthday != null)
+      privateData['birthday'] = Timestamp.fromDate(birthday);
     if (ageTier != null) privateData['ageTier'] = ageTier;
     if (ageVerified != null) privateData['ageVerified'] = ageVerified;
 
     final batch = _firestore.batch();
     batch.update(_firestore.collection('users').doc(uid), publicData);
-    if (privateData.length > 1) { // More than just updatedAt
-      batch.set(_firestore.collection('users_private').doc(uid), privateData, SetOptions(merge: true));
+    if (privateData.length > 1) {
+      // More than just updatedAt
+      batch.set(_firestore.collection('users_private').doc(uid), privateData,
+          SetOptions(merge: true));
     }
-    
+
     await batch.commit();
   }
 
@@ -56,7 +60,10 @@ class ProfileRepository {
     if (birthday != null) data['birthday'] = Timestamp.fromDate(birthday);
 
     if (data.isNotEmpty) {
-      await _firestore.collection('users_private').doc(uid).set(data, SetOptions(merge: true));
+      await _firestore
+          .collection('users_private')
+          .doc(uid)
+          .set(data, SetOptions(merge: true));
     }
   }
 
@@ -66,17 +73,18 @@ class ProfileRepository {
     required String uid,
     required Map<String, dynamic> settings,
   }) async {
-    final publicData = Map<String, dynamic>.fromEntries(
-        settings.entries.where((e) => UserProfile.publicFields.contains(e.key)));
-    final privateData = Map<String, dynamic>.fromEntries(
-        settings.entries.where((e) => UserProfile.privateFields.contains(e.key)));
+    final publicData = Map<String, dynamic>.fromEntries(settings.entries
+        .where((e) => UserProfile.publicFields.contains(e.key)));
+    final privateData = Map<String, dynamic>.fromEntries(settings.entries
+        .where((e) => UserProfile.privateFields.contains(e.key)));
 
     final batch = _firestore.batch();
     if (publicData.isNotEmpty) {
       batch.update(_firestore.collection('users').doc(uid), publicData);
     }
     if (privateData.isNotEmpty) {
-      batch.set(_firestore.collection('users_private').doc(uid), privateData, SetOptions(merge: true));
+      batch.set(_firestore.collection('users_private').doc(uid), privateData,
+          SetOptions(merge: true));
     }
     await batch.commit();
   }
@@ -110,7 +118,10 @@ class ProfileRepository {
 
   /// Check if a username is already taken by another user.
   Future<bool> isUsernameAvailable(String username, String currentUid) async {
-    final doc = await _firestore.collection('usernames').doc(username.toLowerCase()).get();
+    final doc = await _firestore
+        .collection('usernames')
+        .doc(username.toLowerCase())
+        .get();
     if (!doc.exists) return true;
     return doc.data()?['uid'] == currentUid;
   }
@@ -125,7 +136,8 @@ class ProfileRepository {
     final batch = _firestore.batch();
 
     if (oldUsername.isNotEmpty) {
-      batch.delete(_firestore.collection('usernames').doc(oldUsername.toLowerCase()));
+      batch.delete(
+          _firestore.collection('usernames').doc(oldUsername.toLowerCase()));
     }
 
     if (newUsername.isNotEmpty) {
@@ -148,22 +160,22 @@ class ProfileRepository {
   }
 
   /// Stream user profile in real-time.
-  Stream<UserProfile?> streamProfile(String uid) => _firestore
-        .collection('users')
-        .doc(uid)
-        .snapshots()
-        .map((snap) {
-      if (snap.exists && snap.data() != null) {
-        return UserProfile.fromMap(snap.data()!, snap.id);
-      }
-      return null;
-    });
+  Stream<UserProfile?> streamProfile(String uid) =>
+      _firestore.collection('users').doc(uid).snapshots().map((snap) {
+        if (snap.exists && snap.data() != null) {
+          return UserProfile.fromMap(snap.data()!, snap.id);
+        }
+        return null;
+      });
 
-  Future<void> blockUser({required String currentUid, required String targetUid}) async {
+  Future<void> blockUser(
+      {required String currentUid, required String targetUid}) async {
     final batch = _firestore.batch();
 
     // 1. Add to blocked_accounts collection
-    final blockDoc = _firestore.collection('blocked_accounts').doc('${currentUid}_blocked_$targetUid');
+    final blockDoc = _firestore
+        .collection('blocked_accounts')
+        .doc('${currentUid}_blocked_$targetUid');
     batch.set(blockDoc, {
       'blockerId': currentUid,
       'blockedId': targetUid,
@@ -176,10 +188,26 @@ class ProfileRepository {
     });
 
     // 3. Clean up followers/following relationships both ways
-    final followerDoc1 = _firestore.collection('followers').doc(targetUid).collection('userFollowers').doc(currentUid);
-    final followingDoc1 = _firestore.collection('following').doc(currentUid).collection('userFollowing').doc(targetUid);
-    final followerDoc2 = _firestore.collection('followers').doc(currentUid).collection('userFollowers').doc(targetUid);
-    final followingDoc2 = _firestore.collection('following').doc(targetUid).collection('userFollowing').doc(currentUid);
+    final followerDoc1 = _firestore
+        .collection('followers')
+        .doc(targetUid)
+        .collection('userFollowers')
+        .doc(currentUid);
+    final followingDoc1 = _firestore
+        .collection('following')
+        .doc(currentUid)
+        .collection('userFollowing')
+        .doc(targetUid);
+    final followerDoc2 = _firestore
+        .collection('followers')
+        .doc(currentUid)
+        .collection('userFollowers')
+        .doc(targetUid);
+    final followingDoc2 = _firestore
+        .collection('following')
+        .doc(targetUid)
+        .collection('userFollowing')
+        .doc(currentUid);
 
     // We check existence first, but in a batch we can just delete them.
     batch.delete(followerDoc1);
@@ -190,10 +218,13 @@ class ProfileRepository {
     await batch.commit();
   }
 
-  Future<void> unblockUser({required String currentUid, required String targetUid}) async {
+  Future<void> unblockUser(
+      {required String currentUid, required String targetUid}) async {
     final batch = _firestore.batch();
 
-    final blockDoc = _firestore.collection('blocked_accounts').doc('${currentUid}_blocked_$targetUid');
+    final blockDoc = _firestore
+        .collection('blocked_accounts')
+        .doc('${currentUid}_blocked_$targetUid');
     batch.delete(blockDoc);
 
     batch.update(_firestore.collection('users').doc(currentUid), {
@@ -203,10 +234,13 @@ class ProfileRepository {
     await batch.commit();
   }
 
-  Future<void> muteUser({required String currentUid, required String targetUid}) async {
+  Future<void> muteUser(
+      {required String currentUid, required String targetUid}) async {
     final batch = _firestore.batch();
 
-    final muteDoc = _firestore.collection('muted_accounts').doc('${currentUid}_muted_$targetUid');
+    final muteDoc = _firestore
+        .collection('muted_accounts')
+        .doc('${currentUid}_muted_$targetUid');
     batch.set(muteDoc, {
       'muterId': currentUid,
       'mutedId': targetUid,
@@ -220,10 +254,13 @@ class ProfileRepository {
     await batch.commit();
   }
 
-  Future<void> unmuteUser({required String currentUid, required String targetUid}) async {
+  Future<void> unmuteUser(
+      {required String currentUid, required String targetUid}) async {
     final batch = _firestore.batch();
 
-    final muteDoc = _firestore.collection('muted_accounts').doc('${currentUid}_muted_$targetUid');
+    final muteDoc = _firestore
+        .collection('muted_accounts')
+        .doc('${currentUid}_muted_$targetUid');
     batch.delete(muteDoc);
 
     batch.update(_firestore.collection('users').doc(currentUid), {
@@ -233,25 +270,29 @@ class ProfileRepository {
     await batch.commit();
   }
 
-  Future<void> addToGhostList({required String currentUid, required String targetUid}) async {
+  Future<void> addToGhostList(
+      {required String currentUid, required String targetUid}) async {
     await _firestore.collection('users_private').doc(currentUid).update({
       'ghostUids': FieldValue.arrayUnion([targetUid]),
     });
   }
 
-  Future<void> removeFromGhostList({required String currentUid, required String targetUid}) async {
+  Future<void> removeFromGhostList(
+      {required String currentUid, required String targetUid}) async {
     await _firestore.collection('users_private').doc(currentUid).update({
       'ghostUids': FieldValue.arrayRemove([targetUid]),
     });
   }
 
-  Future<void> addToFriendList({required String currentUid, required String targetUid}) async {
+  Future<void> addToFriendList(
+      {required String currentUid, required String targetUid}) async {
     await _firestore.collection('users_private').doc(currentUid).update({
       'friendUids': FieldValue.arrayUnion([targetUid]),
     });
   }
 
-  Future<void> removeFromFriendList({required String currentUid, required String targetUid}) async {
+  Future<void> removeFromFriendList(
+      {required String currentUid, required String targetUid}) async {
     await _firestore.collection('users_private').doc(currentUid).update({
       'friendUids': FieldValue.arrayRemove([targetUid]),
     });

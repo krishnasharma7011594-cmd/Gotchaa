@@ -41,12 +41,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         setState(() => _selectedNation = nation);
         ref.read(selectedNationProvider.notifier).select(nation);
       }
-      
+
       // Auto-trigger Demo if requested in URL
       if (kIsWeb) {
         final uri = Uri.base;
         if (uri.queryParameters['demo'] == 'true') {
-          
           _handleDemo();
         }
       }
@@ -145,7 +144,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 color: AppColors.electricBlue.withValues(alpha: 0.08),
               ),
             ),
-          ).animate().fadeIn(duration: 800.ms).scale(begin: const Offset(0.5, 0.5)),
+          )
+              .animate()
+              .fadeIn(duration: 800.ms)
+              .scale(begin: const Offset(0.5, 0.5)),
 
           Positioned(
             bottom: -60,
@@ -226,7 +228,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 if (v == null || v.trim().isEmpty) {
                                   return 'Please enter your email';
                                 }
-                                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(v.trim())) {
+                                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                                    .hasMatch(v.trim())) {
                                   return 'Enter a valid email address';
                                 }
                                 return null;
@@ -235,7 +238,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             const SizedBox(height: 16),
 
                             // Country selector — only visible during signup
-                            if (_isSignUpMode) ...[  
+                            if (_isSignUpMode) ...[
                               const SizedBox(height: 16),
                               Align(
                                 alignment: Alignment.centerLeft,
@@ -268,8 +271,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               icon: Icons.lock_outline_rounded,
                               isPassword: true,
                               obscure: _obscurePassword,
-                              onToggleObscure: () =>
-                                  setState(() => _obscurePassword = !_obscurePassword),
+                              onToggleObscure: () => setState(
+                                  () => _obscurePassword = !_obscurePassword),
                               validator: (v) {
                                 if (v == null || v.isEmpty) {
                                   return 'Please enter your password';
@@ -284,7 +287,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                             // CTA Button
                             _buildPrimaryButton(
-                              label: _isSignUpMode ? 'Create Account' : 'Sign In',
+                              label:
+                                  _isSignUpMode ? 'Create Account' : 'Sign In',
                               isLoading: isLoading,
                               onPressed: _handleEmailAuth,
                             ),
@@ -316,7 +320,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                           });
                                         },
                                   child: Text(
-                                    _isSignUpMode ? 'Sign In' : 'Create Account',
+                                    _isSignUpMode
+                                        ? 'Sign In'
+                                        : 'Create Account',
                                     style: GoogleFonts.outfit(
                                       color: AppColors.electricBlue,
                                       fontWeight: FontWeight.bold,
@@ -355,7 +361,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         const SizedBox(width: 16),
 
                         // Apple — only show on iOS or macOS
-                        if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS)
+                        if (defaultTargetPlatform == TargetPlatform.iOS ||
+                            defaultTargetPlatform == TargetPlatform.macOS)
                           _buildSocialButton(
                             label: 'Apple',
                             icon: const Icon(Icons.apple_rounded,
@@ -387,37 +394,51 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                     if (_isSignUpMode)
                       Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: RichText(
+                          child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: RichText(
                             textAlign: TextAlign.center,
                             text: TextSpan(
-                              style: GoogleFonts.outfit(color: Colors.grey.shade500, fontSize: 12),
-                              children: [
-                                const TextSpan(text: 'By creating an account, you agree to our\n'),
-                                WidgetSpan(
-                                  child: GestureDetector(
+                                style: GoogleFonts.outfit(
+                                    color: Colors.grey.shade500, fontSize: 12),
+                                children: [
+                                  const TextSpan(
+                                      text:
+                                          'By creating an account, you agree to our\n'),
+                                  WidgetSpan(
+                                      child: GestureDetector(
                                     onTap: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsOfServiceScreen()));
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  const TermsOfServiceScreen()));
                                     },
-                                    child: Text('Terms of Service', style: GoogleFonts.outfit(color: AppColors.electricBlue, fontSize: 12, fontWeight: FontWeight.bold)),
-                                  )
-                                ),
-                                const TextSpan(text: ' and '),
-                                WidgetSpan(
-                                  child: GestureDetector(
+                                    child: Text('Terms of Service',
+                                        style: GoogleFonts.outfit(
+                                            color: AppColors.electricBlue,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold)),
+                                  )),
+                                  const TextSpan(text: ' and '),
+                                  WidgetSpan(
+                                      child: GestureDetector(
                                     onTap: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()));
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  const PrivacyPolicyScreen()));
                                     },
-                                    child: Text('Privacy Policy', style: GoogleFonts.outfit(color: AppColors.electricBlue, fontSize: 12, fontWeight: FontWeight.bold)),
-                                  )
-                                ),
-                                const TextSpan(text: '.'),
-                              ]
-                            )
-                          ).animate().fadeIn(delay: 700.ms),
-                        )
-                      ),
+                                    child: Text('Privacy Policy',
+                                        style: GoogleFonts.outfit(
+                                            color: AppColors.electricBlue,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold)),
+                                  )),
+                                  const TextSpan(text: '.'),
+                                ])).animate().fadeIn(delay: 700.ms),
+                      )),
 
                     const SizedBox(height: 40),
                   ],
@@ -452,149 +473,153 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     VoidCallback? onToggleObscure,
     TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
-  }) => TextFormField(
-      controller: controller,
-      obscureText: isPassword && obscure,
-      keyboardType: keyboardType,
-      style: GoogleFonts.outfit(fontSize: 15),
-      validator: validator,
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: GoogleFonts.outfit(color: Colors.grey.shade400, fontSize: 15),
-        prefixIcon: Icon(icon, color: Colors.grey.shade400, size: 22),
-        suffixIcon: isPassword
-            ? IconButton(
-                icon: Icon(
-                  obscure
-                      ? Icons.visibility_off_rounded
-                      : Icons.visibility_rounded,
-                  color: Colors.grey.shade400,
-                  size: 22,
-                ),
-                onPressed: onToggleObscure,
-              )
-            : null,
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: Colors.grey.shade100),
+  }) =>
+      TextFormField(
+        controller: controller,
+        obscureText: isPassword && obscure,
+        keyboardType: keyboardType,
+        style: GoogleFonts.outfit(fontSize: 15),
+        validator: validator,
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle:
+              GoogleFonts.outfit(color: Colors.grey.shade400, fontSize: 15),
+          prefixIcon: Icon(icon, color: Colors.grey.shade400, size: 22),
+          suffixIcon: isPassword
+              ? IconButton(
+                  icon: Icon(
+                    obscure
+                        ? Icons.visibility_off_rounded
+                        : Icons.visibility_rounded,
+                    color: Colors.grey.shade400,
+                    size: 22,
+                  ),
+                  onPressed: onToggleObscure,
+                )
+              : null,
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Colors.grey.shade100),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Colors.grey.shade200),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide:
+                const BorderSide(color: AppColors.electricBlue, width: 1.5),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: const BorderSide(color: Colors.redAccent),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
+          ),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: Colors.grey.shade200),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide:
-              const BorderSide(color: AppColors.electricBlue, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(color: Colors.redAccent),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
-        ),
-      ),
-    );
+      );
 
   Widget _buildPrimaryButton({
     required String label,
     required bool isLoading,
     required VoidCallback onPressed,
-  }) => SizedBox(
-      width: double.infinity,
-      height: 60,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: AppColors.electricGradient,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.electricBlue.withValues(alpha: 0.3),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: ElevatedButton(
-          onPressed: isLoading ? null : onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20)),
+  }) =>
+      SizedBox(
+        width: double.infinity,
+        height: 60,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: AppColors.electricGradient,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.electricBlue.withValues(alpha: 0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
-          child: isLoading
-              ? const SizedBox(
-                  height: 24,
-                  width: 24,
-                  child: CircularProgressIndicator(
-                      color: Colors.white, strokeWidth: 2.5),
-                )
-              : Text(
-                  label,
-                  style: GoogleFonts.outfit(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+          child: ElevatedButton(
+            onPressed: isLoading ? null : onPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+            ),
+            child: isLoading
+                ? const SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(
+                        color: Colors.white, strokeWidth: 2.5),
+                  )
+                : Text(
+                    label,
+                    style: GoogleFonts.outfit(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
+          ),
         ),
-      ),
-    );
+      );
 
   Widget _buildSocialButton({
     required String label,
     required Widget icon,
     VoidCallback? onPressed,
-  }) => GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade200),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            icon,
-            const SizedBox(width: 10),
-            Text(
-              label,
-              style: GoogleFonts.outfit(
-                fontWeight: FontWeight.w600,
-                fontSize: 15,
-                color: Colors.black87,
+  }) =>
+      GestureDetector(
+        onTap: onPressed,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey.shade200),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
-            ),
-          ],
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              icon,
+              const SizedBox(width: 10),
+              Text(
+                label,
+                style: GoogleFonts.outfit(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
 }
 
 /// Simple coloured G logo widget (avoids needing an SVG asset).
 class _GoogleLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox(
-      width: 26,
-      height: 26,
-      child: CustomPaint(painter: _GoogleLogoPainter()),
-    );
+        width: 26,
+        height: 26,
+        child: CustomPaint(painter: _GoogleLogoPainter()),
+      );
 }
 
 class _GoogleLogoPainter extends CustomPainter {

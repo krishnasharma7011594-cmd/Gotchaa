@@ -17,7 +17,8 @@ class DeleteAccountScreen extends ConsumerStatefulWidget {
   const DeleteAccountScreen({super.key});
 
   @override
-  ConsumerState<DeleteAccountScreen> createState() => _DeleteAccountScreenState();
+  ConsumerState<DeleteAccountScreen> createState() =>
+      _DeleteAccountScreenState();
 }
 
 class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
@@ -38,7 +39,8 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
 
   Future<void> _handleDelete() async {
     if (_confirmController.text != context.tr('delete_account_type_delete')) {
-      setState(() => _errorMessage = 'Please type ${context.tr('delete_account_type_delete')} to confirm');
+      setState(() => _errorMessage =
+          'Please type ${context.tr('delete_account_type_delete')} to confirm');
       return;
     }
 
@@ -71,7 +73,7 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
       // 1. Re-authentication check
       // For simplicity in this demo, we'll try to re-authenticate if it's a recent login failure
       // But usually, we should show a dialog first.
-      
+
       await ref.read(authRepositoryProvider).deleteUserAccount();
       await ConsentGateService.resetAll();
 
@@ -96,7 +98,8 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
 
   void _showReauthDialog() {
     final user = FirebaseAuth.instance.currentUser;
-    final isGoogle = user?.providerData.any((p) => p.providerId == 'google.com') ?? false;
+    final isGoogle =
+        user?.providerData.any((p) => p.providerId == 'google.com') ?? false;
 
     showModalBottomSheet(
       context: context,
@@ -154,96 +157,105 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
   }
 
   Widget _buildGoogleReauthButton() => SizedBox(
-      width: double.infinity,
-      height: 54,
-      child: ElevatedButton.icon(
-        onPressed: () async {
-          Navigator.pop(context);
-          setState(() => _isReauthenticating = true);
-          try {
-            await ref.read(authRepositoryProvider).reauthenticateWithGoogle();
-            _handleDelete();
-          } catch (e) {
-            setState(() => _errorMessage = e.toString());
-          } finally {
-            if (mounted) setState(() => _isReauthenticating = false);
-          }
-        },
-        icon: CachedNetworkImage(
-          imageUrl: 'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
-          height: 24,
-          placeholder: (context, url) => const SizedBox(
+        width: double.infinity,
+        height: 54,
+        child: ElevatedButton.icon(
+          onPressed: () async {
+            Navigator.pop(context);
+            setState(() => _isReauthenticating = true);
+            try {
+              await ref.read(authRepositoryProvider).reauthenticateWithGoogle();
+              _handleDelete();
+            } catch (e) {
+              setState(() => _errorMessage = e.toString());
+            } finally {
+              if (mounted) setState(() => _isReauthenticating = false);
+            }
+          },
+          icon: CachedNetworkImage(
+            imageUrl:
+                'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
             height: 24,
-            width: 24,
-            child: BlurHash(hash: 'L5H2EC=pPdpWXVJs00QQV_9H00XY'),
+            placeholder: (context, url) => const SizedBox(
+              height: 24,
+              width: 24,
+              child: BlurHash(hash: 'L5H2EC=pPdpWXVJs00QQV_9H00XY'),
+            ),
+            errorWidget: (context, url, error) =>
+                const Icon(Icons.error, size: 24),
           ),
-          errorWidget: (context, url, error) => const Icon(Icons.error, size: 24),
+          label: Text(
+            'Re-authenticate with Google',
+            style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
+            elevation: 0,
+            side: BorderSide(color: Colors.grey.shade300),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          ),
         ),
-        label: Text(
-          'Re-authenticate with Google',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
-          elevation: 0,
-          side: BorderSide(color: Colors.grey.shade300),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        ),
-      ),
-    );
+      );
 
   Widget _buildEmailReauthForm() => Column(
-      children: [
-        TextField(
-          controller: _emailController,
-          decoration: InputDecoration(
-            labelText: context.tr('auth_email'),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+        children: [
+          TextField(
+            controller: _emailController,
+            decoration: InputDecoration(
+              labelText: context.tr('auth_email'),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        TextField(
-          controller: _passwordController,
-          obscureText: true,
-          decoration: InputDecoration(
-            labelText: context.tr('auth_password'),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _passwordController,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: context.tr('auth_password'),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+            ),
           ),
-        ),
-        const SizedBox(height: 24),
-        SizedBox(
-          width: double.infinity,
-          height: 54,
-          child: ElevatedButton(
-            onPressed: () async {
-              final email = _emailController.text.trim();
-              final password = _passwordController.text;
-              if (email.isEmpty || password.isEmpty) return;
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: ElevatedButton(
+              onPressed: () async {
+                final email = _emailController.text.trim();
+                final password = _passwordController.text;
+                if (email.isEmpty || password.isEmpty) return;
 
-              Navigator.pop(context);
-              setState(() => _isReauthenticating = true);
-              try {
-                await ref.read(authRepositoryProvider).reauthenticate(email, password);
-                _handleDelete();
-              } catch (e) {
-                setState(() => _errorMessage = e.toString());
-              } finally {
-                if (mounted) setState(() => _isReauthenticating = false);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.electricBlue,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            ),
-            child: Text(
-              context.tr('btn_confirm'),
-              style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: Colors.white),
+                Navigator.pop(context);
+                setState(() => _isReauthenticating = true);
+                try {
+                  await ref
+                      .read(authRepositoryProvider)
+                      .reauthenticate(email, password);
+                  _handleDelete();
+                } catch (e) {
+                  setState(() => _errorMessage = e.toString());
+                } finally {
+                  if (mounted) setState(() => _isReauthenticating = false);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.electricBlue,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+              ),
+              child: Text(
+                context.tr('btn_confirm'),
+                style: GoogleFonts.outfit(
+                    fontWeight: FontWeight.w700, color: Colors.white),
+              ),
             ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -320,14 +332,17 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
               controller: _confirmController,
               decoration: InputDecoration(
                 hintText: context.tr('delete_account_type_delete'),
-                hintStyle: GoogleFonts.outfit(color: Colors.grey.withOpacity(0.5)),
+                hintStyle:
+                    GoogleFonts.outfit(color: Colors.grey.withOpacity(0.5)),
                 filled: true,
-                fillColor: isDark ? AppColors.darkSurface : Colors.grey.shade100,
+                fillColor:
+                    isDark ? AppColors.darkSurface : Colors.grey.shade100,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide.none,
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               ),
               style: GoogleFonts.outfit(
                 fontWeight: FontWeight.w700,
@@ -350,22 +365,26 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: _isDeleting || _isReauthenticating ? null : _handleDelete,
+                onPressed:
+                    _isDeleting || _isReauthenticating ? null : _handleDelete,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.error,
                   foregroundColor: Colors.white,
                   elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                 ),
                 child: _isDeleting || _isReauthenticating
                     ? const SizedBox(
                         height: 24,
                         width: 24,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2),
                       )
                     : Text(
                         context.tr('delete_account_title'),
-                        style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700),
+                        style: GoogleFonts.outfit(
+                            fontSize: 16, fontWeight: FontWeight.w700),
                       ),
               ),
             ),
@@ -377,14 +396,14 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
   }
 
   Widget _consequenceItem(String text) => Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Text(
-        text,
-        style: GoogleFonts.outfit(
-          fontSize: 14,
-          color: Colors.grey.shade600,
-          height: 1.5,
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Text(
+          text,
+          style: GoogleFonts.outfit(
+            fontSize: 14,
+            color: Colors.grey.shade600,
+            height: 1.5,
+          ),
         ),
-      ),
-    );
+      );
 }

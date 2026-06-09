@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 enum EditableItemType { text, sticker, tag }
 
 class EditableItem {
-
   EditableItem({
     required this.id,
     required this.type,
@@ -42,17 +41,18 @@ class EditableItem {
     TextAlign? textAlign,
     bool? hasBackground,
     double? fontSize,
-  }) => EditableItem(
-      id: id ?? this.id,
-      type: type ?? this.type,
-      value: value ?? this.value,
-      position: position ?? this.position,
-      scale: scale ?? this.scale,
-      rotation: rotation ?? this.rotation,
-      color: color ?? this.color,
-      style: style ?? this.style,
-      textAlign: textAlign ?? this.textAlign,
-      hasBackground: hasBackground ?? this.hasBackground,
-      fontSize: fontSize ?? this.fontSize,
-    );
+  }) =>
+      EditableItem(
+        id: id ?? this.id,
+        type: type ?? this.type,
+        value: value ?? this.value,
+        position: position ?? this.position,
+        scale: scale ?? this.scale,
+        rotation: rotation ?? this.rotation,
+        color: color ?? this.color,
+        style: style ?? this.style,
+        textAlign: textAlign ?? this.textAlign,
+        hasBackground: hasBackground ?? this.hasBackground,
+        fontSize: fontSize ?? this.fontSize,
+      );
 }

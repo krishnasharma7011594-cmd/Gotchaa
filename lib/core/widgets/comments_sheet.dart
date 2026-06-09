@@ -14,9 +14,9 @@ import '../theme/app_colors.dart';
 import 'gotchaa_like_button.dart';
 
 class CommentsSheet extends ConsumerStatefulWidget {
-
   const CommentsSheet({
-    required this.postId, super.key,
+    required this.postId,
+    super.key,
     this.onCommentAdded,
     this.onCommentDeleted,
   });
@@ -39,7 +39,8 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 100) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 100) {
       if (mounted) {
         ref.read(postCommentsLimitProvider(widget.postId).notifier).state += 20;
       }
@@ -65,9 +66,12 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
     );
 
     _controller.clear();
-    
+
     // Fire and forget (Optimistic caching by Firestore handles the rest instantly)
-    ref.read(socialRepositoryProvider).addComment(postId: widget.postId, comment: comment).then((_) {
+    ref
+        .read(socialRepositoryProvider)
+        .addComment(postId: widget.postId, comment: comment)
+        .then((_) {
       widget.onCommentAdded?.call();
     }).catchError((e) {
       if (mounted) {
@@ -153,7 +157,8 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
                 return ListView.builder(
                   controller: _scrollController,
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: comments.length + 1, // +1 for loading indicator at bottom
+                  itemCount:
+                      comments.length + 1, // +1 for loading indicator at bottom
                   itemBuilder: (ctx, i) {
                     if (i == comments.length) {
                       return const Padding(
@@ -167,12 +172,12 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
                         ),
                       );
                     }
-                    return _CommentTile(comment: comments[i], postId: widget.postId);
+                    return _CommentTile(
+                        comment: comments[i], postId: widget.postId);
                   },
                 );
               },
-              loading: () =>
-                  const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(
                 child: Text('Error loading comments',
                     style: GoogleFonts.outfit(color: Colors.grey)),
@@ -206,18 +211,16 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
                           color: Colors.grey.shade400, fontSize: 14),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
-                        borderSide:
-                            BorderSide(color: Colors.grey.shade200),
+                        borderSide: BorderSide(color: Colors.grey.shade200),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
-                        borderSide:
-                            BorderSide(color: Colors.grey.shade200),
+                        borderSide: BorderSide(color: Colors.grey.shade200),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
-                        borderSide: const BorderSide(
-                            color: AppColors.electricBlue),
+                        borderSide:
+                            const BorderSide(color: AppColors.electricBlue),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 10),
@@ -228,7 +231,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
                 IconButton(
                   onPressed: _sendComment,
                   icon: const Icon(Icons.send_rounded,
-                          color: AppColors.electricBlue),
+                      color: AppColors.electricBlue),
                 ),
               ],
             ),
@@ -249,110 +252,110 @@ class _CommentTile extends StatelessWidget {
       context,
       reportedUserId: comment.uid,
       contentType: 'comment',
-      contentId: comment.id.isNotEmpty ? comment.id : '${postId}_${comment.uid}',
+      contentId:
+          comment.id.isNotEmpty ? comment.id : '${postId}_${comment.uid}',
       contentPreview: comment.text,
     );
   }
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-      onLongPress: () => _reportComment(context),
-      child: Padding(
-      padding:
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => UserProfileScreen(uid: comment.uid),
-                ),
-              );
-            },
-            child: CircleAvatar(
-              radius: 16,
-              backgroundImage: comment.userPhoto.isNotEmpty
-                  ? CachedNetworkImageProvider(comment.userPhoto)
-                  : null,
-              child: comment.userPhoto.isEmpty
-                  ? Text(
-                      comment.username.isNotEmpty
-                          ? comment.username[0].toUpperCase()
-                          : '?',
-                      style: GoogleFonts.outfit(
-                          fontWeight: FontWeight.w700, fontSize: 12),
-                    )
-                  : null,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => UserProfileScreen(uid: comment.uid),
-                      ),
-                    );
-                  },
-                  child: RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: comment.username.isNotEmpty
-                              ? comment.username
-                              : 'User',
-                          style: GoogleFonts.outfit(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const TextSpan(text: '  '),
-                        TextSpan(
-                          text: comment.text,
-                          style: GoogleFonts.outfit(
-                            fontSize: 13,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ],
+        onLongPress: () => _reportComment(context),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => UserProfileScreen(uid: comment.uid),
                     ),
-                  ),
+                  );
+                },
+                child: CircleAvatar(
+                  radius: 16,
+                  backgroundImage: comment.userPhoto.isNotEmpty
+                      ? CachedNetworkImageProvider(comment.userPhoto)
+                      : null,
+                  child: comment.userPhoto.isEmpty
+                      ? Text(
+                          comment.username.isNotEmpty
+                              ? comment.username[0].toUpperCase()
+                              : '?',
+                          style: GoogleFonts.outfit(
+                              fontWeight: FontWeight.w700, fontSize: 12),
+                        )
+                      : null,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  _timeSince(comment.createdAt),
-                  style: GoogleFonts.outfit(
-                    fontSize: 11,
-                    color: Colors.grey.shade400,
-                  ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => UserProfileScreen(uid: comment.uid),
+                          ),
+                        );
+                      },
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: comment.username.isNotEmpty
+                                  ? comment.username
+                                  : 'User',
+                              style: GoogleFonts.outfit(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                                color: Colors.black,
+                              ),
+                            ),
+                            const TextSpan(text: '  '),
+                            TextSpan(
+                              text: comment.text,
+                              style: GoogleFonts.outfit(
+                                fontSize: 13,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _timeSince(comment.createdAt),
+                      style: GoogleFonts.outfit(
+                        fontSize: 11,
+                        color: Colors.grey.shade400,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 8),
+              GotchaaLikeButton(
+                contentId: comment.id,
+                contentType: 'comments',
+                parentId: postId,
+                initialCount: comment.likesCount,
+                ownerId: comment.uid,
+                ownerName: comment.username,
+                iconSize: 18,
+                textSize: 12,
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
-          GotchaaLikeButton(
-            contentId: comment.id,
-            contentType: 'comments',
-            parentId: postId,
-            initialCount: comment.likesCount,
-            ownerId: comment.uid,
-            ownerName: comment.username,
-            iconSize: 18,
-            textSize: 12,
-          ),
-        ],
-      ),
-    ),
-    );
+        ),
+      );
 
   String _timeSince(DateTime time) {
     final diff = DateTime.now().difference(time);

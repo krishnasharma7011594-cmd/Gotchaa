@@ -13,7 +13,8 @@ class EditCustomListScreen extends ConsumerStatefulWidget {
   final CustomPrivacyList? list;
 
   @override
-  ConsumerState<EditCustomListScreen> createState() => _EditCustomListScreenState();
+  ConsumerState<EditCustomListScreen> createState() =>
+      _EditCustomListScreenState();
 }
 
 class _EditCustomListScreenState extends ConsumerState<EditCustomListScreen> {
@@ -39,7 +40,8 @@ class _EditCustomListScreenState extends ConsumerState<EditCustomListScreen> {
     setState(() => _isLoading = true);
     final profiles = <UserProfile>[];
     for (final uid in _selectedUids) {
-      final profile = await ref.read(profileRepositoryProvider).getUserProfile(uid);
+      final profile =
+          await ref.read(profileRepositoryProvider).getUserProfile(uid);
       if (profile != null) profiles.add(profile);
     }
     setState(() {
@@ -59,7 +61,8 @@ class _EditCustomListScreenState extends ConsumerState<EditCustomListScreen> {
 
     setState(() => _isSearching = true);
     try {
-      final results = await ref.read(firestoreRepositoryProvider).searchUsers(query);
+      final results =
+          await ref.read(firestoreRepositoryProvider).searchUsers(query);
       setState(() {
         _searchResults = results;
         _isSearching = false;
@@ -83,17 +86,17 @@ class _EditCustomListScreenState extends ConsumerState<EditCustomListScreen> {
     if (uid != null) {
       if (widget.list == null) {
         await ref.read(profileRepositoryProvider).createCustomList(
-          uid: uid,
-          name: name,
-          memberUids: _selectedUids,
-        );
+              uid: uid,
+              name: name,
+              memberUids: _selectedUids,
+            );
       } else {
         await ref.read(profileRepositoryProvider).updateCustomList(
-          uid: uid,
-          listId: widget.list!.id,
-          name: name,
-          memberUids: _selectedUids,
-        );
+              uid: uid,
+              listId: widget.list!.id,
+              name: name,
+              memberUids: _selectedUids,
+            );
       }
     }
     setState(() => _isLoading = false);
@@ -105,9 +108,9 @@ class _EditCustomListScreenState extends ConsumerState<EditCustomListScreen> {
     final uid = ref.read(currentUserProvider)?.uid;
     if (uid != null && widget.list != null) {
       await ref.read(profileRepositoryProvider).deleteCustomList(
-        uid: uid,
-        listId: widget.list!.id,
-      );
+            uid: uid,
+            listId: widget.list!.id,
+          );
     }
     setState(() => _isLoading = false);
     Navigator.pop(context);
@@ -133,13 +136,15 @@ class _EditCustomListScreenState extends ConsumerState<EditCustomListScreen> {
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.close_rounded, color: isDark ? Colors.white : Colors.black),
+          icon: Icon(Icons.close_rounded,
+              color: isDark ? Colors.white : Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           if (widget.list != null)
             IconButton(
-              icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+              icon: const Icon(Icons.delete_outline_rounded,
+                  color: Colors.redAccent),
               onPressed: _showDeleteDialog,
             ),
           TextButton(
@@ -155,69 +160,74 @@ class _EditCustomListScreenState extends ConsumerState<EditCustomListScreen> {
           ),
         ],
       ),
-      body: _isLoading 
-        ? const Center(child: CircularProgressIndicator())
-        : Column(
-            children: [
-              // List Name Field
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: TextField(
-                  controller: _nameController,
-                  style: GoogleFonts.outfit(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : Colors.black,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'List Name (e.g. Family)',
-                    hintStyle: GoogleFonts.outfit(color: Colors.grey.withValues(alpha: 0.5)),
-                    border: InputBorder.none,
-                    prefixIcon: const Icon(Icons.edit_rounded, color: AppColors.electricBlue, size: 20),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                // List Name Field
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: TextField(
+                    controller: _nameController,
+                    style: GoogleFonts.outfit(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'List Name (e.g. Family)',
+                      hintStyle: GoogleFonts.outfit(
+                          color: Colors.grey.withValues(alpha: 0.5)),
+                      border: InputBorder.none,
+                      prefixIcon: const Icon(Icons.edit_rounded,
+                          color: AppColors.electricBlue, size: 20),
+                    ),
                   ),
                 ),
-              ),
 
-              // Search Bar
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
-                  height: 46,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkSurface : Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.search_rounded, color: Colors.grey, size: 20),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextField(
-                          controller: _searchController,
-                          onChanged: _performSearch,
-                          style: GoogleFonts.outfit(color: isDark ? Colors.white : Colors.black),
-                          decoration: InputDecoration(
-                            hintText: 'Search people to add...',
-                            hintStyle: GoogleFonts.outfit(color: Colors.grey, fontSize: 14),
-                            border: InputBorder.none,
+                // Search Bar
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Container(
+                    height: 46,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.darkSurface : Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.search_rounded,
+                            color: Colors.grey, size: 20),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: _performSearch,
+                            style: GoogleFonts.outfit(
+                                color: isDark ? Colors.white : Colors.black),
+                            decoration: InputDecoration(
+                              hintText: 'Search people to add...',
+                              hintStyle: GoogleFonts.outfit(
+                                  color: Colors.grey, fontSize: 14),
+                              border: InputBorder.none,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              Expanded(
-                child: _searchController.text.isNotEmpty 
-                  ? _buildSearchResults(isDark, currentUser?.uid)
-                  : _buildSelectedList(isDark),
-              ),
-            ],
-          ),
+                Expanded(
+                  child: _searchController.text.isNotEmpty
+                      ? _buildSearchResults(isDark, currentUser?.uid)
+                      : _buildSelectedList(isDark),
+                ),
+              ],
+            ),
     );
   }
 
@@ -226,14 +236,17 @@ class _EditCustomListScreenState extends ConsumerState<EditCustomListScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete List'),
-        content: const Text('Are you sure you want to delete this privacy list?'),
+        content:
+            const Text('Are you sure you want to delete this privacy list?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel')),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               _deleteList();
-            }, 
+            },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
@@ -243,7 +256,8 @@ class _EditCustomListScreenState extends ConsumerState<EditCustomListScreen> {
 
   Widget _buildSearchResults(bool isDark, String? currentUid) {
     if (_isSearching) return const Center(child: CircularProgressIndicator());
-    if (_searchResults.isEmpty) return const Center(child: Text('No users found'));
+    if (_searchResults.isEmpty)
+      return const Center(child: Text('No users found'));
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -258,7 +272,9 @@ class _EditCustomListScreenState extends ConsumerState<EditCustomListScreen> {
           isDark: isDark,
           trailing: IconButton(
             icon: Icon(
-              isSelected ? Icons.check_circle_rounded : Icons.add_circle_outline_rounded,
+              isSelected
+                  ? Icons.check_circle_rounded
+                  : Icons.add_circle_outline_rounded,
               color: isSelected ? AppColors.electricBlue : Colors.grey,
             ),
             onPressed: () {
@@ -303,7 +319,8 @@ class _EditCustomListScreenState extends ConsumerState<EditCustomListScreen> {
                 _selectedUsers.removeAt(index);
               });
             },
-            child: const Text('Remove', style: TextStyle(color: Colors.redAccent)),
+            child:
+                const Text('Remove', style: TextStyle(color: Colors.redAccent)),
           ),
         );
       },
@@ -312,29 +329,30 @@ class _EditCustomListScreenState extends ConsumerState<EditCustomListScreen> {
 }
 
 class _UserTile extends StatelessWidget {
-
-  const _UserTile({required this.user, required this.isDark, required this.trailing});
+  const _UserTile(
+      {required this.user, required this.isDark, required this.trailing});
   final UserProfile user;
   final bool isDark;
   final Widget trailing;
 
   @override
   Widget build(BuildContext context) => Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        contentPadding: EdgeInsets.zero,
-        leading: CircleAvatar(
-          backgroundImage: CachedNetworkImageProvider(user.photoUrl),
-        ),
-        title: Text(
-          user.displayName,
-          style: GoogleFonts.outfit(
-            fontWeight: FontWeight.w600,
-            color: isDark ? Colors.white : Colors.black,
+        margin: const EdgeInsets.only(bottom: 8),
+        child: ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: CircleAvatar(
+            backgroundImage: CachedNetworkImageProvider(user.photoUrl),
           ),
+          title: Text(
+            user.displayName,
+            style: GoogleFonts.outfit(
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+          ),
+          subtitle: Text('@${user.username}',
+              style: GoogleFonts.outfit(color: Colors.grey, fontSize: 12)),
+          trailing: trailing,
         ),
-        subtitle: Text('@${user.username}', style: GoogleFonts.outfit(color: Colors.grey, fontSize: 12)),
-        trailing: trailing,
-      ),
-    );
+      );
 }

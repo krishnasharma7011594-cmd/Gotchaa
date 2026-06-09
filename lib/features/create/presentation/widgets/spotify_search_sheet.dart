@@ -18,7 +18,7 @@ class SpotifySearchSheet extends StatefulWidget {
 class _SpotifySearchSheetState extends State<SpotifySearchSheet> {
   final TextEditingController _searchController = TextEditingController();
   final AudioPlayer _audioPlayer = AudioPlayer();
-  
+
   List<SpotifyTrack> _searchResults = [];
   bool _isLoading = false;
   String? _currentlyPlayingId;
@@ -42,7 +42,8 @@ class _SpotifySearchSheetState extends State<SpotifySearchSheet> {
       final response = await http.post(
         Uri.parse('https://accounts.spotify.com/api/token'),
         headers: {
-          'Authorization': 'Basic ${base64Encode(utf8.encode('$_clientId:$_clientSecret'))}',
+          'Authorization':
+              'Basic ${base64Encode(utf8.encode('$_clientId:$_clientSecret'))}',
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: {'grant_type': 'client_credentials'},
@@ -51,12 +52,8 @@ class _SpotifySearchSheetState extends State<SpotifySearchSheet> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         _accessToken = data['access_token'];
-      } else {
-        
-      }
-    } catch (e) {
-      
-    }
+      } else {}
+    } catch (e) {}
   }
 
   Future<void> _searchTracks(String query) async {
@@ -77,7 +74,8 @@ class _SpotifySearchSheetState extends State<SpotifySearchSheet> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://api.spotify.com/v1/search?q=$query&type=track&limit=20'),
+        Uri.parse(
+            'https://api.spotify.com/v1/search?q=$query&type=track&limit=20'),
         headers: {'Authorization': 'Bearer $_accessToken'},
       );
 
@@ -110,7 +108,7 @@ class _SpotifySearchSheetState extends State<SpotifySearchSheet> {
       await _audioPlayer.setUrl(track.previewUrl!);
       await _audioPlayer.play();
       setState(() => _currentlyPlayingId = track.id);
-      
+
       _audioPlayer.playerStateStream.listen((state) {
         if (state.processingState == ProcessingState.completed) {
           if (mounted) setState(() => _currentlyPlayingId = null);
@@ -121,170 +119,177 @@ class _SpotifySearchSheetState extends State<SpotifySearchSheet> {
 
   @override
   Widget build(BuildContext context) => Container(
-      height: MediaQuery.of(context).size.height * 0.8,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+        height: MediaQuery.of(context).size.height * 0.8,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
         ),
-      ),
-      child: Column(
-        children: [
-          // Drag Handle
-          const SizedBox(height: 12),
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          
-          // Header
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Text(
-                  'Add Music',
-                  style: GoogleFonts.outfit(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-          ),
-
-          // Search Bar
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          children: [
+            // Drag Handle
+            const SizedBox(height: 12),
+            Container(
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: TextField(
-                controller: _searchController,
-                decoration: const InputDecoration(
-                  hintText: 'Search for a song...',
-                  border: InputBorder.none,
-                  icon: Icon(Icons.search, color: Colors.grey),
-                ),
-                onSubmitted: _searchTracks,
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
-          ),
 
-          const SizedBox(height: 8),
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Text(
+                    'Add Music',
+                    style: GoogleFonts.outfit(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+            ),
 
-          // Results
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: Colors.black))
-                : ListView.builder(
-                    itemCount: _searchResults.length,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemBuilder: (context, index) {
-                      final track = _searchResults[index];
-                      final isPlaying = _currentlyPlayingId == track.id;
+            // Search Bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: const InputDecoration(
+                    hintText: 'Search for a song...',
+                    border: InputBorder.none,
+                    icon: Icon(Icons.search, color: Colors.grey),
+                  ),
+                  onSubmitted: _searchTracks,
+                ),
+              ),
+            ),
 
-                      return InkWell(
-                        onTap: () => _togglePreview(track),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          child: Row(
-                            children: [
-                              // Album Art
-                              Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: CachedNetworkImage(
-                                      imageUrl: track.albumArtUrl,
-                                      width: 56,
-                                      height: 56,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  if (isPlaying)
-                                    Container(
-                                      width: 56,
-                                      height: 56,
-                                      decoration: BoxDecoration(
-                                        color: Colors.black38,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: const Icon(Icons.pause, color: Colors.white, size: 24),
-                                    )
-                                  else if (track.previewUrl != null)
-                                    const Icon(Icons.play_arrow, color: Colors.white, size: 20),
-                                ],
-                              ),
-                              const SizedBox(width: 16),
-                              
-                              // Track Info
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(height: 8),
+
+            // Results
+            Expanded(
+              child: _isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(color: Colors.black))
+                  : ListView.builder(
+                      itemCount: _searchResults.length,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      itemBuilder: (context, index) {
+                        final track = _searchResults[index];
+                        final isPlaying = _currentlyPlayingId == track.id;
+
+                        return InkWell(
+                          onTap: () => _togglePreview(track),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 12),
+                            child: Row(
+                              children: [
+                                // Album Art
+                                Stack(
+                                  alignment: Alignment.center,
                                   children: [
-                                    Text(
-                                      track.name,
-                                      style: GoogleFonts.outfit(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: CachedNetworkImage(
+                                        imageUrl: track.albumArtUrl,
+                                        width: 56,
+                                        height: 56,
+                                        fit: BoxFit.cover,
                                       ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    Text(
-                                      track.artist,
-                                      style: GoogleFonts.outfit(
-                                        color: Colors.grey,
-                                        fontSize: 13,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                                    if (isPlaying)
+                                      Container(
+                                        width: 56,
+                                        height: 56,
+                                        decoration: BoxDecoration(
+                                          color: Colors.black38,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: const Icon(Icons.pause,
+                                            color: Colors.white, size: 24),
+                                      )
+                                    else if (track.previewUrl != null)
+                                      const Icon(Icons.play_arrow,
+                                          color: Colors.white, size: 20),
                                   ],
                                 ),
-                              ),
+                                const SizedBox(width: 16),
 
-                              // Add Button
-                              TextButton(
-                                style: TextButton.styleFrom(
-                                  backgroundColor: Colors.blue.shade50,
-                                  foregroundColor: Colors.blue,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
+                                // Track Info
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        track.name,
+                                        style: GoogleFonts.outfit(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        track.artist,
+                                        style: GoogleFonts.outfit(
+                                          color: Colors.grey,
+                                          fontSize: 13,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                onPressed: () {
-                                  _audioPlayer.stop();
-                                  Navigator.pop(context, track);
-                                },
-                                child: Text(
-                                  'Add',
-                                  style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+
+                                // Add Button
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: Colors.blue.shade50,
+                                    foregroundColor: Colors.blue,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    _audioPlayer.stop();
+                                    Navigator.pop(context, track);
+                                  },
+                                  child: Text(
+                                    'Add',
+                                    style: GoogleFonts.outfit(
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-          ),
-        ],
-      ),
-    );
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      );
 }

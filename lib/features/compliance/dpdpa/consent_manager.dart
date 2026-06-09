@@ -1,5 +1,5 @@
 /// Firestore Collection Schema: users/{uid}/consents/{consentType}
-/// 
+///
 /// Document ID: consentType (e.g., "dataProcessing", "marketing")
 /// Fields:
 /// - granted: Boolean

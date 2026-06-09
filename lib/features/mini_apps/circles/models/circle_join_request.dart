@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CircleJoinRequest {
-
   CircleJoinRequest({
     required this.requestId,
     required this.circleId,
@@ -15,18 +14,19 @@ class CircleJoinRequest {
     required this.createdAt,
   });
 
-  factory CircleJoinRequest.fromMap(Map<String, dynamic> map, String docId) => CircleJoinRequest(
-      requestId: docId,
-      circleId: map['circleId'] ?? '',
-      userId: map['userId'] ?? '',
-      userName: map['userName'] ?? 'New Member',
-      userAvatar: map['userAvatar'] ?? '',
-      introMessage: map['introMessage'] ?? '',
-      karmaScore: map['karmaScore'] ?? 0,
-      trustTier: map['trustTier'] ?? 'New',
-      status: map['status'] ?? 'pending',
-      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-    );
+  factory CircleJoinRequest.fromMap(Map<String, dynamic> map, String docId) =>
+      CircleJoinRequest(
+        requestId: docId,
+        circleId: map['circleId'] ?? '',
+        userId: map['userId'] ?? '',
+        userName: map['userName'] ?? 'New Member',
+        userAvatar: map['userAvatar'] ?? '',
+        introMessage: map['introMessage'] ?? '',
+        karmaScore: map['karmaScore'] ?? 0,
+        trustTier: map['trustTier'] ?? 'New',
+        status: map['status'] ?? 'pending',
+        createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      );
   final String requestId;
   final String circleId;
   final String userId;
@@ -39,15 +39,15 @@ class CircleJoinRequest {
   final DateTime createdAt;
 
   Map<String, dynamic> toMap() => {
-      'requestId': requestId,
-      'circleId': circleId,
-      'userId': userId,
-      'userName': userName,
-      'userAvatar': userAvatar,
-      'introMessage': introMessage,
-      'karmaScore': karmaScore,
-      'trustTier': trustTier,
-      'status': status,
-      'createdAt': Timestamp.fromDate(createdAt),
-    };
+        'requestId': requestId,
+        'circleId': circleId,
+        'userId': userId,
+        'userName': userName,
+        'userAvatar': userAvatar,
+        'introMessage': introMessage,
+        'karmaScore': karmaScore,
+        'trustTier': trustTier,
+        'status': status,
+        'createdAt': Timestamp.fromDate(createdAt),
+      };
 }

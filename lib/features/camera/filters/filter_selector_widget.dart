@@ -13,7 +13,7 @@ class FilterSelectorWidget extends StatefulWidget {
 class _FilterSelectorWidgetState extends State<FilterSelectorWidget> {
   final PageController _pageController = PageController(viewportFraction: 0.22);
   final FilterManager manager = FilterManager();
-  
+
   int _currentIndex = 0;
 
   @override
@@ -21,7 +21,7 @@ class _FilterSelectorWidgetState extends State<FilterSelectorWidget> {
       listenable: manager,
       builder: (context, _) {
         final filters = manager.filteredFilters;
-        
+
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -41,18 +41,21 @@ class _FilterSelectorWidgetState extends State<FilterSelectorWidget> {
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       margin: const EdgeInsets.only(right: 12),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
                         color: isSelected ? Colors.white : Colors.black45,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: isSelected ? Colors.white : Colors.white24),
+                        border: Border.all(
+                            color: isSelected ? Colors.white : Colors.white24),
                       ),
                       child: Text(
                         _getCategoryName(cat),
                         style: GoogleFonts.outfit(
                           color: isSelected ? Colors.black : Colors.white,
                           fontSize: 14,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.w500,
                         ),
                       ),
                     ),
@@ -63,10 +66,10 @@ class _FilterSelectorWidgetState extends State<FilterSelectorWidget> {
             const SizedBox(height: 16),
 
             // Intensity Slider
-            if (manager.activeColorGrade != null || 
-                manager.activeParticle != null || 
-                manager.activeBackground != null || 
-                manager.activeViral != null || 
+            if (manager.activeColorGrade != null ||
+                manager.activeParticle != null ||
+                manager.activeBackground != null ||
+                manager.activeViral != null ||
                 manager.activeFaceFilter != null)
               SizedBox(
                 width: 200,
@@ -77,7 +80,7 @@ class _FilterSelectorWidgetState extends State<FilterSelectorWidget> {
                   onChanged: manager.setIntensity,
                 ),
               ),
-            
+
             // Filter Name Label
             if (filters.isNotEmpty)
               Padding(
@@ -85,10 +88,15 @@ class _FilterSelectorWidgetState extends State<FilterSelectorWidget> {
                 child: Text(
                   filters[_currentIndex].name,
                   style: GoogleFonts.outfit(
-                    color: Colors.white, 
-                    fontSize: 18, 
+                    color: Colors.white,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    shadows: [const Shadow(color: Colors.black54, blurRadius: 4, offset: Offset(0, 2))],
+                    shadows: [
+                      const Shadow(
+                          color: Colors.black54,
+                          blurRadius: 4,
+                          offset: Offset(0, 2))
+                    ],
                   ),
                 ),
               ),
@@ -115,60 +123,73 @@ class _FilterSelectorWidgetState extends State<FilterSelectorWidget> {
                       tween: Tween<double>(begin: scale, end: scale),
                       curve: Curves.easeOutBack,
                       builder: (context, val, child) => Transform.scale(
-                          scale: val,
-                          child: GestureDetector(
-                            onTap: () {
-                              _pageController.animateToPage(index, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(vertical: 10),
-                              decoration: BoxDecoration(
+                        scale: val,
+                        child: GestureDetector(
+                          onTap: () {
+                            _pageController.animateToPage(index,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeOut);
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: isSelected ? Colors.white : Colors.transparent, 
-                                  width: 3
-                                ),
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.transparent,
+                                    width: 3),
                                 boxShadow: [
-                                  if (isSelected) 
-                                    BoxShadow(color: Colors.white.withOpacity(0.5), blurRadius: 10, spreadRadius: 2)
-                                ]
-                              ),
-                              child: ClipOval(
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                                  child: Container(
-                                    color: Colors.white.withOpacity(0.1),
-                                    child: Image.asset(
-                                      filter.iconAsset,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => const Icon(Icons.auto_awesome, color: Colors.white, size: 30),
-                                    ),
+                                  if (isSelected)
+                                    BoxShadow(
+                                        color: Colors.white.withOpacity(0.5),
+                                        blurRadius: 10,
+                                        spreadRadius: 2)
+                                ]),
+                            child: ClipOval(
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                child: Container(
+                                  color: Colors.white.withOpacity(0.1),
+                                  child: Image.asset(
+                                    filter.iconAsset,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => const Icon(
+                                        Icons.auto_awesome,
+                                        color: Colors.white,
+                                        size: 30),
                                   ),
                                 ),
                               ),
                             ),
                           ),
                         ),
+                      ),
                     );
                   },
                 ),
               ),
           ],
         );
-      }
-    );
+      });
 
   String _getCategoryName(FilterCategory cat) {
     switch (cat) {
-      case FilterCategory.colorGrade: return 'Colors';
-      case FilterCategory.faceAR: return 'Face';
-      case FilterCategory.particle: return 'Effects';
-      case FilterCategory.background: return 'Scenes';
-      case FilterCategory.motion: return 'Motion';
-      case FilterCategory.viral: return 'Viral';
+      case FilterCategory.colorGrade:
+        return 'Colors';
+      case FilterCategory.faceAR:
+        return 'Face';
+      case FilterCategory.particle:
+        return 'Effects';
+      case FilterCategory.background:
+        return 'Scenes';
+      case FilterCategory.motion:
+        return 'Motion';
+      case FilterCategory.viral:
+        return 'Viral';
     }
   }
-  
+
   @override
   void dispose() {
     _pageController.dispose();

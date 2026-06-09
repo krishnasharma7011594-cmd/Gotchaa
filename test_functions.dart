@@ -9,7 +9,7 @@ const String baseUrl = 'https://$projectRegion-$projectId.cloudfunctions.net';
 
 Future<void> main() async {
   print('🧪 Starting Cloud Functions Smoke Test...');
-  
+
   final List<String> endpoints = [
     'geminiProxy',
     'findVibeMatch',
@@ -24,7 +24,7 @@ Future<void> main() async {
 
 Future<void> testEndpoint(String name) async {
   final url = Uri.parse('$baseUrl/$name');
-  
+
   try {
     print('Checking $name...');
     // Callable functions expect a POST with data: {}
@@ -36,7 +36,9 @@ Future<void> testEndpoint(String name) async {
 
     // We expect a 401 Unauthenticated or 403 Forbidden because we aren't passing a token,
     // but a 404 would mean the function is missing.
-    if (response.statusCode == 401 || response.statusCode == 403 || response.statusCode == 400) {
+    if (response.statusCode == 401 ||
+        response.statusCode == 403 ||
+        response.statusCode == 400) {
       print('✅ $name: Reachable (Status ${response.statusCode})');
     } else if (response.statusCode == 404) {
       print('❌ $name: NOT FOUND (404)');

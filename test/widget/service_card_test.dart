@@ -15,7 +15,8 @@ void main() {
   );
 
   group('ServiceCard Tests', () {
-    testWidgets('Renders name and description correctly', (WidgetTester tester) async {
+    testWidgets('Renders name and description correctly',
+        (WidgetTester tester) async {
       await tester.pumpApp(
         ServiceCard(
           service: testService,
@@ -27,9 +28,10 @@ void main() {
       expect(find.text('Test Description'), findsOneWidget);
     });
 
-    testWidgets('Tapping card triggers onTap callback', (WidgetTester tester) async {
+    testWidgets('Tapping card triggers onTap callback',
+        (WidgetTester tester) async {
       bool tapped = false;
-      
+
       await tester.pumpApp(
         ServiceCard(
           service: testService,
@@ -41,9 +43,10 @@ void main() {
       expect(tapped, isTrue);
     });
 
-    testWidgets('Favourite icon toggles and triggers callback', (WidgetTester tester) async {
+    testWidgets('Favourite icon toggles and triggers callback',
+        (WidgetTester tester) async {
       bool toggleTapped = false;
-      
+
       await tester.pumpApp(
         ServiceCard(
           service: testService,
@@ -61,7 +64,8 @@ void main() {
       expect(toggleTapped, isTrue);
     });
 
-    testWidgets('Shows filled favourite icon when isFavourite is true', (WidgetTester tester) async {
+    testWidgets('Shows filled favourite icon when isFavourite is true',
+        (WidgetTester tester) async {
       await tester.pumpApp(
         ServiceCard(
           service: testService,

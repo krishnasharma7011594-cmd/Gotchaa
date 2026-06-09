@@ -85,16 +85,14 @@ class _LanguageSelectionScreenState
                     final lang = langs[index];
                     final isSelected = _selectedCode == lang.code;
                     return GestureDetector(
-                      onTap: () =>
-                          setState(() => _selectedCode = lang.code),
+                      onTap: () => setState(() => _selectedCode = lang.code),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 14),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? AppColors.electricBlue
-                                  .withValues(alpha: 0.08)
+                              ? AppColors.electricBlue.withValues(alpha: 0.08)
                               : Colors.grey.shade50,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
@@ -111,8 +109,7 @@ class _LanguageSelectionScreenState
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     lang.nameNative,
@@ -165,8 +162,8 @@ class _LanguageSelectionScreenState
                     boxShadow: _selectedCode != null
                         ? [
                             BoxShadow(
-                              color: AppColors.electricBlue
-                                  .withValues(alpha: 0.3),
+                              color:
+                                  AppColors.electricBlue.withValues(alpha: 0.3),
                               blurRadius: 16,
                               offset: const Offset(0, 6),
                             )
@@ -174,9 +171,8 @@ class _LanguageSelectionScreenState
                         : null,
                   ),
                   child: ElevatedButton(
-                    onPressed: _selectedCode == null || _saving
-                        ? null
-                        : _continue,
+                    onPressed:
+                        _selectedCode == null || _saving ? null : _continue,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,

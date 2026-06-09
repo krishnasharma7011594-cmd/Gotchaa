@@ -10,15 +10,26 @@ final vybzFeedProvider = StreamProvider<List<VybzModel>>((ref) {
   final limit = ref.watch(vybzFeedLimitProvider);
   final blockedUids = ref.watch(blockedUidsProvider).value ?? [];
   final mutedUids = ref.watch(mutedUidsProvider).value ?? [];
-  
-  return ref.watch(firestoreRepositoryProvider).getVybzFeed(limit: limit).map((list) => list.where((v) => !blockedUids.contains(v.creatorId) && !mutedUids.contains(v.creatorId)).toList());
+
+  return ref.watch(firestoreRepositoryProvider).getVybzFeed(limit: limit).map(
+      (list) => list
+          .where((v) =>
+              !blockedUids.contains(v.creatorId) &&
+              !mutedUids.contains(v.creatorId))
+          .toList());
 });
 
-final userVybzLimitProvider = StateProvider.family<int, String>((ref, userId) => 10);
+final userVybzLimitProvider =
+    StateProvider.family<int, String>((ref, userId) => 10);
 
-final userVybzProvider = StreamProvider.family<List<VybzModel>, String>((ref, userId) {
+final userVybzProvider =
+    StreamProvider.family<List<VybzModel>, String>((ref, userId) {
   final limit = ref.watch(userVybzLimitProvider(userId));
-  return ref.watch(firestoreRepositoryProvider).getUserVybz(userId, limit: limit);
+  return ref
+      .watch(firestoreRepositoryProvider)
+      .getUserVybz(userId, limit: limit);
 });
 
-final vybzCommentsProvider = StreamProvider.family<List<dynamic>, String>((ref, vybzId) => ref.watch(firestoreRepositoryProvider).getVybzComments(vybzId));
+final vybzCommentsProvider = StreamProvider.family<List<dynamic>, String>(
+    (ref, vybzId) =>
+        ref.watch(firestoreRepositoryProvider).getVybzComments(vybzId));

@@ -22,9 +22,11 @@ class ActiveSessionsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: bg,
         title: Text('Active Sessions',
-            style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: textPrimary)),
+            style: GoogleFonts.outfit(
+                fontWeight: FontWeight.w700, color: textPrimary)),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: textPrimary, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+              color: textPrimary, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -50,15 +52,19 @@ class ActiveSessionsScreen extends StatelessWidget {
                           style: GoogleFonts.outfit(color: textPrimary)),
                     ...docs.map((d) {
                       final data = d.data()! as Map<String, dynamic>;
-                      final device = data['deviceName'] as String? ?? 'Unknown device';
+                      final device =
+                          data['deviceName'] as String? ?? 'Unknown device';
                       final location = data['location'] as String? ?? 'Unknown';
                       final last = data['lastActive'];
-                      final ts = last is Timestamp ? last.toDate() : DateTime.now();
+                      final ts =
+                          last is Timestamp ? last.toDate() : DateTime.now();
                       final isCurrent = data['isCurrent'] == true;
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12),
                         child: ListTile(
-                          title: Text(device, style: GoogleFonts.outfit(fontWeight: FontWeight.w600)),
+                          title: Text(device,
+                              style: GoogleFonts.outfit(
+                                  fontWeight: FontWeight.w600)),
                           subtitle: Text(
                             '$location · ${DateFormat.yMMMd().add_jm().format(ts)}${isCurrent ? ' · This device' : ''}',
                             style: GoogleFonts.outfit(fontSize: 12),
@@ -66,8 +72,10 @@ class ActiveSessionsScreen extends StatelessWidget {
                           trailing: isCurrent
                               ? null
                               : IconButton(
-                                  icon: const Icon(Icons.logout_rounded, color: AppColors.error),
-                                  onPressed: () => _revokeSession(context, d.id),
+                                  icon: const Icon(Icons.logout_rounded,
+                                      color: AppColors.error),
+                                  onPressed: () =>
+                                      _revokeSession(context, d.id),
                                 ),
                         ),
                       );
@@ -105,7 +113,9 @@ class ActiveSessionsScreen extends StatelessWidget {
 
   Future<void> _revokeAllOther(BuildContext context, String uid) async {
     try {
-      await FirebaseFunctions.instance.httpsCallable('revokeAllOtherSessions').call();
+      await FirebaseFunctions.instance
+          .httpsCallable('revokeAllOtherSessions')
+          .call();
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Other sessions revoked')),

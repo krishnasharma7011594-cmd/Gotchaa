@@ -9,10 +9,10 @@ final connectivityServiceProvider = Provider<ConnectivityService>((ref) {
   return svc;
 });
 
-final isOnlineProvider = StreamProvider<bool>((ref) => ref.watch(connectivityServiceProvider).onlineStream);
+final isOnlineProvider = StreamProvider<bool>(
+    (ref) => ref.watch(connectivityServiceProvider).onlineStream);
 
 class ConnectivityService {
-
   ConnectivityService() {
     _sub = _connectivity.onConnectivityChanged.listen(_handle);
     _connectivity.checkConnectivity().then(_handle);

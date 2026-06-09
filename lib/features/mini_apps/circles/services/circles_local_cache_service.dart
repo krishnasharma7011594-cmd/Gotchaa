@@ -9,7 +9,8 @@ import '../models/circle_model.dart';
 
 class CirclesLocalCacheService {
   CirclesLocalCacheService._internal();
-  static final CirclesLocalCacheService instance = CirclesLocalCacheService._internal();
+  static final CirclesLocalCacheService instance =
+      CirclesLocalCacheService._internal();
 
   Future<File> _getFile(String filename) async {
     final dir = await getApplicationDocumentsDirectory();
@@ -24,10 +25,12 @@ class CirclesLocalCacheService {
       // Handle Timestamp conversion for serialization
       for (final map in list) {
         if (map['eventDate'] != null) {
-          map['eventDate'] = (map['eventDate'] as dynamic).millisecondsSinceEpoch;
+          map['eventDate'] =
+              (map['eventDate'] as dynamic).millisecondsSinceEpoch;
         }
         if (map['createdAt'] != null) {
-          map['createdAt'] = (map['createdAt'] as dynamic).millisecondsSinceEpoch;
+          map['createdAt'] =
+              (map['createdAt'] as dynamic).millisecondsSinceEpoch;
         }
         // Exclude locationLatLng to preserve privacy in public cache
         map.remove('locationLatLng');
@@ -49,10 +52,12 @@ class CirclesLocalCacheService {
         final map = Map<String, dynamic>.from(item);
         // Reconstruct timestamp objects
         if (map['eventDate'] != null) {
-          map['eventDate'] = Timestamp.fromMillisecondsSinceEpoch(map['eventDate'] as int);
+          map['eventDate'] =
+              Timestamp.fromMillisecondsSinceEpoch(map['eventDate'] as int);
         }
         if (map['createdAt'] != null) {
-          map['createdAt'] = Timestamp.fromMillisecondsSinceEpoch(map['createdAt'] as int);
+          map['createdAt'] =
+              Timestamp.fromMillisecondsSinceEpoch(map['createdAt'] as int);
         }
         return CircleModel.fromMap(map, map['id'] ?? '');
       }).toList();
@@ -62,13 +67,15 @@ class CirclesLocalCacheService {
   }
 
   // Cache group chat messages
-  Future<void> cacheMessages(String circleId, List<CircleMessage> messages) async {
+  Future<void> cacheMessages(
+      String circleId, List<CircleMessage> messages) async {
     try {
       final file = await _getFile('cached_msgs_$circleId.json');
       final list = messages.map((m) => m.toMap()).toList();
       for (final map in list) {
         if (map['timestamp'] != null) {
-          map['timestamp'] = (map['timestamp'] as dynamic).millisecondsSinceEpoch;
+          map['timestamp'] =
+              (map['timestamp'] as dynamic).millisecondsSinceEpoch;
         }
         if (map['ttl'] != null) {
           map['ttl'] = (map['ttl'] as dynamic).millisecondsSinceEpoch;
@@ -90,7 +97,8 @@ class CirclesLocalCacheService {
       return list.map((item) {
         final map = Map<String, dynamic>.from(item);
         if (map['timestamp'] != null) {
-          map['timestamp'] = Timestamp.fromMillisecondsSinceEpoch(map['timestamp'] as int);
+          map['timestamp'] =
+              Timestamp.fromMillisecondsSinceEpoch(map['timestamp'] as int);
         }
         if (map['ttl'] != null) {
           map['ttl'] = Timestamp.fromMillisecondsSinceEpoch(map['ttl'] as int);

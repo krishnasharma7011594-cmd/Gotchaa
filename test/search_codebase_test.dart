@@ -5,7 +5,7 @@ void main() {
   test('search files', () {
     final root = Directory('lib');
     final files = root.listSync(recursive: true).whereType<File>();
-    
+
     final searchTerms = [
       'Permission.location',
       'Permission.storage',
@@ -16,7 +16,7 @@ void main() {
       'putFile',
       'File(',
     ];
-    
+
     print('Found files checking...');
     for (final file in files) {
       if (!file.path.endsWith('.dart')) continue;

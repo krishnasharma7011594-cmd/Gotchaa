@@ -30,7 +30,8 @@ class ConsentGateService {
 
   static const _keyTimestampAnalytics = 'gdpr_consent_analytics_timestamp';
   static const _keyTimestampPerformance = 'gdpr_consent_performance_timestamp';
-  static const _keyTimestampPersonalization = 'gdpr_consent_personalization_timestamp';
+  static const _keyTimestampPersonalization =
+      'gdpr_consent_personalization_timestamp';
   static const _keyTimestampDoNotSell = 'ccpa_do_not_sell_timestamp';
 
   // ── Getters ────────────────────────────────────────────────────────────────
@@ -41,7 +42,9 @@ class ConsentGateService {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getBool(_keyPrompted) ?? false;
     } catch (e, stack) {
-      AppLogger.e('GDPR Consent: Failed to read hasPromptedForConsent from SharedPreferences', e);
+      AppLogger.e(
+          'GDPR Consent: Failed to read hasPromptedForConsent from SharedPreferences',
+          e);
       debugPrint('$stack');
       return false;
     }
@@ -53,7 +56,9 @@ class ConsentGateService {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getBool(_keyAnalytics) ?? false;
     } catch (e, stack) {
-      AppLogger.e('GDPR Consent: Failed to read hasAnalyticsConsent from SharedPreferences', e);
+      AppLogger.e(
+          'GDPR Consent: Failed to read hasAnalyticsConsent from SharedPreferences',
+          e);
       debugPrint('$stack');
       return false;
     }
@@ -71,7 +76,9 @@ class ConsentGateService {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getBool(_keyPerformance) ?? false;
     } catch (e, stack) {
-      AppLogger.e('GDPR Consent: Failed to read hasPerformanceConsent from SharedPreferences', e);
+      AppLogger.e(
+          'GDPR Consent: Failed to read hasPerformanceConsent from SharedPreferences',
+          e);
       debugPrint('$stack');
       return false;
     }
@@ -83,7 +90,9 @@ class ConsentGateService {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getBool(_keyPersonalization) ?? false;
     } catch (e, stack) {
-      AppLogger.e('GDPR Consent: Failed to read hasPersonalizationConsent from SharedPreferences', e);
+      AppLogger.e(
+          'GDPR Consent: Failed to read hasPersonalizationConsent from SharedPreferences',
+          e);
       debugPrint('$stack');
       return false;
     }
@@ -95,7 +104,9 @@ class ConsentGateService {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getBool(_keyDoNotSell) ?? false;
     } catch (e, stack) {
-      AppLogger.e('GDPR Consent: Failed to read isDoNotSellEnabled from SharedPreferences', e);
+      AppLogger.e(
+          'GDPR Consent: Failed to read isDoNotSellEnabled from SharedPreferences',
+          e);
       debugPrint('$stack');
       return false;
     }
@@ -128,12 +139,12 @@ class ConsentGateService {
       } catch (_) {
         // App does not exist, so initialize it
       }
-      
+
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
       debugPrint('Firebase initialized successfully after consent');
-      
+
       // Configure Firestore Settings
       try {
         configureFirestore();
@@ -143,7 +154,8 @@ class ConsentGateService {
 
       // 1. Crashlytics (Legitimate Interest)
       try {
-        await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+        await FirebaseCrashlytics.instance
+            .setCrashlyticsCollectionEnabled(true);
         debugPrint('FirebaseCrashlytics collection enabled successfully');
       } catch (e, stack) {
         debugPrint('FirebaseCrashlytics failed to enable: $e');
@@ -153,8 +165,10 @@ class ConsentGateService {
       // 2. Analytics Consent Check & Apply
       final analyticsConsent = await hasAnalyticsConsent();
       try {
-        await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(analyticsConsent);
-        debugPrint('FirebaseAnalytics collection enabled set to: $analyticsConsent');
+        await FirebaseAnalytics.instance
+            .setAnalyticsCollectionEnabled(analyticsConsent);
+        debugPrint(
+            'FirebaseAnalytics collection enabled set to: $analyticsConsent');
       } catch (e, stack) {
         debugPrint('FirebaseAnalytics failed to set collection enabled: $e');
         debugPrint('$stack');
@@ -163,8 +177,10 @@ class ConsentGateService {
       // 3. Performance Consent Check & Apply
       final performanceConsent = await hasPerformanceConsent();
       try {
-        await FirebasePerformance.instance.setPerformanceCollectionEnabled(performanceConsent);
-        debugPrint('FirebasePerformance collection enabled set to: $performanceConsent');
+        await FirebasePerformance.instance
+            .setPerformanceCollectionEnabled(performanceConsent);
+        debugPrint(
+            'FirebasePerformance collection enabled set to: $performanceConsent');
       } catch (e, stack) {
         debugPrint('FirebasePerformance failed to set collection enabled: $e');
         debugPrint('$stack');
@@ -173,8 +189,11 @@ class ConsentGateService {
       // 4. Firebase App Check
       try {
         await FirebaseAppCheck.instance.activate(
-          androidProvider: kReleaseMode ? AndroidProvider.playIntegrity : AndroidProvider.debug,
-          appleProvider: kReleaseMode ? AppleProvider.deviceCheck : AppleProvider.debug,
+          androidProvider: kReleaseMode
+              ? AndroidProvider.playIntegrity
+              : AndroidProvider.debug,
+          appleProvider:
+              kReleaseMode ? AppleProvider.deviceCheck : AppleProvider.debug,
         );
         debugPrint('FirebaseAppCheck activated successfully');
       } catch (e, stack) {
@@ -211,7 +230,8 @@ class ConsentGateService {
 
       // 7. Error handlers to Crashlytics
       try {
-        FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+        FlutterError.onError =
+            FirebaseCrashlytics.instance.recordFlutterFatalError;
         debugPrint('FlutterError.onError registered with Crashlytics');
       } catch (e, stack) {
         debugPrint('Failed to set Crashlytics records: $e');
@@ -227,7 +247,8 @@ class ConsentGateService {
           }
           return true;
         };
-        debugPrint('PlatformDispatcher.instance.onError registered with Crashlytics');
+        debugPrint(
+            'PlatformDispatcher.instance.onError registered with Crashlytics');
       } catch (e, stack) {
         debugPrint('Failed to register PlatformDispatcher error handler: $e');
         debugPrint('$stack');
@@ -264,12 +285,14 @@ class ConsentGateService {
       AppLogger.e('GDPR Consent: Failed to write Analytics consent status', e);
       debugPrint('$stack');
     }
-    
+
     try {
       await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(granted);
-      AppLogger.i('GDPR Consent: Firebase Analytics collection set to $granted');
+      AppLogger.i(
+          'GDPR Consent: Firebase Analytics collection set to $granted');
     } catch (e) {
-      AppLogger.e('GDPR Consent: Failed to update Firebase Analytics collection', e);
+      AppLogger.e(
+          'GDPR Consent: Failed to update Firebase Analytics collection', e);
     }
   }
 
@@ -281,15 +304,19 @@ class ConsentGateService {
       await prefs.setBool(_keyPerformance, granted);
       await prefs.setString(_keyTimestampPerformance, timestamp);
     } catch (e, stack) {
-      AppLogger.e('GDPR Consent: Failed to write Performance consent status', e);
+      AppLogger.e(
+          'GDPR Consent: Failed to write Performance consent status', e);
       debugPrint('$stack');
     }
-    
+
     try {
-      await FirebasePerformance.instance.setPerformanceCollectionEnabled(granted);
-      AppLogger.i('GDPR Consent: Firebase Performance monitoring set to $granted');
+      await FirebasePerformance.instance
+          .setPerformanceCollectionEnabled(granted);
+      AppLogger.i(
+          'GDPR Consent: Firebase Performance monitoring set to $granted');
     } catch (e) {
-      AppLogger.e('GDPR Consent: Failed to update Firebase Performance collection', e);
+      AppLogger.e(
+          'GDPR Consent: Failed to update Firebase Performance collection', e);
     }
   }
 
@@ -302,7 +329,8 @@ class ConsentGateService {
       await prefs.setString(_keyTimestampPersonalization, timestamp);
       AppLogger.i('GDPR Consent: Personalization set to $granted');
     } catch (e, stack) {
-      AppLogger.e('GDPR Consent: Failed to write Personalization consent status', e);
+      AppLogger.e(
+          'GDPR Consent: Failed to write Personalization consent status', e);
       debugPrint('$stack');
     }
   }
@@ -353,7 +381,8 @@ class ConsentGateService {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getString(_keyTimestampPersonalization);
     } catch (e, stack) {
-      AppLogger.e('GDPR Consent: Failed to read getPersonalizationTimestamp', e);
+      AppLogger.e(
+          'GDPR Consent: Failed to read getPersonalizationTimestamp', e);
       debugPrint('$stack');
       return null;
     }

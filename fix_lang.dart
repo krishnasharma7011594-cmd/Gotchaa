@@ -1,9 +1,13 @@
 import 'dart:io';
+
 void main() {
-  final f = File('lib/features/settings/presentation/screens/language_settings_screen.dart');
+  final f = File(
+      'lib/features/settings/presentation/screens/language_settings_screen.dart');
   var s = f.readAsStringSync();
-  s = s.replaceFirst(RegExp(r"import 'package:flutter/material\.dart';[\s\S]*?'Hindi \(हिन्दी\)': TranslateLanguage\.hindi,"),
-  """
+  s = s.replaceFirst(
+      RegExp(
+          r"import 'package:flutter/material\.dart';[\s\S]*?'Hindi \(हिन्दी\)': TranslateLanguage\.hindi,"),
+      """
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';

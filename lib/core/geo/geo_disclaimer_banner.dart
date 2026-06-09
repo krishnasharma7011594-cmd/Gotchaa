@@ -32,7 +32,10 @@ class _GeoDisclaimerBannerState extends State<GeoDisclaimerBanner> {
           const Expanded(
             child: Text(
               'Some content is not available in your region due to local regulations.',
-              style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500),
             ),
           ),
           IconButton(

@@ -8,11 +8,13 @@ import 'repository_providers.dart';
 
 // ── Stream: auth state ───────────────────────────────────────────────────────
 
-final authStateProvider = StreamProvider<User?>((ref) => ref.watch(authRepositoryProvider).authStateChanges);
+final authStateProvider = StreamProvider<User?>(
+    (ref) => ref.watch(authRepositoryProvider).authStateChanges);
 
 // ── Current user convenience provider ───────────────────────────────────────
 
-final currentUserProvider = Provider<User?>((ref) => ref.watch(authStateProvider).asData?.value);
+final currentUserProvider =
+    Provider<User?>((ref) => ref.watch(authStateProvider).asData?.value);
 
 // ── AuthController state ─────────────────────────────────────────────────────
 
@@ -41,7 +43,6 @@ class AuthError extends AuthState {
 // ── Controller ───────────────────────────────────────────────────────────────
 
 class AuthController extends StateNotifier<AuthState> {
-
   AuthController(this._repo) : super(const AuthIdle());
   final AuthRepository _repo;
 
@@ -97,7 +98,9 @@ class AuthController extends StateNotifier<AuthState> {
       return true;
     } catch (e) {
       try {
-        await FirebaseFunctions.instance.httpsCallable('trackFailedLogin').call({'email': email});
+        await FirebaseFunctions.instance
+            .httpsCallable('trackFailedLogin')
+            .call({'email': email});
       } catch (_) {}
       state = AuthError(_friendlyError(e));
       return false;
@@ -107,11 +110,9 @@ class AuthController extends StateNotifier<AuthState> {
   Future<bool> signUp(String email, String password, {NationData? nation}) =>
       _run(() => _repo.signUpWithEmail(email, password, nation: nation));
 
-  Future<bool> signInWithGoogle() =>
-      _run(_repo.signInWithGoogle);
+  Future<bool> signInWithGoogle() => _run(_repo.signInWithGoogle);
 
-  Future<bool> signInWithApple() =>
-      _run(_repo.signInWithApple);
+  Future<bool> signInWithApple() => _run(_repo.signInWithApple);
 
   Future<void> signOut() async {
     state = const AuthLoading();
@@ -123,13 +124,12 @@ class AuthController extends StateNotifier<AuthState> {
     }
   }
 
-  Future<bool> signInAnonymously() =>
-      _run(_repo.signInAnonymously);
+  Future<bool> signInAnonymously() => _run(_repo.signInAnonymously);
 
   void resetState() => state = const AuthIdle();
 }
 
 // ── Provider ─────────────────────────────────────────────────────────────────
 
-final authControllerProvider =
-    StateNotifierProvider<AuthController, AuthState>((ref) => AuthController(ref.watch(authRepositoryProvider)));
+final authControllerProvider = StateNotifierProvider<AuthController, AuthState>(
+    (ref) => AuthController(ref.watch(authRepositoryProvider)));

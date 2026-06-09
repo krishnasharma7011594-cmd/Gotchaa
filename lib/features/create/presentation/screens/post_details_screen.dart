@@ -22,9 +22,10 @@ import '../models/editable_item.dart';
 import '../widgets/spotify_search_sheet.dart';
 
 class PostDetailsScreen extends ConsumerStatefulWidget {
-
   const PostDetailsScreen({
-    required this.mediaFile, required this.isVideo, super.key,
+    required this.mediaFile,
+    required this.isVideo,
+    super.key,
     this.initialTrack,
     this.overlays,
   });
@@ -84,14 +85,15 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
 
     try {
       final caption = _captionController.text.trim();
-      final captionCheck = ContentValidator().validatePostText(caption, userId: user.uid);
+      final captionCheck =
+          ContentValidator().validatePostText(caption, userId: user.uid);
       if (!captionCheck.isValid && !captionCheck.warningOnly) {
         throw Exception(captionCheck.reason ?? 'Caption blocked');
       }
 
       setState(() => _uploadProgress = 0.3);
       final storageRepo = ref.read(storageRepositoryProvider);
-      
+
       String mediaUrl;
       String mediaThumbnailUrl = '';
       if (widget.isVideo) {
@@ -118,7 +120,7 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
 
       final postRepo = ref.read(postRepositoryProvider);
       final post = PostModel(
-        postId: '', 
+        postId: '',
         uid: user.uid,
         username: profile?.username ?? profile?.displayName ?? '',
         userPhoto: profile?.photoUrl ?? '',
@@ -133,15 +135,17 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
         spotifyPreviewUrl: _selectedTrack?.previewUrl,
         isPrivate: profile?.isPrivate ?? false,
         visibility: _visibility,
-        overlays: widget.overlays?.map((e) => {
-          'type': e.type.name,
-          'value': e.value,
-          'dx': e.position.dx,
-          'dy': e.position.dy,
-          'scale': e.scale,
-          'rotation': e.rotation,
-          'color': e.color?.value,
-        }).toList(),
+        overlays: widget.overlays
+            ?.map((e) => {
+                  'type': e.type.name,
+                  'value': e.value,
+                  'dx': e.position.dx,
+                  'dy': e.position.dy,
+                  'scale': e.scale,
+                  'rotation': e.rotation,
+                  'color': e.color?.value,
+                })
+            .toList(),
       );
 
       await postRepo.createPost(post);
@@ -159,8 +163,8 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
                 style: GoogleFonts.outfit(color: Colors.white)),
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         );
         // Pop all back to Home
@@ -179,14 +183,15 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final profile = ref.watch(currentUserProfileProvider).asData?.value;
     final customLists = profile?.customPrivacyLists ?? [];
-    
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (context) => Container(
         padding: const EdgeInsets.all(24),
-        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.75),
+        constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.75),
         decoration: BoxDecoration(
           color: isDark ? AppColors.darkSurface : Colors.white,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -242,14 +247,14 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
                       child: Divider(),
                     ),
                     ...customLists.map((list) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: _visibilityOption(
-                        label: list.name,
-                        sub: '${list.uids.length} members',
-                        value: 'list:${list.id}',
-                        icon: '📋',
-                      ),
-                    )),
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _visibilityOption(
+                            label: list.name,
+                            sub: '${list.uids.length} members',
+                            value: 'list:${list.id}',
+                            icon: '📋',
+                          ),
+                        )),
                   ],
                 ],
               ),
@@ -265,7 +270,7 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
     if (_visibility == 'public') return 'Normal Post';
     if (_visibility == 'friends') return 'Friend List';
     if (_visibility == 'ghost') return 'Ghost List';
-    
+
     if (_visibility.startsWith('list:')) {
       final listId = _visibility.split(':')[1];
       final profile = ref.read(currentUserProfileProvider).asData?.value;
@@ -296,12 +301,14 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected 
-              ? AppColors.electricBlue.withValues(alpha: 0.1) 
+          color: isSelected
+              ? AppColors.electricBlue.withValues(alpha: 0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? AppColors.electricBlue : Colors.grey.withValues(alpha: 0.2),
+            color: isSelected
+                ? AppColors.electricBlue
+                : Colors.grey.withValues(alpha: 0.2),
             width: 1,
           ),
         ),
@@ -332,7 +339,8 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
               ),
             ),
             if (isSelected)
-              const Icon(Icons.check_circle_rounded, color: AppColors.electricBlue, size: 22),
+              const Icon(Icons.check_circle_rounded,
+                  color: AppColors.electricBlue, size: 22),
           ],
         ),
       ),
@@ -341,279 +349,297 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      backgroundColor: context.bg,
-      appBar: AppBar(
         backgroundColor: context.bg,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          onPressed: _isUploading ? null : () => Navigator.pop(context),
-          icon: Icon(Icons.arrow_back_ios_new_rounded,
-              color: context.textPrimary, size: 20),
-        ),
-        title: Text(
-          'New Post',
-          style: GoogleFonts.outfit(
-            color: context.textPrimary,
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
+        appBar: AppBar(
+          backgroundColor: context.bg,
+          elevation: 0,
+          centerTitle: true,
+          leading: IconButton(
+            onPressed: _isUploading ? null : () => Navigator.pop(context),
+            icon: Icon(Icons.arrow_back_ios_new_rounded,
+                color: context.textPrimary, size: 20),
+          ),
+          title: Text(
+            'New Post',
+            style: GoogleFonts.outfit(
+              color: context.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
-      ),
-      body: Column(
-        children: [
-          Divider(height: 1, color: context.divider),
+        body: Column(
+          children: [
+            Divider(height: 1, color: context.divider),
 
-          if (_isUploading) ...[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    _uploadProgress < 0.7
-                        ? context.tr('create_post_uploading_media')
-                        : context.tr('create_post_saving'),
-                    style: GoogleFonts.outfit(
-                      color: context.textSecondary,
-                      fontSize: 14,
-                    ),
-                  ),
-                  Text(
-                    '${(_uploadProgress * 100).toInt()}%',
-                    style: GoogleFonts.outfit(
-                      color: AppColors.electricBlue,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
-                  value: _uploadProgress,
-                  minHeight: 5,
-                  backgroundColor: context.shimmerBase,
-                  valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.electricBlue),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-          ],
-
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16),
-                  
-                  // Media preview + Caption
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Media thumbnail
-                        Container(
-                          width: 100,
-                          height: 150,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: context.inputFill,
-                            image: !widget.isVideo
-                                ? DecorationImage(
-                                    image: FileImage(widget.mediaFile),
-                                    fit: BoxFit.cover,
-                                  )
-                                : null,
-                          ),
-                          child: widget.isVideo && _videoController != null
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: AspectRatio(
-                                  aspectRatio: _videoController!.value.aspectRatio,
-                                  child: VideoPlayer(_videoController!),
-                                ),
-                              )
-                            : null,
-                        ),
-                        const SizedBox(width: 16),
-
-                        // Caption field
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              TextField(
-                                controller: _captionController,
-                                maxLines: 5,
-                                maxLength: 500,
-                                enabled: !_isUploading,
-                                style: GoogleFonts.outfit(fontSize: 14, color: context.textPrimary),
-                                decoration: InputDecoration(
-                                  hintText: 'Write a caption... #hashtags @friends',
-                                  hintStyle: GoogleFonts.outfit(
-                                    color: context.textHint,
-                                    fontSize: 14,
-                                  ),
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.zero,
-                                  counterStyle: GoogleFonts.outfit(
-                                    color: context.textHint,
-                                    fontSize: 11,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-                  Divider(height: 1, color: context.divider),
-
-                  // Options
-                  _optionTile(
-                    icon: Icons.music_note_rounded,
-                    iconColor: Colors.green,
-                    title: _selectedTrack != null ? 'Music: ${_selectedTrack!.name}' : 'Attach Music (Spotify)',
-                    trailing: _selectedTrack != null 
-                        ? IconButton(
-                            icon: const Icon(Icons.close, size: 20),
-                            onPressed: () {
-                              setState(() => _selectedTrack = null);
-                            },
-                          )
-                        : Icon(Icons.chevron_right_rounded, color: context.iconMuted, size: 22),
-                    onTap: () async {
-                       final selected = await showModalBottomSheet<SpotifyTrack>(
-                         context: context,
-                         isScrollControlled: true,
-                         backgroundColor: Colors.transparent,
-                         builder: (context) => const SpotifySearchSheet(),
-                       );
-                       if (selected != null) {
-                         setState(() => _selectedTrack = selected);
-                       }
-                    },
-                  ),
-                  Divider(height: 1, color: context.divider, indent: 60),
-
-                  _optionTile(
-                    icon: Icons.location_on_outlined,
-                    iconColor: Colors.red.shade400,
-                    title: 'Add Location',
-                    trailing: Icon(Icons.chevron_right_rounded, color: context.iconMuted, size: 22),
-                  ),
-                  Divider(height: 1, color: context.divider, indent: 60),
-
-                  _optionTile(
-                    icon: Icons.person_add_outlined,
-                    iconColor: AppColors.electricBlue,
-                    title: 'Tag People',
-                    trailing: Icon(Icons.chevron_right_rounded, color: context.iconMuted, size: 22),
-                  ),
-                  Divider(height: 1, color: context.divider, indent: 60),
-
-                  _optionTile(
-                    icon: _visibility == 'public' 
-                        ? Icons.public_rounded 
-                        : _visibility == 'friends' 
-                            ? Icons.people_rounded 
-                            : Icons.visibility_off_rounded,
-                    iconColor: Colors.teal,
-                    title: 'Who can view this post',
-                    onTap: _showVisibilityPicker,
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          _getVisibilityLabel(),
-                          style: GoogleFonts.outfit(
-                            color: AppColors.electricBlue,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Icon(Icons.chevron_right_rounded, color: context.iconMuted, size: 22),
-                      ],
-                    ),
-                  ),
-                  Divider(height: 1, color: context.divider, indent: 60),
-                ],
-              ),
-            ),
-          ),
-
-          if (_errorMessage != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
+            if (_isUploading) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(Icons.error_outline_rounded, color: Colors.red.shade400, size: 18),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        _errorMessage!,
-                        style: GoogleFonts.outfit(color: Colors.red.shade700, fontSize: 13),
+                    Text(
+                      _uploadProgress < 0.7
+                          ? context.tr('create_post_uploading_media')
+                          : context.tr('create_post_saving'),
+                      style: GoogleFonts.outfit(
+                        color: context.textSecondary,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      '${(_uploadProgress * 100).toInt()}%',
+                      style: GoogleFonts.outfit(
+                        color: AppColors.electricBlue,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-
-          // Bottom Button
-          Padding(
-            padding: EdgeInsets.fromLTRB(20, 12, 20, MediaQuery.of(context).padding.bottom + 12),
-            child: SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton.icon(
-                onPressed: _isUploading ? null : _publishPost,
-                icon: _isUploading
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                      )
-                    : const Icon(Icons.send_rounded, color: Colors.white, size: 18),
-                label: Text(
-                  _isUploading ? 'Publishing...' : 'Share',
-                  style: GoogleFonts.outfit(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: _uploadProgress,
+                    minHeight: 5,
+                    backgroundColor: context.shimmerBase,
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                        AppColors.electricBlue),
                   ),
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _isUploading ? Colors.grey.shade400 : AppColors.electricBlue,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+              ),
+              const SizedBox(height: 12),
+            ],
+
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 16),
+
+                    // Media preview + Caption
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Media thumbnail
+                          Container(
+                            width: 100,
+                            height: 150,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: context.inputFill,
+                              image: !widget.isVideo
+                                  ? DecorationImage(
+                                      image: FileImage(widget.mediaFile),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null,
+                            ),
+                            child: widget.isVideo && _videoController != null
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: AspectRatio(
+                                      aspectRatio:
+                                          _videoController!.value.aspectRatio,
+                                      child: VideoPlayer(_videoController!),
+                                    ),
+                                  )
+                                : null,
+                          ),
+                          const SizedBox(width: 16),
+
+                          // Caption field
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                TextField(
+                                  controller: _captionController,
+                                  maxLines: 5,
+                                  maxLength: 500,
+                                  enabled: !_isUploading,
+                                  style: GoogleFonts.outfit(
+                                      fontSize: 14, color: context.textPrimary),
+                                  decoration: InputDecoration(
+                                    hintText:
+                                        'Write a caption... #hashtags @friends',
+                                    hintStyle: GoogleFonts.outfit(
+                                      color: context.textHint,
+                                      fontSize: 14,
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.zero,
+                                    counterStyle: GoogleFonts.outfit(
+                                      color: context.textHint,
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+                    Divider(height: 1, color: context.divider),
+
+                    // Options
+                    _optionTile(
+                      icon: Icons.music_note_rounded,
+                      iconColor: Colors.green,
+                      title: _selectedTrack != null
+                          ? 'Music: ${_selectedTrack!.name}'
+                          : 'Attach Music (Spotify)',
+                      trailing: _selectedTrack != null
+                          ? IconButton(
+                              icon: const Icon(Icons.close, size: 20),
+                              onPressed: () {
+                                setState(() => _selectedTrack = null);
+                              },
+                            )
+                          : Icon(Icons.chevron_right_rounded,
+                              color: context.iconMuted, size: 22),
+                      onTap: () async {
+                        final selected =
+                            await showModalBottomSheet<SpotifyTrack>(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => const SpotifySearchSheet(),
+                        );
+                        if (selected != null) {
+                          setState(() => _selectedTrack = selected);
+                        }
+                      },
+                    ),
+                    Divider(height: 1, color: context.divider, indent: 60),
+
+                    _optionTile(
+                      icon: Icons.location_on_outlined,
+                      iconColor: Colors.red.shade400,
+                      title: 'Add Location',
+                      trailing: Icon(Icons.chevron_right_rounded,
+                          color: context.iconMuted, size: 22),
+                    ),
+                    Divider(height: 1, color: context.divider, indent: 60),
+
+                    _optionTile(
+                      icon: Icons.person_add_outlined,
+                      iconColor: AppColors.electricBlue,
+                      title: 'Tag People',
+                      trailing: Icon(Icons.chevron_right_rounded,
+                          color: context.iconMuted, size: 22),
+                    ),
+                    Divider(height: 1, color: context.divider, indent: 60),
+
+                    _optionTile(
+                      icon: _visibility == 'public'
+                          ? Icons.public_rounded
+                          : _visibility == 'friends'
+                              ? Icons.people_rounded
+                              : Icons.visibility_off_rounded,
+                      iconColor: Colors.teal,
+                      title: 'Who can view this post',
+                      onTap: _showVisibilityPicker,
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            _getVisibilityLabel(),
+                            style: GoogleFonts.outfit(
+                              color: AppColors.electricBlue,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Icon(Icons.chevron_right_rounded,
+                              color: context.iconMuted, size: 22),
+                        ],
+                      ),
+                    ),
+                    Divider(height: 1, color: context.divider, indent: 60),
+                  ],
+                ),
+              ),
+            ),
+
+            if (_errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.error_outline_rounded,
+                          color: Colors.red.shade400, size: 18),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          _errorMessage!,
+                          style: GoogleFonts.outfit(
+                              color: Colors.red.shade700, fontSize: 13),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+            // Bottom Button
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                  20, 12, 20, MediaQuery.of(context).padding.bottom + 12),
+              child: SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton.icon(
+                  onPressed: _isUploading ? null : _publishPost,
+                  icon: _isUploading
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                              color: Colors.white, strokeWidth: 2),
+                        )
+                      : const Icon(Icons.send_rounded,
+                          color: Colors.white, size: 18),
+                  label: Text(
+                    _isUploading ? 'Publishing...' : 'Share',
+                    style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 16,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _isUploading
+                        ? Colors.grey.shade400
+                        : AppColors.electricBlue,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
 
   Widget _optionTile({
     required IconData icon,
@@ -621,28 +647,28 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
     required String title,
     required Widget trailing,
     VoidCallback? onTap,
-  }) => InkWell(
-      onTap: onTap ?? () {},
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Row(
-          children: [
-            Icon(icon, color: iconColor, size: 24),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                title,
-                style: GoogleFonts.outfit(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: context.textPrimary,
+  }) =>
+      InkWell(
+        onTap: onTap ?? () {},
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Row(
+            children: [
+              Icon(icon, color: iconColor, size: 24),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  title,
+                  style: GoogleFonts.outfit(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: context.textPrimary,
+                  ),
                 ),
               ),
-            ),
-            trailing,
-          ],
+              trailing,
+            ],
+          ),
         ),
-      ),
-    );
+      );
 }
-

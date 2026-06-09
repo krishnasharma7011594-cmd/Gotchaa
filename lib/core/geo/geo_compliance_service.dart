@@ -3,7 +3,8 @@ enum ContentRegion { global, middleEast, southeastAsia, russia, china }
 class GeoComplianceService {
   factory GeoComplianceService() => _instance;
   GeoComplianceService._internal();
-  static final GeoComplianceService _instance = GeoComplianceService._internal();
+  static final GeoComplianceService _instance =
+      GeoComplianceService._internal();
 
   // Hardcoded map of ISO country codes to regions
   final Map<String, ContentRegion> _countryToRegionMap = {
@@ -24,12 +25,12 @@ class GeoComplianceService {
     'DZ': ContentRegion.middleEast,
     'YE': ContentRegion.middleEast,
     'SY': ContentRegion.middleEast,
-    
+
     // Southeast Asia (Restricted parts)
     'ID': ContentRegion.southeastAsia,
     'MY': ContentRegion.southeastAsia,
     'BN': ContentRegion.southeastAsia,
-    
+
     // Others
     'RU': ContentRegion.russia,
     'CN': ContentRegion.china,

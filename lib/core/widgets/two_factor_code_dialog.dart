@@ -8,19 +8,23 @@ Future<String?> showTwoFactorCodeDialog(BuildContext context) async {
     context: context,
     builder: (ctx) => AlertDialog(
       backgroundColor: const Color(0xFF1A1A1A),
-      title: Text('Two-factor code', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+      title: Text('Two-factor code',
+          style: GoogleFonts.outfit(
+              color: Colors.white, fontWeight: FontWeight.bold)),
       content: TextField(
         controller: controller,
         keyboardType: TextInputType.number,
         maxLength: 6,
-        style: const TextStyle(color: Colors.white, fontSize: 22, letterSpacing: 8),
+        style: const TextStyle(
+            color: Colors.white, fontSize: 22, letterSpacing: 8),
         decoration: const InputDecoration(
           hintText: '000000',
           counterText: '',
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+        TextButton(
+            onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
         TextButton(
           onPressed: () => Navigator.pop(ctx, controller.text.trim()),
           child: const Text('Verify'),

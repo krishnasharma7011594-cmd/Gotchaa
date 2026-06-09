@@ -4,7 +4,8 @@ import 'package:rxdart/rxdart.dart';
 import '../../../core/providers/auth_providers.dart';
 import '../../../core/providers/repository_providers.dart';
 
-class CreatorAnalyticsData { // Last 12 months or similar
+class CreatorAnalyticsData {
+  // Last 12 months or similar
 
   CreatorAnalyticsData({
     required this.totalViews,
@@ -19,16 +20,16 @@ class CreatorAnalyticsData { // Last 12 months or similar
   });
 
   factory CreatorAnalyticsData.empty() => CreatorAnalyticsData(
-      totalViews: 0,
-      totalEngagements: 0,
-      totalLikes: 0,
-      totalComments: 0,
-      postsCount: 0,
-      vybzCount: 0,
-      watchTimeHrs: 0,
-      followersChange: 0,
-      viewsHistory: List.filled(12, 0),
-    );
+        totalViews: 0,
+        totalEngagements: 0,
+        totalLikes: 0,
+        totalComments: 0,
+        postsCount: 0,
+        vybzCount: 0,
+        watchTimeHrs: 0,
+        followersChange: 0,
+        viewsHistory: List.filled(12, 0),
+      );
   final int totalViews;
   final int totalEngagements;
   final int totalLikes;

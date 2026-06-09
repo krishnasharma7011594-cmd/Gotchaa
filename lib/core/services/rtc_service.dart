@@ -18,15 +18,14 @@ enum RTCConnectionState {
 }
 
 class RTCService extends ChangeNotifier {
-
   RTCService(this._e2eeService);
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final E2EEService _e2eeService;
-  
+
   RTCPeerConnection? _peerConnection;
   MediaStream? _localStream;
   MediaStream? _remoteStream;
-  
+
   RTCVideoRenderer localRenderer = RTCVideoRenderer();
   RTCVideoRenderer remoteRenderer = RTCVideoRenderer();
 
@@ -64,7 +63,7 @@ class RTCService extends ChangeNotifier {
     await _prepareLocalMedia();
     await _createPeerConnection();
     await _createOffer();
-    
+
     // Create a call document in Firestore
     await _db.collection('calls').doc(_currentCallId).set({
       'chatId': chatId,
@@ -98,21 +97,24 @@ class RTCService extends ChangeNotifier {
 
     await _prepareLocalMedia();
     await _createPeerConnection();
-    
+
     // Get the offer from Firestore
     final doc = await _db.collection('calls').doc(_currentCallId).get();
     final data = doc.data();
     if (data != null && data['offer'] != null) {
-      final decryptedSDP = await _e2eeService.decrypt(data['offer'], _sharedSecret!);
+      final decryptedSDP =
+          await _e2eeService.decrypt(data['offer'], _sharedSecret!);
       final offerMap = jsonDecode(decryptedSDP);
-      
+
       await _peerConnection!.setRemoteDescription(
-        RTCSessionDescription(offerMap['sdp'], offerMap['type'])
-      );
-      
+          RTCSessionDescription(offerMap['sdp'], offerMap['type']));
+
       await _createAnswer();
-      await _db.collection('calls').doc(_currentCallId).update({'status': 'connected'});
-      
+      await _db
+          .collection('calls')
+          .doc(_currentCallId)
+          .update({'status': 'connected'});
+
       _listenToCallStatus();
       _listenForRemoteIceCandidates(false);
     }
@@ -121,11 +123,13 @@ class RTCService extends ChangeNotifier {
   Future<void> _prepareLocalMedia() async {
     final mediaConstraints = <String, dynamic>{
       'audio': true,
-      'video': _isVideo ? {
-        'facingMode': 'user',
-        'width': '1280',
-        'height': '720',
-      } : false,
+      'video': _isVideo
+          ? {
+              'facingMode': 'user',
+              'width': '1280',
+              'height': '720',
+            }
+          : false,
     };
 
     _localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
@@ -163,16 +167,25 @@ class RTCService extends ChangeNotifier {
 
     _peerConnection?.onIceCandidate = (candidate) async {
       if (_currentCallId != null && _sharedSecret != null) {
-        final collection = (_myUid == _targetUid) ? 'dummy' : (_state == RTCConnectionState.calling ? 'callerCandidates' : 'calleeCandidates');
+        final collection = (_myUid == _targetUid)
+            ? 'dummy'
+            : (_state == RTCConnectionState.calling
+                ? 'callerCandidates'
+                : 'calleeCandidates');
         // We use a more deterministic approach for collection naming
         final isCaller = _state == RTCConnectionState.calling;
-        final targetCollection = isCaller ? 'callerCandidates' : 'calleeCandidates';
-        
+        final targetCollection =
+            isCaller ? 'callerCandidates' : 'calleeCandidates';
+
         final candidateData = jsonEncode(candidate.toMap());
-        final encryptedCandidate = await _e2eeService.encrypt(candidateData, _sharedSecret!);
-        
-        await _db.collection('calls').doc(_currentCallId)
-            .collection(targetCollection).add({'data': encryptedCandidate});
+        final encryptedCandidate =
+            await _e2eeService.encrypt(candidateData, _sharedSecret!);
+
+        await _db
+            .collection('calls')
+            .doc(_currentCallId)
+            .collection(targetCollection)
+            .add({'data': encryptedCandidate});
       }
     };
 
@@ -186,7 +199,6 @@ class RTCService extends ChangeNotifier {
     };
 
     _peerConnection?.onConnectionState = (state) {
-      
       if (state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected ||
           state == RTCPeerConnectionState.RTCPeerConnectionStateFailed) {
         hangUp();
@@ -198,29 +210,43 @@ class RTCService extends ChangeNotifier {
     final offer = await _peerConnection!.createOffer();
     await _peerConnection!.setLocalDescription(offer);
 
-    final encryptedSDP = await _e2eeService.encrypt(jsonEncode(offer.toMap()), _sharedSecret!);
-    await _db.collection('calls').doc(_currentCallId).update({'offer': encryptedSDP});
+    final encryptedSDP =
+        await _e2eeService.encrypt(jsonEncode(offer.toMap()), _sharedSecret!);
+    await _db
+        .collection('calls')
+        .doc(_currentCallId)
+        .update({'offer': encryptedSDP});
   }
 
   Future<void> _createAnswer() async {
     final answer = await _peerConnection!.createAnswer();
     await _peerConnection!.setLocalDescription(answer);
 
-    final encryptedSDP = await _e2eeService.encrypt(jsonEncode(answer.toMap()), _sharedSecret!);
-    await _db.collection('calls').doc(_currentCallId).update({'answer': encryptedSDP});
+    final encryptedSDP =
+        await _e2eeService.encrypt(jsonEncode(answer.toMap()), _sharedSecret!);
+    await _db
+        .collection('calls')
+        .doc(_currentCallId)
+        .update({'answer': encryptedSDP});
   }
 
   void _listenForAnswer() {
-    _db.collection('calls').doc(_currentCallId).snapshots().listen((snapshot) async {
+    _db
+        .collection('calls')
+        .doc(_currentCallId)
+        .snapshots()
+        .listen((snapshot) async {
       final data = snapshot.data();
-      if (data != null && data['answer'] != null && _state == RTCConnectionState.calling) {
+      if (data != null &&
+          data['answer'] != null &&
+          _state == RTCConnectionState.calling) {
         final remoteDesc = await _peerConnection!.getRemoteDescription();
         if (remoteDesc == null) {
-          final decryptedSDP = await _e2eeService.decrypt(data['answer'], _sharedSecret!);
+          final decryptedSDP =
+              await _e2eeService.decrypt(data['answer'], _sharedSecret!);
           final answerMap = jsonDecode(decryptedSDP);
           await _peerConnection!.setRemoteDescription(
-            RTCSessionDescription(answerMap['sdp'], answerMap['type'])
-          );
+              RTCSessionDescription(answerMap['sdp'], answerMap['type']));
         }
       }
     });
@@ -237,7 +263,12 @@ class RTCService extends ChangeNotifier {
 
   void _listenForRemoteIceCandidates(bool isCaller) {
     final targetCollection = isCaller ? 'calleeCandidates' : 'callerCandidates';
-    _db.collection('calls').doc(_currentCallId).collection(targetCollection).snapshots().listen((snapshot) {
+    _db
+        .collection('calls')
+        .doc(_currentCallId)
+        .collection(targetCollection)
+        .snapshots()
+        .listen((snapshot) {
       for (final change in snapshot.docChanges) {
         if (change.type == DocumentChangeType.added) {
           final data = change.doc.data()!;
@@ -252,8 +283,7 @@ class RTCService extends ChangeNotifier {
     final decrypted = await _e2eeService.decrypt(encryptedData, _sharedSecret!);
     final map = jsonDecode(decrypted);
     await _peerConnection!.addCandidate(
-      RTCIceCandidate(map['candidate'], map['sdpMid'], map['sdpMLineIndex'])
-    );
+        RTCIceCandidate(map['candidate'], map['sdpMid'], map['sdpMLineIndex']));
   }
 
   Future<void> toggleMute() async {
@@ -287,7 +317,10 @@ class RTCService extends ChangeNotifier {
 
   void hangUp({bool notifyDb = true}) async {
     if (notifyDb && _currentCallId != null) {
-      await _db.collection('calls').doc(_currentCallId).update({'status': 'ended'});
+      await _db
+          .collection('calls')
+          .doc(_currentCallId)
+          .update({'status': 'ended'});
     }
 
     _localStream?.getTracks().forEach((track) => track.stop());
@@ -301,10 +334,10 @@ class RTCService extends ChangeNotifier {
     _peerConnection = null;
     _currentCallId = null;
     _state = RTCConnectionState.initial;
-    
+
     localRenderer.srcObject = null;
     remoteRenderer.srcObject = null;
-    
+
     notifyListeners();
   }
 

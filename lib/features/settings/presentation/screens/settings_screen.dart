@@ -63,9 +63,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         uid: uid,
         settings: {key: value},
       );
-    } catch (e) {
-      
-    }
+    } catch (e) {}
   }
 
   bool _matchesSearch(String text) {
@@ -85,10 +83,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     // ── Adaptive colours ────────────────────────────────────────────────
     final bgColor = isDark ? AppColors.darkBg : const Color(0xFFF8F9FB);
     final cardColor = isDark ? AppColors.darkSurface : Colors.white;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : const Color(0xFF0D0D0D);
-    final textSecondary = isDark ? AppColors.darkTextSecondary : Colors.grey.shade500;
+    final textPrimary =
+        isDark ? AppColors.darkTextPrimary : const Color(0xFF0D0D0D);
+    final textSecondary =
+        isDark ? AppColors.darkTextSecondary : Colors.grey.shade500;
     final dividerColor = isDark ? AppColors.darkDivider : Colors.grey.shade200;
-    final iconSecondary = isDark ? AppColors.darkTextSecondary : Colors.grey.shade700;
+    final iconSecondary =
+        isDark ? AppColors.darkTextSecondary : Colors.grey.shade700;
     final searchBorder = isDark ? AppColors.darkDivider : Colors.grey.shade200;
 
     return Scaffold(
@@ -118,9 +119,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
             child: profileAsync.when(
-              data: (profile) => _buildUserCard(profile, textPrimary, textSecondary),
+              data: (profile) =>
+                  _buildUserCard(profile, textPrimary, textSecondary),
               loading: () => _buildUserCardLoading(textSecondary),
-              error: (_, __) => _buildUserCard(null, textPrimary, textSecondary),
+              error: (_, __) =>
+                  _buildUserCard(null, textPrimary, textSecondary),
             ),
           ),
 
@@ -143,10 +146,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     child: TextField(
                       controller: _searchController,
                       onChanged: (v) => setState(() => _searchQuery = v),
-                      style: GoogleFonts.outfit(color: textPrimary, fontSize: 14),
+                      style:
+                          GoogleFonts.outfit(color: textPrimary, fontSize: 14),
                       decoration: InputDecoration(
                         hintText: context.tr('settings_search'),
-                        hintStyle: GoogleFonts.outfit(color: textSecondary, fontSize: 14),
+                        hintStyle: GoogleFonts.outfit(
+                            color: textSecondary, fontSize: 14),
                         border: InputBorder.none,
                         isDense: true,
                         contentPadding: EdgeInsets.zero,
@@ -155,7 +160,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   if (_searchQuery.isNotEmpty)
                     IconButton(
-                      icon: Icon(Icons.close_rounded, color: textSecondary, size: 18),
+                      icon: Icon(Icons.close_rounded,
+                          color: textSecondary, size: 18),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       onPressed: () {
@@ -172,51 +178,59 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _sectionLabel(context.tr('settings_account'), textSecondary),
           _settingsCard(cardColor, [
             if (_matchesSearch(context.tr('settings_personal_info')))
-            _settingsTile(
-              icon: Icons.person_rounded,
-              iconColor: AppColors.electricBlue,
-              title: context.tr('settings_personal_info'),
-              textPrimary: textPrimary,
-              textSecondary: textSecondary,
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const PersonalInformationScreen())),
-            ),
+              _settingsTile(
+                icon: Icons.person_rounded,
+                iconColor: AppColors.electricBlue,
+                title: context.tr('settings_personal_info'),
+                textPrimary: textPrimary,
+                textSecondary: textSecondary,
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const PersonalInformationScreen())),
+              ),
             if (_matchesSearch(context.tr('settings_personal_info')))
-            _divider(dividerColor),
+              _divider(dividerColor),
             if (_matchesSearch(context.tr('settings_security')))
-            _settingsTile(
-              icon: Icons.shield_rounded,
-              iconColor: AppColors.electricBlue,
-              title: context.tr('settings_security'),
-              textPrimary: textPrimary,
-              textSecondary: textSecondary,
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const SecuritySettingsScreen())),
-            ),
+              _settingsTile(
+                icon: Icons.shield_rounded,
+                iconColor: AppColors.electricBlue,
+                title: context.tr('settings_security'),
+                textPrimary: textPrimary,
+                textSecondary: textSecondary,
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const SecuritySettingsScreen())),
+              ),
             if (_matchesSearch(context.tr('settings_security')))
-            _divider(dividerColor),
+              _divider(dividerColor),
             if (_matchesSearch(context.tr('settings_saved_posts')))
-            _settingsTile(
-              icon: Icons.bookmark_rounded,
-              iconColor: AppColors.electricBlue,
-              title: context.tr('settings_saved_posts'),
-              textPrimary: textPrimary,
-              textSecondary: textSecondary,
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const SavedPostsScreen())),
-            ),
+              _settingsTile(
+                icon: Icons.bookmark_rounded,
+                iconColor: AppColors.electricBlue,
+                title: context.tr('settings_saved_posts'),
+                textPrimary: textPrimary,
+                textSecondary: textSecondary,
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const SavedPostsScreen())),
+              ),
             if (_matchesSearch(context.tr('settings_saved_posts')))
-            _divider(dividerColor),
+              _divider(dividerColor),
             if (_matchesSearch(context.tr('settings_delete_account')))
-            _settingsTile(
-              icon: Icons.delete_forever_rounded,
-              iconColor: AppColors.error,
-              title: context.tr('settings_delete_account'),
-              textPrimary: textPrimary,
-              textSecondary: textSecondary,
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const DeleteAccountScreen())),
-            ),
+              _settingsTile(
+                icon: Icons.delete_forever_rounded,
+                iconColor: AppColors.error,
+                title: context.tr('settings_delete_account'),
+                textPrimary: textPrimary,
+                textSecondary: textSecondary,
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const DeleteAccountScreen())),
+              ),
           ]),
 
           const SizedBox(height: 8),
@@ -226,77 +240,80 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _settingsCard(cardColor, [
             // Chat Language
             if (_matchesSearch(context.tr('settings_chat_language')))
-            InkWell(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const LanguageSettingsScreen()));
-              },
-              borderRadius: BorderRadius.circular(16),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
-                  children: [
-                    const Icon(Icons.language_rounded,
-                        color: AppColors.electricBlue, size: 22),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Text(context.tr('settings_chat_language'),
-                          style: GoogleFonts.outfit(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: textPrimary)),
-                    ),
-                    Icon(Icons.chevron_right_rounded,
-                        color: textSecondary, size: 22),
-                  ],
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const LanguageSettingsScreen()));
+                },
+                borderRadius: BorderRadius.circular(16),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.language_rounded,
+                          color: AppColors.electricBlue, size: 22),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Text(context.tr('settings_chat_language'),
+                            style: GoogleFonts.outfit(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: textPrimary)),
+                      ),
+                      Icon(Icons.chevron_right_rounded,
+                          color: textSecondary, size: 22),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
             if (_matchesSearch(context.tr('settings_chat_language')))
-            _divider(dividerColor),
+              _divider(dividerColor),
 
             // ── Appearance / Theme ─────────────────────────────────────
             if (_matchesSearch(context.tr('settings_appearance')))
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => const AppearanceScreen()),
-                );
-              },
-              borderRadius: BorderRadius.circular(16),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
-                  children: [
-                    const Icon(Icons.brightness_6_rounded,
-                        color: AppColors.electricBlue, size: 22),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(context.tr('settings_appearance'),
-                              style: GoogleFonts.outfit(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
-                                  color: textPrimary)),
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AppearanceScreen()),
+                  );
+                },
+                borderRadius: BorderRadius.circular(16),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.brightness_6_rounded,
+                          color: AppColors.electricBlue, size: 22),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(context.tr('settings_appearance'),
+                                style: GoogleFonts.outfit(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                    color: textPrimary)),
                             Text(
                               _currentThemeLabel(context, themeState.themeMode),
                               style: GoogleFonts.outfit(
                                   fontSize: 12, color: textSecondary),
                             ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    Icon(Icons.chevron_right_rounded,
-                        color: textSecondary, size: 22),
-                  ],
+                      Icon(Icons.chevron_right_rounded,
+                          color: textSecondary, size: 22),
+                    ],
+                  ),
                 ),
               ),
-            ),
           ]),
 
           const SizedBox(height: 8),
@@ -305,69 +322,74 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _sectionLabel(context.tr('settings_privacy'), textSecondary),
           _settingsCard(cardColor, [
             if (_matchesSearch(context.tr('settings_private_account')))
-            _settingsTileSwitch(
-              icon: Icons.lock_rounded,
-              iconColor: iconSecondary,
-              title: context.tr('settings_private_account'),
-              subtitle: context.tr('settings_private_account_sub'),
-              value: _privateAccount,
-              onChanged: (v) {
-                setState(() => _privateAccount = v);
-                _updatePrivacy('isPrivate', v);
-              },
-              textPrimary: textPrimary,
-              textSecondary: textSecondary,
-            ),
+              _settingsTileSwitch(
+                icon: Icons.lock_rounded,
+                iconColor: iconSecondary,
+                title: context.tr('settings_private_account'),
+                subtitle: context.tr('settings_private_account_sub'),
+                value: _privateAccount,
+                onChanged: (v) {
+                  setState(() => _privateAccount = v);
+                  _updatePrivacy('isPrivate', v);
+                },
+                textPrimary: textPrimary,
+                textSecondary: textSecondary,
+              ),
             if (_matchesSearch(context.tr('settings_private_account')))
-            _divider(dividerColor),
+              _divider(dividerColor),
             if (_matchesSearch(context.tr('settings_activity_status')))
-            _settingsTileSwitch(
-              icon: Icons.visibility_rounded,
-              iconColor: iconSecondary,
-              title: context.tr('settings_activity_status'),
-              value: _activityStatus,
-              onChanged: (v) {
-                setState(() => _activityStatus = v);
-                _updatePrivacy('showActivityStatus', v);
-              },
-              textPrimary: textPrimary,
-              textSecondary: textSecondary,
-            ),
+              _settingsTileSwitch(
+                icon: Icons.visibility_rounded,
+                iconColor: iconSecondary,
+                title: context.tr('settings_activity_status'),
+                value: _activityStatus,
+                onChanged: (v) {
+                  setState(() => _activityStatus = v);
+                  _updatePrivacy('showActivityStatus', v);
+                },
+                textPrimary: textPrimary,
+                textSecondary: textSecondary,
+              ),
             _divider(dividerColor),
             if (_matchesSearch(context.tr('settings_blocked_accounts')))
-            _settingsTile(
-              icon: Icons.block_rounded,
-              iconColor: iconSecondary,
-              title: context.tr('settings_blocked_accounts'),
-              textPrimary: textPrimary,
-              textSecondary: textSecondary,
-              onTap: () => Navigator.push(context, 
-                MaterialPageRoute(builder: (_) => const BlockedAccountsScreen())),
-            ),
+              _settingsTile(
+                icon: Icons.block_rounded,
+                iconColor: iconSecondary,
+                title: context.tr('settings_blocked_accounts'),
+                textPrimary: textPrimary,
+                textSecondary: textSecondary,
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const BlockedAccountsScreen())),
+              ),
             if (_matchesSearch(context.tr('settings_blocked_accounts')))
-            _divider(dividerColor),
+              _divider(dividerColor),
             if (_matchesSearch(context.tr('settings_privacy_lists')))
-            _settingsTile(
-              icon: Icons.list_alt_rounded,
-              iconColor: iconSecondary,
-              title: context.tr('settings_privacy_lists'),
-              textPrimary: textPrimary,
-              textSecondary: textSecondary,
-              onTap: () => Navigator.push(context, 
-                MaterialPageRoute(builder: (_) => const PrivacyListsScreen())),
-            ),
+              _settingsTile(
+                icon: Icons.list_alt_rounded,
+                iconColor: iconSecondary,
+                title: context.tr('settings_privacy_lists'),
+                textPrimary: textPrimary,
+                textSecondary: textSecondary,
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const PrivacyListsScreen())),
+              ),
+            if (_matchesSearch('Privacy & Data')) _divider(dividerColor),
             if (_matchesSearch('Privacy & Data'))
-            _divider(dividerColor),
-            if (_matchesSearch('Privacy & Data'))
-            _settingsTile(
-              icon: Icons.tune_rounded,
-              iconColor: AppColors.electricBlue,
-              title: 'Privacy & Data',
-              textPrimary: textPrimary,
-              textSecondary: textSecondary,
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const PrivacySettingsScreen())),
-            ),
+              _settingsTile(
+                icon: Icons.tune_rounded,
+                iconColor: AppColors.electricBlue,
+                title: 'Privacy & Data',
+                textPrimary: textPrimary,
+                textSecondary: textSecondary,
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const PrivacySettingsScreen())),
+              ),
           ]),
 
           const SizedBox(height: 8),
@@ -376,33 +398,33 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _sectionLabel(context.tr('settings_notifications'), textSecondary),
           _settingsCard(cardColor, [
             if (_matchesSearch(context.tr('settings_push_notifications')))
-            _settingsTileSwitch(
-              icon: Icons.notifications_rounded,
-              iconColor: AppColors.electricBlue,
-              title: context.tr('settings_push_notifications'),
-              value: _pushNotifications,
-              onChanged: (v) {
-                setState(() => _pushNotifications = v);
-                _updatePrivacy('pushNotificationsEnabled', v);
-              },
-              textPrimary: textPrimary,
-              textSecondary: textSecondary,
-            ),
+              _settingsTileSwitch(
+                icon: Icons.notifications_rounded,
+                iconColor: AppColors.electricBlue,
+                title: context.tr('settings_push_notifications'),
+                value: _pushNotifications,
+                onChanged: (v) {
+                  setState(() => _pushNotifications = v);
+                  _updatePrivacy('pushNotificationsEnabled', v);
+                },
+                textPrimary: textPrimary,
+                textSecondary: textSecondary,
+              ),
             if (_matchesSearch(context.tr('settings_push_notifications')))
-            _divider(dividerColor),
+              _divider(dividerColor),
             if (_matchesSearch(context.tr('settings_email_notifications')))
-            _settingsTileSwitch(
-              icon: Icons.email_rounded,
-              iconColor: AppColors.electricBlue,
-              title: context.tr('settings_email_notifications'),
-              value: _emailNotifications,
-              onChanged: (v) {
-                setState(() => _emailNotifications = v);
-                _updatePrivacy('emailNotificationsEnabled', v);
-              },
-              textPrimary: textPrimary,
-              textSecondary: textSecondary,
-            ),
+              _settingsTileSwitch(
+                icon: Icons.email_rounded,
+                iconColor: AppColors.electricBlue,
+                title: context.tr('settings_email_notifications'),
+                value: _emailNotifications,
+                onChanged: (v) {
+                  setState(() => _emailNotifications = v);
+                  _updatePrivacy('emailNotificationsEnabled', v);
+                },
+                textPrimary: textPrimary,
+                textSecondary: textSecondary,
+              ),
           ]),
 
           const SizedBox(height: 8),
@@ -411,15 +433,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _sectionLabel('Legal', textSecondary),
           _settingsCard(cardColor, [
             if (_matchesSearch('Legal'))
-            _settingsTile(
-              icon: Icons.menu_book_rounded,
-              iconColor: AppColors.electricBlue,
-              title: 'Legal',
-              textPrimary: textPrimary,
-              textSecondary: textSecondary,
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const LegalHubScreen())),
-            ),
+              _settingsTile(
+                icon: Icons.menu_book_rounded,
+                iconColor: AppColors.electricBlue,
+                title: 'Legal',
+                textPrimary: textPrimary,
+                textSecondary: textSecondary,
+                onTap: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const LegalHubScreen())),
+              ),
           ]),
 
           const SizedBox(height: 8),
@@ -428,59 +450,70 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _sectionLabel(context.tr('settings_about'), textSecondary),
           _settingsCard(cardColor, [
             if (_matchesSearch(context.tr('settings_privacy_policy')))
-            InkWell(
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
-              borderRadius: BorderRadius.circular(16),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
-                  children: [
-                    const Icon(Icons.privacy_tip_rounded,
-                        color: AppColors.electricBlue, size: 22),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Text(context.tr('settings_privacy_policy'),
-                          style: GoogleFonts.outfit(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: textPrimary)),
-                    ),
-                    Icon(Icons.chevron_right_rounded,
-                        color: textSecondary, size: 22),
-                  ],
+              InkWell(
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const PrivacyPolicyScreen())),
+                borderRadius: BorderRadius.circular(16),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.privacy_tip_rounded,
+                          color: AppColors.electricBlue, size: 22),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Text(context.tr('settings_privacy_policy'),
+                            style: GoogleFonts.outfit(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: textPrimary)),
+                      ),
+                      Icon(Icons.chevron_right_rounded,
+                          color: textSecondary, size: 22),
+                    ],
+                  ),
                 ),
               ),
-            ),
             if (_matchesSearch(context.tr('settings_privacy_policy')))
-            _divider(dividerColor),
+              _divider(dividerColor),
             if (_matchesSearch(context.tr('settings_terms')))
-            InkWell(
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const TermsOfServiceScreen())),
-              borderRadius: BorderRadius.circular(16),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
-                  children: [
-                    const Icon(Icons.gavel_rounded,
-                        color: AppColors.electricBlue, size: 22),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Text(context.tr('settings_terms'),
-                          style: GoogleFonts.outfit(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: textPrimary)),
-                    ),
-                    Icon(Icons.chevron_right_rounded,
-                        color: textSecondary, size: 22),
-                  ],
+              InkWell(
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const TermsOfServiceScreen())),
+                borderRadius: BorderRadius.circular(16),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.gavel_rounded,
+                          color: AppColors.electricBlue, size: 22),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Text(context.tr('settings_terms'),
+                            style: GoogleFonts.outfit(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: textPrimary)),
+                      ),
+                      Icon(Icons.chevron_right_rounded,
+                          color: textSecondary, size: 22),
+                    ],
+                  ),
                 ),
               ),
-            ),
             if (profileAsync.asData?.value != null) ...[
-              if ((profileAsync.asData!.value?.nation?['currentCountry'] as String? ?? '').toUpperCase() == 'IN' && _matchesSearch('Grievance Officer')) ...[
+              if ((profileAsync.asData!.value?.nation?['currentCountry']
+                                  as String? ??
+                              '')
+                          .toUpperCase() ==
+                      'IN' &&
+                  _matchesSearch('Grievance Officer')) ...[
                 _divider(dividerColor),
                 _settingsTile(
                   icon: Icons.gavel_rounded,
@@ -488,8 +521,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   title: 'Grievance Officer',
                   textPrimary: textPrimary,
                   textSecondary: textSecondary,
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const GrievanceOfficerPage())),
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const GrievanceOfficerPage())),
                 ),
               ],
               if (_matchesSearch('Your Data Rights')) ...[
@@ -500,8 +535,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   title: 'Your Data Rights',
                   textPrimary: textPrimary,
                   textSecondary: textSecondary,
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const DataPrincipalRightsPage())),
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const DataPrincipalRightsPage())),
                 ),
               ],
             ],
@@ -511,51 +548,51 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
           // ── Help Center ──────────────────────────────────────────────
           if (_matchesSearch(context.tr('settings_help')))
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: InkWell(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const InAppWebViewScreen(
-                    url: 'https://gotchaa.app/support',
-                    title: 'Help Center',
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: InkWell(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const InAppWebViewScreen(
+                      url: 'https://gotchaa.app/support',
+                      title: 'Help Center',
+                    ),
+                  ),
+                ),
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.help_outline_rounded,
+                          color: AppColors.electricBlue, size: 22),
+                      const SizedBox(width: 14),
+                      Text(
+                        context.tr('settings_help'),
+                        style: GoogleFonts.outfit(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: textPrimary),
+                      ),
+                      const Spacer(),
+                      Icon(
+                        Icons.open_in_new_rounded,
+                        color: textSecondary,
+                        size: 20,
+                      ),
+                    ],
                   ),
                 ),
               ),
-              borderRadius: BorderRadius.circular(16),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                decoration: BoxDecoration(
-                  color: cardColor,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.help_outline_rounded,
-                        color: AppColors.electricBlue, size: 22),
-                    const SizedBox(width: 14),
-                    Text(
-                      context.tr('settings_help'),
-                      style: GoogleFonts.outfit(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: textPrimary),
-                    ),
-                    const Spacer(),
-                    Icon(
-                      Icons.open_in_new_rounded,
-                      color: textSecondary,
-                      size: 20,
-                    ),
-                  ],
-                ),
-              ),
             ),
-          ),
 
           const SizedBox(height: 24),
 
@@ -663,8 +700,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       color: textPrimary)),
               if (handle.isNotEmpty)
                 Text(handle,
-                    style: GoogleFonts.outfit(
-                        fontSize: 13, color: textSecondary)),
+                    style:
+                        GoogleFonts.outfit(fontSize: 13, color: textSecondary)),
               const SizedBox(height: 2),
               Row(
                 children: [
@@ -686,35 +723,35 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Widget _buildUserCardLoading(Color textSecondary) => Row(
-      children: [
-        CircleAvatar(
-            radius: 32,
-            backgroundColor: textSecondary.withValues(alpha: 0.1)),
-        const SizedBox(width: 14),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 120,
-              height: 16,
-              decoration: BoxDecoration(
-                color: textSecondary.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(4),
+        children: [
+          CircleAvatar(
+              radius: 32,
+              backgroundColor: textSecondary.withValues(alpha: 0.1)),
+          const SizedBox(width: 14),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 120,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: textSecondary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
-            ),
-            const SizedBox(height: 6),
-            Container(
-              width: 80,
-              height: 12,
-              decoration: BoxDecoration(
-                color: textSecondary.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(4),
+              const SizedBox(height: 6),
+              Container(
+                width: 80,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: textSecondary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
-            ),
-          ],
-        ),
-      ],
-    );
+            ],
+          ),
+        ],
+      );
 
   // ── Helpers ───────────────────────────────────────────────────────────────
   Widget _sectionLabel(String label, Color textSecondary) => Padding(
@@ -733,8 +770,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Container(
           decoration: BoxDecoration(
-              color: cardColor,
-              borderRadius: BorderRadius.circular(16)),
+              color: cardColor, borderRadius: BorderRadius.circular(16)),
           child: Column(children: children),
         ),
       );
@@ -749,60 +785,66 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     required Color textPrimary,
     required Color textSecondary,
     VoidCallback? onTap,
-  }) => InkWell(
-      onTap: onTap ?? () {},
-      borderRadius: BorderRadius.circular(16),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
-          children: [
-            Icon(icon, color: iconColor, size: 22),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Text(title,
-                  style: GoogleFonts.outfit(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                      color: textPrimary)),
-            ),
-            Icon(Icons.chevron_right_rounded, color: textSecondary, size: 22),
-          ],
+  }) =>
+      InkWell(
+        onTap: onTap ?? () {},
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Icon(icon, color: iconColor, size: 22),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(title,
+                    style: GoogleFonts.outfit(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: textPrimary)),
+              ),
+              Icon(Icons.chevron_right_rounded, color: textSecondary, size: 22),
+            ],
+          ),
         ),
-      ),
-    );
+      );
 
   Widget _settingsTileSwitch({
     required IconData icon,
     required Color iconColor,
     required String title,
-    required bool value, required ValueChanged<bool> onChanged, required Color textPrimary, required Color textSecondary, String? subtitle,
-  }) => Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Row(
-        children: [
-          Icon(icon, color: iconColor, size: 22),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title,
-                    style: GoogleFonts.outfit(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        color: textPrimary)),
-                if (subtitle != null)
-                  Text(subtitle,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+    required Color textPrimary,
+    required Color textSecondary,
+    String? subtitle,
+  }) =>
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          children: [
+            Icon(icon, color: iconColor, size: 22),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
                       style: GoogleFonts.outfit(
-                          fontSize: 12, color: textSecondary)),
-              ],
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: textPrimary)),
+                  if (subtitle != null)
+                    Text(subtitle,
+                        style: GoogleFonts.outfit(
+                            fontSize: 12, color: textSecondary)),
+                ],
+              ),
             ),
-          ),
-          Switch(
-              value: value,
-              onChanged: onChanged,
-              activeThumbColor: AppColors.electricBlue),
-        ],
-      ),
-    );
+            Switch(
+                value: value,
+                onChanged: onChanged,
+                activeThumbColor: AppColors.electricBlue),
+          ],
+        ),
+      );
 }

@@ -17,13 +17,14 @@ import 'nation_database.dart';
 ///
 /// Never blocks UI. Call [detectNation] in the background.
 class NationDetectionService {
-
   NationDetectionService({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage(
-          aOptions: AndroidOptions(encryptedSharedPreferences: true),
-        );
+      : _storage = storage ??
+            const FlutterSecureStorage(
+              aOptions: AndroidOptions(encryptedSharedPreferences: true),
+            );
   static const _cacheKey = 'gotchaa_cached_nation_v1';
-  static const _ipApiUrl = 'http://ip-api.com/json/?fields=status,countryCode,country,city,regionName,timezone';
+  static const _ipApiUrl =
+      'http://ip-api.com/json/?fields=status,countryCode,country,city,regionName,timezone';
 
   final FlutterSecureStorage _storage;
 
@@ -56,12 +57,15 @@ class NationDetectionService {
           );
         } else {
           // Disagree — prefer IP (more accurate for physical location)
-          best = ipResult.copyWith(confidence: 'MEDIUM', detectedAt: DateTime.now());
+          best = ipResult.copyWith(
+              confidence: 'MEDIUM', detectedAt: DateTime.now());
         }
       } else if (ipResult != null) {
-        best = ipResult.copyWith(confidence: 'MEDIUM', detectedAt: DateTime.now());
+        best =
+            ipResult.copyWith(confidence: 'MEDIUM', detectedAt: DateTime.now());
       } else if (localResult != null) {
-        best = localResult.copyWith(confidence: 'MEDIUM', detectedAt: DateTime.now());
+        best = localResult.copyWith(
+            confidence: 'MEDIUM', detectedAt: DateTime.now());
       }
 
       // 3. Fall back to cache if live detection failed
@@ -70,7 +74,6 @@ class NationDetectionService {
       if (best != null) await _saveCache(best);
       return best;
     } catch (e) {
-      
       return _loadCached();
     }
   }
@@ -154,7 +157,6 @@ class NationDetectionService {
         detectedAt: DateTime.now(),
       );
     } catch (e) {
-      
       return null;
     }
   }
@@ -163,12 +165,10 @@ class NationDetectionService {
 
   Future<void> _saveCache(NationData data) async {
     try {
-      final json = jsonEncode(data.toFirestore()
-          .map((k, v) => MapEntry(k, v.toString())));
+      final json = jsonEncode(
+          data.toFirestore().map((k, v) => MapEntry(k, v.toString())));
       await _storage.write(key: _cacheKey, value: json);
-    } catch (e) {
-      
-    }
+    } catch (e) {}
   }
 
   Future<NationData?> _loadCached() async {
@@ -182,7 +182,8 @@ class NationDetectionService {
       return base.copyWith(
         detectedVia: map['detectedVia'] as String? ?? 'CACHE',
         confidence: map['confidence'] as String? ?? 'LOW',
-        detectedAt: DateTime.tryParse(map['detectedAt'] as String? ?? '') ?? DateTime.now(),
+        detectedAt: DateTime.tryParse(map['detectedAt'] as String? ?? '') ??
+            DateTime.now(),
       );
     } catch (_) {
       return null;

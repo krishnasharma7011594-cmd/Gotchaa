@@ -2,9 +2,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class GlassCard extends StatelessWidget {
-
   const GlassCard({
-    required this.child, super.key,
+    required this.child,
+    super.key,
     this.borderRadius = 24,
     this.blur = 10,
     this.color = Colors.white,
@@ -20,20 +20,21 @@ class GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-        child: Container(
-          decoration: BoxDecoration(
-            color: color.withOpacity(opacity),
-            borderRadius: BorderRadius.circular(borderRadius),
-            border: border ?? Border.all(
-              color: color.withOpacity(0.2),
-              width: 1.5,
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+          child: Container(
+            decoration: BoxDecoration(
+              color: color.withOpacity(opacity),
+              borderRadius: BorderRadius.circular(borderRadius),
+              border: border ??
+                  Border.all(
+                    color: color.withOpacity(0.2),
+                    width: 1.5,
+                  ),
             ),
+            child: child,
           ),
-          child: child,
         ),
-      ),
-    );
+      );
 }

@@ -21,7 +21,8 @@ import 'post_detail_screen.dart';
 final userSearchProvider =
     FutureProvider.family<List<UserProfile>, String>((ref, query) async {
   if (query.trim().isEmpty) return [];
-  final users = await ref.read(firestoreRepositoryProvider).searchUsers(query.trim());
+  final users =
+      await ref.read(firestoreRepositoryProvider).searchUsers(query.trim());
   final blockedUids = ref.read(blockedUidsProvider).value ?? [];
   return users.where((u) => !blockedUids.contains(u.uid)).toList();
 });
@@ -52,7 +53,8 @@ class ExploreScreen extends ConsumerStatefulWidget {
   ConsumerState<ExploreScreen> createState() => _ExploreScreenState();
 }
 
-class _ExploreScreenState extends ConsumerState<ExploreScreen> with SingleTickerProviderStateMixin {
+class _ExploreScreenState extends ConsumerState<ExploreScreen>
+    with SingleTickerProviderStateMixin {
   int _selectedCategoryTab = 0;
   int _searchResultTab = 0; // 0: Users, 1: Posts
   final TextEditingController _searchController = TextEditingController();
@@ -72,8 +74,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> with SingleTicker
     super.initState();
     GotchaaPerformanceTraces.instance.startFeedLoad();
     _scrollController.addListener(_onScroll);
-    _searchController.addListener(() =>
-        setState(() => _searchQuery = _searchController.text.trim()));
+    _searchController.addListener(
+        () => setState(() => _searchQuery = _searchController.text.trim()));
   }
 
   void _onScroll() {
@@ -93,7 +95,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
-    final postsAsync = ref.watch(forYouFeedProvider); 
+    final postsAsync = ref.watch(forYouFeedProvider);
 
     final Widget content = Column(
       children: [
@@ -104,8 +106,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> with SingleTicker
             child: Row(
               children: [
                 GestureDetector(
-                  onTap: () =>
-                      mainShellScaffoldKey.currentState?.openDrawer(),
+                  onTap: () => mainShellScaffoldKey.currentState?.openDrawer(),
                   child: Container(
                     width: 44,
                     height: 44,
@@ -231,7 +232,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> with SingleTicker
                 return GridView.builder(
                   controller: _scrollController,
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.only(bottom: 120, left: 2, right: 2, top: 2),
+                  padding: const EdgeInsets.only(
+                      bottom: 120, left: 2, right: 2, top: 2),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: 2,
@@ -257,8 +259,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> with SingleTicker
                               ? CachedNetworkImage(
                                   imageUrl: item.post.mediaUrl,
                                   fit: BoxFit.cover,
-                                  placeholder: (context, url) => Container(color: context.inputFill),
-                                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                                  placeholder: (context, url) =>
+                                      Container(color: context.inputFill),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.error),
                                 )
                               : Center(
                                   child: Padding(
@@ -278,8 +282,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> with SingleTicker
                   },
                 );
               },
-              loading: () =>
-                  const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -351,23 +354,34 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> with SingleTicker
                   leading: Hero(
                     tag: 'profile_avatar_${user.uid}',
                     child: CircleAvatar(
-                      backgroundImage: user.photoUrl.isNotEmpty ? CachedNetworkImageProvider(user.photoUrl) : null,
+                      backgroundImage: user.photoUrl.isNotEmpty
+                          ? CachedNetworkImageProvider(user.photoUrl)
+                          : null,
                     ),
                   ),
-                  title: Text(user.username, style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
-                  subtitle: Text(user.displayName, style: GoogleFonts.outfit(color: context.textSecondary, fontSize: 12)),
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => UserProfileScreen(uid: user.uid))),
+                  title: Text(user.username,
+                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+                  subtitle: Text(user.displayName,
+                      style: GoogleFonts.outfit(
+                          color: context.textSecondary, fontSize: 12)),
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => UserProfileScreen(uid: user.uid))),
                 );
               },
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text(context.tr('error_prefix', args: [e.toString()]))),
+          error: (e, _) => Center(
+              child: Text(context.tr('error_prefix', args: [e.toString()]))),
         );
       });
     } else {
       // Post / Hashtag Search
-      final query = _searchResultTab == 2 && !_searchQuery.startsWith('#') ? '#$_searchQuery' : _searchQuery;
+      final query = _searchResultTab == 2 && !_searchQuery.startsWith('#')
+          ? '#$_searchQuery'
+          : _searchQuery;
       return Consumer(builder: (context, ref, _) {
         final searchResult = ref.watch(postSearchProvider(query));
         return searchResult.when(
@@ -381,7 +395,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> with SingleTicker
                 childAspectRatio: 0.8,
               ),
               itemCount: posts.length,
-              padding: const EdgeInsets.only(bottom: 120, left: 2, right: 2, top: 2),
+              padding:
+                  const EdgeInsets.only(bottom: 120, left: 2, right: 2, top: 2),
               itemBuilder: (context, index) {
                 final post = posts[index];
                 return GestureDetector(
@@ -399,8 +414,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> with SingleTicker
                         ? CachedNetworkImage(
                             imageUrl: post.mediaUrl,
                             fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(color: context.inputFill),
-                            errorWidget: (context, url, error) => const Icon(Icons.error),
+                            placeholder: (context, url) =>
+                                Container(color: context.inputFill),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
                           )
                         : Center(
                             child: Padding(
@@ -419,49 +436,52 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> with SingleTicker
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text(context.tr('error_prefix', args: [e.toString()]))),
+          error: (e, _) => Center(
+              child: Text(context.tr('error_prefix', args: [e.toString()]))),
         );
       });
     }
   }
 
   Widget _noResults() => Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.search_off_rounded, size: 48, color: context.iconMuted),
-          const SizedBox(height: 16),
-          Text(context.tr('explore_no_results', namedArgs: {'query': _searchQuery}), style: GoogleFonts.outfit(color: context.textSecondary)),
-        ],
-      ),
-    );
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.search_off_rounded, size: 48, color: context.iconMuted),
+            const SizedBox(height: 16),
+            Text(
+                context.tr('explore_no_results',
+                    namedArgs: {'query': _searchQuery}),
+                style: GoogleFonts.outfit(color: context.textSecondary)),
+          ],
+        ),
+      );
 
   Widget _emptyState() => Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppColors.electricBlue.withOpacity(0.1),
-              shape: BoxShape.circle,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: AppColors.electricBlue.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.explore_rounded,
+                  size: 40, color: AppColors.electricBlue),
             ),
-            child: const Icon(Icons.explore_rounded,
-                size: 40, color: AppColors.electricBlue),
-          ),
-          const SizedBox(height: 20),
-          Text(context.tr('explore_empty_title'),
-              style: GoogleFonts.outfit(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: context.textPrimary)),
-          const SizedBox(height: 8),
-          Text(context.tr('explore_empty_subtitle'),
-              style: GoogleFonts.outfit(
-                  color: context.textSecondary, fontSize: 14)),
-        ],
-      ),
-    );
+            const SizedBox(height: 20),
+            Text(context.tr('explore_empty_title'),
+                style: GoogleFonts.outfit(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: context.textPrimary)),
+            const SizedBox(height: 8),
+            Text(context.tr('explore_empty_subtitle'),
+                style: GoogleFonts.outfit(
+                    color: context.textSecondary, fontSize: 14)),
+          ],
+        ),
+      );
 }
-

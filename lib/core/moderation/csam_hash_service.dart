@@ -19,7 +19,8 @@ class CsamHashService {
     _knownHashes.addAll(hashes.map((h) => h.toLowerCase()));
   }
 
-  Future<CsamCheckResult> checkImageBytes(Uint8List bytes, {required String userId}) async {
+  Future<CsamCheckResult> checkImageBytes(Uint8List bytes,
+      {required String userId}) async {
     try {
       final hash = _computeDHash(bytes);
       if (hash == null) return const CsamCheckResult.safe();
@@ -37,9 +38,12 @@ class CsamHashService {
     }
   }
 
-  Future<void> _triggerIncident({required String userId, required String hash}) async {
+  Future<void> _triggerIncident(
+      {required String userId, required String hash}) async {
     try {
-      await FirebaseFunctions.instance.httpsCallable('handleCsamIncident').call({
+      await FirebaseFunctions.instance
+          .httpsCallable('handleCsamIncident')
+          .call({
         'userId': userId,
         'perceptualHash': hash,
         'detectedAt': DateTime.now().toIso8601String(),

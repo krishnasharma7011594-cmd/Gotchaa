@@ -117,13 +117,13 @@ class PerformanceTracker {
 class MeasurementStats {
   /// Creates [MeasurementStats] from a list of durations.
   MeasurementStats.fromDurations(List<Duration> durations)
-    : count = durations.length,
-      min = durations.reduce((a, b) => a < b ? a : b),
-      max = durations.reduce((a, b) => a > b ? a : b),
-      total = durations.fold<Duration>(
-        Duration.zero,
-        (prev, curr) => prev + curr,
-      ) {
+      : count = durations.length,
+        min = durations.reduce((a, b) => a < b ? a : b),
+        max = durations.reduce((a, b) => a > b ? a : b),
+        total = durations.fold<Duration>(
+          Duration.zero,
+          (prev, curr) => prev + curr,
+        ) {
     average = Duration(microseconds: total.inMicroseconds ~/ count);
   }
 
@@ -143,8 +143,7 @@ class MeasurementStats {
   late final Duration average;
 
   @override
-  String toString() =>
-      'Stats(count=$count, min=${min.inMilliseconds}ms, '
+  String toString() => 'Stats(count=$count, min=${min.inMilliseconds}ms, '
       'max=${max.inMilliseconds}ms, avg=${average.inMilliseconds}ms)';
 }
 

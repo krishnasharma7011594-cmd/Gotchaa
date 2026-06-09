@@ -8,18 +8,18 @@ int calculateVibeTalkScore({
   required int waitTimeSeconds,
 }) {
   int score = 0;
-  
+
   if (languageMatch) score += 40;
   if (sameContinent) score += 20;
-  
+
   // Common games score: 20 points max
   if (commonGamesCount > 0) score += 20;
-  
+
   // Wait time scores up to 20 points
   int waitScore = (waitTimeSeconds ~/ 10);
   if (waitScore > 20) waitScore = 20;
   score += waitScore;
-  
+
   if (score > 100) score = 100;
   return score;
 }
@@ -30,7 +30,8 @@ bool checkVibeTalkRateLimit(int joinCountPerHour) {
 
 void main() {
   group('VibeTalk Algorithm Tests', () {
-    test('Perfect match (same language + continent + games) scores highest', () {
+    test('Perfect match (same language + continent + games) scores highest',
+        () {
       final score = calculateVibeTalkScore(
         languageMatch: true,
         sameContinent: true,

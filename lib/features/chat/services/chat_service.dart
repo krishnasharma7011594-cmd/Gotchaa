@@ -68,13 +68,10 @@ class ChatService {
                 : (currentUser.username.isNotEmpty
                     ? currentUser.username
                     : 'User'),
-            otherUserId:
-                otherUser.displayName.isNotEmpty &&
-                        otherUser.displayName != 'Unknown'
-                    ? otherUser.displayName
-                    : (otherUser.username.isNotEmpty
-                        ? otherUser.username
-                        : 'User'),
+            otherUserId: otherUser.displayName.isNotEmpty &&
+                    otherUser.displayName != 'Unknown'
+                ? otherUser.displayName
+                : (otherUser.username.isNotEmpty ? otherUser.username : 'User'),
           },
           'participantAvatars': {
             currentUserId: currentUser.photoUrl,
@@ -222,8 +219,14 @@ class ChatService {
     DateTime? expiresAt,
   }) async {
     // Check if blocked by either user
-    final block1 = await _firestore.collection('blocked_accounts').doc('${currentUserId}_blocked_$receiverId').get();
-    final block2 = await _firestore.collection('blocked_accounts').doc('${receiverId}_blocked_$currentUserId').get();
+    final block1 = await _firestore
+        .collection('blocked_accounts')
+        .doc('${currentUserId}_blocked_$receiverId')
+        .get();
+    final block2 = await _firestore
+        .collection('blocked_accounts')
+        .doc('${receiverId}_blocked_$currentUserId')
+        .get();
     if (block1.exists || block2.exists) {
       throw Exception('Blocked user cannot message');
     }
@@ -239,8 +242,8 @@ class ChatService {
 
     // ── Content moderation (text only) ──────────────────────────────────────
     if (type == 'text' && text.isNotEmpty) {
-      final validation = ContentValidator()
-          .validateMessageText(text, userId: currentUserId);
+      final validation =
+          ContentValidator().validateMessageText(text, userId: currentUserId);
       if (!validation.isValid && !validation.warningOnly) {
         throw Exception(validation.reason ?? 'Message blocked');
       }
@@ -371,9 +374,8 @@ class ChatService {
         _firestore.collection('chats').doc(chatId).collection('messages');
     final chatRef = _firestore.collection('chats').doc(chatId);
 
-    final sentByOther = await messagesRef
-        .where('senderId', isEqualTo: otherUserId)
-        .get();
+    final sentByOther =
+        await messagesRef.where('senderId', isEqualTo: otherUserId).get();
 
     final unreadDocs = sentByOther.docs
         .where((doc) => (doc.data()['status'] ?? '') != 'read')
@@ -443,8 +445,7 @@ class ChatService {
     });
   }
 
-  Future<void> deleteMessageForEveryone(
-      String chatId, String messageId) async {
+  Future<void> deleteMessageForEveryone(String chatId, String messageId) async {
     await _firestore
         .collection('chats')
         .doc(chatId)

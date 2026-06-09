@@ -29,7 +29,7 @@ abstract class CameraStreamPainter extends ChangeNotifier {
 
   bool _converting = false; // guard: skip if previous frame not done yet
   CameraController? _controller;
-  
+
   /// Callback for external processing (e.g. Face Detection)
   void Function(CameraImage)? onImageCallback;
 
@@ -48,7 +48,8 @@ abstract class CameraStreamPainter extends ChangeNotifier {
   }
 
   int get sensorOrientation => _controller?.description.sensorOrientation ?? 90;
-  bool get isFrontCamera => _controller?.description.lensDirection == CameraLensDirection.front;
+  bool get isFrontCamera =>
+      _controller?.description.lensDirection == CameraLensDirection.front;
   int get deviceOrientationDegrees => _deviceOrientationDegrees;
 
   // ─── Lifecycle ──────────────────────────────────────────────────────────────
@@ -134,7 +135,8 @@ abstract class CameraStreamPainter extends ChangeNotifier {
     if (frame == null) return null;
 
     final recorder = ui.PictureRecorder();
-    final canvas = ui.Canvas(recorder, Rect.fromLTWH(0, 0, size.width, size.height));
+    final canvas =
+        ui.Canvas(recorder, Rect.fromLTWH(0, 0, size.width, size.height));
 
     // We use the same paint logic as the UI
     final dp = _DelegatePainter(this);
@@ -147,7 +149,8 @@ abstract class CameraStreamPainter extends ChangeNotifier {
 
     final bytes = byteData.buffer.asUint8List();
     final tempDir = await getTemporaryDirectory();
-    final path = '${tempDir.path}/GOTCHA_${DateTime.now().millisecondsSinceEpoch}.png';
+    final path =
+        '${tempDir.path}/GOTCHA_${DateTime.now().millisecondsSinceEpoch}.png';
     final file = File(path);
     await file.writeAsBytes(bytes);
 
@@ -165,7 +168,6 @@ abstract class CameraStreamPainter extends ChangeNotifier {
 // Internal painter — wraps the streaming painter
 // ─────────────────────────────────────────────────────────────────────────────
 class _DelegatePainter extends CustomPainter {
-
   _DelegatePainter(this.sp) : super(repaint: sp);
   final CameraStreamPainter sp;
 
@@ -188,7 +190,7 @@ class _DelegatePainter extends CustomPainter {
     // The frames arrive in landscape. To get them to portrait:
     // Back: rotate 90.
     // Front: rotate 270 (or 90 with mirror flipped).
-    
+
     final int sensorOrientation = sp.sensorOrientation;
     final int deviceOrientation = sp.deviceOrientationDegrees;
 
@@ -201,14 +203,14 @@ class _DelegatePainter extends CustomPainter {
     }
 
     final double rotationRad = totalRotation * 3.1415926535897932 / 180.0;
-    
+
     // Move to center
     canvas.translate(size.width / 2, size.height / 2);
     canvas.rotate(rotationRad);
-    
+
     if (sp.isFrontCamera) {
-       // Flip horizontally relative to the sensor's vertical axis
-       canvas.scale(-1, 1);
+      // Flip horizontally relative to the sensor's vertical axis
+      canvas.scale(-1, 1);
     }
 
     final bool rotated90 = (totalRotation % 180 != 0);
@@ -223,7 +225,8 @@ class _DelegatePainter extends CustomPainter {
     final double finalW = frame.width * scale;
     final double finalH = frame.height * scale;
 
-    final src = ui.Rect.fromLTWH(0, 0, frame.width.toDouble(), frame.height.toDouble());
+    final src =
+        ui.Rect.fromLTWH(0, 0, frame.width.toDouble(), frame.height.toDouble());
     final dst = ui.Rect.fromLTWH(-finalW / 2, -finalH / 2, finalW, finalH);
 
     // First pass: draw raw frame (before filter)

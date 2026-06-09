@@ -6,7 +6,6 @@ import '../providers/repository_providers.dart';
 final activityServiceProvider = Provider(ActivityService.new);
 
 class ActivityService {
-
   ActivityService(this._ref);
   final Ref _ref;
   Timer? _sessionTimer;
@@ -27,16 +26,17 @@ class ActivityService {
 
   Future<void> _markAsActive() async {
     if (_isActiveFinalized) return;
-    
+
     final profile = _ref.read(currentUserProfileProvider).asData?.value;
     if (profile == null) return;
 
     // If the user was invited with a code and hasn't triggered the reward yet
     if (profile.joinedWithCode.isNotEmpty) {
-      final success = await _ref.read(firestoreRepositoryProvider).finalizeInviteReward(
-        uid: profile.uid,
-        joinedWithCode: profile.joinedWithCode,
-      );
+      final success =
+          await _ref.read(firestoreRepositoryProvider).finalizeInviteReward(
+                uid: profile.uid,
+                joinedWithCode: profile.joinedWithCode,
+              );
       if (success) {
         _isActiveFinalized = true;
       }

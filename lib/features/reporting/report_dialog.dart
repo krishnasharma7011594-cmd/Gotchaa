@@ -10,7 +10,10 @@ import 'report_repository.dart';
 
 class ReportBottomSheet extends StatefulWidget {
   const ReportBottomSheet({
-    required this.reportedUserId, required this.contentType, required this.contentId, super.key,
+    required this.reportedUserId,
+    required this.contentType,
+    required this.contentId,
+    super.key,
     this.contentPreview,
   });
 
@@ -39,7 +42,8 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
   Future<void> _submit() async {
     if (_category == null) return;
     if (_category == 'Other' && _otherController.text.trim().isEmpty) return;
-    if (_subReason == null && ReportCategories.categories[_category]!.length > 1) {
+    if (_subReason == null &&
+        ReportCategories.categories[_category]!.length > 1) {
       return;
     }
 
@@ -76,7 +80,9 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
             'Thank you for keeping GOTCHAA safe. Our trust team will review this report.',
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Done')),
+            TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Done')),
             TextButton(
               onPressed: () => Navigator.pop(ctx, true),
               child: const Text('Block user'),
@@ -105,7 +111,9 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final subs = _category != null ? ReportCategories.categories[_category]! : <String>[];
+    final subs = _category != null
+        ? ReportCategories.categories[_category]!
+        : <String>[];
 
     return DraggableScrollableSheet(
       initialChildSize: 0.75,
@@ -133,7 +141,9 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
             const SizedBox(height: 16),
             Text('Report',
                 style: GoogleFonts.outfit(
-                    fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)),
             const SizedBox(height: 8),
             Text('Select a category',
                 style: GoogleFonts.outfit(fontSize: 14, color: Colors.grey)),
@@ -153,7 +163,8 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
             if (_category != null && subs.isNotEmpty) ...[
               const SizedBox(height: 8),
               Text('Sub-reason',
-                  style: GoogleFonts.outfit(color: Colors.white70, fontWeight: FontWeight.w600)),
+                  style: GoogleFonts.outfit(
+                      color: Colors.white70, fontWeight: FontWeight.w600)),
               ...subs.map(
                 (s) => RadioListTile<String>(
                   title: Text(s, style: const TextStyle(color: Colors.white70)),
@@ -175,7 +186,8 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
                   hintStyle: TextStyle(color: Colors.grey.shade600),
                   filled: true,
                   fillColor: Colors.white10,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ],
@@ -185,10 +197,12 @@ class _ReportBottomSheetState extends State<ReportBottomSheet> {
               height: 48,
               child: ElevatedButton(
                 onPressed: _submitting ? null : _submit,
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+                style:
+                    ElevatedButton.styleFrom(backgroundColor: AppColors.error),
                 child: _submitting
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Submit Report', style: TextStyle(color: Colors.white)),
+                    : const Text('Submit Report',
+                        style: TextStyle(color: Colors.white)),
               ),
             ),
           ],

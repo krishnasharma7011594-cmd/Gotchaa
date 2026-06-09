@@ -26,7 +26,8 @@ class _VibeTalkMainScreenState extends ConsumerState<VibeTalkMainScreen> {
     super.initState();
     // Listen for match — fire once when status becomes connected
     ref.listenManual(vibeTalkProvider.select((s) => s.status), (prev, next) {
-      if (next == VibeTalkStatus.connected && prev != VibeTalkStatus.connected) {
+      if (next == VibeTalkStatus.connected &&
+          prev != VibeTalkStatus.connected) {
         AnalyticsService.logMatchFound();
       }
     });
@@ -68,54 +69,59 @@ class _VibeTalkMainScreenState extends ConsumerState<VibeTalkMainScreen> {
               'Spam / Scam / Phishing',
               'Other Violation'
             ].map((reason) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: InkWell(
-                onTap: () async {
-                  Navigator.pop(ctx);
-                  
-                  final state = ref.read(vibeTalkProvider);
-                  final reporterId = state.currentUserId ?? '';
-                  final reportedUsername = state.anonymousUsername ?? 'anonymous';
-                  final roomId = state.roomId ?? 'unknown';
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: InkWell(
+                    onTap: () async {
+                      Navigator.pop(ctx);
 
-                  // Terminate WebRTC session immediately
-                  await ref.read(vibeTalkProvider.notifier).endChat();
+                      final state = ref.read(vibeTalkProvider);
+                      final reporterId = state.currentUserId ?? '';
+                      final reportedUsername =
+                          state.anonymousUsername ?? 'anonymous';
+                      final roomId = state.roomId ?? 'unknown';
 
-                  try {
-                    await FirebaseFirestore.instance.collection('reports').add({
-                      'reporterId': reporterId,
-                      'reportedUsername': reportedUsername,
-                      'roomId': roomId,
-                      'reason': reason,
-                      'timestamp': FieldValue.serverTimestamp(),
-                      'type': 'vibetalk',
-                    });
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Report submitted. Thank you for helping keep our community safe.'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    // Silently handle
-                  }
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: context.divider),
-                    borderRadius: BorderRadius.circular(12),
+                      // Terminate WebRTC session immediately
+                      await ref.read(vibeTalkProvider.notifier).endChat();
+
+                      try {
+                        await FirebaseFirestore.instance
+                            .collection('reports')
+                            .add({
+                          'reporterId': reporterId,
+                          'reportedUsername': reportedUsername,
+                          'roomId': roomId,
+                          'reason': reason,
+                          'timestamp': FieldValue.serverTimestamp(),
+                          'type': 'vibetalk',
+                        });
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Report submitted. Thank you for helping keep our community safe.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        // Silently handle
+                      }
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: context.divider),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        reason,
+                        style: TextStyle(color: context.textPrimary),
+                      ),
+                    ),
                   ),
-                  child: Text(
-                    reason,
-                    style: TextStyle(color: context.textPrimary),
-                  ),
-                ),
-              ),
-            )),
+                )),
           ],
         ),
         actions: [
@@ -139,7 +145,8 @@ class _VibeTalkMainScreenState extends ConsumerState<VibeTalkMainScreen> {
     return Scaffold(
       backgroundColor: context.bg,
       appBar: AppBar(
-        title: Text(context.tr('mini_app_vibetalk_name'), style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(context.tr('mini_app_vibetalk_name'),
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: context.surface,
         elevation: 0,
@@ -151,7 +158,8 @@ class _VibeTalkMainScreenState extends ConsumerState<VibeTalkMainScreen> {
               tooltip: 'Report User',
             ),
             IconButton(
-              icon: Icon(Icons.skip_next_rounded, color: Theme.of(context).colorScheme.primary),
+              icon: Icon(Icons.skip_next_rounded,
+                  color: Theme.of(context).colorScheme.primary),
               onPressed: () {
                 ref.read(vibeTalkProvider.notifier).skipToNext();
               },
@@ -177,12 +185,16 @@ class _VibeTalkMainScreenState extends ConsumerState<VibeTalkMainScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.stars_rounded, color: Colors.white, size: 18),
+                  const Icon(Icons.stars_rounded,
+                      color: Colors.white, size: 18),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       context.tr('vibetalk_limited_access'),
-                      style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600),
                     ),
                   ),
                   TextButton(
@@ -190,11 +202,16 @@ class _VibeTalkMainScreenState extends ConsumerState<VibeTalkMainScreen> {
                       // Navigate to invite screen
                     },
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 0),
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    child: Text(context.tr('vibetalk_unlock'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                    child: Text(context.tr('vibetalk_unlock'),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12)),
                   ),
                 ],
               ),

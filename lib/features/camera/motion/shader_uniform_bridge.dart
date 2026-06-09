@@ -15,7 +15,6 @@ import 'sensor_state.dart';
 ///   2 → float uIntensity
 ///   3..N → filter-specific (see [_applyMotionUniforms])
 class ShaderUniformBridge {
-
   ShaderUniformBridge({
     required this.shader,
     required this.filter,

@@ -4,11 +4,19 @@ import 'content_policy.dart';
 class GeoContentFilter {
   /// Checks if a post should be shown based on the region's policy
   bool shouldShowContent(PostModel post, ContentPolicy policy) {
-    final textToCheck = '${post.caption} ${post.hashtags.join(' ')}'.toLowerCase();
+    final textToCheck =
+        '${post.caption} ${post.hashtags.join(' ')}'.toLowerCase();
 
     // Check LGBTQ+ content
     if (!policy.allowLGBTQContent) {
-      final lgbtqKeywords = ['lgbt', 'pride', 'gay', 'lesbian', 'transgender', 'queer'];
+      final lgbtqKeywords = [
+        'lgbt',
+        'pride',
+        'gay',
+        'lesbian',
+        'transgender',
+        'queer'
+      ];
       for (final keyword in lgbtqKeywords) {
         if (textToCheck.contains(keyword)) {
           return false;
@@ -18,10 +26,22 @@ class GeoContentFilter {
 
     // Check Alcohol References
     if (!policy.allowAlcoholReferences) {
-      final alcoholKeywords = ['alcohol', 'beer', 'wine', 'vodka', 'whiskey', 'rum', 'cocktail', 'drink', 'bar', 'pub'];
+      final alcoholKeywords = [
+        'alcohol',
+        'beer',
+        'wine',
+        'vodka',
+        'whiskey',
+        'rum',
+        'cocktail',
+        'drink',
+        'bar',
+        'pub'
+      ];
       for (final keyword in alcoholKeywords) {
         // Use word boundary to avoid matching "barrier" or "puddle"
-        final regex = RegExp(r'\b' + RegExp.escape(keyword) + r'\b', caseSensitive: false);
+        final regex = RegExp(r'\b' + RegExp.escape(keyword) + r'\b',
+            caseSensitive: false);
         if (regex.hasMatch(textToCheck)) {
           return false;
         }
@@ -30,9 +50,18 @@ class GeoContentFilter {
 
     // Check Dating Features/Content
     if (!policy.allowDatingFeatures) {
-      final datingKeywords = ['date', 'dating', 'couple', 'love', 'romance', 'meetup', 'hookup'];
+      final datingKeywords = [
+        'date',
+        'dating',
+        'couple',
+        'love',
+        'romance',
+        'meetup',
+        'hookup'
+      ];
       for (final keyword in datingKeywords) {
-        final regex = RegExp(r'\b' + RegExp.escape(keyword) + r'\b', caseSensitive: false);
+        final regex = RegExp(r'\b' + RegExp.escape(keyword) + r'\b',
+            caseSensitive: false);
         if (regex.hasMatch(textToCheck)) {
           return false;
         }
@@ -41,9 +70,19 @@ class GeoContentFilter {
 
     // Check Gambling Content
     if (!policy.allowGamblingContent) {
-      final gamblingKeywords = ['gamble', 'gambling', 'bet', 'betting', 'casino', 'slots', 'poker', 'lottery'];
+      final gamblingKeywords = [
+        'gamble',
+        'gambling',
+        'bet',
+        'betting',
+        'casino',
+        'slots',
+        'poker',
+        'lottery'
+      ];
       for (final keyword in gamblingKeywords) {
-        final regex = RegExp(r'\b' + RegExp.escape(keyword) + r'\b', caseSensitive: false);
+        final regex = RegExp(r'\b' + RegExp.escape(keyword) + r'\b',
+            caseSensitive: false);
         if (regex.hasMatch(textToCheck)) {
           return false;
         }
@@ -54,5 +93,6 @@ class GeoContentFilter {
   }
 
   /// Filters a list of posts based on the policy
-  List<PostModel> filterFeed(List<PostModel> posts, ContentPolicy policy) => posts.where((post) => shouldShowContent(post, policy)).toList();
+  List<PostModel> filterFeed(List<PostModel> posts, ContentPolicy policy) =>
+      posts.where((post) => shouldShowContent(post, policy)).toList();
 }

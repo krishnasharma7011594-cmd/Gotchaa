@@ -7,7 +7,7 @@ class FeedVideoManager {
 
   // Cache pool mapping: videoUrl -> VideoPlayerController
   final Map<String, VideoPlayerController> _pool = {};
-  
+
   // LRU eviction queue tracker
   final List<String> _history = [];
 
@@ -17,7 +17,7 @@ class FeedVideoManager {
       // Update LRU history: move to the end (most recently used)
       _history.remove(url);
       _history.add(url);
-      
+
       final controller = _pool[url]!;
       if (!controller.value.isInitialized) {
         await controller.initialize();
@@ -87,7 +87,8 @@ class FeedVideoManager {
 
   /// Preload the next video in the queue asynchronously.
   void preload(String url) {
-    if (_pool.containsKey(url) || url.isEmpty || !url.startsWith('http')) return;
+    if (_pool.containsKey(url) || url.isEmpty || !url.startsWith('http'))
+      return;
 
     final controller = VideoPlayerController.networkUrl(Uri.parse(url));
     controller.initialize().then((_) {

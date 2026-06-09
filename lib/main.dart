@@ -22,7 +22,8 @@ import 'core/ui/dev_badge.dart';
 import 'features/ai/presentation/widgets/floating_gemini_overlay.dart';
 
 void main() async {
-  final WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  final WidgetsBinding widgetsBinding =
+      WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   // NOTE: .env file removed from assets — API keys are now injected via
@@ -32,14 +33,18 @@ void main() async {
 
   // Check if consent has already been prompted (which means Firebase can be initialized)
   final hasPrompted = sharedPrefs.getBool('gdpr_consent_prompted') ?? false;
-  
+
   if (hasPrompted) {
     await ConsentGateService.initializeFirebaseAndDependents();
   } else {
     debugPrint('Firebase initialization deferred until consent is given');
   }
 
-  try { FrameRateMonitor.start(); } catch (e) { debugPrint('FrameRateMonitor error: $e'); }
+  try {
+    FrameRateMonitor.start();
+  } catch (e) {
+    debugPrint('FrameRateMonitor error: $e');
+  }
 
   try {
     await ProfanityFilter().initialize();
@@ -60,55 +65,56 @@ void main() async {
 
   // Global Error Boundary - Replace grey screen with a branded error UI
   ErrorWidget.builder = (details) => Material(
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        color: AppColors.black,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 64, color: AppColors.error),
-            const SizedBox(height: 24),
-            const Text(
-              'Oops! Something went wrong',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              details.exceptionAsString(),
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
-                fontSize: 14,
-                fontFamily: 'monospace',
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 5,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () {
-                // In a global error boundary, we can't easily navigate without a navigatorKey
-                // For now, we'll just display the error clearly
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.electricBlue,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          color: AppColors.black,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 64, color: AppColors.error),
+              const SizedBox(height: 24),
+              const Text(
+                'Oops! Something went wrong',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.center,
               ),
-              child: const Text('Try Again'),
-            ),
-          ],
+              const SizedBox(height: 12),
+              Text(
+                details.exceptionAsString(),
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 14,
+                  fontFamily: 'monospace',
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 5,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: () {
+                  // In a global error boundary, we can't easily navigate without a navigatorKey
+                  // For now, we'll just display the error clearly
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.electricBlue,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('Try Again'),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
 
   runApp(
     ProviderScope(
@@ -120,14 +126,16 @@ void main() async {
   );
 
   // Preserve splash screen for at least 1.5 seconds for branding as requested
-  Future.delayed(const Duration(milliseconds: 1500), FlutterNativeSplash.remove);
+  Future.delayed(
+      const Duration(milliseconds: 1500), FlutterNativeSplash.remove);
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) => const ProviderScope(child: GotchaaApp());
+  Widget build(BuildContext context) =>
+      const ProviderScope(child: GotchaaApp());
 }
 
 class GotchaaApp extends ConsumerWidget {
@@ -149,14 +157,15 @@ class GotchaaApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'GOTCHAA',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.fromGotchaaTheme(AppThemes.allThemes[ThemeType.gotchaaLight]!),
-      darkTheme: AppTheme.fromGotchaaTheme(AppThemes.allThemes[ThemeType.gotchaaDark]!),
+      theme: AppTheme.fromGotchaaTheme(
+          AppThemes.allThemes[ThemeType.gotchaaLight]!),
+      darkTheme: AppTheme.fromGotchaaTheme(
+          AppThemes.allThemes[ThemeType.gotchaaDark]!),
       themeMode: themeState.themeMode,
       locale: locale,
       routerConfig: router,
-      supportedLocales: AppLocalizationsConfig.languages
-          .map((l) => Locale(l.code))
-          .toList(),
+      supportedLocales:
+          AppLocalizationsConfig.languages.map((l) => Locale(l.code)).toList(),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -174,4 +183,3 @@ class GotchaaApp extends ConsumerWidget {
     );
   }
 }
-

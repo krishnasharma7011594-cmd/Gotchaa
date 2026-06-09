@@ -10,7 +10,8 @@ import 'circles_firestore_service.dart';
 
 class CirclesCheckInService {
   CirclesCheckInService._internal();
-  static final CirclesCheckInService instance = CirclesCheckInService._internal();
+  static final CirclesCheckInService instance =
+      CirclesCheckInService._internal();
 
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -74,8 +75,9 @@ class CirclesCheckInService {
     final uid = currentUserId;
     if (uid == 'anonymous') return false;
 
-    final checkinRef = _db.collection('circles').doc(circleId).collection('checkins').doc(uid);
-    
+    final checkinRef =
+        _db.collection('circles').doc(circleId).collection('checkins').doc(uid);
+
     // Check if already checked in to prevent duplicate records
     final checkinSnap = await checkinRef.get();
     if (checkinSnap.exists) {
@@ -98,12 +100,14 @@ class CirclesCheckInService {
       final decodedStr = utf8.decode(decodedBytes);
       final payload = jsonDecode(decodedStr) as Map<String, dynamic>;
 
-      final issuedAt = DateTime.fromMillisecondsSinceEpoch(payload['issuedAt'] as int);
+      final issuedAt =
+          DateTime.fromMillisecondsSinceEpoch(payload['issuedAt'] as int);
       final age = DateTime.now().difference(issuedAt);
 
       // Token expires after 30 minutes
       if (age.inMinutes > 30) {
-        throw Exception('QR Token expired. Host must generate a new check-in QR.');
+        throw Exception(
+            'QR Token expired. Host must generate a new check-in QR.');
       }
     }
 
@@ -132,7 +136,11 @@ class CirclesCheckInService {
     await fService.updateUserKarma(uid, 10);
 
     // 5. Check if at least 3 members checked in to award +20 host karma
-    final checkinsSnap = await _db.collection('circles').doc(circleId).collection('checkins').get();
+    final checkinsSnap = await _db
+        .collection('circles')
+        .doc(circleId)
+        .collection('checkins')
+        .get();
     if (checkinsSnap.docs.length >= 3) {
       await fService.updateUserKarma(circle.hostId, 20);
     }

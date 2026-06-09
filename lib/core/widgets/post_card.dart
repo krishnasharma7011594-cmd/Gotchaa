@@ -26,7 +26,8 @@ class PostCard extends ConsumerStatefulWidget {
   ConsumerState<PostCard> createState() => _PostCardState();
 }
 
-class _PostCardState extends ConsumerState<PostCard> with SingleTickerProviderStateMixin {
+class _PostCardState extends ConsumerState<PostCard>
+    with SingleTickerProviderStateMixin {
   bool _isLikedLocal = false;
   bool _isBookmarkedLocal = false;
   int _likesCountLocal = 0;
@@ -123,16 +124,21 @@ class _PostCardState extends ConsumerState<PostCard> with SingleTickerProviderSt
 
     HapticFeedback.lightImpact();
     if (willBookmark) {
-      ref.read(socialRepositoryProvider).bookmarkPost(postId: widget.post.postId, uid: myUid);
+      ref
+          .read(socialRepositoryProvider)
+          .bookmarkPost(postId: widget.post.postId, uid: myUid);
     } else {
-      ref.read(socialRepositoryProvider).unbookmarkPost(postId: widget.post.postId, uid: myUid);
+      ref
+          .read(socialRepositoryProvider)
+          .unbookmarkPost(postId: widget.post.postId, uid: myUid);
     }
   }
 
   void _sharePost() {
     HapticFeedback.lightImpact();
     // In a real app, this would be a dynamic link.
-    Share.share('Check out this post by ${widget.post.username} on GOTCHAA!\n\n${widget.post.caption}');
+    Share.share(
+        'Check out this post by ${widget.post.username} on GOTCHAA!\n\n${widget.post.caption}');
   }
 
   @override
@@ -146,7 +152,8 @@ class _PostCardState extends ConsumerState<PostCard> with SingleTickerProviderSt
     )));
     likedAsync.whenData(_handleLikeCheck);
 
-    final bookmarkedAsync = ref.watch(isPostBookmarkedProvider((postId: widget.post.postId, uid: myUid)));
+    final bookmarkedAsync = ref.watch(
+        isPostBookmarkedProvider((postId: widget.post.postId, uid: myUid)));
     bookmarkedAsync.whenData(_handleBookmarkCheck);
 
     return Container(
@@ -166,14 +173,19 @@ class _PostCardState extends ConsumerState<PostCard> with SingleTickerProviderSt
                 GestureDetector(
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => UserProfileScreen(uid: widget.post.uid)),
+                    MaterialPageRoute(
+                        builder: (_) =>
+                            UserProfileScreen(uid: widget.post.uid)),
                   ),
                   child: Container(
                     padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
-                        colors: [AppColors.electricBlue, AppColors.electricBlue.withOpacity(0.5)],
+                        colors: [
+                          AppColors.electricBlue,
+                          AppColors.electricBlue.withOpacity(0.5)
+                        ],
                       ),
                     ),
                     child: Hero(
@@ -186,8 +198,13 @@ class _PostCardState extends ConsumerState<PostCard> with SingleTickerProviderSt
                         backgroundColor: context.shimmerBase,
                         child: widget.post.userPhoto.isEmpty
                             ? Text(
-                                widget.post.username.isNotEmpty ? widget.post.username[0].toUpperCase() : '?',
-                                style: GoogleFonts.outfit(fontWeight: FontWeight.w700, fontSize: 16, color: context.textPrimary),
+                                widget.post.username.isNotEmpty
+                                    ? widget.post.username[0].toUpperCase()
+                                    : '?',
+                                style: GoogleFonts.outfit(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16,
+                                    color: context.textPrimary),
                               )
                             : null,
                       ),
@@ -200,24 +217,32 @@ class _PostCardState extends ConsumerState<PostCard> with SingleTickerProviderSt
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.post.username.isNotEmpty ? widget.post.username : 'User',
-                        style: GoogleFonts.outfit(fontWeight: FontWeight.w700, fontSize: 15, color: context.textPrimary),
+                        widget.post.username.isNotEmpty
+                            ? widget.post.username
+                            : 'User',
+                        style: GoogleFonts.outfit(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            color: context.textPrimary),
                       ),
                       if (widget.post.authorNation != null)
                         Text(
                           '${widget.post.authorNation} • ${_timeSince(widget.post.createdAt)}',
-                          style: GoogleFonts.outfit(fontSize: 12, color: context.textSecondary),
+                          style: GoogleFonts.outfit(
+                              fontSize: 12, color: context.textSecondary),
                         )
                       else
                         Text(
                           _timeSince(widget.post.createdAt),
-                          style: GoogleFonts.outfit(fontSize: 12, color: context.textSecondary),
+                          style: GoogleFonts.outfit(
+                              fontSize: 12, color: context.textSecondary),
                         ),
                     ],
                   ),
                 ),
                 PopupMenuButton<String>(
-                  icon: Icon(Icons.more_horiz_rounded, color: context.iconMuted),
+                  icon:
+                      Icon(Icons.more_horiz_rounded, color: context.iconMuted),
                   onSelected: (v) {
                     if (v == 'report') {
                       showReportBottomSheet(
@@ -260,7 +285,8 @@ class _PostCardState extends ConsumerState<PostCard> with SingleTickerProviderSt
                       errorWidget: (_, __, ___) => Container(
                         height: 350,
                         color: context.shimmerBase,
-                        child: Icon(Icons.broken_image_rounded, size: 40, color: context.iconSecondary),
+                        child: Icon(Icons.broken_image_rounded,
+                            size: 40, color: context.iconSecondary),
                       ),
                     ),
                   ),
@@ -271,7 +297,12 @@ class _PostCardState extends ConsumerState<PostCard> with SingleTickerProviderSt
                         Icons.favorite_rounded,
                         color: Colors.white,
                         size: 100,
-                        shadows: [Shadow(color: Colors.black26, blurRadius: 15, offset: Offset(0, 4))],
+                        shadows: [
+                          Shadow(
+                              color: Colors.black26,
+                              blurRadius: 15,
+                              offset: Offset(0, 4))
+                        ],
                       ),
                     ),
                 ],
@@ -300,7 +331,12 @@ class _PostCardState extends ConsumerState<PostCard> with SingleTickerProviderSt
                               height: 44,
                               fit: BoxFit.cover,
                             )
-                          : Container(width: 44, height: 44, color: Colors.green.withOpacity(0.1), child: const Icon(Icons.music_note, color: Colors.green)),
+                          : Container(
+                              width: 44,
+                              height: 44,
+                              color: Colors.green.withOpacity(0.1),
+                              child: const Icon(Icons.music_note,
+                                  color: Colors.green)),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -309,13 +345,17 @@ class _PostCardState extends ConsumerState<PostCard> with SingleTickerProviderSt
                         children: [
                           Text(
                             widget.post.spotifyTrackName ?? 'Music',
-                            style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14, color: context.textPrimary),
+                            style: GoogleFonts.outfit(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: context.textPrimary),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
                             widget.post.spotifyArtistName ?? 'Spotify',
-                            style: GoogleFonts.outfit(fontSize: 12, color: context.textSecondary),
+                            style: GoogleFonts.outfit(
+                                fontSize: 12, color: context.textSecondary),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -335,7 +375,12 @@ class _PostCardState extends ConsumerState<PostCard> with SingleTickerProviderSt
                         }
                         if (mounted) setState(() => _isPlaying = !_isPlaying);
                       },
-                      icon: Icon(_isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled, color: Colors.green, size: 32),
+                      icon: Icon(
+                          _isPlaying
+                              ? Icons.pause_circle_filled
+                              : Icons.play_circle_filled,
+                          color: Colors.green,
+                          size: 32),
                     ),
                   ],
                 ),
@@ -391,8 +436,12 @@ class _PostCardState extends ConsumerState<PostCard> with SingleTickerProviderSt
                 IconButton(
                   onPressed: () => _toggleBookmark(myUid),
                   icon: Icon(
-                    _isBookmarkedLocal ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-                    color: _isBookmarkedLocal ? AppColors.electricBlue : context.iconSecondary,
+                    _isBookmarkedLocal
+                        ? Icons.bookmark_rounded
+                        : Icons.bookmark_border_rounded,
+                    color: _isBookmarkedLocal
+                        ? AppColors.electricBlue
+                        : context.iconSecondary,
                   ),
                 ),
               ],
@@ -408,11 +457,15 @@ class _PostCardState extends ConsumerState<PostCard> with SingleTickerProviderSt
                   children: [
                     TextSpan(
                       text: '${widget.post.username}  ',
-                      style: GoogleFonts.outfit(fontWeight: FontWeight.w700, fontSize: 14, color: context.textPrimary),
+                      style: GoogleFonts.outfit(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                          color: context.textPrimary),
                     ),
                     TextSpan(
                       text: widget.post.caption,
-                      style: GoogleFonts.outfit(fontSize: 14, color: context.textPrimary),
+                      style: GoogleFonts.outfit(
+                          fontSize: 14, color: context.textPrimary),
                     ),
                   ],
                 ),
@@ -433,8 +486,8 @@ class _PostCardState extends ConsumerState<PostCard> with SingleTickerProviderSt
 }
 
 class _ActionButton extends StatelessWidget {
-
-  const _ActionButton({required this.icon, required this.onTap, this.label, this.color});
+  const _ActionButton(
+      {required this.icon, required this.onTap, this.label, this.color});
   final IconData icon;
   final String? label;
   final Color? color;
@@ -442,20 +495,22 @@ class _ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        child: Row(
-          children: [
-            Icon(icon, color: color ?? Theme.of(context).iconTheme.color, size: 22),
-            if (label != null) ...[
-              const SizedBox(width: 6),
-              Text(label!, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w600)),
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: Row(
+            children: [
+              Icon(icon,
+                  color: color ?? Theme.of(context).iconTheme.color, size: 22),
+              if (label != null) ...[
+                const SizedBox(width: 6),
+                Text(label!,
+                    style: GoogleFonts.outfit(
+                        fontSize: 14, fontWeight: FontWeight.w600)),
+              ],
             ],
-          ],
+          ),
         ),
-      ),
-    );
+      );
 }
-

@@ -17,9 +17,10 @@ import 'checkin_qr_screen.dart';
 import 'checkin_scanner_screen.dart';
 
 class CirclesChatScreen extends ConsumerStatefulWidget {
-
   const CirclesChatScreen({
-    required this.circleId, required this.circleTitle, super.key,
+    required this.circleId,
+    required this.circleTitle,
+    super.key,
   });
   final String circleId;
   final String circleTitle;
@@ -28,7 +29,8 @@ class CirclesChatScreen extends ConsumerStatefulWidget {
   ConsumerState<CirclesChatScreen> createState() => _CirclesChatScreenState();
 }
 
-class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with WidgetsBindingObserver {
+class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen>
+    with WidgetsBindingObserver {
   final TextEditingController _msgController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   CircleModel? _circle;
@@ -44,7 +46,10 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
 
   Future<void> _loadCircleAndCheckInStatus() async {
     try {
-      final doc = await FirebaseFirestore.instance.collection('circles').doc(widget.circleId).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('circles')
+          .doc(widget.circleId)
+          .get();
       if (doc.exists && mounted) {
         setState(() {
           _circle = CircleModel.fromMap(doc.data()!, doc.id);
@@ -59,7 +64,7 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
           .collection('checkins')
           .doc(service.currentUserId)
           .get();
-      
+
       if (mounted) {
         setState(() {
           _hasCheckedIn = checkinSnap.exists;
@@ -72,7 +77,8 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
       // Stop sharing immediately in background to conserve battery and cost (Cost Protection)
       if (_shareLocation) {
         CirclesLiveLocationService.instance.stopSharing(widget.circleId);
@@ -80,7 +86,9 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
     } else if (state == AppLifecycleState.resumed) {
       // Re-enable if toggled on
       if (_shareLocation && _circle != null) {
-        CirclesLiveLocationService.instance.startSharing(widget.circleId, _circle!).catchError((_) {
+        CirclesLiveLocationService.instance
+            .startSharing(widget.circleId, _circle!)
+            .catchError((_) {
           setState(() => _shareLocation = false);
         });
       }
@@ -99,9 +107,9 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
   void _sendMessage() {
     if (_msgController.text.trim().isEmpty) return;
     ref.read(circlesChatProvider(widget.circleId).notifier).sendMessage(
-      widget.circleId,
-      _msgController.text.trim(),
-    );
+          widget.circleId,
+          _msgController.text.trim(),
+        );
     _msgController.clear();
     // Scroll to bottom
     Future.delayed(const Duration(milliseconds: 100), () {
@@ -118,14 +126,15 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
   void _pinMeetupLocation() {
     // Hosts can pin event coordinate details (Connaught Place coordinates)
     ref.read(circlesChatProvider(widget.circleId).notifier).pinLocation(
-      widget.circleId,
-      'Central Park Cafe, Outer Circle',
-      28.6139,
-      77.2090,
-      'Neon Blue Glow',
-    );
+          widget.circleId,
+          'Central Park Cafe, Outer Circle',
+          28.6139,
+          77.2090,
+          'Neon Blue Glow',
+        );
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('📍 Meetup location pinned! Visible to all members.')),
+      const SnackBar(
+          content: Text('📍 Meetup location pinned! Visible to all members.')),
     );
   }
 
@@ -152,15 +161,20 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
           children: [
             Text(
               'Safety & Moderation Options',
-              style: GoogleFonts.outfit(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              style: GoogleFonts.outfit(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            
+
             // Report Button
             ListTile(
-              leading: const Icon(Icons.flag_rounded, color: AppColors.karmaOrange),
-              title: const Text('Report Message / Behavior', style: TextStyle(color: Colors.white)),
+              leading:
+                  const Icon(Icons.flag_rounded, color: AppColors.karmaOrange),
+              title: const Text('Report Message / Behavior',
+                  style: TextStyle(color: Colors.white)),
               onTap: () async {
                 Navigator.of(context).pop();
                 await service.reportItem(
@@ -170,7 +184,9 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
                   reason: 'Offensive language / breaking rules',
                 );
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('🛡️ Report submitted. Gotchaa safety moderators will review this.')),
+                  const SnackBar(
+                      content: Text(
+                          '🛡️ Report submitted. Gotchaa safety moderators will review this.')),
                 );
               },
             ),
@@ -178,17 +194,21 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
             // Block Button (if not me)
             if (!isMe)
               ListTile(
-                leading: const Icon(Icons.block_rounded, color: AppColors.error),
-                title: Text('Block ${msg.senderName}', style: const TextStyle(color: AppColors.error)),
+                leading:
+                    const Icon(Icons.block_rounded, color: AppColors.error),
+                title: Text('Block ${msg.senderName}',
+                    style: const TextStyle(color: AppColors.error)),
                 onTap: () async {
                   Navigator.of(context).pop();
                   await service.blockUser(msg.senderId);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('🛡️ Blocked ${msg.senderName}. Restarting chat view...')),
+                    SnackBar(
+                        content: Text(
+                            '🛡️ Blocked ${msg.senderName}. Restarting chat view...')),
                   );
                 },
               ),
-            
+
             const SizedBox(height: 12),
           ],
         ),
@@ -209,35 +229,46 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.circleTitle, style: GoogleFonts.outfit(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-            Text('Temporary Group Chat', style: GoogleFonts.inter(color: context.textSecondary, fontSize: 11)),
+            Text(widget.circleTitle,
+                style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold)),
+            Text('Temporary Group Chat',
+                style: GoogleFonts.inter(
+                    color: context.textSecondary, fontSize: 11)),
           ],
         ),
         actions: [
           if (_circle != null) ...[
             if (isHost)
               IconButton(
-                icon: const Icon(Icons.qr_code_2_rounded, color: AppColors.primaryGlow),
+                icon: const Icon(Icons.qr_code_2_rounded,
+                    color: AppColors.primaryGlow),
                 onPressed: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => CheckInQrScreen(circle: _circle!)),
+                    MaterialPageRoute(
+                        builder: (_) => CheckInQrScreen(circle: _circle!)),
                   );
                 },
                 tooltip: 'Generate Check-in QR',
               )
             else
               IconButton(
-                icon: const Icon(Icons.camera_alt_rounded, color: Colors.greenAccent),
+                icon: const Icon(Icons.camera_alt_rounded,
+                    color: Colors.greenAccent),
                 onPressed: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => CheckInScannerScreen(circle: _circle!)),
+                    MaterialPageRoute(
+                        builder: (_) => CheckInScannerScreen(circle: _circle!)),
                   );
                 },
                 tooltip: 'Check In',
               ),
           ],
           IconButton(
-            icon: const Icon(Icons.pin_drop_rounded, color: AppColors.primaryGlow),
+            icon: const Icon(Icons.pin_drop_rounded,
+                color: AppColors.primaryGlow),
             onPressed: _pinMeetupLocation,
             tooltip: 'Pin Meetup Location',
           )
@@ -252,65 +283,83 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  const Icon(Icons.security, color: AppColors.karmaOrange, size: 16),
+                  const Icon(Icons.security,
+                      color: AppColors.karmaOrange, size: 16),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'All group chat messages expire 24 hours after the meetup event ends.',
-                      style: GoogleFonts.inter(color: Colors.white70, fontSize: 11),
+                      style: GoogleFonts.inter(
+                          color: Colors.white70, fontSize: 11),
                     ),
                   ),
                 ],
               ),
             ),
 
-            if (_hasCheckedIn && _circle != null && CirclesLiveLocationService.instance.isEventWindowActive(_circle!)) ...[
+            if (_hasCheckedIn &&
+                _circle != null &&
+                CirclesLiveLocationService.instance
+                    .isEventWindowActive(_circle!)) ...[
               // Safety Warning Banner
               if (_shareLocation)
                 Container(
                   color: Colors.green.withOpacity(0.15),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Row(
                     children: [
-                      const Icon(Icons.location_on, color: Colors.greenAccent, size: 16),
+                      const Icon(Icons.location_on,
+                          color: Colors.greenAccent, size: 16),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Your location is being shared with circle members',
-                          style: GoogleFonts.inter(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.inter(
+                              color: Colors.white70,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
                   ),
                 ),
-              
+
               // Share Toggle Bar
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: GlassmorphicCard(
                   borderRadius: 16,
                   child: SwitchListTile(
                     value: _shareLocation,
                     title: Text(
                       'Live Location Radar',
-                      style: GoogleFonts.outfit(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.outfit(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(
                       'Share your coordinate coordinates with other checked-in attendees.',
-                      style: GoogleFonts.inter(color: Colors.white54, fontSize: 10),
+                      style: GoogleFonts.inter(
+                          color: Colors.white54, fontSize: 10),
                     ),
                     activeThumbColor: AppColors.primaryGlow,
                     onChanged: (val) async {
                       try {
                         if (val) {
-                          await CirclesLiveLocationService.instance.startSharing(widget.circleId, _circle!);
+                          await CirclesLiveLocationService.instance
+                              .startSharing(widget.circleId, _circle!);
                           setState(() => _shareLocation = true);
                         } else {
-                          await CirclesLiveLocationService.instance.stopSharing(widget.circleId);
+                          await CirclesLiveLocationService.instance
+                              .stopSharing(widget.circleId);
                           setState(() => _shareLocation = false);
                         }
                       } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sharing Error: $e')));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Sharing Error: $e')));
                       }
                     },
                   ),
@@ -320,7 +369,8 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
               // Live Location Map Radar widget
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: CirclesLiveMapWidget(circleId: widget.circleId, circle: _circle!),
+                child: CirclesLiveMapWidget(
+                    circleId: widget.circleId, circle: _circle!),
               ),
             ],
 
@@ -329,7 +379,8 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
                 padding: const EdgeInsets.all(8),
                 child: Text(
                   '⚠️ FireStore cost protection active. Throttling reads.',
-                  style: GoogleFonts.outfit(color: AppColors.error, fontSize: 11),
+                  style:
+                      GoogleFonts.outfit(color: AppColors.error, fontSize: 11),
                 ),
               ),
 
@@ -339,7 +390,8 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
                   ? Center(
                       child: Text(
                         'Say hello! This circle\'s chat is empty.',
-                        style: GoogleFonts.outfit(color: context.textSecondary, fontSize: 15),
+                        style: GoogleFonts.outfit(
+                            color: context.textSecondary, fontSize: 15),
                       ),
                     )
                   : ListView.builder(
@@ -365,22 +417,31 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
                                   children: [
                                     Row(
                                       children: [
-                                        const Icon(Icons.push_pin_rounded, color: AppColors.primaryGlow, size: 16),
+                                        const Icon(Icons.push_pin_rounded,
+                                            color: AppColors.primaryGlow,
+                                            size: 16),
                                         const SizedBox(width: 6),
                                         Text(
                                           'PINNED MEETUP LOCATION',
-                                          style: GoogleFonts.outfit(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                                          style: GoogleFonts.outfit(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold),
                                         ),
                                       ],
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
                                       msg.pinLocation!['title'] ?? '',
-                                      style: GoogleFonts.outfit(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                                      style: GoogleFonts.outfit(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     Text(
                                       'Coordinates: (${msg.pinLocation!['lat']}, ${msg.pinLocation!['lng']}) • Style: ${msg.pinLocation!['style']}',
-                                      style: GoogleFonts.inter(color: Colors.white70, fontSize: 12),
+                                      style: GoogleFonts.inter(
+                                          color: Colors.white70, fontSize: 12),
                                     ),
                                   ],
                                 ),
@@ -392,7 +453,9 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: Align(
-                            alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                            alignment: isMe
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -401,8 +464,13 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
                                   CircleAvatar(
                                     radius: 16,
                                     backgroundColor: Colors.white12,
-                                    backgroundImage: msg.senderAvatar.isNotEmpty ? NetworkImage(msg.senderAvatar) : null,
-                                    child: msg.senderAvatar.isEmpty ? const Icon(Icons.person, size: 16, color: Colors.white) : null,
+                                    backgroundImage: msg.senderAvatar.isNotEmpty
+                                        ? NetworkImage(msg.senderAvatar)
+                                        : null,
+                                    child: msg.senderAvatar.isEmpty
+                                        ? const Icon(Icons.person,
+                                            size: 16, color: Colors.white)
+                                        : null,
                                   ),
                                   const SizedBox(width: 8),
                                 ],
@@ -411,31 +479,45 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
                                     onLongPress: () => _showSafetyOptions(msg),
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: isMe ? AppColors.electricBlue : context.surface,
+                                        color: isMe
+                                            ? AppColors.electricBlue
+                                            : context.surface,
                                         borderRadius: BorderRadius.only(
                                           topLeft: const Radius.circular(16),
                                           topRight: const Radius.circular(16),
-                                          bottomLeft: Radius.circular(isMe ? 16 : 0),
-                                          bottomRight: Radius.circular(isMe ? 0 : 16),
+                                          bottomLeft:
+                                              Radius.circular(isMe ? 16 : 0),
+                                          bottomRight:
+                                              Radius.circular(isMe ? 0 : 16),
                                         ),
                                       ),
-                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 10),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           if (!isMe)
                                             Text(
                                               msg.senderName,
-                                              style: GoogleFonts.outfit(color: AppColors.primaryGlow, fontSize: 11, fontWeight: FontWeight.bold),
+                                              style: GoogleFonts.outfit(
+                                                  color: AppColors.primaryGlow,
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold),
                                             ),
                                           Text(
                                             msg.text,
-                                            style: GoogleFonts.inter(color: Colors.white, fontSize: 14),
+                                            style: GoogleFonts.inter(
+                                                color: Colors.white,
+                                                fontSize: 14),
                                           ),
                                           const SizedBox(height: 2),
                                           Text(
-                                            DateFormat('hh:mm a').format(msg.timestamp),
-                                            style: const TextStyle(color: Colors.white54, fontSize: 9),
+                                            DateFormat('hh:mm a')
+                                                .format(msg.timestamp),
+                                            style: const TextStyle(
+                                                color: Colors.white54,
+                                                fontSize: 9),
                                           ),
                                         ],
                                       ),
@@ -468,7 +550,8 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
                           borderRadius: BorderRadius.circular(24),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 12),
                       ),
                       onSubmitted: (_) => _sendMessage(),
                     ),
@@ -483,7 +566,8 @@ class _CirclesChatScreenState extends ConsumerState<CirclesChatScreen> with Widg
                         color: AppColors.electricBlue,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.send, color: Colors.white, size: 18),
+                      child:
+                          const Icon(Icons.send, color: Colors.white, size: 18),
                     ),
                   ),
                 ],

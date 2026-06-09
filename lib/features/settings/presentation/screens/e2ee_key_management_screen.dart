@@ -51,7 +51,8 @@ class _E2eeKeyManagementScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✅ Keys rotated successfully! New key uploaded to Firestore.'),
+            content: Text(
+                '✅ Keys rotated successfully! New key uploaded to Firestore.'),
             backgroundColor: Colors.green,
           ),
         );
@@ -59,7 +60,9 @@ class _E2eeKeyManagementScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Rotation failed: $e'), backgroundColor: Colors.red),
+          SnackBar(
+              content: Text('❌ Rotation failed: $e'),
+              backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -106,7 +109,9 @@ class _E2eeKeyManagementScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Export failed: $e'), backgroundColor: Colors.red),
+          SnackBar(
+              content: Text('❌ Export failed: $e'),
+              backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -159,7 +164,8 @@ class _E2eeKeyManagementScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('❌ Import failed: wrong passphrase or corrupt backup. ($e)'),
+            content: Text(
+                '❌ Import failed: wrong passphrase or corrupt backup. ($e)'),
             backgroundColor: Colors.red,
           ),
         );
@@ -183,17 +189,22 @@ class _E2eeKeyManagementScreenState
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF1A1A2E),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(title, style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: Text(body, style: GoogleFonts.outfit(color: Colors.white70, height: 1.5)),
+        title: Text(title,
+            style: GoogleFonts.outfit(
+                color: Colors.white, fontWeight: FontWeight.bold)),
+        content: Text(body,
+            style: GoogleFonts.outfit(color: Colors.white70, height: 1.5)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Cancel', style: GoogleFonts.outfit(color: Colors.white54)),
+            child: Text('Cancel',
+                style: GoogleFonts.outfit(color: Colors.white54)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: confirmColor),
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(confirmLabel, style: GoogleFonts.outfit(color: Colors.white)),
+            child: Text(confirmLabel,
+                style: GoogleFonts.outfit(color: Colors.white)),
           ),
         ],
       ),
@@ -212,7 +223,9 @@ class _E2eeKeyManagementScreenState
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF1A1A2E),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(title, style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(title,
+            style: GoogleFonts.outfit(
+                color: Colors.white, fontWeight: FontWeight.bold)),
         content: TextField(
           controller: controller,
           obscureText: true,
@@ -220,17 +233,21 @@ class _E2eeKeyManagementScreenState
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: GoogleFonts.outfit(color: Colors.white38),
-            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
-            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.electricBlue)),
+            enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white24)),
+            focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: AppColors.electricBlue)),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, null),
-            child: Text('Cancel', style: GoogleFonts.outfit(color: Colors.white54)),
+            child: Text('Cancel',
+                style: GoogleFonts.outfit(color: Colors.white54)),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.electricBlue),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.electricBlue),
             onPressed: () => Navigator.pop(ctx, controller.text),
             child: Text(buttonLabel, style: GoogleFonts.outfit()),
           ),
@@ -239,14 +256,17 @@ class _E2eeKeyManagementScreenState
     );
   }
 
-  Future<String?> _showTextInputDialog({required String title, required String hint}) async {
+  Future<String?> _showTextInputDialog(
+      {required String title, required String hint}) async {
     final controller = TextEditingController();
     return showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF1A1A2E),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(title, style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(title,
+            style: GoogleFonts.outfit(
+                color: Colors.white, fontWeight: FontWeight.bold)),
         content: TextField(
           controller: controller,
           maxLines: 5,
@@ -271,10 +291,12 @@ class _E2eeKeyManagementScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, null),
-            child: Text('Cancel', style: GoogleFonts.outfit(color: Colors.white54)),
+            child: Text('Cancel',
+                style: GoogleFonts.outfit(color: Colors.white54)),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.electricBlue),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.electricBlue),
             onPressed: () => Navigator.pop(ctx, controller.text),
             child: Text('Confirm', style: GoogleFonts.outfit()),
           ),
@@ -288,177 +310,215 @@ class _E2eeKeyManagementScreenState
   // ---------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) => Scaffold(
-      backgroundColor: const Color(0xFF0D0D1A),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          'Encryption & Keys',
-          style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // --- Header banner ---
-            _buildInfoBanner(),
-            const SizedBox(height: 28),
-
-            // --- Crypto Technical Details ---
-            _buildSectionTitle('How It Works'),
-            const SizedBox(height: 12),
-            _buildTechCard(),
-            const SizedBox(height: 28),
-
-            // --- Actions ---
-            _buildSectionTitle('Key Management'),
-            const SizedBox(height: 12),
-            _buildActionCard(
-              icon: Icons.autorenew_rounded,
-              color: Colors.orange,
-              title: 'Rotate Identity Keys',
-              subtitle: 'Generate a new X25519 key pair. Contacts will see a new Safety Number.',
-              isLoading: _isRotating,
-              onTap: _rotateKeys,
-            ),
-            const SizedBox(height: 12),
-            _buildActionCard(
-              icon: Icons.upload_rounded,
-              color: AppColors.electricBlue,
-              title: 'Export Key Backup',
-              subtitle: 'Encrypt & save your private key with a passphrase. Use on a new device.',
-              isLoading: _isExporting,
-              onTap: _exportBackup,
-            ),
-            const SizedBox(height: 12),
-            _buildActionCard(
-              icon: Icons.download_rounded,
-              color: Colors.green,
-              title: 'Import Key Backup',
-              subtitle: 'Restore a previous backup to decrypt messages from your old device.',
-              isLoading: _isImporting,
-              onTap: _importBackup,
-              isDanger: false,
-            ),
-            const SizedBox(height: 28),
-
-            // --- Forward Secrecy Note ---
-            _buildForwardSecrecyNote(),
-            const SizedBox(height: 32),
-          ],
-        ),
-      ),
-    );
-
-  Widget _buildSectionTitle(String title) => Text(
-    title.toUpperCase(),
-    style: GoogleFonts.outfit(
-      color: Colors.white38,
-      fontSize: 12,
-      fontWeight: FontWeight.bold,
-      letterSpacing: 1.2,
-    ),
-  );
-
-  Widget _buildInfoBanner() => Container(
-    padding: const EdgeInsets.all(20),
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        colors: [AppColors.electricBlue.withValues(alpha: 0.2), Colors.purple.withValues(alpha: 0.15)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: AppColors.electricBlue.withValues(alpha: 0.3)),
-    ),
-    child: Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppColors.electricBlue.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(14),
+        backgroundColor: const Color(0xFF0D0D1A),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: Text(
+            'Encryption & Keys',
+            style: GoogleFonts.outfit(
+                color: Colors.white, fontWeight: FontWeight.bold),
           ),
-          child: const Icon(Icons.lock_rounded, color: Colors.white, size: 28),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                color: Colors.white, size: 20),
+            onPressed: () => Navigator.pop(context),
+          ),
         ),
-        const SizedBox(width: 16),
-        Expanded(
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'End-to-End Encrypted',
-                style: GoogleFonts.outfit(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+              // --- Header banner ---
+              _buildInfoBanner(),
+              const SizedBox(height: 28),
+
+              // --- Crypto Technical Details ---
+              _buildSectionTitle('How It Works'),
+              const SizedBox(height: 12),
+              _buildTechCard(),
+              const SizedBox(height: 28),
+
+              // --- Actions ---
+              _buildSectionTitle('Key Management'),
+              const SizedBox(height: 12),
+              _buildActionCard(
+                icon: Icons.autorenew_rounded,
+                color: Colors.orange,
+                title: 'Rotate Identity Keys',
+                subtitle:
+                    'Generate a new X25519 key pair. Contacts will see a new Safety Number.',
+                isLoading: _isRotating,
+                onTap: _rotateKeys,
               ),
-              const SizedBox(height: 4),
-              Text(
-                'GOTCHAA cannot read your messages. Private keys never leave your device.',
-                style: GoogleFonts.outfit(color: Colors.white70, fontSize: 13, height: 1.4),
+              const SizedBox(height: 12),
+              _buildActionCard(
+                icon: Icons.upload_rounded,
+                color: AppColors.electricBlue,
+                title: 'Export Key Backup',
+                subtitle:
+                    'Encrypt & save your private key with a passphrase. Use on a new device.',
+                isLoading: _isExporting,
+                onTap: _exportBackup,
               ),
+              const SizedBox(height: 12),
+              _buildActionCard(
+                icon: Icons.download_rounded,
+                color: Colors.green,
+                title: 'Import Key Backup',
+                subtitle:
+                    'Restore a previous backup to decrypt messages from your old device.',
+                isLoading: _isImporting,
+                onTap: _importBackup,
+                isDanger: false,
+              ),
+              const SizedBox(height: 28),
+
+              // --- Forward Secrecy Note ---
+              _buildForwardSecrecyNote(),
+              const SizedBox(height: 32),
             ],
           ),
         ),
-      ],
-    ),
-  ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1);
+      );
+
+  Widget _buildSectionTitle(String title) => Text(
+        title.toUpperCase(),
+        style: GoogleFonts.outfit(
+          color: Colors.white38,
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
+        ),
+      );
+
+  Widget _buildInfoBanner() => Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.electricBlue.withValues(alpha: 0.2),
+              Colors.purple.withValues(alpha: 0.15)
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          border:
+              Border.all(color: AppColors.electricBlue.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.electricBlue.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child:
+                  const Icon(Icons.lock_rounded, color: Colors.white, size: 28),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'End-to-End Encrypted',
+                    style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'GOTCHAA cannot read your messages. Private keys never leave your device.',
+                    style: GoogleFonts.outfit(
+                        color: Colors.white70, fontSize: 13, height: 1.4),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1);
 
   Widget _buildTechCard() => Container(
-    padding: const EdgeInsets.all(20),
-    decoration: BoxDecoration(
-      color: Colors.white.withValues(alpha: 0.04),
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: Colors.white10),
-    ),
-    child: Column(
-      children: [
-        _buildTechRow('Key Exchange', 'X25519 Elliptic Curve Diffie-Hellman', Icons.swap_horiz_rounded),
-        _divider(),
-        _buildTechRow('Key Derivation', 'HKDF-SHA256 (chatId as info)', Icons.functions_rounded),
-        _divider(),
-        _buildTechRow('Encryption', 'AES-256-GCM (random 12-byte IV per message)', Icons.enhanced_encryption_rounded),
-        _divider(),
-        _buildTechRow('Integrity', 'AES-GCM Authentication Tag (128-bit)', Icons.verified_rounded),
-        _divider(),
-        _buildTechRow('Key Storage', 'flutter_secure_storage (Android Keystore / iOS Secure Enclave)', Icons.security_rounded),
-        _divider(),
-        _buildTechRow('Safety Number', 'SHA-256(pubKeyA ‖ pubKeyB) — first 40 hex chars', Icons.fingerprint_rounded),
-        _divider(),
-        _buildTechRow('Key Backup', 'PBKDF2-SHA256 (100k iterations) + AES-256-GCM', Icons.backup_rounded),
-        _divider(),
-        _buildTechRow('Forward Secrecy', 'Symmetric Ratchet foundation (Double Ratchet ready)', Icons.repeat_rounded),
-      ],
-    ),
-  ).animate().fadeIn(delay: 100.ms);
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.04),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white10),
+        ),
+        child: Column(
+          children: [
+            _buildTechRow(
+                'Key Exchange',
+                'X25519 Elliptic Curve Diffie-Hellman',
+                Icons.swap_horiz_rounded),
+            _divider(),
+            _buildTechRow('Key Derivation', 'HKDF-SHA256 (chatId as info)',
+                Icons.functions_rounded),
+            _divider(),
+            _buildTechRow(
+                'Encryption',
+                'AES-256-GCM (random 12-byte IV per message)',
+                Icons.enhanced_encryption_rounded),
+            _divider(),
+            _buildTechRow('Integrity', 'AES-GCM Authentication Tag (128-bit)',
+                Icons.verified_rounded),
+            _divider(),
+            _buildTechRow(
+                'Key Storage',
+                'flutter_secure_storage (Android Keystore / iOS Secure Enclave)',
+                Icons.security_rounded),
+            _divider(),
+            _buildTechRow(
+                'Safety Number',
+                'SHA-256(pubKeyA ‖ pubKeyB) — first 40 hex chars',
+                Icons.fingerprint_rounded),
+            _divider(),
+            _buildTechRow(
+                'Key Backup',
+                'PBKDF2-SHA256 (100k iterations) + AES-256-GCM',
+                Icons.backup_rounded),
+            _divider(),
+            _buildTechRow(
+                'Forward Secrecy',
+                'Symmetric Ratchet foundation (Double Ratchet ready)',
+                Icons.repeat_rounded),
+          ],
+        ),
+      ).animate().fadeIn(delay: 100.ms);
 
   Widget _divider() => const Divider(color: Colors.white10, height: 20);
 
   Widget _buildTechRow(String label, String value, IconData icon) => Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Icon(icon, size: 18, color: AppColors.electricBlue.withValues(alpha: 0.8)),
-      const SizedBox(width: 12),
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label, style: GoogleFonts.outfit(color: Colors.white54, fontSize: 12, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 2),
-            Text(value, style: GoogleFonts.jetBrainsMono(color: Colors.white, fontSize: 12)),
-          ],
-        ),
-      ),
-    ],
-  );
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon,
+              size: 18, color: AppColors.electricBlue.withValues(alpha: 0.8)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label,
+                    style: GoogleFonts.outfit(
+                        color: Colors.white54,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600)),
+                const SizedBox(height: 2),
+                Text(value,
+                    style: GoogleFonts.jetBrainsMono(
+                        color: Colors.white, fontSize: 12)),
+              ],
+            ),
+          ),
+        ],
+      );
 
   Widget _buildActionCard({
     required IconData icon,
@@ -468,71 +528,87 @@ class _E2eeKeyManagementScreenState
     required bool isLoading,
     required VoidCallback onTap,
     bool isDanger = false,
-  }) => InkWell(
-    onTap: isLoading ? null : onTap,
-    borderRadius: BorderRadius.circular(16),
-    child: Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.04),
+  }) =>
+      InkWell(
+        onTap: isLoading ? null : onTap,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.25)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: isLoading
-                ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: color))
-                : Icon(icon, color: color, size: 22),
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.04),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: color.withValues(alpha: 0.25)),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15)),
-                const SizedBox(height: 3),
-                Text(subtitle, style: GoogleFonts.outfit(color: Colors.white54, fontSize: 12, height: 1.4)),
-              ],
-            ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: isLoading
+                    ? SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: color))
+                    : Icon(icon, color: color, size: 22),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                        style: GoogleFonts.outfit(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15)),
+                    const SizedBox(height: 3),
+                    Text(subtitle,
+                        style: GoogleFonts.outfit(
+                            color: Colors.white54, fontSize: 12, height: 1.4)),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded, color: Colors.white24),
+            ],
           ),
-          const Icon(Icons.chevron_right_rounded, color: Colors.white24),
-        ],
-      ),
-    ),
-  ).animate().fadeIn(delay: 200.ms);
+        ),
+      ).animate().fadeIn(delay: 200.ms);
 
   Widget _buildForwardSecrecyNote() => Container(
-    padding: const EdgeInsets.all(18),
-    decoration: BoxDecoration(
-      color: Colors.purple.withValues(alpha: 0.08),
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: Colors.purple.withValues(alpha: 0.2)),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: Colors.purple.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.purple.withValues(alpha: 0.2)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.science_rounded, color: Colors.purple, size: 18),
-            const SizedBox(width: 8),
+            Row(
+              children: [
+                const Icon(Icons.science_rounded,
+                    color: Colors.purple, size: 18),
+                const SizedBox(width: 8),
+                Text(
+                  'Double Ratchet (Forward Secrecy)',
+                  style: GoogleFonts.outfit(
+                      color: Colors.purple,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
             Text(
-              'Double Ratchet (Forward Secrecy)',
-              style: GoogleFonts.outfit(color: Colors.purple, fontWeight: FontWeight.bold, fontSize: 13),
+              'GOTCHAA has implemented the RatchetState and symmetric ratchet step — the foundation of the Signal Protocol Double Ratchet. Full implementation provides Perfect Forward Secrecy: even if one key is compromised, future and past messages remain secure.',
+              style: GoogleFonts.outfit(
+                  color: Colors.white60, fontSize: 12, height: 1.5),
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        Text(
-          'GOTCHAA has implemented the RatchetState and symmetric ratchet step — the foundation of the Signal Protocol Double Ratchet. Full implementation provides Perfect Forward Secrecy: even if one key is compromised, future and past messages remain secure.',
-          style: GoogleFonts.outfit(color: Colors.white60, fontSize: 12, height: 1.5),
-        ),
-      ],
-    ),
-  ).animate().fadeIn(delay: 300.ms);
+      ).animate().fadeIn(delay: 300.ms);
 }

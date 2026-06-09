@@ -9,9 +9,11 @@ import 'post_card.dart';
 import 'vybz_card.dart';
 
 class FeedListView extends ConsumerWidget {
-
   const FeedListView({
-    required this.feedAsync, required this.onRefresh, required this.onLoadMore, super.key,
+    required this.feedAsync,
+    required this.onRefresh,
+    required this.onLoadMore,
+    super.key,
     this.emptyTitle,
     this.emptySubtitle,
     this.emptyActionLabel,
@@ -27,70 +29,70 @@ class FeedListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => feedAsync.when(
-      data: (items) {
-        if (items.isEmpty) return _buildEmptyState(context);
+        data: (items) {
+          if (items.isEmpty) return _buildEmptyState(context);
 
-        return RefreshIndicator(
-          onRefresh: () async => onRefresh(),
-          color: context.accent,
-          backgroundColor: context.bg,
-          child: NotificationListener<ScrollNotification>(
-            onNotification: (notification) {
-              if (notification is ScrollEndNotification &&
-                  notification.metrics.extentAfter < 200) {
-                onLoadMore();
-              }
-              return false;
-            },
-            child: ListView.builder(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.only(bottom: 100),
-              itemCount: items.length + 1,
-              itemBuilder: (context, index) {
-                if (index == items.length) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 32),
-                    child: Center(
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  );
+          return RefreshIndicator(
+            onRefresh: () async => onRefresh(),
+            color: context.accent,
+            backgroundColor: context.bg,
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                if (notification is ScrollEndNotification &&
+                    notification.metrics.extentAfter < 200) {
+                  onLoadMore();
                 }
-
-                final item = items[index];
-                if (item is PostFeedItem) {
-                  return PostCard(post: item.post);
-                } else if (item is VybzFeedItem) {
-                  return VybzCard(vybz: item.vybz);
-                }
-                return const SizedBox.shrink();
+                return false;
               },
+              child: ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.only(bottom: 100),
+                itemCount: items.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == items.length) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 32),
+                      child: Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    );
+                  }
+
+                  final item = items[index];
+                  if (item is PostFeedItem) {
+                    return PostCard(post: item.post);
+                  } else if (item is VybzFeedItem) {
+                    return VybzCard(vybz: item.vybz);
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
             ),
+          );
+        },
+        // Shimmer skeleton instead of spinner
+        loading: () => const GotchaaSkeletonLoader.feed(itemCount: 3),
+        error: (err, stack) => Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.error_outline_rounded,
+                  size: 48, color: context.iconMuted),
+              const SizedBox(height: 16),
+              Text('Failed to load feed',
+                  style: GoogleFonts.outfit(color: context.textSecondary)),
+              TextButton(onPressed: onRefresh, child: const Text('Retry')),
+            ],
           ),
-        );
-      },
-      // Shimmer skeleton instead of spinner
-      loading: () => const GotchaaSkeletonLoader.feed(itemCount: 3),
-      error: (err, stack) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.error_outline_rounded, size: 48, color: context.iconMuted),
-            const SizedBox(height: 16),
-            Text('Failed to load feed',
-                style: GoogleFonts.outfit(color: context.textSecondary)),
-            TextButton(onPressed: onRefresh, child: const Text('Retry')),
-          ],
         ),
-      ),
-    );
+      );
 
   Widget _buildEmptyState(BuildContext context) => GotchaaEmptyState(
-      icon: Icons.auto_awesome_outlined,
-      title: emptyTitle ?? 'Your feed is quiet',
-      subtitle: emptySubtitle ??
-          'Follow more people or explore trending content.',
-      actionLabel: emptyActionLabel,
-      onAction: onEmptyAction,
-    );
+        icon: Icons.auto_awesome_outlined,
+        title: emptyTitle ?? 'Your feed is quiet',
+        subtitle:
+            emptySubtitle ?? 'Follow more people or explore trending content.',
+        actionLabel: emptyActionLabel,
+        onAction: onEmptyAction,
+      );
 }
-

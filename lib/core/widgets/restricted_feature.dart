@@ -10,9 +10,9 @@ enum RestrictionType {
 }
 
 class RestrictedFeature extends ConsumerWidget {
-
   const RestrictedFeature({
-    required this.child, super.key,
+    required this.child,
+    super.key,
     this.type = RestrictionType.social,
     this.fallback,
   });
@@ -42,12 +42,14 @@ class RestrictedFeature extends ConsumerWidget {
 
     // Default restricted UI
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Container(
       padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05),
+        color: isDark
+            ? Colors.white.withOpacity(0.05)
+            : Colors.black.withOpacity(0.05),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(

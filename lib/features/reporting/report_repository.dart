@@ -12,7 +12,8 @@ class ReportRepository {
     final data = report.toMap()
       ..['isCsamFlag'] = report.isCsamFlag || isChildSafety
       ..['contentHidden'] = report.contentHidden || isChildSafety
-      ..['priority'] = isChildSafety ? 'critical' : _priorityForSeverity(report.severity);
+      ..['priority'] =
+          isChildSafety ? 'critical' : _priorityForSeverity(report.severity);
 
     final ref = await _firestore.collection('moderation_reports').add(data);
 
@@ -21,14 +22,18 @@ class ReportRepository {
     final reportsQuery = await _firestore
         .collection('moderation_reports')
         .where('contentId', isEqualTo: report.contentId)
-        .where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(oneDayAgo))
+        .where('timestamp',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(oneDayAgo))
         .get();
 
     if (reportsQuery.docs.length >= 3 || isChildSafety) {
       await _hideContent(report.contentType, report.contentId);
-      
+
       // Add to moderator review queue
-      await _firestore.collection('moderation_queue').doc(report.contentId.replaceAll('/', '_')).set({
+      await _firestore
+          .collection('moderation_queue')
+          .doc(report.contentId.replaceAll('/', '_'))
+          .set({
         'contentId': report.contentId,
         'contentType': report.contentType,
         'reportsCount': reportsQuery.docs.length,
@@ -40,7 +45,9 @@ class ReportRepository {
 
       if (isChildSafety) {
         try {
-          await FirebaseFunctions.instance.httpsCallable('notifyAdminModeration').call({
+          await FirebaseFunctions.instance
+              .httpsCallable('notifyAdminModeration')
+              .call({
             'reportId': ref.id,
             'priority': 'critical',
             'category': report.category,

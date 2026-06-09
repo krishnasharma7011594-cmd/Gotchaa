@@ -1,5 +1,5 @@
 /// Firestore Collection Schema: takedown_requests
-/// 
+///
 /// Document ID: Auto-generated
 /// Fields:
 /// - contentId: String (ID of the content to remove)

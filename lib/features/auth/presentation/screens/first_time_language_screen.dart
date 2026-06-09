@@ -76,9 +76,9 @@ class _FirstTimeLanguageScreenState
   // ── Save both prefs and mark done ────────────────────────────────────────
 
   Future<void> _finish() async {
-    // We don't show the loading overlay immediately to avoid "flicker" 
+    // We don't show the loading overlay immediately to avoid "flicker"
     // since SharedPreferences is very fast.
-    
+
     try {
       // 1. Save UI language (now background-syncs to Firestore)
       await ref.read(languageProvider.notifier).setLanguage(_selectedUiCode);
@@ -136,179 +136,176 @@ class _FirstTimeLanguageScreenState
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          // ── Decorative blobs ─────────────────────────────────────────────
-          Positioned(
-            top: -80,
-            right: -80,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.electricBlue.withValues(alpha: 0.07),
+        backgroundColor: Colors.white,
+        body: Stack(
+          children: [
+            // ── Decorative blobs ─────────────────────────────────────────────
+            Positioned(
+              top: -80,
+              right: -80,
+              child: Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.electricBlue.withValues(alpha: 0.07),
+                ),
               ),
-            ),
-          ).animate().fadeIn(duration: 800.ms).scale(begin: const Offset(0.4, 0.4)),
-          Positioned(
-            bottom: -60,
-            left: -60,
-            child: Container(
-              width: 260,
-              height: 260,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.primaryGlow.withValues(alpha: 0.05),
+            )
+                .animate()
+                .fadeIn(duration: 800.ms)
+                .scale(begin: const Offset(0.4, 0.4)),
+            Positioned(
+              bottom: -60,
+              left: -60,
+              child: Container(
+                width: 260,
+                height: 260,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primaryGlow.withValues(alpha: 0.05),
+                ),
               ),
-            ),
-          ).animate().fadeIn(duration: 1000.ms, delay: 200.ms),
+            ).animate().fadeIn(duration: 1000.ms, delay: 200.ms),
 
-          // ── Main content ─────────────────────────────────────────────────
-          SafeArea(
-            child: Column(
-              children: [
-                // ── Top header ─────────────────────────────────────────
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Step indicator
-                      Row(
-                        children: [
-                          _StepDot(active: _step == 0),
-                          const SizedBox(width: 8),
-                          _StepDot(active: _step == 1),
-                        ],
-                      )
-                          .animate()
-                          .fadeIn(duration: 500.ms),
-                      const SizedBox(height: 20),
-                      // Title
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        transitionBuilder: (child, anim) => FadeTransition(
-                          opacity: anim,
-                          child: SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(0, 0.15),
-                              end: Offset.zero,
-                            ).animate(anim),
-                            child: child,
+            // ── Main content ─────────────────────────────────────────────────
+            SafeArea(
+              child: Column(
+                children: [
+                  // ── Top header ─────────────────────────────────────────
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Step indicator
+                        Row(
+                          children: [
+                            _StepDot(active: _step == 0),
+                            const SizedBox(width: 8),
+                            _StepDot(active: _step == 1),
+                          ],
+                        ).animate().fadeIn(duration: 500.ms),
+                        const SizedBox(height: 20),
+                        // Title
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          transitionBuilder: (child, anim) => FadeTransition(
+                            opacity: anim,
+                            child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(0, 0.15),
+                                end: Offset.zero,
+                              ).animate(anim),
+                              child: child,
+                            ),
+                          ),
+                          child: Column(
+                            key: ValueKey(_step),
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _step == 0
+                                    ? 'Choose your\nlanguage 🌐'
+                                    : 'Chat translation\nlanguage 💬',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.black,
+                                  height: 1.15,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                _step == 0
+                                    ? 'Pick the language for the app interface'
+                                    : 'Messages will be translated into this language',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 15,
+                                  color: Colors.grey.shade500,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        child: Column(
-                          key: ValueKey(_step),
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _step == 0
-                                  ? 'Choose your\nlanguage 🌐'
-                                  : 'Chat translation\nlanguage 💬',
-                              style: GoogleFonts.outfit(
-                                fontSize: 32,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.black,
-                                height: 1.15,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              _step == 0
-                                  ? 'Pick the language for the app interface'
-                                  : 'Messages will be translated into this language',
-                              style: GoogleFonts.outfit(
-                                fontSize: 15,
-                                color: Colors.grey.shade500,
-                              ),
-                            ),
-                          ],
+                      ],
+                    ),
+                  ),
+
+                  // ── Language list pages ─────────────────────────────────
+                  Expanded(
+                    child: PageView(
+                      controller: _pageController,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        _AppLanguagePage(
+                          selectedCode: _selectedUiCode,
+                          onSelect: (code) =>
+                              setState(() => _selectedUiCode = code),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // ── Language list pages ─────────────────────────────────
-                Expanded(
-                  child: PageView(
-                    controller: _pageController,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: [
-                      _AppLanguagePage(
-                        selectedCode: _selectedUiCode,
-                        onSelect: (code) =>
-                            setState(() => _selectedUiCode = code),
-                      ),
-                      _ChatLanguagePage(
-                        selected: _selectedChat,
-                        onSelect: (lang) =>
-                            setState(() => _selectedChat = lang),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // ── Bottom action bar ───────────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-                  child: Row(
-                    children: [
-                      // Back button (only on step 2)
-                      if (_step == 1)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 12),
-                          child: _BackBtn(onTap: _prevStep),
-                        )
-                            .animate()
-                            .fadeIn(duration: 300.ms)
-                            .slideX(begin: -0.3),
-
-                      // Primary button
-                      Expanded(
-                        child: _PrimaryButton(
-                          label: _step == 0 ? 'Continue' : 'Get Started 🚀',
-                          isLoading: _isSaving,
-                          onPressed: _nextStep,
+                        _ChatLanguagePage(
+                          selected: _selectedChat,
+                          onSelect: (lang) =>
+                              setState(() => _selectedChat = lang),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                )
-                    .animate()
-                    .fadeIn(delay: 600.ms)
-                    .slideY(begin: 0.3),
-              ],
+
+                  // ── Bottom action bar ───────────────────────────────────
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                    child: Row(
+                      children: [
+                        // Back button (only on step 2)
+                        if (_step == 1)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: _BackBtn(onTap: _prevStep),
+                          )
+                              .animate()
+                              .fadeIn(duration: 300.ms)
+                              .slideX(begin: -0.3),
+
+                        // Primary button
+                        Expanded(
+                          child: _PrimaryButton(
+                            label: _step == 0 ? 'Continue' : 'Get Started 🚀',
+                            isLoading: _isSaving,
+                            onPressed: _nextStep,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.3),
+                ],
+              ),
             ),
-          ),
 
-          // ── Loading overlay ──────────────────────────────────────────────
-          if (_isSaving)
-            Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                child: Container(
-                  color: Colors.white.withValues(alpha: 0.5),
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.electricBlue,
+            // ── Loading overlay ──────────────────────────────────────────────
+            if (_isSaving)
+              Positioned.fill(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                  child: Container(
+                    color: Colors.white.withValues(alpha: 0.5),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.electricBlue,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
 }
 
 // ── App language page ─────────────────────────────────────────────────────────
 
 class _AppLanguagePage extends StatelessWidget {
-
   const _AppLanguagePage({
     required this.selectedCode,
     required this.onSelect,
@@ -343,7 +340,6 @@ class _AppLanguagePage extends StatelessWidget {
 // ── Chat language page ────────────────────────────────────────────────────────
 
 class _ChatLanguagePage extends StatelessWidget {
-
   const _ChatLanguagePage({
     required this.selected,
     required this.onSelect,
@@ -361,8 +357,7 @@ class _ChatLanguagePage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
               color: AppColors.electricBlue.withValues(alpha: 0.07),
               borderRadius: BorderRadius.circular(14),
@@ -414,7 +409,6 @@ class _ChatLanguagePage extends StatelessWidget {
 // ── Shared tile ───────────────────────────────────────────────────────────────
 
 class _LanguageTile extends StatelessWidget {
-
   const _LanguageTile({
     required this.flag,
     required this.nameNative,
@@ -434,88 +428,86 @@ class _LanguageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOut,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.electricBlue.withValues(alpha: 0.08)
-              : Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
             color: isSelected
-                ? AppColors.electricBlue
-                : Colors.grey.shade200,
-            width: isSelected ? 2 : 1,
+                ? AppColors.electricBlue.withValues(alpha: 0.08)
+                : Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: isSelected ? AppColors.electricBlue : Colors.grey.shade200,
+              width: isSelected ? 2 : 1,
+            ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: AppColors.electricBlue.withValues(alpha: 0.12),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    )
+                  ]
+                : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    )
+                  ],
           ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.electricBlue.withValues(alpha: 0.12),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  )
-                ]
-              : [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  )
-                ],
-        ),
-        child: Row(
-          children: [
-            if (showFlag) ...[
-              Text(flag, style: const TextStyle(fontSize: 24)),
-              const SizedBox(width: 12),
-            ],
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    nameNative,
-                    style: GoogleFonts.outfit(
-                      fontSize: 15,
-                      fontWeight: isSelected
-                          ? FontWeight.w700
-                          : FontWeight.w500,
-                      color: isSelected
-                          ? AppColors.electricBlue
-                          : Colors.black87,
-                    ),
-                  ),
-                  if (nameEn.isNotEmpty)
+          child: Row(
+            children: [
+              if (showFlag) ...[
+                Text(flag, style: const TextStyle(fontSize: 24)),
+                const SizedBox(width: 12),
+              ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      nameEn,
+                      nameNative,
                       style: GoogleFonts.outfit(
-                        fontSize: 12,
+                        fontSize: 15,
+                        fontWeight:
+                            isSelected ? FontWeight.w700 : FontWeight.w500,
                         color: isSelected
-                            ? AppColors.electricBlue.withValues(alpha: 0.7)
-                            : Colors.grey.shade500,
+                            ? AppColors.electricBlue
+                            : Colors.black87,
                       ),
                     ),
-                ],
+                    if (nameEn.isNotEmpty)
+                      Text(
+                        nameEn,
+                        style: GoogleFonts.outfit(
+                          fontSize: 12,
+                          color: isSelected
+                              ? AppColors.electricBlue.withValues(alpha: 0.7)
+                              : Colors.grey.shade500,
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: isSelected
-                  ? const Icon(Icons.check_circle_rounded,
-                      color: AppColors.electricBlue, size: 22,
-                      key: ValueKey('check'))
-                  : const SizedBox(width: 22, key: ValueKey('empty')),
-            ),
-          ],
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: isSelected
+                    ? const Icon(Icons.check_circle_rounded,
+                        color: AppColors.electricBlue,
+                        size: 22,
+                        key: ValueKey('check'))
+                    : const SizedBox(width: 22, key: ValueKey('empty')),
+              ),
+            ],
+          ),
         ),
-      ),
-    )
-        .animate(delay: Duration(milliseconds: 40 * index))
-        .fadeIn(duration: 300.ms)
-        .slideX(begin: 0.15, curve: Curves.easeOut);
+      )
+          .animate(delay: Duration(milliseconds: 40 * index))
+          .fadeIn(duration: 300.ms)
+          .slideX(begin: 0.15, curve: Curves.easeOut);
 }
 
 // ── Small helpers ─────────────────────────────────────────────────────────────
@@ -526,15 +518,14 @@ class _StepDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      width: active ? 28 : 8,
-      height: 8,
-      decoration: BoxDecoration(
-        color:
-            active ? AppColors.electricBlue : Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(4),
-      ),
-    );
+        duration: const Duration(milliseconds: 300),
+        width: active ? 28 : 8,
+        height: 8,
+        decoration: BoxDecoration(
+          color: active ? AppColors.electricBlue : Colors.grey.shade300,
+          borderRadius: BorderRadius.circular(4),
+        ),
+      );
 }
 
 class _BackBtn extends StatelessWidget {
@@ -543,23 +534,22 @@ class _BackBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 54,
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.grey.shade200),
+        onTap: onTap,
+        child: Container(
+          width: 54,
+          height: 60,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: const Icon(Icons.arrow_back_ios_new_rounded,
+              color: Colors.black87, size: 20),
         ),
-        child: const Icon(Icons.arrow_back_ios_new_rounded,
-            color: Colors.black87, size: 20),
-      ),
-    );
+      );
 }
 
 class _PrimaryButton extends StatelessWidget {
-
   const _PrimaryButton({
     required this.label,
     required this.isLoading,
@@ -571,43 +561,43 @@ class _PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-      onTap: isLoading ? null : onPressed,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        height: 60,
-        decoration: BoxDecoration(
-          gradient: isLoading
-              ? const LinearGradient(
-                  colors: [Colors.grey, Colors.grey],
-                )
-              : AppColors.electricGradient,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.electricBlue.withValues(alpha: 0.35),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            )
-          ],
-        ),
-        child: Center(
-          child: isLoading
-              ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                      color: Colors.white, strokeWidth: 2.5),
-                )
-              : Text(
-                  label,
-                  style: GoogleFonts.outfit(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: 0.3,
+        onTap: isLoading ? null : onPressed,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          height: 60,
+          decoration: BoxDecoration(
+            gradient: isLoading
+                ? const LinearGradient(
+                    colors: [Colors.grey, Colors.grey],
+                  )
+                : AppColors.electricGradient,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.electricBlue.withValues(alpha: 0.35),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              )
+            ],
+          ),
+          child: Center(
+            child: isLoading
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                        color: Colors.white, strokeWidth: 2.5),
+                  )
+                : Text(
+                    label,
+                    style: GoogleFonts.outfit(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 0.3,
+                    ),
                   ),
-                ),
+          ),
         ),
-      ),
-    );
+      );
 }

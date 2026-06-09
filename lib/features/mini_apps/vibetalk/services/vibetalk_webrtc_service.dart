@@ -9,7 +9,7 @@ class VibeWebRTCService {
   RTCPeerConnection? _peerConnection;
   MediaStream? _localStream;
   MediaStream? _remoteStream;
-  
+
   String? _roomId;
   String? _uid;
   bool _isCaller = false;
@@ -20,16 +20,20 @@ class VibeWebRTCService {
 
   // Streams for UI (Recreated in init to support re-initialization)
   StreamController<VibeIceState>? _iceStateController;
-  Stream<VibeIceState> get iceStateStream => _iceStateController?.stream ?? const Stream.empty();
-  
+  Stream<VibeIceState> get iceStateStream =>
+      _iceStateController?.stream ?? const Stream.empty();
+
   StreamController<double>? _audioLevelController;
-  Stream<double> get localAudioLevelStream => _audioLevelController?.stream ?? const Stream.empty();
-  
+  Stream<double> get localAudioLevelStream =>
+      _audioLevelController?.stream ?? const Stream.empty();
+
   StreamController<double>? _remoteAudioLevelController;
-  Stream<double> get remoteAudioLevelStream => _remoteAudioLevelController?.stream ?? const Stream.empty();
-  
+  Stream<double> get remoteAudioLevelStream =>
+      _remoteAudioLevelController?.stream ?? const Stream.empty();
+
   StreamController<VibeQualityState>? _qualityController;
-  Stream<VibeQualityState> get qualityStream => _qualityController?.stream ?? const Stream.empty();
+  Stream<VibeQualityState> get qualityStream =>
+      _qualityController?.stream ?? const Stream.empty();
 
   Function(MediaStream stream)? onRemoteStreamAdd;
   Timer? _statsTimer;
@@ -63,12 +67,13 @@ class VibeWebRTCService {
     'sdpSemantics': 'unified-plan',
   };
 
-  Future<void> init(String roomId, String uid, bool isCaller, bool isVideo) async {
+  Future<void> init(
+      String roomId, String uid, bool isCaller, bool isVideo) async {
     _roomId = roomId;
     _uid = uid;
     _isCaller = isCaller;
     this.isVideo = isVideo;
-    
+
     // Initialize/Recreate controllers
     _iceStateController = StreamController<VibeIceState>.broadcast();
     _audioLevelController = StreamController<double>.broadcast();
@@ -81,7 +86,6 @@ class VibeWebRTCService {
     });
 
     _peerConnection?.onIceConnectionState = (state) {
-      
       switch (state) {
         case RTCIceConnectionState.RTCIceConnectionStateChecking:
           _safeAdd(_iceStateController, VibeIceState.checking);
@@ -104,8 +108,13 @@ class VibeWebRTCService {
 
     _peerConnection?.onIceCandidate = (candidate) {
       if (_roomId != null) {
-        final String collection = isCaller ? 'callerCandidates' : 'calleeCandidates';
-        _db.collection('vibetalk_rooms').doc(_roomId).collection(collection).add(candidate.toMap());
+        final String collection =
+            isCaller ? 'callerCandidates' : 'calleeCandidates';
+        _db
+            .collection('vibetalk_rooms')
+            .doc(_roomId)
+            .collection(collection)
+            .add(candidate.toMap());
       }
     };
 
@@ -126,22 +135,23 @@ class VibeWebRTCService {
         'sampleRate': 48000,
         'channelCount': 1,
       },
-      'video': isVideo ? {
-        'facingMode': 'user',
-        'width': 1280,
-        'height': 720,
-      } : false,
+      'video': isVideo
+          ? {
+              'facingMode': 'user',
+              'width': 1280,
+              'height': 720,
+            }
+          : false,
     };
-    
+
     try {
-      final localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+      final localStream =
+          await navigator.mediaDevices.getUserMedia(mediaConstraints);
       _localStream = localStream;
       localStream.getTracks().forEach((track) {
         _peerConnection?.addTrack(track, localStream);
       });
-    } catch (e) {
-      
-    }
+    } catch (e) {}
 
     if (isCaller) {
       await _createOffer();
@@ -155,27 +165,28 @@ class VibeWebRTCService {
 
   void _startStatsMonitoring() {
     _statsTimer?.cancel();
-    _statsTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) async {
+    _statsTimer =
+        Timer.periodic(const Duration(milliseconds: 500), (timer) async {
       if (_peerConnection == null) return;
-      
+
       final stats = await _peerConnection!.getStats();
       double localLevel = 0;
       double remoteLevel = 0;
-      
+
       for (final report in stats) {
         if (report.type == 'media-source' && report.values['kind'] == 'audio') {
           localLevel = (report.values['audioLevel'] ?? 0.0).toDouble();
         }
         if (report.type == 'inbound-rtp' && report.values['kind'] == 'audio') {
           remoteLevel = (report.values['audioLevel'] ?? 0.0).toDouble();
-          
+
           // Quality Logic (every 3s roughly via counter or just here)
           if (timer.tick % 6 == 0) {
             _updateQuality(report);
           }
         }
       }
-      
+
       _safeAdd(_audioLevelController, localLevel);
       _safeAdd(_remoteAudioLevelController, remoteLevel);
     });
@@ -190,8 +201,10 @@ class VibeWebRTCService {
   void _updateQuality(StatsReport report) {
     final rtt = (report.values['roundTripTime'] ?? 0.0).toDouble() * 1000;
     final packetsLost = (report.values['packetsLost'] ?? 0).toInt();
-    final packetsSent = (report.values['packetsReceived'] ?? 1).toInt(); // Approximate
-    final lossRatio = packetsSent > 0 ? (packetsLost / (packetsSent + packetsLost)) : 0.0;
+    final packetsSent =
+        (report.values['packetsReceived'] ?? 1).toInt(); // Approximate
+    final lossRatio =
+        packetsSent > 0 ? (packetsLost / (packetsSent + packetsLost)) : 0.0;
 
     VibeQualityState quality;
     if (rtt < 100 && lossRatio < 0.01) {
@@ -204,14 +217,14 @@ class VibeWebRTCService {
       quality = VibeQualityState.poor;
       _degradeBitrate();
     }
-    
+
     _safeAdd(_qualityController, quality);
   }
 
   Future<void> _degradeBitrate() async {
     final pc = _peerConnection;
     if (pc == null) return;
-    
+
     final senders = await pc.getSenders();
     for (final sender in senders) {
       if (sender.track?.kind == 'audio') {
@@ -227,7 +240,7 @@ class VibeWebRTCService {
   Future<void> restartIce() async {
     if (_peerConnection == null) return;
     _safeAdd(_iceStateController, VibeIceState.reconnecting);
-    
+
     // In flutter_webrtc, we typically create a new offer with iceRestart: true
     if (_isCaller) {
       final offer = await _peerConnection!.createOffer({'iceRestart': true});
@@ -241,24 +254,32 @@ class VibeWebRTCService {
 
   Future<void> _handleIceFailure() async {
     // Basic auto-retry logic
-    
+
     await restartIce();
   }
 
   Future<void> _createOffer() async {
     final pc = _peerConnection;
     if (pc == null || _roomId == null) return;
-    
+
     final offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
-    await _db.collection('vibetalk_rooms').doc(_roomId).update({'offer': offer.toMap()});
+    await _db
+        .collection('vibetalk_rooms')
+        .doc(_roomId)
+        .update({'offer': offer.toMap()});
 
-    _db.collection('vibetalk_rooms').doc(_roomId).snapshots().listen((snapshot) async {
+    _db
+        .collection('vibetalk_rooms')
+        .doc(_roomId)
+        .snapshots()
+        .listen((snapshot) async {
       final data = snapshot.data();
       if (data != null && data['answer'] != null) {
         final remoteDesc = await pc.getRemoteDescription();
         if (remoteDesc == null) {
-          final answer = RTCSessionDescription(data['answer']['sdp'], data['answer']['type']);
+          final answer = RTCSessionDescription(
+              data['answer']['sdp'], data['answer']['type']);
           await pc.setRemoteDescription(answer);
           await _processQueuedCandidates();
         }
@@ -267,33 +288,48 @@ class VibeWebRTCService {
   }
 
   Future<void> _listenForOffer() async {
-    _db.collection('vibetalk_rooms').doc(_roomId).snapshots().listen((snapshot) async {
+    _db
+        .collection('vibetalk_rooms')
+        .doc(_roomId)
+        .snapshots()
+        .listen((snapshot) async {
       final pc = _peerConnection;
       if (pc == null) return;
-      
+
       final data = snapshot.data();
       if (data != null && data['offer'] != null) {
         final remoteDesc = await pc.getRemoteDescription();
         if (remoteDesc == null) {
-          final offer = RTCSessionDescription(data['offer']['sdp'], data['offer']['type']);
+          final offer = RTCSessionDescription(
+              data['offer']['sdp'], data['offer']['type']);
           await pc.setRemoteDescription(offer);
           await _processQueuedCandidates();
           final answer = await pc.createAnswer();
           await pc.setLocalDescription(answer);
-          await _db.collection('vibetalk_rooms').doc(_roomId).update({'answer': answer.toMap()});
+          await _db
+              .collection('vibetalk_rooms')
+              .doc(_roomId)
+              .update({'answer': answer.toMap()});
         }
       }
     });
   }
 
   void _listenForRemoteIceCandidates(bool isCaller) {
-    final String collection = isCaller ? 'calleeCandidates' : 'callerCandidates';
-    _db.collection('vibetalk_rooms').doc(_roomId).collection(collection).snapshots().listen((snapshot) async {
+    final String collection =
+        isCaller ? 'calleeCandidates' : 'callerCandidates';
+    _db
+        .collection('vibetalk_rooms')
+        .doc(_roomId)
+        .collection(collection)
+        .snapshots()
+        .listen((snapshot) async {
       for (final change in snapshot.docChanges) {
         if (change.type == DocumentChangeType.added) {
           final data = change.doc.data();
           if (data != null && _peerConnection != null) {
-            final candidate = RTCIceCandidate(data['candidate'], data['sdpMid'], data['sdpMLineIndex']);
+            final candidate = RTCIceCandidate(
+                data['candidate'], data['sdpMid'], data['sdpMLineIndex']);
             final remoteDesc = await _peerConnection!.getRemoteDescription();
             if (remoteDesc != null) {
               await _peerConnection!.addCandidate(candidate);

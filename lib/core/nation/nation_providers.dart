@@ -5,7 +5,8 @@ import 'nation_detection_service.dart';
 
 // ── Service providers ─────────────────────────────────────────────────────
 
-final nationDetectionServiceProvider = Provider<NationDetectionService>((ref) => NationDetectionService());
+final nationDetectionServiceProvider =
+    Provider<NationDetectionService>((ref) => NationDetectionService());
 
 // ── Detection state ───────────────────────────────────────────────────────
 
@@ -46,7 +47,6 @@ final selectedNationProvider =
 /// Background service: on login compares detected country with stored homeCountry
 /// and updates Firestore if the user is travelling.
 class LoginNationUpdateService {
-
   LoginNationUpdateService(this._detector);
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final NationDetectionService _detector;
@@ -169,12 +169,13 @@ class LoginNationUpdateService {
   }
 }
 
-final loginNationUpdateServiceProvider = Provider<LoginNationUpdateService>((ref) => LoginNationUpdateService(ref.read(nationDetectionServiceProvider)));
+final loginNationUpdateServiceProvider = Provider<LoginNationUpdateService>(
+    (ref) =>
+        LoginNationUpdateService(ref.read(nationDetectionServiceProvider)));
 
 // ── Travel result ─────────────────────────────────────────────────────────
 
 class TravelResult {
-
   const TravelResult._({required this.isTravelling, this.currentNation});
 
   factory TravelResult.travelling(NationData nation) =>
@@ -193,14 +194,18 @@ enum NationVisibility { country, continent, private }
 class NationVisibilityService {
   static NationVisibility fromString(String? s) {
     switch (s) {
-      case 'continent': return NationVisibility.continent;
-      case 'private':   return NationVisibility.private;
-      default:          return NationVisibility.country;
+      case 'continent':
+        return NationVisibility.continent;
+      case 'private':
+        return NationVisibility.private;
+      default:
+        return NationVisibility.country;
     }
   }
 
   /// Applies privacy filter before sharing nation data with strangers.
-  static Map<String, String> applyPrivacy(NationData nation, NationVisibility visibility) {
+  static Map<String, String> applyPrivacy(
+      NationData nation, NationVisibility visibility) {
     switch (visibility) {
       case NationVisibility.country:
         return {
@@ -225,12 +230,18 @@ class NationVisibilityService {
 
   static String _continentFlag(String continent) {
     switch (continent) {
-      case 'Asia':      return '🌏';
-      case 'Europe':    return '🌍';
-      case 'Americas':  return '🌎';
-      case 'Africa':    return '🌍';
-      case 'Oceania':   return '🌏';
-      default:          return '🌍';
+      case 'Asia':
+        return '🌏';
+      case 'Europe':
+        return '🌍';
+      case 'Americas':
+        return '🌎';
+      case 'Africa':
+        return '🌍';
+      case 'Oceania':
+        return '🌏';
+      default:
+        return '🌍';
     }
   }
 }

@@ -21,7 +21,8 @@ class StorageRepository {
   }) async {
     final ref = _storage.ref().child('profile_pictures').child('$uid.jpg');
     final bytes = await file.readAsBytes();
-    final compressed = await MediaCompressionService.instance.compressImageBytes(
+    final compressed =
+        await MediaCompressionService.instance.compressImageBytes(
       Uint8List.fromList(bytes),
       kind: MediaUploadKind.profile,
     );
@@ -45,11 +46,17 @@ class StorageRepository {
     UploadProgressCallback? onProgress,
   }) async {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final fullRef = _storage.ref().child('posts').child(uid).child('$timestamp.jpg');
-    final thumbRef = _storage.ref().child('posts').child(uid).child('${timestamp}_thumb.jpg');
+    final fullRef =
+        _storage.ref().child('posts').child(uid).child('$timestamp.jpg');
+    final thumbRef = _storage
+        .ref()
+        .child('posts')
+        .child(uid)
+        .child('${timestamp}_thumb.jpg');
 
     final bytes = await file.readAsBytes();
-    final compressed = await MediaCompressionService.instance.compressImageBytes(
+    final compressed =
+        await MediaCompressionService.instance.compressImageBytes(
       Uint8List.fromList(bytes),
       kind: MediaUploadKind.post,
     );
@@ -82,7 +89,8 @@ class StorageRepository {
     String userId, {
     UploadProgressCallback? onProgress,
   }) async {
-    final compressedPath = await MediaCompressionService.instance.compressVideoPath(file.path);
+    final compressedPath =
+        await MediaCompressionService.instance.compressVideoPath(file.path);
     final uploadFile = compressedPath != null ? XFile(compressedPath) : file;
     final fileName = '${_uuid.v4()}.mp4';
     final ref = _storage.ref().child('vybz').child(userId).child(fileName);
@@ -101,7 +109,8 @@ class StorageRepository {
         });
       }
       final taskSnapshot = await uploadTask;
-      if (taskSnapshot.state == TaskState.error || taskSnapshot.state == TaskState.canceled) {
+      if (taskSnapshot.state == TaskState.error ||
+          taskSnapshot.state == TaskState.canceled) {
         throw Exception('Upload failed or was canceled');
       }
       return taskSnapshot.ref.getDownloadURL();
@@ -122,7 +131,8 @@ class StorageRepository {
     final kind = folder == 'stories'
         ? MediaUploadKind.story
         : (folder == 'posts' ? MediaUploadKind.post : MediaUploadKind.profile);
-    final compressed = await MediaCompressionService.instance.compressImageBytes(
+    final compressed =
+        await MediaCompressionService.instance.compressImageBytes(
       Uint8List.fromList(bytes),
       kind: kind,
     );
@@ -141,16 +151,21 @@ class StorageRepository {
     String type, {
     UploadProgressCallback? onProgress,
   }) async {
-    final extension = type == 'video' ? 'mp4' : (type == 'voice' ? 'm4a' : 'jpg');
+    final extension =
+        type == 'video' ? 'mp4' : (type == 'voice' ? 'm4a' : 'jpg');
     final fileName = '${_uuid.v4()}.$extension';
-    final ref = _storage.ref().child('chats').child(chatId).child(type).child(fileName);
+    final ref =
+        _storage.ref().child('chats').child(chatId).child(type).child(fileName);
     final metadata = SettableMetadata(
-      contentType: type == 'video' ? 'video/mp4' : (type == 'voice' ? 'audio/mpeg' : 'image/jpeg'),
+      contentType: type == 'video'
+          ? 'video/mp4'
+          : (type == 'voice' ? 'audio/mpeg' : 'image/jpeg'),
     );
 
     Uint8List bytes;
     if (type == 'video') {
-      final path = await MediaCompressionService.instance.compressVideoPath(file.path);
+      final path =
+          await MediaCompressionService.instance.compressVideoPath(file.path);
       bytes = Uint8List.fromList(await XFile(path ?? file.path).readAsBytes());
     } else {
       final raw = await file.readAsBytes();
@@ -171,9 +186,11 @@ class StorageRepository {
 
   Future<void> _csamGate(Uint8List bytes) async {
     final uid = FirebaseAuth.instance.currentUser?.uid ?? 'unknown';
-    final result = await CsamHashService.instance.checkImageBytes(bytes, userId: uid);
+    final result =
+        await CsamHashService.instance.checkImageBytes(bytes, userId: uid);
     if (result.isBlocked) {
-      throw Exception('Upload blocked for safety review. Your account has been suspended.');
+      throw Exception(
+          'Upload blocked for safety review. Your account has been suspended.');
     }
   }
 
@@ -191,7 +208,8 @@ class StorageRepository {
       });
     }
     final taskSnapshot = await uploadTask;
-    if (taskSnapshot.state == TaskState.error || taskSnapshot.state == TaskState.canceled) {
+    if (taskSnapshot.state == TaskState.error ||
+        taskSnapshot.state == TaskState.canceled) {
       throw Exception('Upload failed or was canceled');
     }
     return taskSnapshot.ref.getDownloadURL();

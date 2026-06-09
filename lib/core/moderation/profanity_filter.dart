@@ -115,10 +115,12 @@ class ProfanityFilter {
     final matches = <ProfanityMatch>[];
     final lower = input.toLowerCase();
     for (final term in _terms) {
-      if (term.allowedContexts != null && !term.allowedContexts!.contains(context)) {
+      if (term.allowedContexts != null &&
+          !term.allowedContexts!.contains(context)) {
         continue;
       }
-      final pattern = RegExp(r'\b' + RegExp.escape(term.word) + r'\b', caseSensitive: false);
+      final pattern = RegExp(r'\b' + RegExp.escape(term.word) + r'\b',
+          caseSensitive: false);
       if (pattern.hasMatch(lower)) {
         matches.add(ProfanityMatch(
           term: term.word,
@@ -135,7 +137,8 @@ class ProfanityFilter {
     if (matches.isEmpty) return null;
     FilterSeverity highest = FilterSeverity.low;
     for (final m in matches) {
-      if (_severityRank(m.severity) > _severityRank(highest)) highest = m.severity;
+      if (_severityRank(m.severity) > _severityRank(highest))
+        highest = m.severity;
     }
     return highest;
   }
@@ -155,12 +158,17 @@ class ProfanityFilter {
     var result = input;
     for (final term in _terms) {
       if (term.severity != FilterSeverity.low) continue;
-      if (term.allowedContexts != null && !term.allowedContexts!.contains(context)) continue;
-      final pattern = RegExp(r'\b' + RegExp.escape(term.word) + r'\b', caseSensitive: false);
-      result = result.replaceAllMapped(pattern, (m) => '●' * m.group(0)!.length);
+      if (term.allowedContexts != null &&
+          !term.allowedContexts!.contains(context)) continue;
+      final pattern = RegExp(r'\b' + RegExp.escape(term.word) + r'\b',
+          caseSensitive: false);
+      result =
+          result.replaceAllMapped(pattern, (m) => '●' * m.group(0)!.length);
     }
     return result;
   }
 
-  bool containsViolation(String input, {FilterContext context = FilterContext.message}) => findMatches(input, context).any((m) => m.severity != FilterSeverity.low);
+  bool containsViolation(String input,
+          {FilterContext context = FilterContext.message}) =>
+      findMatches(input, context).any((m) => m.severity != FilterSeverity.low);
 }

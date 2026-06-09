@@ -18,7 +18,8 @@ void main() {
 
     test('Test assertKeysPresent throws when keys missing', () {
       // This will throw an AssertionError in debug mode because geminiApiKey is empty.
-      expect(() => AppConfig.assertKeysPresent(), throwsA(isA<AssertionError>()));
+      expect(
+          () => AppConfig.assertKeysPresent(), throwsA(isA<AssertionError>()));
     });
   });
 }

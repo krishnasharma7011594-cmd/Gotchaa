@@ -11,17 +11,21 @@ void main() {
   const testUserName = 'Test User';
 
   group('ChatConversationScreen Tests', () {
-    testWidgets('Empty state shown when no messages', (WidgetTester tester) async {
+    testWidgets('Empty state shown when no messages',
+        (WidgetTester tester) async {
       await tester.pumpApp(
-        const ChatConversationScreen(chatId: testChatId, userName: testUserName),
+        const ChatConversationScreen(
+            chatId: testChatId, userName: testUserName),
         overrides: [
-          messageStreamProvider(testChatId).overrideWith((ref) => Stream.value([])),
+          messageStreamProvider(testChatId)
+              .overrideWith((ref) => Stream.value([])),
         ],
       );
 
       await tester.pumpAndSettle();
 
-      expect(find.text('No messages yet. Start the conversation.'), findsOneWidget);
+      expect(find.text('No messages yet. Start the conversation.'),
+          findsOneWidget);
     });
 
     testWidgets('Message list renders messages', (WidgetTester tester) async {
@@ -37,9 +41,11 @@ void main() {
       ];
 
       await tester.pumpApp(
-        const ChatConversationScreen(chatId: testChatId, userName: testUserName),
+        const ChatConversationScreen(
+            chatId: testChatId, userName: testUserName),
         overrides: [
-          messageStreamProvider(testChatId).overrideWith((ref) => Stream.value(messages)),
+          messageStreamProvider(testChatId)
+              .overrideWith((ref) => Stream.value(messages)),
         ],
       );
 
@@ -61,22 +67,30 @@ void main() {
       ];
 
       await tester.pumpApp(
-        const ChatConversationScreen(chatId: testChatId, userName: testUserName),
+        const ChatConversationScreen(
+            chatId: testChatId, userName: testUserName),
         overrides: [
-          messageStreamProvider(testChatId).overrideWith((ref) => Stream.value(messages)),
+          messageStreamProvider(testChatId)
+              .overrideWith((ref) => Stream.value(messages)),
         ],
       );
 
       await tester.pumpAndSettle();
 
-      expect(find.text('Messages are end-to-end encrypted. No one outside of this chat can read them.'), findsOneWidget);
+      expect(
+          find.text(
+              'Messages are end-to-end encrypted. No one outside of this chat can read them.'),
+          findsOneWidget);
     });
 
-    testWidgets('Input field and send button are present', (WidgetTester tester) async {
+    testWidgets('Input field and send button are present',
+        (WidgetTester tester) async {
       await tester.pumpApp(
-        const ChatConversationScreen(chatId: testChatId, userName: testUserName),
+        const ChatConversationScreen(
+            chatId: testChatId, userName: testUserName),
         overrides: [
-          messageStreamProvider(testChatId).overrideWith((ref) => Stream.value([])),
+          messageStreamProvider(testChatId)
+              .overrideWith((ref) => Stream.value([])),
         ],
       );
 

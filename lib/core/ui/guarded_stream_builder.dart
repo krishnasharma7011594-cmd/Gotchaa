@@ -18,7 +18,8 @@ class GuardedStreamBuilder<T> extends StatefulWidget {
   final Widget Function(BuildContext, String reason)? loopErrorBuilder;
 
   @override
-  State<GuardedStreamBuilder<T>> createState() => _GuardedStreamBuilderState<T>();
+  State<GuardedStreamBuilder<T>> createState() =>
+      _GuardedStreamBuilderState<T>();
 }
 
 class _GuardedStreamBuilderState<T> extends State<GuardedStreamBuilder<T>> {

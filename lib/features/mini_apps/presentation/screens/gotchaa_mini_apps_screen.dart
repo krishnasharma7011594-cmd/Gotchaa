@@ -11,7 +11,6 @@ import '../../circles/screens/circles_feed_screen.dart';
 import '../../vibetalk/screens/vibetalk_main_screen.dart';
 
 class NativeMiniApp {
-
   const NativeMiniApp({
     required this.id,
     required this.name,
@@ -29,15 +28,28 @@ class NativeMiniApp {
 }
 
 final nativeMiniApps = [
-  const NativeMiniApp(id: 'vibetalk', name: 'VibeTalk', description: 'Global Video Matching', icon: Icons.video_camera_front_rounded, screen: VibeTalkMainScreen(), color: AppColors.electricBlue),
-  const NativeMiniApp(id: 'circles', name: 'Circles', description: 'Social Discovery & Meetups', icon: Icons.groups_rounded, screen: CirclesFeedScreen(), color: AppColors.vibrantPurple),
+  const NativeMiniApp(
+      id: 'vibetalk',
+      name: 'VibeTalk',
+      description: 'Global Video Matching',
+      icon: Icons.video_camera_front_rounded,
+      screen: VibeTalkMainScreen(),
+      color: AppColors.electricBlue),
+  const NativeMiniApp(
+      id: 'circles',
+      name: 'Circles',
+      description: 'Social Discovery & Meetups',
+      icon: Icons.groups_rounded,
+      screen: CirclesFeedScreen(),
+      color: AppColors.vibrantPurple),
 ];
 
 class GotchaaMiniAppsScreen extends ConsumerStatefulWidget {
   const GotchaaMiniAppsScreen({super.key});
 
   @override
-  ConsumerState<GotchaaMiniAppsScreen> createState() => _GotchaaMiniAppsScreenState();
+  ConsumerState<GotchaaMiniAppsScreen> createState() =>
+      _GotchaaMiniAppsScreenState();
 }
 
 class _GotchaaMiniAppsScreenState extends ConsumerState<GotchaaMiniAppsScreen> {
@@ -52,7 +64,8 @@ class _GotchaaMiniAppsScreenState extends ConsumerState<GotchaaMiniAppsScreen> {
 
   void _openService(GotchaaService service) {
     Navigator.of(context, rootNavigator: true).push(
-      MaterialPageRoute(builder: (_) => GotchaaWebBrowserScreen(service: service)),
+      MaterialPageRoute(
+          builder: (_) => GotchaaWebBrowserScreen(service: service)),
     );
   }
 
@@ -69,15 +82,16 @@ class _GotchaaMiniAppsScreenState extends ConsumerState<GotchaaMiniAppsScreen> {
 
     final filteredNativeApps = nativeMiniApps.where((app) {
       if (_searchQuery.isEmpty) return true;
-      return app.name.toLowerCase().contains(_searchQuery) || 
-             app.description.toLowerCase().contains(_searchQuery);
+      return app.name.toLowerCase().contains(_searchQuery) ||
+          app.description.toLowerCase().contains(_searchQuery);
     }).toList();
 
     final filteredServices = services.where((service) {
-      final matchesCategory = category == ServiceCategory.all || service.category == category;
-      final matchesQuery = _searchQuery.isEmpty || 
-                           service.name.toLowerCase().contains(_searchQuery) || 
-                           service.description.toLowerCase().contains(_searchQuery);
+      final matchesCategory =
+          category == ServiceCategory.all || service.category == category;
+      final matchesQuery = _searchQuery.isEmpty ||
+          service.name.toLowerCase().contains(_searchQuery) ||
+          service.description.toLowerCase().contains(_searchQuery);
       return matchesCategory && matchesQuery;
     }).toList();
 
@@ -85,7 +99,9 @@ class _GotchaaMiniAppsScreenState extends ConsumerState<GotchaaMiniAppsScreen> {
       backgroundColor: context.bg,
       appBar: AppBar(
         backgroundColor: context.bg,
-        title: Text('Mini Apps', style: GoogleFonts.outfit(color: context.textPrimary, fontWeight: FontWeight.bold)),
+        title: Text('Mini Apps',
+            style: GoogleFonts.outfit(
+                color: context.textPrimary, fontWeight: FontWeight.bold)),
       ),
       body: Column(
         children: [
@@ -112,14 +128,17 @@ class _GotchaaMiniAppsScreenState extends ConsumerState<GotchaaMiniAppsScreen> {
               },
             ),
           ),
-          
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
-                  child: Text('Apps & Services', style: GoogleFonts.outfit(color: context.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
+                  child: Text('Apps & Services',
+                      style: GoogleFonts.outfit(
+                          color: context.textPrimary,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold)),
                 ),
                 SizedBox(
                   height: 40,
@@ -133,21 +152,31 @@ class _GotchaaMiniAppsScreenState extends ConsumerState<GotchaaMiniAppsScreen> {
                         padding: const EdgeInsets.only(right: 8),
                         child: ChoiceChip(
                           label: Text(
-                            cat.name.substring(0, 1).toUpperCase() + cat.name.substring(1),
+                            cat.name.substring(0, 1).toUpperCase() +
+                                cat.name.substring(1),
                             style: GoogleFonts.outfit(
-                              color: isSelected ? Colors.white : context.textSecondary,
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              color: isSelected
+                                  ? Colors.white
+                                  : context.textSecondary,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
                             ),
                           ),
                           selected: isSelected,
                           onSelected: (selected) {
                             if (selected) {
-                              ref.read(servicesSelectedCategoryProvider.notifier).state = cat;
+                              ref
+                                  .read(
+                                      servicesSelectedCategoryProvider.notifier)
+                                  .state = cat;
                             }
                           },
                           backgroundColor: context.surface,
                           selectedColor: AppColors.electricBlue,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide.none),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              side: BorderSide.none),
                         ),
                       );
                     },
@@ -163,11 +192,15 @@ class _GotchaaMiniAppsScreenState extends ConsumerState<GotchaaMiniAppsScreen> {
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
                   ),
-                  itemCount: (category == ServiceCategory.all ? filteredNativeApps.length : 0) + filteredServices.length,
+                  itemCount: (category == ServiceCategory.all
+                          ? filteredNativeApps.length
+                          : 0) +
+                      filteredServices.length,
                   itemBuilder: (context, index) {
                     final showNative = category == ServiceCategory.all;
-                    final isNative = showNative && index < filteredNativeApps.length;
-                    
+                    final isNative =
+                        showNative && index < filteredNativeApps.length;
+
                     if (isNative) {
                       final app = filteredNativeApps[index];
                       return GestureDetector(
@@ -176,7 +209,8 @@ class _GotchaaMiniAppsScreenState extends ConsumerState<GotchaaMiniAppsScreen> {
                           decoration: BoxDecoration(
                             color: context.surface,
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: app.color.withOpacity(0.3), width: 2),
+                            border: Border.all(
+                                color: app.color.withOpacity(0.3), width: 2),
                           ),
                           padding: const EdgeInsets.all(16),
                           child: Column(
@@ -189,18 +223,23 @@ class _GotchaaMiniAppsScreenState extends ConsumerState<GotchaaMiniAppsScreen> {
                                   color: app.color.withOpacity(0.1),
                                   shape: BoxShape.circle,
                                 ),
-                                child: Icon(app.icon, color: app.color, size: 30),
+                                child:
+                                    Icon(app.icon, color: app.color, size: 30),
                               ),
                               const SizedBox(height: 16),
                               Text(
                                 app.name,
-                                style: GoogleFonts.outfit(color: context.textPrimary, fontWeight: FontWeight.bold, fontSize: 16),
+                                style: GoogleFonts.outfit(
+                                    color: context.textPrimary,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16),
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 app.description,
-                                style: GoogleFonts.inter(color: context.textSecondary, fontSize: 12),
+                                style: GoogleFonts.inter(
+                                    color: context.textSecondary, fontSize: 12),
                                 textAlign: TextAlign.center,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -210,7 +249,9 @@ class _GotchaaMiniAppsScreenState extends ConsumerState<GotchaaMiniAppsScreen> {
                         ),
                       );
                     } else {
-                      final serviceIndex = showNative ? index - filteredNativeApps.length : index;
+                      final serviceIndex = showNative
+                          ? index - filteredNativeApps.length
+                          : index;
                       final service = filteredServices[serviceIndex];
                       return GestureDetector(
                         onTap: () => _openService(service),
@@ -218,7 +259,9 @@ class _GotchaaMiniAppsScreenState extends ConsumerState<GotchaaMiniAppsScreen> {
                           decoration: BoxDecoration(
                             color: context.surface,
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: service.brandColor.withOpacity(0.3), width: 2),
+                            border: Border.all(
+                                color: service.brandColor.withOpacity(0.3),
+                                width: 2),
                           ),
                           padding: const EdgeInsets.all(16),
                           child: Column(
@@ -231,18 +274,23 @@ class _GotchaaMiniAppsScreenState extends ConsumerState<GotchaaMiniAppsScreen> {
                                   color: service.brandColor.withOpacity(0.1),
                                   shape: BoxShape.circle,
                                 ),
-                                child: Icon(Icons.public_rounded, color: service.brandColor, size: 30),
+                                child: Icon(Icons.public_rounded,
+                                    color: service.brandColor, size: 30),
                               ),
                               const SizedBox(height: 16),
                               Text(
                                 service.name,
-                                style: GoogleFonts.outfit(color: context.textPrimary, fontWeight: FontWeight.bold, fontSize: 16),
+                                style: GoogleFonts.outfit(
+                                    color: context.textPrimary,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16),
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 service.description,
-                                style: GoogleFonts.inter(color: context.textSecondary, fontSize: 12),
+                                style: GoogleFonts.inter(
+                                    color: context.textSecondary, fontSize: 12),
                                 textAlign: TextAlign.center,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,

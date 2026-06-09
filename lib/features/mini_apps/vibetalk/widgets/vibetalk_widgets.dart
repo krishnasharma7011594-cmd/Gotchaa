@@ -6,7 +6,6 @@ import '../services/vibetalk_webrtc_service.dart';
 
 // ── Audio Waveform Painter ──
 class AudioWaveformPainter extends CustomPainter {
-
   AudioWaveformPainter({
     required this.audioLevel,
     required this.isLocalUser,
@@ -22,9 +21,9 @@ class AudioWaveformPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final gradient = LinearGradient(
-      colors: isLocalUser 
-        ? [const Color(0xFF0070FF), const Color(0xFF00D1FF)] // Local Blue
-        : [primaryColor, secondaryColor], // Remote/Theme-based
+      colors: isLocalUser
+          ? [const Color(0xFF0070FF), const Color(0xFF00D1FF)] // Local Blue
+          : [primaryColor, secondaryColor], // Remote/Theme-based
     );
 
     final paint = Paint()
@@ -38,8 +37,9 @@ class AudioWaveformPainter extends CustomPainter {
     for (int i = 0; i < barCount; i++) {
       // Use sine for variety
       final wave = 0.8 + (0.2 * (i % 3 == 0 ? 1.0 : 0.5));
-      final height = (audioLevel * maxBarHeight * wave).clamp(4.0, maxBarHeight);
-      
+      final height =
+          (audioLevel * maxBarHeight * wave).clamp(4.0, maxBarHeight);
+
       final x = i * spacing + (spacing / 2);
       final top = (size.height - height) / 2;
       final bottom = top + height;
@@ -49,15 +49,16 @@ class AudioWaveformPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant AudioWaveformPainter oldDelegate) => 
+  bool shouldRepaint(covariant AudioWaveformPainter oldDelegate) =>
       oldDelegate.audioLevel != audioLevel;
 }
 
 // ── Speaking Avatar ──
 class SpeakingAvatarWidget extends StatelessWidget {
-
   const SpeakingAvatarWidget({
-    required this.audioLevel, required this.isLocal, super.key,
+    required this.audioLevel,
+    required this.isLocal,
+    super.key,
     this.accentColor,
   });
   final double audioLevel;
@@ -66,7 +67,8 @@ class SpeakingAvatarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final glowColor = isLocal ? Colors.blueAccent : (accentColor ?? context.accent);
+    final glowColor =
+        isLocal ? Colors.blueAccent : (accentColor ?? context.accent);
     final pulseScale = 1.0 + (audioLevel * 0.1);
 
     return AnimatedScale(
@@ -89,8 +91,8 @@ class SpeakingAvatarWidget extends StatelessWidget {
           radius: 40,
           backgroundColor: context.surface,
           child: Icon(
-            isLocal ? Icons.person_rounded : Icons.record_voice_over_rounded, 
-            size: 32, 
+            isLocal ? Icons.person_rounded : Icons.record_voice_over_rounded,
+            size: 32,
             color: context.textPrimary,
           ),
         ),
@@ -106,7 +108,7 @@ class VibeQualityBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = switch(quality) {
+    final color = switch (quality) {
       VibeQualityState.excellent => const Color(0xFF10B981), // Emerald
       VibeQualityState.good => Colors.amber,
       VibeQualityState.fair => Colors.orange,
@@ -124,18 +126,18 @@ class VibeQualityBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 6, 
-            height: 6, 
+            width: 6,
+            height: 6,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           const SizedBox(width: 6),
           Text(
             context.tr('vibetalk_quality_${quality.name}'),
-            style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: color, fontSize: 11, fontWeight: FontWeight.bold),
           ),
         ],
       ),
     );
   }
 }
-

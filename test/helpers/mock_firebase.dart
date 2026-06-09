@@ -6,7 +6,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class MockGoogleSignIn extends Mock implements GoogleSignIn {}
+
 class MockFirebaseStorage extends Mock implements FirebaseStorage {}
+
 class MockFirebaseMessaging extends Mock implements FirebaseMessaging {}
 
 /// Returns a fake Firestore instance for testing.
@@ -17,7 +19,10 @@ FakeFirebaseFirestore getFakeFirestore() {
 }
 
 /// Returns a mock Firebase Auth instance for testing.
-MockFirebaseAuth getMockAuth({bool signedIn = true, String uid = 'test_uid', String email = 'test@example.com'}) {
+MockFirebaseAuth getMockAuth(
+    {bool signedIn = true,
+    String uid = 'test_uid',
+    String email = 'test@example.com'}) {
   if (signedIn) {
     final user = MockUser(
       uid: uid,

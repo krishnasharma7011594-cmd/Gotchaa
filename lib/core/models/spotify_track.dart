@@ -1,4 +1,5 @@
-class SpotifyTrack { // The 30-second premium-free clip
+class SpotifyTrack {
+  // The 30-second premium-free clip
 
   SpotifyTrack({
     required this.id,
@@ -9,12 +10,12 @@ class SpotifyTrack { // The 30-second premium-free clip
   });
 
   factory SpotifyTrack.fromJson(Map<String, dynamic> json) => SpotifyTrack(
-      id: json['id'] ?? '',
-      name: json['name'] ?? 'Unknown Track',
-      artist: (json['artists'] as List?)?.first['name'] ?? 'Unknown Artist',
-      albumArtUrl: json['album']?['images']?[0]?['url'] ?? '',
-      previewUrl: json['preview_url'],
-    );
+        id: json['id'] ?? '',
+        name: json['name'] ?? 'Unknown Track',
+        artist: (json['artists'] as List?)?.first['name'] ?? 'Unknown Artist',
+        albumArtUrl: json['album']?['images']?[0]?['url'] ?? '',
+        previewUrl: json['preview_url'],
+      );
   final String id;
   final String name;
   final String artist;
@@ -22,10 +23,10 @@ class SpotifyTrack { // The 30-second premium-free clip
   final String? previewUrl;
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'artist': artist,
-    'albumArtUrl': albumArtUrl,
-    'previewUrl': previewUrl,
-  };
+        'id': id,
+        'name': name,
+        'artist': artist,
+        'albumArtUrl': albumArtUrl,
+        'previewUrl': previewUrl,
+      };
 }

@@ -1,5 +1,5 @@
 /// Firestore Collection Schema: deletion_requests
-/// 
+///
 /// Document ID: uid (User ID)
 /// Fields:
 /// - status: String ("pending", "processed")
@@ -17,7 +17,8 @@ class DataPrincipalRightsPage extends StatefulWidget {
   const DataPrincipalRightsPage({super.key});
 
   @override
-  State<DataPrincipalRightsPage> createState() => _DataPrincipalRightsPageState();
+  State<DataPrincipalRightsPage> createState() =>
+      _DataPrincipalRightsPageState();
 }
 
 class _DataPrincipalRightsPageState extends State<DataPrincipalRightsPage> {
@@ -48,8 +49,10 @@ class _DataPrincipalRightsPageState extends State<DataPrincipalRightsPage> {
     // Load Consents
     final dataProcessing = await _consentManager.hasConsent('dataProcessing');
     final marketing = await _consentManager.hasConsent('marketing');
-    final locationTracking = await _consentManager.hasConsent('locationTracking');
-    final analyticsTracking = await _consentManager.hasConsent('analyticsTracking');
+    final locationTracking =
+        await _consentManager.hasConsent('locationTracking');
+    final analyticsTracking =
+        await _consentManager.hasConsent('analyticsTracking');
 
     // Load User Data summary
     final userDoc = await _firestore.collection('users').doc(uid).get();
@@ -93,10 +96,15 @@ class _DataPrincipalRightsPageState extends State<DataPrincipalRightsPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Account'),
-        content: const Text('Are you sure you want to request account deletion? This action cannot be undone and will take up to 30 days to process.'),
+        content: const Text(
+            'Are you sure you want to request account deletion? This action cannot be undone and will take up to 30 days to process.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete', style: TextStyle(color: Colors.red))),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Delete', style: TextStyle(color: Colors.red))),
         ],
       ),
     );
@@ -106,7 +114,7 @@ class _DataPrincipalRightsPageState extends State<DataPrincipalRightsPage> {
         'status': 'pending',
         'requestedAt': FieldValue.serverTimestamp(),
       });
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Deletion request submitted.')),
@@ -140,85 +148,92 @@ class _DataPrincipalRightsPageState extends State<DataPrincipalRightsPage> {
   }
 
   Widget _buildAccessSection() => Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Access My Data', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        const Text('Summary of data we hold:'),
-        const SizedBox(height: 8),
-        if (_userData != null) ...[
-          Text('Username: ${_userData!['username'] ?? 'N/A'}'),
-          Text('Email: ${_userData!['email'] ?? 'N/A'}'),
-          Text('Phone: ${_userData!['phone'] ?? 'N/A'}'),
-          Text('Bio: ${_userData!['bio'] ?? 'N/A'}'),
-        ] else
-          const Text('No data found.'),
-      ],
-    );
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Access My Data',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          const Text('Summary of data we hold:'),
+          const SizedBox(height: 8),
+          if (_userData != null) ...[
+            Text('Username: ${_userData!['username'] ?? 'N/A'}'),
+            Text('Email: ${_userData!['email'] ?? 'N/A'}'),
+            Text('Phone: ${_userData!['phone'] ?? 'N/A'}'),
+            Text('Bio: ${_userData!['bio'] ?? 'N/A'}'),
+          ] else
+            const Text('No data found.'),
+        ],
+      );
 
   Widget _buildConsentSection() => Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Manage Consents', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        SwitchListTile(
-          title: const Text('Data Processing'),
-          subtitle: const Text('Allow processing of your personal data for app functionality.'),
-          value: _consents['dataProcessing']!,
-          onChanged: (val) => _toggleConsent('dataProcessing', val),
-        ),
-        SwitchListTile(
-          title: const Text('Marketing'),
-          subtitle: const Text('Receive promotional offers and updates.'),
-          value: _consents['marketing']!,
-          onChanged: (val) => _toggleConsent('marketing', val),
-        ),
-        SwitchListTile(
-          title: const Text('Location Tracking'),
-          subtitle: const Text('Allow app to use your precise location.'),
-          value: _consents['locationTracking']!,
-          onChanged: (val) => _toggleConsent('locationTracking', val),
-        ),
-        SwitchListTile(
-          title: const Text('Analytics Tracking'),
-          subtitle: const Text('Help us improve the app by sharing usage data.'),
-          value: _consents['analyticsTracking']!,
-          onChanged: (val) => _toggleConsent('analyticsTracking', val),
-        ),
-      ],
-    );
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Manage Consents',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          SwitchListTile(
+            title: const Text('Data Processing'),
+            subtitle: const Text(
+                'Allow processing of your personal data for app functionality.'),
+            value: _consents['dataProcessing']!,
+            onChanged: (val) => _toggleConsent('dataProcessing', val),
+          ),
+          SwitchListTile(
+            title: const Text('Marketing'),
+            subtitle: const Text('Receive promotional offers and updates.'),
+            value: _consents['marketing']!,
+            onChanged: (val) => _toggleConsent('marketing', val),
+          ),
+          SwitchListTile(
+            title: const Text('Location Tracking'),
+            subtitle: const Text('Allow app to use your precise location.'),
+            value: _consents['locationTracking']!,
+            onChanged: (val) => _toggleConsent('locationTracking', val),
+          ),
+          SwitchListTile(
+            title: const Text('Analytics Tracking'),
+            subtitle:
+                const Text('Help us improve the app by sharing usage data.'),
+            value: _consents['analyticsTracking']!,
+            onChanged: (val) => _toggleConsent('analyticsTracking', val),
+          ),
+        ],
+      );
 
   Widget _buildActionSection() => Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Actions', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        ListTile(
-          leading: const Icon(Icons.edit),
-          title: const Text('Correct My Data'),
-          subtitle: const Text('Update your profile information.'),
-          onTap: () {
-            // Navigate to Edit Profile (assuming route name or just push back)
-            Navigator.pop(context); // Go back or to edit profile
-          },
-        ),
-        ListTile(
-          leading: const Icon(Icons.delete_forever, color: Colors.red),
-          title: const Text('Delete My Account'),
-          subtitle: const Text('Submit a request to permanently delete your account.'),
-          onTap: _requestAccountDeletion,
-        ),
-        ListTile(
-          leading: const Icon(Icons.gavel),
-          title: const Text('File a Grievance'),
-          subtitle: const Text('Contact our Grievance Officer.'),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const GrievanceOfficerPage()),
-            );
-          },
-        ),
-      ],
-    );
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Actions',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          ListTile(
+            leading: const Icon(Icons.edit),
+            title: const Text('Correct My Data'),
+            subtitle: const Text('Update your profile information.'),
+            onTap: () {
+              // Navigate to Edit Profile (assuming route name or just push back)
+              Navigator.pop(context); // Go back or to edit profile
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.delete_forever, color: Colors.red),
+            title: const Text('Delete My Account'),
+            subtitle: const Text(
+                'Submit a request to permanently delete your account.'),
+            onTap: _requestAccountDeletion,
+          ),
+          ListTile(
+            leading: const Icon(Icons.gavel),
+            title: const Text('File a Grievance'),
+            subtitle: const Text('Contact our Grievance Officer.'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const GrievanceOfficerPage()),
+              );
+            },
+          ),
+        ],
+      );
 }

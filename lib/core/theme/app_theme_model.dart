@@ -20,7 +20,6 @@ enum ThemeType {
 }
 
 class GotchaaThemeData {
-
   GotchaaThemeData({
     required this.name,
     required this.type,
@@ -33,7 +32,10 @@ class GotchaaThemeData {
     required this.textPrimary,
     required this.textSecondary,
     required this.dividerColor,
-    required this.accentGradient, required this.bubbleMe, required this.bubbleThem, this.backgroundGradient,
+    required this.accentGradient,
+    required this.bubbleMe,
+    required this.bubbleThem,
+    this.backgroundGradient,
     this.cornerRadius = 16.0,
   });
   final String name;
@@ -55,24 +57,25 @@ class GotchaaThemeData {
 
   GotchaaThemeData copyWith({
     double? cornerRadius,
-  }) => GotchaaThemeData(
-      name: name,
-      type: type,
-      brightness: brightness,
-      primaryColor: primaryColor,
-      accentColor: accentColor,
-      backgroundColor: backgroundColor,
-      surfaceColor: surfaceColor,
-      cardColor: cardColor,
-      textPrimary: textPrimary,
-      textSecondary: textSecondary,
-      dividerColor: dividerColor,
-      backgroundGradient: backgroundGradient,
-      accentGradient: accentGradient,
-      bubbleMe: bubbleMe,
-      bubbleThem: bubbleThem,
-      cornerRadius: cornerRadius ?? this.cornerRadius,
-    );
+  }) =>
+      GotchaaThemeData(
+        name: name,
+        type: type,
+        brightness: brightness,
+        primaryColor: primaryColor,
+        accentColor: accentColor,
+        backgroundColor: backgroundColor,
+        surfaceColor: surfaceColor,
+        cardColor: cardColor,
+        textPrimary: textPrimary,
+        textSecondary: textSecondary,
+        dividerColor: dividerColor,
+        backgroundGradient: backgroundGradient,
+        accentGradient: accentGradient,
+        bubbleMe: bubbleMe,
+        bubbleThem: bubbleThem,
+        cornerRadius: cornerRadius ?? this.cornerRadius,
+      );
 }
 
 class AppThemes {
@@ -90,7 +93,8 @@ class AppThemes {
       textPrimary: Colors.white,
       textSecondary: Colors.grey[400]!,
       dividerColor: Colors.white10,
-      accentGradient: const LinearGradient(colors: [Color(0xFF7C5CFC), Color(0xFFB57BEA)]),
+      accentGradient:
+          const LinearGradient(colors: [Color(0xFF7C5CFC), Color(0xFFB57BEA)]),
       bubbleMe: const Color(0xFF7C5CFC),
       bubbleThem: const Color(0xFF252525),
     ),
@@ -106,7 +110,8 @@ class AppThemes {
       textPrimary: const Color(0xFFE3F2FD),
       textSecondary: const Color(0xFF90A4AE),
       dividerColor: Colors.white10,
-      accentGradient: const LinearGradient(colors: [Color(0xFF0070FF), Color(0xFF00D1FF)]),
+      accentGradient:
+          const LinearGradient(colors: [Color(0xFF0070FF), Color(0xFF00D1FF)]),
       bubbleMe: const Color(0xFF0070FF),
       bubbleThem: const Color(0xFF162033),
     ),
@@ -122,7 +127,8 @@ class AppThemes {
       textPrimary: Colors.white,
       textSecondary: Colors.grey[400]!,
       dividerColor: Colors.white10,
-      accentGradient: const LinearGradient(colors: [Color(0xFFFF4D6D), Color(0xFFFF8A00)]),
+      accentGradient:
+          const LinearGradient(colors: [Color(0xFFFF4D6D), Color(0xFFFF8A00)]),
       bubbleMe: const Color(0xFFFF4D6D),
       bubbleThem: const Color(0xFF2D1B1E),
     ),
@@ -138,7 +144,8 @@ class AppThemes {
       textPrimary: const Color(0xFFE0F2F1),
       textSecondary: const Color(0xFF80CBC4),
       dividerColor: Colors.white10,
-      accentGradient: const LinearGradient(colors: [Color(0xFF00C897), Color(0xFF1DE9B6)]),
+      accentGradient:
+          const LinearGradient(colors: [Color(0xFF00C897), Color(0xFF1DE9B6)]),
       bubbleMe: const Color(0xFF00C897),
       bubbleThem: const Color(0xFF1E332D),
     ),
@@ -156,7 +163,8 @@ class AppThemes {
       textPrimary: const Color(0xFF2D2D2D),
       textSecondary: const Color(0xFF757575),
       dividerColor: Colors.black12,
-      accentGradient: const LinearGradient(colors: [Color(0xFF916BFF), Color(0xFFB39DDB)]),
+      accentGradient:
+          const LinearGradient(colors: [Color(0xFF916BFF), Color(0xFFB39DDB)]),
       bubbleMe: const Color(0xFF916BFF),
       bubbleThem: const Color(0xFFEDE7F6),
     ),
@@ -172,7 +180,8 @@ class AppThemes {
       textPrimary: const Color(0xFF1A237E),
       textSecondary: const Color(0xFF546E7A),
       dividerColor: Colors.black12,
-      accentGradient: const LinearGradient(colors: [Color(0xFF03A9F4), Color(0xFF81D4FA)]),
+      accentGradient:
+          const LinearGradient(colors: [Color(0xFF03A9F4), Color(0xFF81D4FA)]),
       bubbleMe: const Color(0xFF03A9F4),
       bubbleThem: const Color(0xFFE1F5FE),
     ),
@@ -188,7 +197,8 @@ class AppThemes {
       textPrimary: const Color(0xFF4E342E),
       textSecondary: const Color(0xFF8D6E63),
       dividerColor: Colors.black12,
-      accentGradient: const LinearGradient(colors: [Color(0xFFFF8A65), Color(0xFFFFAB91)]),
+      accentGradient:
+          const LinearGradient(colors: [Color(0xFFFF8A65), Color(0xFFFFAB91)]),
       bubbleMe: const Color(0xFFFF8A65),
       bubbleThem: const Color(0xFFFFEBE6),
     ),
@@ -204,7 +214,8 @@ class AppThemes {
       textPrimary: const Color(0xFF004D40),
       textSecondary: const Color(0xFF455A64),
       dividerColor: Colors.black12,
-      accentGradient: const LinearGradient(colors: [Color(0xFF4DB6AC), Color(0xFF80CBC4)]),
+      accentGradient:
+          const LinearGradient(colors: [Color(0xFF4DB6AC), Color(0xFF80CBC4)]),
       bubbleMe: const Color(0xFF4DB6AC),
       bubbleThem: const Color(0xFFE0F2F1),
     ),
@@ -269,7 +280,8 @@ class AppThemes {
       textPrimary: Colors.white,
       textSecondary: Colors.grey[400]!,
       dividerColor: Colors.white10,
-      accentGradient: const LinearGradient(colors: [Color(0xFF0070FF), Color(0xFF00D1FF)]),
+      accentGradient:
+          const LinearGradient(colors: [Color(0xFF0070FF), Color(0xFF00D1FF)]),
       bubbleMe: const Color(0xFF0070FF),
       bubbleThem: const Color(0xFF252525),
     ),
@@ -285,7 +297,8 @@ class AppThemes {
       textPrimary: Colors.black,
       textSecondary: Colors.grey[600]!,
       dividerColor: Colors.black12,
-      accentGradient: const LinearGradient(colors: [Color(0xFF0070FF), Color(0xFF00D1FF)]),
+      accentGradient:
+          const LinearGradient(colors: [Color(0xFF0070FF), Color(0xFF00D1FF)]),
       bubbleMe: const Color(0xFF0070FF),
       bubbleThem: const Color(0xFFF3F3F3),
     ),

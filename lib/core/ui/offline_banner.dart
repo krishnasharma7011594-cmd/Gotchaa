@@ -21,15 +21,18 @@ class OfflineBanner extends ConsumerWidget {
             child: SafeArea(
               bottom: false,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   children: [
-                    const Icon(Icons.wifi_off_rounded, color: Colors.white, size: 18),
+                    const Icon(Icons.wifi_off_rounded,
+                        color: Colors.white, size: 18),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'No internet connection — showing cached content',
-                        style: GoogleFonts.outfit(color: Colors.white, fontSize: 13),
+                        style: GoogleFonts.outfit(
+                            color: Colors.white, fontSize: 13),
                       ),
                     ),
                   ],

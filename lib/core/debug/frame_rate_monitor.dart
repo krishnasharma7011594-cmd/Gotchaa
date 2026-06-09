@@ -24,7 +24,8 @@ class FrameRateMonitor {
         if (fps < 30) {
           _lowFpsCount++;
           final now = DateTime.now();
-          if (now.difference(_windowStart).inSeconds >= 10 && _lowFpsCount >= 5) {
+          if (now.difference(_windowStart).inSeconds >= 10 &&
+              _lowFpsCount >= 5) {
             FirebaseCrashlytics.instance.log(
               'low_fps_detected: ${fps.toStringAsFixed(1)} fps ($_lowFpsCount frames/10s)',
             );

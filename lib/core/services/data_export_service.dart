@@ -23,12 +23,14 @@ class DataExportService {
       final res = await callable.call<Map<String, dynamic>>();
       final data = Map<String, dynamic>.from(res.data as Map);
       return DataExportResult.success(
-        message: data['message'] as String? ?? 'Export started. You will receive a link by email and notification.',
+        message: data['message'] as String? ??
+            'Export started. You will receive a link by email and notification.',
         exportId: data['exportId'] as String?,
       );
     } on FirebaseFunctionsException catch (e) {
       if (e.code == 'resource-exhausted') {
-        return DataExportResult.error('You can request an export once every 30 days.');
+        return DataExportResult.error(
+            'You can request an export once every 30 days.');
       }
       return DataExportResult.error(e.message ?? 'Export failed');
     } catch (e) {
@@ -39,7 +41,8 @@ class DataExportService {
 
   /// Local preview export (profile + public posts metadata only).
   Future<Map<String, dynamic>> collectLocalPreview(String uid) async {
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
     final posts = await FirebaseFirestore.instance
         .collection('posts')
         .where('uid', isEqualTo: uid)
@@ -58,16 +61,18 @@ class DataExportService {
           'createdAt': m['createdAt']?.toString(),
         };
       }).toList(),
-      'note': 'Full export includes messages metadata, karma, settings via email link.',
+      'note':
+          'Full export includes messages metadata, karma, settings via email link.',
     };
   }
 }
 
 class DataExportResult {
   const DataExportResult._({required this.ok, this.message, this.exportId});
-  DataExportResult.success({required this.message, this.exportId})
-      : ok = true;
-  DataExportResult.error(this.message) : ok = false, exportId = null;
+  DataExportResult.success({required this.message, this.exportId}) : ok = true;
+  DataExportResult.error(this.message)
+      : ok = false,
+        exportId = null;
 
   final bool ok;
   final String? message;

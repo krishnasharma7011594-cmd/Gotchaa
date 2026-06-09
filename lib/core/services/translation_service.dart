@@ -11,18 +11,17 @@ import '../providers/shared_prefs_provider.dart';
 //  TranslationService  (ML Kit chat translation)
 // ──────────────────────────────────────────────────────────
 class TranslationService {
-
   TranslationService(this._prefs);
   final SharedPreferences _prefs;
 
-  static const _chatLangKey     = 'preferred_chat_language';
+  static const _chatLangKey = 'preferred_chat_language';
   static const _autoTranslateKey = 'auto_translate_enabled';
+
   /// Key that stores the UI locale language code, e.g. 'es', 'hi', 'ja'
-  static const _uiLangKey       = 'preferred_ui_language';
+  static const _uiLangKey = 'preferred_ui_language';
 
   // ── UI locale ──────────────────────────────────────────
-  String get preferredUiLanguageCode =>
-      _prefs.getString(_uiLangKey) ?? 'en';
+  String get preferredUiLanguageCode => _prefs.getString(_uiLangKey) ?? 'en';
 
   Future<void> setPreferredUiLanguageCode(String code) async {
     await _prefs.setString(_uiLangKey, code);
@@ -51,26 +50,27 @@ class TranslationService {
   Future<TranslateLanguage?> detectLanguage(String text) async {
     final cleanText = text.trim();
     if (cleanText.isEmpty) return null;
-    
+
     // Lower threshold for short messages (like chat)
     final languageIdentifier = LanguageIdentifier(confidenceThreshold: 0.1);
     try {
-      final String languageCode = await languageIdentifier.identifyLanguage(cleanText);
+      final String languageCode =
+          await languageIdentifier.identifyLanguage(cleanText);
 
       if (languageCode == 'und') {
         // Fallback: try to see if it's a very short message that might be identifiable anyway
-        final possible = await languageIdentifier.identifyPossibleLanguages(cleanText);
+        final possible =
+            await languageIdentifier.identifyPossibleLanguages(cleanText);
         if (possible.isNotEmpty && possible.first.confidence > 0.05) {
           final bestCode = possible.first.languageTag;
-          
+
           return _mapCodeToLanguage(bestCode);
         }
         return null;
       }
-      
+
       return _mapCodeToLanguage(languageCode);
     } catch (e) {
-      
       return null;
     } finally {
       languageIdentifier.close();
@@ -80,7 +80,7 @@ class TranslationService {
   TranslateLanguage? _mapCodeToLanguage(String code) {
     // Standardize code (e.g. en-US -> en)
     final shortCode = code.split('-').first.toLowerCase();
-    
+
     for (final lang in TranslateLanguage.values) {
       if (lang.bcpCode.toLowerCase() == shortCode) return lang;
     }
@@ -90,15 +90,13 @@ class TranslationService {
   Future<String> translateText(
       String text, TranslateLanguage source, TranslateLanguage target) async {
     if (source == target) return text;
-    
+
     // Ensure models are available
     final modelManager = OnDeviceTranslatorModelManager();
     if (!await modelManager.isModelDownloaded(source.bcpCode)) {
-      
       await modelManager.downloadModel(source.bcpCode, isWifiRequired: false);
     }
     if (!await modelManager.isModelDownloaded(target.bcpCode)) {
-      
       await modelManager.downloadModel(target.bcpCode, isWifiRequired: false);
     }
 
@@ -109,7 +107,6 @@ class TranslationService {
       await onDeviceTranslator.close();
       return response;
     } catch (e) {
-      
       await onDeviceTranslator.close();
       return 'Translation Error';
     }
@@ -123,12 +120,10 @@ class TranslationService {
   Future<bool> downloadModel(TranslateLanguage lang) async {
     final modelManager = OnDeviceTranslatorModelManager();
     try {
-      
       final success =
           await modelManager.downloadModel(lang.bcpCode, isWifiRequired: false);
       return success;
     } catch (e) {
-      
       return false;
     }
   }
@@ -147,10 +142,9 @@ final translationServiceProvider = Provider<TranslationService>((ref) {
 /// Reactive UI locale — drives MaterialApp.locale
 final localeProvider = Provider<Locale>((ref) => ref.watch(languageProvider));
 
-// Legacy LocaleNotifier kept for backward-compatibility if needed, 
+// Legacy LocaleNotifier kept for backward-compatibility if needed,
 // but it now just redirects to languageProvider
 class LocaleNotifier extends StateNotifier<Locale> {
-
   LocaleNotifier(this._ref) : super(_ref.read(languageProvider));
   final Ref _ref;
 

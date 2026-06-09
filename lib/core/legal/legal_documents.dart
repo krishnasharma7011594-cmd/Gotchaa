@@ -20,8 +20,7 @@ class LegalDocument {
   final String? changeSummary;
   final String? previousVersion;
 
-  String get shareUrl =>
-      'https://gotchaa.app/legal/${shareSlug ?? id}';
+  String get shareUrl => 'https://gotchaa.app/legal/${shareSlug ?? id}';
 }
 
 class LegalDocuments {
@@ -59,7 +58,8 @@ class LegalDocuments {
       version: 'v3.0',
       lastUpdated: DateTime(2026, 5, 21),
       shareSlug: 'community-guidelines',
-      changeSummary: 'New document: zero-tolerance policies, enforcement ladder, VibeTalk and Karma rules.',
+      changeSummary:
+          'New document: zero-tolerance policies, enforcement ladder, VibeTalk and Karma rules.',
     ),
     LegalDocument(
       id: 'cookies',
@@ -68,7 +68,8 @@ class LegalDocuments {
       version: 'v3.0',
       lastUpdated: DateTime(2026, 5, 21),
       shareSlug: 'cookies',
-      changeSummary: 'New document: GOTCHAA cookies, third-party browser cookies, consent controls.',
+      changeSummary:
+          'New document: GOTCHAA cookies, third-party browser cookies, consent controls.',
     ),
     LegalDocument(
       id: 'aup',
@@ -77,7 +78,8 @@ class LegalDocuments {
       version: 'v3.0',
       lastUpdated: DateTime(2026, 5, 21),
       shareSlug: 'acceptable-use',
-      changeSummary: 'New document: automation, API abuse, Karma abuse, impersonation.',
+      changeSummary:
+          'New document: automation, API abuse, Karma abuse, impersonation.',
     ),
     LegalDocument(
       id: 'dmca',
@@ -86,7 +88,8 @@ class LegalDocuments {
       version: 'v3.0',
       lastUpdated: DateTime(2026, 5, 21),
       shareSlug: 'dmca',
-      changeSummary: 'New document: takedown, counter-notice, repeat infringer policy.',
+      changeSummary:
+          'New document: takedown, counter-notice, repeat infringer policy.',
     ),
     LegalDocument(
       id: 'law_enforcement',
@@ -95,7 +98,8 @@ class LegalDocuments {
       version: 'v3.0',
       lastUpdated: DateTime(2026, 5, 21),
       shareSlug: 'law-enforcement',
-      changeSummary: 'New document: legal process, emergency requests, transparency commitment.',
+      changeSummary:
+          'New document: legal process, emergency requests, transparency commitment.',
     ),
     LegalDocument(
       id: 'security',
@@ -104,7 +108,8 @@ class LegalDocuments {
       version: 'v3.0',
       lastUpdated: DateTime(2026, 5, 21),
       shareSlug: 'security-disclosure',
-      changeSummary: 'New document: safe harbor, response timelines, bug bounty commitment.',
+      changeSummary:
+          'New document: safe harbor, response timelines, bug bounty commitment.',
     ),
   ];
 
