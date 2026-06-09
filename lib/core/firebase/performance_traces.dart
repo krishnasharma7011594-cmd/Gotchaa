@@ -11,42 +11,62 @@ class GotchaaPerformanceTraces {
   Trace? _uploadTrace;
 
   Future<void> startFeedLoad() async {
-    _feedTrace = FirebasePerformance.instance.newTrace('feed_load');
-    await _feedTrace!.start();
+    try {
+      _feedTrace = FirebasePerformance.instance.newTrace('feed_load');
+      await _feedTrace!.start();
+    } catch (_) {}
   }
 
   Future<void> stopFeedLoad() async {
-    await _feedTrace?.stop();
-    _feedTrace = null;
+    try {
+      await _feedTrace?.stop();
+    } catch (_) {} finally {
+      _feedTrace = null;
+    }
   }
 
   Future<void> startChatOpen() async {
-    _chatTrace = FirebasePerformance.instance.newTrace('chat_open');
-    await _chatTrace!.start();
+    try {
+      _chatTrace = FirebasePerformance.instance.newTrace('chat_open');
+      await _chatTrace!.start();
+    } catch (_) {}
   }
 
   Future<void> stopChatOpen() async {
-    await _chatTrace?.stop();
-    _chatTrace = null;
+    try {
+      await _chatTrace?.stop();
+    } catch (_) {} finally {
+      _chatTrace = null;
+    }
   }
 
   Future<void> startVibeTalkMatch() async {
-    _vibetalkTrace = FirebasePerformance.instance.newTrace('vibetalk_match');
-    await _vibetalkTrace!.start();
+    try {
+      _vibetalkTrace = FirebasePerformance.instance.newTrace('vibetalk_match');
+      await _vibetalkTrace!.start();
+    } catch (_) {}
   }
 
   Future<void> stopVibeTalkMatch() async {
-    await _vibetalkTrace?.stop();
-    _vibetalkTrace = null;
+    try {
+      await _vibetalkTrace?.stop();
+    } catch (_) {} finally {
+      _vibetalkTrace = null;
+    }
   }
 
   Future<void> startImageUpload({String kind = 'image'}) async {
-    _uploadTrace = FirebasePerformance.instance.newTrace('image_upload_$kind');
-    await _uploadTrace!.start();
+    try {
+      _uploadTrace = FirebasePerformance.instance.newTrace('image_upload_$kind');
+      await _uploadTrace!.start();
+    } catch (_) {}
   }
 
   Future<void> stopImageUpload() async {
-    await _uploadTrace?.stop();
-    _uploadTrace = null;
+    try {
+      await _uploadTrace?.stop();
+    } catch (_) {} finally {
+      _uploadTrace = null;
+    }
   }
 }

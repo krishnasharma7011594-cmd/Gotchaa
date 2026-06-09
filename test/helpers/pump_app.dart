@@ -4,18 +4,31 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gotchaa/core/theme/app_theme.dart';
 import 'package:gotchaa/core/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gotchaa/core/providers/shared_prefs_provider.dart';
+import 'package:gotchaa/core/providers/auth_providers.dart';
+import 'package:gotchaa/features/chat/providers/chat_providers.dart';
+import 'package:gotchaa/core/providers/repository_providers.dart';
+import 'package:gotchaa/core/repositories/social_repository.dart';
+import 'mock_firebase.dart';
 
 extension PumpApp on WidgetTester {
   /// Compatibility wrapper for existing tests that call `pumpApp`.
   /// It simply forwards to `pumpGotchaaApp`.
   Future<void> pumpApp(Widget widget,
-      {List<Override> overrides = const []}) async {
-    await pumpGotchaaApp(widget, overrides: overrides);
+      {List<Override> overrides = const [], bool settle = true}) async {
+    await pumpGotchaaApp(widget, overrides: overrides, settle: settle);
   }
 
   /// Pumps a widget wrapped in ProviderScope, MaterialApp, and GoRouter.
   Future<void> pumpGotchaaApp(Widget widget,
-      {List<Override> overrides = const []}) async {
+      {List<Override> overrides = const [], bool settle = true}) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+
+    final mockAuth = getMockAuth();
+    final fakeFirestore = getFakeFirestore();
+
     final router = GoRouter(
       routes: [
         GoRoute(path: '/', builder: (context, state) => widget),
@@ -24,7 +37,14 @@ extension PumpApp on WidgetTester {
 
     await pumpWidget(
       ProviderScope(
-        overrides: overrides,
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          firestoreProvider.overrideWithValue(fakeFirestore),
+          firebaseAuthProvider.overrideWithValue(mockAuth),
+          authStateProvider.overrideWith((ref) => Stream.value(mockAuth.currentUser)),
+          socialRepositoryProvider.overrideWithValue(SocialRepository(db: fakeFirestore)),
+          ...overrides,
+        ],
         child: MaterialApp.router(
           theme: AppTheme.fromGotchaaTheme(
               AppThemes.allThemes[ThemeType.gotchaaLight]!),
@@ -34,7 +54,11 @@ extension PumpApp on WidgetTester {
     );
 
     // Handle async loading states by settling
-    await pumpAndSettle();
+    if (settle) {
+      await pumpAndSettle();
+    } else {
+      await pump();
+    }
   }
 
   /// Finder helper for common GOTCHAA widgets or texts
@@ -46,12 +70,12 @@ extension PumpApp on WidgetTester {
 
 /// Standalone function as requested by user
 Future<void> pumpGotchaaApp(WidgetTester tester, Widget widget,
-    {List<Override> overrides = const []}) async {
-  await tester.pumpGotchaaApp(widget, overrides: overrides);
+    {List<Override> overrides = const [], bool settle = true}) async {
+  await tester.pumpGotchaaApp(widget, overrides: overrides, settle: settle);
 }
 
 /// Compatibility top‑level function matching older test code.
 Future<void> pumpApp(WidgetTester tester, Widget widget,
-    {List<Override> overrides = const []}) async {
-  await tester.pumpGotchaaApp(widget, overrides: overrides);
+    {List<Override> overrides = const [], bool settle = true}) async {
+  await tester.pumpGotchaaApp(widget, overrides: overrides, settle: settle);
 }

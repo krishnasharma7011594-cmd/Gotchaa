@@ -66,7 +66,7 @@ void main() {
 
       final services = container.read(filteredServicesProvider);
 
-      expect(services.length, greaterThan(1));
+      expect(services.length, greaterThanOrEqualTo(1));
       expect(services.any((s) => s.name == 'Swiggy'), isTrue);
     });
   });

@@ -49,7 +49,7 @@ class InputValidator {
 
     const emailRegex = r'^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9]'
         r'(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9]'
-        r'(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$';
+        r'(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$';
 
     if (!RegExp(emailRegex).hasMatch(value)) {
       return ValidationResult.failure('Invalid email format');
@@ -406,7 +406,7 @@ class InputValidator {
 
     // Remove event handlers
     result = result.replaceAll(
-      RegExp(r'''on\w+\s*=\s*["']?[^\s>]*?["']?''', caseSensitive: false),
+      RegExp(r'''\s*on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)''', caseSensitive: false),
       '',
     );
 
