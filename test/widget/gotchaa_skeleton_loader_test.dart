@@ -8,7 +8,8 @@ void main() {
   group('GotchaaSkeletonLoader Tests', () {
     testWidgets('Feed skeleton renders with shimmer',
         (WidgetTester tester) async {
-      await tester.pumpApp(const GotchaaSkeletonLoader.feed(itemCount: 3), settle: false);
+      await tester.pumpApp(const GotchaaSkeletonLoader.feed(itemCount: 3),
+          settle: false);
 
       // Verify Shimmer is present
       expect(find.byType(Shimmer), findsOneWidget);
@@ -16,7 +17,8 @@ void main() {
 
     testWidgets('Chat list skeleton renders with shimmer',
         (WidgetTester tester) async {
-      await tester.pumpApp(const GotchaaSkeletonLoader.chatList(itemCount: 5), settle: false);
+      await tester.pumpApp(const GotchaaSkeletonLoader.chatList(itemCount: 5),
+          settle: false);
 
       // Verify Shimmer is present
       expect(find.byType(Shimmer), findsOneWidget);
@@ -24,7 +26,8 @@ void main() {
 
     testWidgets('Profile skeleton renders with shimmer',
         (WidgetTester tester) async {
-      await tester.pumpApp(const GotchaaSkeletonLoader.profile(), settle: false);
+      await tester.pumpApp(const GotchaaSkeletonLoader.profile(),
+          settle: false);
 
       // Verify Shimmer is present
       expect(find.byType(Shimmer), findsOneWidget);
