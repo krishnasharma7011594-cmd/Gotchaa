@@ -195,6 +195,7 @@ class _Particle {
     required this.color,
     required this.lifetime,
     required this.angle,
+    this.rotation = 0.0,
   });
   double x, y, vx, gravity, rotForce, size, lifetime, angle, rotation;
   Color color;
