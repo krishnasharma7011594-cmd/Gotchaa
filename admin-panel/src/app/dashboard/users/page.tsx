@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { Search, ShieldAlert, RotateCcw, ShieldCheck, Mail, Loader2, UserX } from "lucide-react";
 import { db } from "@/lib/firebase";
-import { collection, query, getDocs, doc, updateDoc, where, limit, orderBy, startAt, endAt } from "firebase/firestore";
+import { collection, query, getDocs, doc, updateDoc, limit, orderBy, startAt, endAt } from "firebase/firestore";
 import styles from "./users.module.css";
 
 interface User {
@@ -15,17 +16,21 @@ interface User {
   photoUrl?: string;
 }
 
+type UserUpdates = Record<string, boolean>;
+
+type ClassValue = string | undefined | null | boolean | number;
+
+function clsx(...args: ClassValue[]) {
+  return args.filter(Boolean).join(" ");
+}
+
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [processingId, setProcessingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchUsers();
-  }, [searchTerm]);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
       const usersRef = collection(db, "users");
@@ -45,14 +50,14 @@ export default function UsersPage() {
       }
 
       const snapshot = await getDocs(q);
-      const loaded: User[] = snapshot.docs.map(doc => {
-        const data = doc.data();
+      const loaded: User[] = snapshot.docs.map(docSnap => {
+        const data = docSnap.data();
         let status: "verified" | "limited" | "banned" = "limited";
         if (data.isBanned) status = "banned";
         else if (data.isVerified) status = "verified";
 
         return {
-          id: doc.id,
+          id: docSnap.id,
           username: data.username || "anonymous",
           email: data.email || "no-email",
           status,
@@ -67,9 +72,13 @@ export default function UsersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm]);
 
-  const updateStatus = async (uid: string, updates: any) => {
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  const updateStatus = async (uid: string, updates: UserUpdates) => {
     setProcessingId(uid);
     try {
       const userRef = doc(db, "users", uid);
@@ -119,7 +128,13 @@ export default function UsersPage() {
               <div className={styles.userHeader}>
                 <div className={styles.avatar}>
                   {user.photoUrl ? (
-                    <img src={user.photoUrl} alt={user.username} className="w-full h-full object-cover rounded-xl" />
+                    <Image
+                      src={user.photoUrl}
+                      alt={user.username}
+                      width={48}
+                      height={48}
+                      className="w-full h-full object-cover rounded-xl"
+                    />
                   ) : (
                     user.username[0].toUpperCase()
                   )}
@@ -173,8 +188,4 @@ export default function UsersPage() {
       )}
     </div>
   );
-}
-
-function clsx(...args: any[]) {
-  return args.filter(Boolean).join(" ");
 }

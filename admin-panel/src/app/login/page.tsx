@@ -32,9 +32,10 @@ export default function LoginPage() {
           setLoading(false);
         }
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.message || "Authentication failed. Please try again.");
+      const errorMessage = err instanceof Error ? err.message : "Authentication failed. Please try again.";
+      setError(errorMessage);
       setLoading(false);
     }
   };

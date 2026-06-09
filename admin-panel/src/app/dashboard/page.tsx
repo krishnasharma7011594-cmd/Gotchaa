@@ -223,7 +223,7 @@ export default function OverviewPage() {
                 </div>
                 <div className={styles.invitersList}>
                   {topInviters.length > 0 ? (
-                    topInviters.map((inviter, i) => (
+                    topInviters.map((inviter) => (
                       <div key={inviter.id} className={styles.inviterItem}>
                         <Award size={18} className={styles.awardIcon} />
                         <div className={styles.inviterInfo}>
