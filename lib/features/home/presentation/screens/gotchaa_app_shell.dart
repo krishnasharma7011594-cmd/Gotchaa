@@ -42,8 +42,9 @@ class _GotchaaAppShellState extends ConsumerState<GotchaaAppShell> {
   void initState() {
     super.initState();
     ref.read(activityServiceProvider).startSession();
-    ref.read(offlineQueueProvider).registerHandler((action) async {
-      if (action.type == OfflineActionType.message) {
+    ref.read(offlineQueueProvider).registerHandler(
+      OfflineActionType.message,
+      (action) async {
         final p = action.payload;
         await ref.read(chatServiceProvider).sendMessage(
           chatId: p['chatId'] as String,
@@ -51,8 +52,8 @@ class _GotchaaAppShellState extends ConsumerState<GotchaaAppShell> {
           text: p['text'] as String,
           type: p['type'] as String? ?? 'text',
         );
-      }
-    });
+      },
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (ref.read(shellPageIndexProvider) == 0 && ref.read(shellPageControllerProvider).hasClients) {
          ref.read(shellPageControllerProvider).jumpToPage(1);
