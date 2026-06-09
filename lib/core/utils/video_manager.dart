@@ -89,7 +89,8 @@ class FeedVideoManager {
   void preload(String url) {
     if (_pool.containsKey(url) || url.isEmpty || !url.startsWith('http')) return;
 
-    VideoPlayerController.networkUrl(Uri.parse(url)).initialize().then((controller) {
+    final controller = VideoPlayerController.networkUrl(Uri.parse(url));
+    controller.initialize().then((_) {
       if (_pool.length >= 3) {
         final oldestUrl = _history.isEmpty ? _pool.keys.first : _history.first;
         _evictController(oldestUrl);

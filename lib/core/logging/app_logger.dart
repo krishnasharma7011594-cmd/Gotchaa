@@ -10,6 +10,10 @@ class AppLogger {
     if (kDebugMode) debugPrint('[INFO] $message');
   }
 
+  static void w(String message) {
+    if (kDebugMode) debugPrint('[WARN] $message');
+  }
+
   static void e(String message, [Object? error]) {
     if (kDebugMode) {
       debugPrint('[ERROR] $message ${error ?? ""}');

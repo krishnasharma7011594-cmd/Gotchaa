@@ -18,7 +18,7 @@ void main() {
   testWidgets('Complete Feed Flow Test', (WidgetTester tester) async {
     final post = getMockPost();
     final feedItems = [
-      PostFeedItem(post: post),
+      PostFeedItem(post),
     ];
 
     await tester.pumpWidget(
