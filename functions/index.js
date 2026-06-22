@@ -1557,7 +1557,7 @@ exports.checkPolicyOnLogin = functions.https.onCall(async (data, context) => {
 exports.compressUploadedVideo = functions.runWith({
     timeoutSeconds: 300,
     memory: '1GB'
-}).storage.object().onFinalized(async (object) => {
+}).storage.object().onFinalize(async (object) => {
     const path = require('path');
     const os = require('os');
     const fs = require('fs');
