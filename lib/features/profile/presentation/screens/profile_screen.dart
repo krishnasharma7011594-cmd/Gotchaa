@@ -669,14 +669,47 @@ class _ProfileView extends ConsumerWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Container(
-                    color: Colors.grey.shade900,
-                    child: const Icon(Icons.videocam_rounded,
-                        color: Colors.white12, size: 36),
+                  if (vybz.thumbnailUrl.isNotEmpty)
+                    CachedNetworkImage(
+                      imageUrl: vybz.thumbnailUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        color: Colors.grey.shade900,
+                        child: const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey.shade900,
+                        child: const Icon(Icons.videocam_rounded,
+                            color: Colors.white10, size: 36),
+                      ),
+                    )
+                  else
+                    Container(
+                      color: Colors.grey.shade900,
+                      child: const Icon(Icons.videocam_rounded,
+                          color: Colors.white10, size: 36),
+                    ),
+                  // Premium overlay: play icon + gradient
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.center,
+                          colors: [
+                            Colors.black.withOpacity(0.4),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                   const Center(
-                    child: Icon(Icons.play_circle_fill_rounded,
-                        color: Colors.white70, size: 36)),
+                    child: Icon(Icons.play_circle_outline_rounded,
+                        color: Colors.white70, size: 32),
+                  ),
                 ],
               ),
             );
@@ -769,12 +802,13 @@ class _RealPostsGrid extends ConsumerWidget {
                             color: context.iconSecondary),
                       ),
                   // Show video icon badge for video posts
-                  if (post.mediaThumbnailUrl.isEmpty && post.mediaUrl.isNotEmpty)
+                  if (post.isVideo)
                     const Positioned(
-                      top: 6,
-                      right: 6,
+                      top: 8,
+                      right: 8,
                       child: Icon(Icons.videocam_rounded,
-                          color: Colors.white, size: 18),
+                          color: Colors.white, size: 18,
+                          shadows: [Shadow(color: Colors.black45, blurRadius: 4)]),
                     ),
                 ],
               ),
