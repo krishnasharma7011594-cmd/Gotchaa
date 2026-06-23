@@ -76,10 +76,18 @@ class _GotchaaLikeButtonState extends ConsumerState<GotchaaLikeButton>
     super.dispose();
   }
 
+  bool _isToggling = false;
+
   Future<void> _toggleLike() async {
+    if (_isToggling) return;
+    _isToggling = true;
+
     final myUser = ref.read(currentUserProfileProvider).value;
     final myUid = ref.read(authStateProvider).value?.uid;
-    if (myUid == null || myUser == null) return;
+    if (myUid == null || myUser == null) {
+      _isToggling = false;
+      return;
+    }
 
     final bool currentlyLiked = _isLikedLocal ?? false;
     final bool nextLikedState = !currentlyLiked;
@@ -144,6 +152,20 @@ class _GotchaaLikeButtonState extends ConsumerState<GotchaaLikeButton>
           ),
         );
       }
+    } finally {
+      _isToggling = false;
+    }
+  }
+
+  // Public method for double-tap support
+  Future<void> forceLike() async {
+    final currentlyLiked = _isLikedLocal ?? false;
+    if (!currentlyLiked) {
+      await _toggleLike();
+    } else {
+      // Just trigger animation if already liked
+      _animController.forward(from: 0);
+      HapticFeedback.mediumImpact();
     }
   }
 

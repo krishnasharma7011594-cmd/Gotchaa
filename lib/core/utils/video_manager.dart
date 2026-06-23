@@ -20,18 +20,28 @@ class FeedVideoManager {
 
       final controller = _pool[url]!;
       if (!controller.value.isInitialized) {
-        await controller.initialize();
+        try {
+          await controller.initialize();
+        } catch (_) {
+          // If cached init fails, remove it so we can try fresh
+          _pool.remove(url);
+          _history.remove(url);
+          return getOrCreateController(url);
+        }
       }
       return controller;
     }
 
-    // Limit active controllers to maximum 3
-    if (_pool.length >= 3) {
+    // Limit active controllers to maximum 10 for better smoother scrolling
+    if (_pool.length >= 10) {
       final oldestUrl = _history.isEmpty ? _pool.keys.first : _history.first;
       await _evictController(oldestUrl);
     }
 
-    final controller = VideoPlayerController.networkUrl(Uri.parse(url));
+    final controller = VideoPlayerController.networkUrl(
+      Uri.parse(url),
+      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+    );
     _pool[url] = controller;
     _history.add(url);
 
@@ -41,6 +51,8 @@ class FeedVideoManager {
       await controller.setVolume(1.0);
     } catch (e) {
       print('Video init error for $url: $e');
+      _pool.remove(url);
+      _history.remove(url);
     }
     return controller;
   }
@@ -51,7 +63,9 @@ class FeedVideoManager {
     _history.remove(url);
     if (controller != null) {
       try {
-        await controller.pause();
+        if (controller.value.isInitialized && controller.value.isPlaying) {
+          await controller.pause();
+        }
         await controller.dispose();
       } catch (_) {}
     }
@@ -65,7 +79,7 @@ class FeedVideoManager {
           controller.play();
         }
       } else {
-        if (controller.value.isPlaying) {
+        if (controller.value.isInitialized && controller.value.isPlaying) {
           controller.pause();
         }
       }
@@ -74,13 +88,16 @@ class FeedVideoManager {
 
   /// Pause play for a specific URL.
   void pause(String url) {
-    _pool[url]?.pause();
+    final controller = _pool[url];
+    if (controller != null && controller.value.isInitialized && controller.value.isPlaying) {
+      controller.pause();
+    }
   }
 
   /// Stop and pause all active players.
   void stop() {
     _pool.forEach((_, controller) {
-      if (controller.value.isPlaying) {
+      if (controller.value.isInitialized && controller.value.isPlaying) {
         controller.pause();
       }
     });
@@ -91,31 +108,31 @@ class FeedVideoManager {
     if (_pool.containsKey(url) || url.isEmpty || !url.startsWith('http'))
       return;
 
+    if (_pool.length >= 10) return;
+
     final controller = VideoPlayerController.networkUrl(Uri.parse(url));
     controller.initialize().then((_) {
-      if (_pool.length >= 3) {
-        final oldestUrl = _history.isEmpty ? _pool.keys.first : _history.first;
-        _evictController(oldestUrl);
-      }
       _pool[url] = controller;
       _history.add(url);
       controller.setLooping(true);
+      controller.setVolume(1.0);
     }).catchError((_) {
       // Fail silently for network timeouts
     });
   }
 
-  /// Keep compatibility, but let the pool manage destruction
   void onDispose(VideoPlayerController controller) {
-    // No-op: Lifecycle managed by pool eviction policy
+     // Managed by pool
   }
 
   /// Clean all active controllers (e.g. leaving the Vybz feed screen)
   void clearAll() {
     _pool.forEach((_, controller) {
       try {
-        controller.pause();
-        controller.dispose();
+        if (controller.value.isInitialized) {
+          controller.pause();
+          controller.dispose();
+        }
       } catch (_) {}
     });
     _pool.clear();

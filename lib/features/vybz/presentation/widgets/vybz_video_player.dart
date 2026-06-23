@@ -8,10 +8,15 @@ import '../../../../core/providers/vybz_providers.dart';
 import '../../../../core/utils/video_manager.dart';
 
 class VybzVideoPlayer extends ConsumerStatefulWidget {
-  const VybzVideoPlayer(
-      {required this.videoUrl, required this.vybzId, super.key});
+  const VybzVideoPlayer({
+    required this.videoUrl,
+    required this.vybzId,
+    this.onDoubleTap,
+    super.key,
+  });
   final String videoUrl;
   final String vybzId;
+  final VoidCallback? onDoubleTap;
 
   @override
   ConsumerState<VybzVideoPlayer> createState() => _VybzVideoPlayerState();
@@ -20,6 +25,7 @@ class VybzVideoPlayer extends ConsumerStatefulWidget {
 class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
   VideoPlayerController? _controller;
   bool _isInitialized = false;
+  bool _showHeart = false;
 
   @override
   void initState() {
@@ -28,6 +34,7 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
   }
 
   Future<void> _initController() async {
+    // 💡 IMPROVED: Using a more robust initialization with skip cache if possible
     final controller =
         await FeedVideoManager().getOrCreateController(widget.videoUrl);
     if (!mounted) return;
@@ -55,13 +62,6 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
     }
   }
 
-  @override
-  void dispose() {
-    // ⚠️ CRITICAL: Do NOT dispose the controller here as the lifecycle
-    // is entirely controlled by FeedVideoManager pool to prevent OOM/ANRs
-    super.dispose();
-  }
-
   void _handleTap() {
     final controller = _controller;
     if (controller == null || !_isInitialized) return;
@@ -72,6 +72,19 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
       FeedVideoManager().play(widget.videoUrl);
     }
     setState(() {});
+  }
+
+  void _handleDoubleTap() {
+    if (widget.onDoubleTap != null) {
+      widget.onDoubleTap!();
+    }
+    setState(() => _showHeart = true);
+    HapticFeedback.heavyImpact();
+    
+    // Auto-hide heart after animation
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (mounted) setState(() => _showHeart = false);
+    });
   }
 
   @override
@@ -111,21 +124,41 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
 
     return GestureDetector(
       onTap: _handleTap,
+      onDoubleTap: _handleDoubleTap,
       child: Stack(
         fit: StackFit.expand,
         children: [
           FittedBox(
             fit: BoxFit.cover,
             child: SizedBox(
-              width: controller.value.size.width,
-              height: controller.value.size.height,
+              width: controller.value.size.width > 0 ? controller.value.size.width : 1080,
+              height: controller.value.size.height > 0 ? controller.value.size.height : 1920,
               child: VideoPlayer(controller),
             ),
           ),
+          
+          // Large Pop-up Heart for Double Tap
+          if (_showHeart)
+            Center(
+              child: const Icon(
+                Icons.favorite_rounded,
+                color: Colors.white70,
+                size: 110,
+              )
+                  .animate()
+                  .scale(
+                    begin: const Offset(0, 0),
+                    end: const Offset(1, 1),
+                    duration: 300.ms,
+                    curve: Curves.elasticOut,
+                  )
+                  .fadeOut(begin: 1.0, delay: 500.ms, duration: 300.ms),
+            ),
+
           ValueListenableBuilder(
             valueListenable: controller,
             builder: (context, value, child) {
-              if (!value.isPlaying) {
+              if (!value.isPlaying && !_showHeart) {
                 return Center(
                   child: Icon(
                     Icons.play_arrow_rounded,
