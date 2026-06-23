@@ -185,6 +185,7 @@ class _VybzItem extends ConsumerStatefulWidget {
 
 class _VybzItemState extends ConsumerState<_VybzItem> {
   int _commentsCountLocal = 0;
+  final GlobalKey<dynamic> _likeButtonKey = GlobalKey();
 
   @override
   void initState() {
@@ -204,7 +205,16 @@ class _VybzItemState extends ConsumerState<_VybzItem> {
       children: [
         if (widget.vybz.videoUrl.startsWith('http'))
           VybzVideoPlayer(
-              videoUrl: widget.vybz.videoUrl, vybzId: widget.vybz.id)
+            videoUrl: widget.vybz.videoUrl,
+            vybzId: widget.vybz.id,
+            onDoubleTap: () {
+              // Trigger the like button remotely
+              final dynamic state = _likeButtonKey.currentState;
+              if (state != null) {
+                state.forceLike();
+              }
+            },
+          )
         else
           CachedNetworkImage(
             imageUrl: 'https://picsum.photos/seed/${widget.vybz.id}/1080/1920',
@@ -350,6 +360,7 @@ class _VybzItemState extends ConsumerState<_VybzItem> {
             mainAxisSize: MainAxisSize.min,
             children: [
               GotchaaLikeButton(
+                key: _likeButtonKey,
                 contentId: widget.vybz.id,
                 contentType: 'vybz',
                 initialCount: widget.vybz.likesCount,
@@ -584,11 +595,31 @@ class _VybzItemState extends ConsumerState<_VybzItem> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context); // Close dialog
-              await ref.read(postRepositoryProvider).deletePost(widget.vybz.id);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Reel deleted successfully')),
-                );
+              
+              // Show a loading snackbar
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Working on it...'),
+                  duration: Duration(seconds: 1),
+                ),
+              );
+
+              try {
+                await ref.read(postRepositoryProvider).deletePost(widget.vybz.id);
+                
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Reel deleted!')),
+                  );
+                  // Force a refresh of the feed provider
+                  ref.invalidate(vybzFeedProvider);
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to delete: $e')),
+                  );
+                }
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),

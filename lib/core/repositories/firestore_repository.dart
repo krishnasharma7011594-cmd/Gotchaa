@@ -720,7 +720,11 @@ class FirestoreRepository {
       });
 
   Future<void> postVybz(VybzModel vybz) async {
-    await _firestore.collection('vybz').add(vybz.toMap());
+    if (vybz.id.isNotEmpty) {
+      await _firestore.collection('vybz').doc(vybz.id).set(vybz.toMap());
+    } else {
+      await _firestore.collection('vybz').add(vybz.toMap());
+    }
   }
 
   Future<void> likeVybz(String vybzId) async {

@@ -150,19 +150,19 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
       );
 
       // 3. Create regular post
-      await postRepo.createPost(post);
+      final postId = await postRepo.createPost(post);
 
       // 4. If it's a video, also create a Vybz Reel entry
       if (widget.isVideo) {
         final vybzRepo = ref.read(firestoreRepositoryProvider);
         final vybz = VybzModel(
-          id: '',
+          id: postId, // LINKED ID: Now they share the same identity!
           creatorId: user.uid,
           creatorUsername: profile?.username ?? profile?.displayName ?? 'User',
           creatorPhoto: profile?.photoUrl ?? '',
           videoUrl: mediaUrl,
           caption: captionCheck.maskedText ?? caption,
-          hashtags: [], // Extract hashtags if possible, or leave empty
+          hashtags: [], 
           createdAt: DateTime.now(),
         );
         await vybzRepo.postVybz(vybz);

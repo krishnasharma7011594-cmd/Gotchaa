@@ -990,6 +990,12 @@ class _VybzGrid extends ConsumerWidget {
                       style: GoogleFonts.outfit(
                           color: Colors.grey.shade400, fontSize: 14),
                     ),
+                    const SizedBox(height: 16),
+                    TextButton.icon(
+                      onPressed: () => ref.invalidate(userVybzProvider(uid)),
+                      icon: const Icon(Icons.refresh_rounded, color: AppColors.electricBlue, size: 16),
+                      label: Text('Check for new Reels', style: GoogleFonts.outfit(color: AppColors.electricBlue)),
+                    ),
                   ],
                 ),
               ),
