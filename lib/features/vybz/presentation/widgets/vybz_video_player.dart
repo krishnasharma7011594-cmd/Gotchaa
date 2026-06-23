@@ -35,19 +35,32 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
   }
 
   Future<void> _initController() async {
-    // 💡 IMPROVED: Using a more robust initialization with skip cache if possible
-    final controller =
-        await FeedVideoManager().getOrCreateController(widget.videoUrl);
-    if (!mounted) return;
     setState(() {
-      _controller = controller;
-      _isInitialized = true;
+      _isInitialized = false;
+      _controller = null;
     });
 
-    // Autoplay if this video is currently active in the page controller
-    if (mounted && ref.read(activeVybzIdProvider) == widget.vybzId) {
-      FeedVideoManager().play(widget.videoUrl);
-      setState(() {}); // Force rebuild to show video
+    final controller =
+        await FeedVideoManager().getOrCreateController(widget.videoUrl);
+
+    if (!mounted) return;
+
+    // Only mark initialized if the controller is actually ready
+    if (controller.value.isInitialized) {
+      setState(() {
+        _controller = controller;
+        _isInitialized = true;
+      });
+      // Autoplay if this video is currently active in the page controller
+      if (ref.read(activeVybzIdProvider) == widget.vybzId) {
+        FeedVideoManager().play(widget.videoUrl);
+      }
+    } else {
+      // Controller failed — show error state
+      setState(() {
+        _controller = null;
+        _isInitialized = true; // set true to exit loading, but controller is null = error
+      });
     }
   }
 
@@ -104,18 +117,39 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
       }
     });
 
-    if (!_isInitialized || controller == null || !controller.value.isInitialized) {
+    // Still initializing — show loading
+    if (!_isInitialized) {
       return Container(
         color: Colors.black,
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const CircularProgressIndicator(color: Colors.white24),
+              const CircularProgressIndicator(color: Colors.white54),
               const SizedBox(height: 12),
-              Text(
-                'Loading Vybz...',
-                style: GoogleFonts.outfit(color: Colors.white24, fontSize: 12),
+              Text('Loading Vybz...', style: GoogleFonts.outfit(color: Colors.white54, fontSize: 12)),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Initialized but controller is null = load failed
+    if (controller == null || !controller.value.isInitialized) {
+      return Container(
+        color: Colors.black,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.wifi_off_rounded, color: Colors.white38, size: 48),
+              const SizedBox(height: 12),
+              Text('Could not load video', style: GoogleFonts.outfit(color: Colors.white38, fontSize: 13)),
+              const SizedBox(height: 16),
+              TextButton.icon(
+                onPressed: _initController,
+                icon: const Icon(Icons.refresh_rounded, color: Colors.white70),
+                label: Text('Retry', style: GoogleFonts.outfit(color: Colors.white70)),
               ),
             ],
           ),
