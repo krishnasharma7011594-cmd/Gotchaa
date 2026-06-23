@@ -99,7 +99,7 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
       final storageRepo = ref.read(storageRepositoryProvider);
       final postRepo = ref.read(postRepositoryProvider);
 
-      final String tempPostId = const Uuid().v4();
+      final String tempPostId = Uuid().v4();
       String mediaUrl = '';
       String? generatedThumbUrl;
       
