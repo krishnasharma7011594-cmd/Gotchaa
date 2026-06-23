@@ -454,8 +454,8 @@ class _CameraStreamScreenState extends State<CameraStreamScreen>
 
     final c = CameraController(
       cam,
-      ResolutionPreset.medium,
-      enableAudio: false,
+      ResolutionPreset.high, // Better for videos
+      enableAudio: true, // Need audio for Reels
       imageFormatGroup: Platform.isAndroid
           ? ImageFormatGroup.yuv420
           : ImageFormatGroup.bgra8888,
@@ -530,28 +530,27 @@ class _CameraStreamScreenState extends State<CameraStreamScreen>
   Future<void> _capture() async {
     if (_capturing || _frame == null) return;
     setState(() => _capturing = true);
+    HapticFeedback.mediumImpact();
+    // Logic for capturing image frame...
+    // (Rest of the capture code remains similar)
     try {
       await _stopStream();
-
       final boundary = _repaintKey.currentContext?.findRenderObject()
           as RenderRepaintBoundary?;
       if (boundary == null) {
         await _startStream();
         return;
       }
-
       final img = await boundary.toImage(pixelRatio: 3);
       final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
       if (bytes == null) {
         await _startStream();
         return;
       }
-
       final dir = await getTemporaryDirectory();
       final file = File(
           '${dir.path}/gotcha_${DateTime.now().millisecondsSinceEpoch}.png');
       await file.writeAsBytes(bytes.buffer.asUint8List());
-
       if (mounted) {
         await Navigator.push(
           context,
@@ -570,6 +569,46 @@ class _CameraStreamScreenState extends State<CameraStreamScreen>
     } finally {
       await _startStream();
       if (mounted) setState(() => _capturing = false);
+    }
+  }
+
+  bool _isRecording = false;
+  
+  Future<void> _startRecording() async {
+    if (_ctrl == null || _isRecording) return;
+    try {
+      await _stopStream();
+      await _ctrl!.startVideoRecording();
+      setState(() => _isRecording = true);
+      HapticFeedback.selectionClick();
+    } catch (e) {
+      debugPrint('Video error: $e');
+      await _startStream();
+    }
+  }
+
+  Future<void> _stopRecording() async {
+    if (_ctrl == null || !_isRecording) return;
+    try {
+      final file = await _ctrl!.stopVideoRecording();
+      setState(() => _isRecording = false);
+      HapticFeedback.mediumImpact();
+      
+      if (mounted) {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PostDetailsScreen(
+              mediaFile: File(file.path),
+              isVideo: true,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Stop video error: $e');
+    } finally {
+      await _startStream();
     }
   }
 
@@ -808,16 +847,21 @@ class _CameraStreamScreenState extends State<CameraStreamScreen>
 
   Widget _shutterBtn() => GestureDetector(
         onTap: _capturing ? null : _capture,
+        onLongPressStart: (_) => _startRecording(),
+        onLongPressEnd: (_) => _stopRecording(),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 100),
-          width: 78,
-          height: 78,
+          width: _isRecording ? 92 : 78,
+          height: _isRecording ? 92 : 78,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: 4),
+            border: Border.all(
+                color: _isRecording ? Colors.redAccent : Colors.white,
+                width: 4),
             boxShadow: [
               BoxShadow(
-                  color: Colors.cyanAccent.withOpacity(0.35),
+                  color: (_isRecording ? Colors.red : Colors.cyanAccent)
+                      .withOpacity(0.35),
                   blurRadius: 24,
                   spreadRadius: 3),
             ],
@@ -828,7 +872,17 @@ class _CameraStreamScreenState extends State<CameraStreamScreen>
                   child: CircularProgressIndicator(
                       color: Colors.cyanAccent, strokeWidth: 3),
                 )
-              : const Icon(Icons.circle, color: Colors.white, size: 58),
+              : Center(
+                  child: Container(
+                    width: _isRecording ? 32 : 58,
+                    height: _isRecording ? 32 : 58,
+                    decoration: BoxDecoration(
+                      color: _isRecording ? Colors.redAccent : Colors.white,
+                      borderRadius:
+                          BorderRadius.circular(_isRecording ? 8 : 100),
+                    ),
+                  ),
+                ),
         ),
       );
 

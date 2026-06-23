@@ -35,33 +35,51 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
   }
 
   Future<void> _initController() async {
+    if (!mounted) return;
+    
     setState(() {
       _isInitialized = false;
       _controller = null;
     });
 
-    final controller =
-        await FeedVideoManager().getOrCreateController(widget.videoUrl);
+    try {
+      final controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.videoUrl),
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+      );
+      
+      await controller.initialize();
+      await controller.setLooping(true);
+      
+      if (!mounted) {
+        await controller.dispose();
+        return;
+      }
 
-    if (!mounted) return;
-
-    // Only mark initialized if the controller is actually ready
-    if (controller.value.isInitialized) {
       setState(() {
         _controller = controller;
         _isInitialized = true;
       });
-      // Autoplay if this video is currently active in the page controller
+
+      // Autoplay if active
       if (ref.read(activeVybzIdProvider) == widget.vybzId) {
-        FeedVideoManager().play(widget.videoUrl);
+        _controller?.play();
       }
-    } else {
-      // Controller failed — show error state
-      setState(() {
-        _controller = null;
-        _isInitialized = true; // set true to exit loading, but controller is null = error
-      });
+    } catch (e) {
+      debugPrint('Vybz init error: $e');
+      if (mounted) {
+        setState(() {
+          _isInitialized = true; // Mark as done to show error UI
+          _controller = null;
+        });
+      }
     }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
   }
 
   @override
@@ -81,9 +99,9 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
     if (controller == null || !_isInitialized) return;
 
     if (controller.value.isPlaying) {
-      FeedVideoManager().pause(widget.videoUrl);
+      controller.pause();
     } else {
-      FeedVideoManager().play(widget.videoUrl);
+      controller.play();
     }
     setState(() {});
   }
@@ -108,7 +126,7 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
     ref.listen(activeVybzIdProvider, (previous, next) {
       if (next == widget.vybzId) {
         if (_isInitialized && controller != null) {
-          FeedVideoManager().play(widget.videoUrl);
+          controller.play();
         }
       } else {
         if (controller != null && controller.value.isPlaying) {

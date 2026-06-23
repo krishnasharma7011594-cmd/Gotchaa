@@ -661,24 +661,24 @@ class _ProfileView extends ConsumerWidget {
           itemCount: list.length,
           itemBuilder: (context, index) {
             final vybz = list[index];
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                if (vybz.videoUrl.isNotEmpty)
-                  CachedNetworkImage(
-                    imageUrl: vybz.videoUrl,
-                    fit: BoxFit.cover,
-                    placeholder: (_, __) =>
-                        Container(color: context.shimmerBase),
-                    errorWidget: (_, __, ___) =>
-                        Container(color: context.shimmerBase),
-                  )
-                else
-                  Container(color: context.shimmerBase),
-                const Center(
-                    child: Icon(Icons.play_arrow_rounded,
-                        color: Colors.white, size: 40)),
-              ],
+            return GestureDetector(
+              onTap: () {
+                // Navigate to Vybz feed tab
+                // (Shell navigation to Vybz handled by main nav)
+              },
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Container(
+                    color: Colors.grey.shade900,
+                    child: const Icon(Icons.videocam_rounded,
+                        color: Colors.white12, size: 36),
+                  ),
+                  const Center(
+                    child: Icon(Icons.play_circle_fill_rounded,
+                        color: Colors.white70, size: 36)),
+                ],
+              ),
             );
           },
         );
@@ -740,30 +740,44 @@ class _RealPostsGrid extends ConsumerWidget {
             final post = posts[index];
             return GestureDetector(
               onTap: () => _showPostDetail(context, post),
-              child: post.mediaUrl.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: post.mediaUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  post.mediaUrl.isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: post.mediaThumbnailUrl.isNotEmpty
+                            ? post.mediaThumbnailUrl
+                            : post.mediaUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) => Container(
+                          color: context.shimmerBase,
+                          child: const Center(
+                              child: SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(strokeWidth: 2))),
+                        ),
+                        errorWidget: (_, __, ___) => Container(
+                          color: Colors.grey.shade900,
+                          child: const Icon(Icons.videocam_rounded,
+                              color: Colors.white24, size: 32),
+                        ),
+                      )
+                    : Container(
                         color: context.shimmerBase,
-                        child: const Center(
-                            child: SizedBox(
-                                width: 20,
-                                height: 20,
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 2))),
-                      ),
-                      errorWidget: (_, __, ___) => Container(
-                        color: context.shimmerBase,
-                        child: Icon(Icons.broken_image_rounded,
+                        child: Icon(Icons.image_rounded,
                             color: context.iconSecondary),
                       ),
-                    )
-                  : Container(
-                      color: context.shimmerBase,
-                      child: Icon(Icons.image_rounded,
-                          color: context.iconSecondary),
+                  // Show video icon badge for video posts
+                  if (post.mediaThumbnailUrl.isEmpty && post.mediaUrl.isNotEmpty)
+                    const Positioned(
+                      top: 6,
+                      right: 6,
+                      child: Icon(Icons.videocam_rounded,
+                          color: Colors.white, size: 18),
                     ),
+                ],
+              ),
             );
           },
         );
