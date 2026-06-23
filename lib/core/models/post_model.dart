@@ -14,6 +14,7 @@ class PostModel {
     this.commentsCount = 0,
     this.shareCount = 0,
     this.viewsCount = 0,
+    this.isVideo = false,
     this.spotifyTrackId,
     this.spotifyTrackName,
     this.spotifyArtistName,
@@ -49,6 +50,7 @@ class PostModel {
         commentsCount: (data['commentsCount'] ?? 0) as int,
         shareCount: (data['shareCount'] ?? 0) as int,
         viewsCount: (data['viewsCount'] ?? 0) as int,
+        isVideo: data['isVideo'] ?? false,
         spotifyTrackId: data['spotifyTrackId'] as String?,
         spotifyTrackName: data['spotifyTrackName'] as String?,
         spotifyArtistName: data['spotifyArtistName'] as String?,
@@ -98,6 +100,7 @@ class PostModel {
   final String? authorLanguage;
   final int shareCount;
   final int viewsCount;
+  final bool isVideo;
   final List<String> hashtags;
   final List<String> searchKeywords;
   final String? blurHash;
@@ -120,6 +123,7 @@ class PostModel {
         'commentsCount': commentsCount,
         'shareCount': shareCount,
         'viewsCount': viewsCount,
+        'isVideo': isVideo,
         if (spotifyTrackId != null) 'spotifyTrackId': spotifyTrackId,
         if (spotifyTrackName != null) 'spotifyTrackName': spotifyTrackName,
         if (spotifyArtistName != null) 'spotifyArtistName': spotifyArtistName,

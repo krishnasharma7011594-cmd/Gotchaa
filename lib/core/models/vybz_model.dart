@@ -6,6 +6,7 @@ class VybzModel {
     required this.creatorId,
     required this.videoUrl,
     required this.caption,
+    this.thumbnailUrl = '',
     this.hashtags = const [],
     this.likesCount = 0,
     this.commentsCount = 0,
@@ -21,6 +22,7 @@ class VybzModel {
         creatorId: data['creatorId'] ?? '',
         videoUrl: data['videoUrl'] ?? '',
         caption: data['caption'] ?? '',
+        thumbnailUrl: data['thumbnailUrl'] ?? '',
         hashtags: List<String>.from(data['hashtags'] ?? []),
         likesCount: data['likesCount'] ?? (data['likes'] ?? 0),
         commentsCount: data['commentsCount'] ?? 0,
@@ -35,6 +37,7 @@ class VybzModel {
   final String id;
   final String creatorId;
   final String videoUrl;
+  final String thumbnailUrl;
   final String caption;
   final List<String> hashtags;
   final int likesCount;
@@ -48,6 +51,7 @@ class VybzModel {
   Map<String, dynamic> toMap() => {
         'creatorId': creatorId,
         'videoUrl': videoUrl,
+        'thumbnailUrl': thumbnailUrl,
         'caption': caption,
         'hashtags': hashtags,
         'likesCount': likesCount,

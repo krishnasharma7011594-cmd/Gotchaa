@@ -16,6 +16,7 @@ import '../../../../core/providers/auth_providers.dart';
 import '../../../../core/providers/profile_providers.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/providers/shell_navigation_provider.dart';
+import 'package:video_compress/video_compress.dart';
 import '../../../../core/services/analytics_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -96,57 +97,63 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
       final storageRepo = ref.read(storageRepositoryProvider);
 
       String mediaUrl;
-      String mediaThumbnailUrl = '';
+      // 1. Upload Media
+      String mediaUrl = '';
+      String? generatedThumbUrl;
+      
       if (widget.isVideo) {
-        mediaUrl = await storageRepo.uploadVideo(
-          XFile(widget.mediaFile.path),
-          user.uid,
-          onProgress: (p) => setState(() => _uploadProgress = 0.3 + p * 0.4),
+        // Parallel process: Generate Thumbnail + Upload Video
+        final thumbnailFile = await VideoCompress.getFileThumbnail(
+          widget.mediaFile.path,
+          quality: 50,
+          position: -1,
         );
+
+        final results = await Future.wait([
+          storageRepo.uploadPostMedia(
+            filePath: widget.mediaFile.path,
+            postId: tempPostId,
+          ),
+          if (thumbnailFile != null)
+            storageRepo.uploadPostMedia(
+              filePath: thumbnailFile.path,
+              postId: '${tempPostId}_thumb',
+            ),
+        ]);
+        
+        mediaUrl = results[0];
+        if (results.length > 1) {
+          generatedThumbUrl = results[1];
+        }
       } else {
-        final result = await storageRepo.uploadPostImage(
-          XFile(widget.mediaFile.path),
-          user.uid,
-          onProgress: (p) => setState(() => _uploadProgress = 0.3 + p * 0.4),
+        mediaUrl = await storageRepo.uploadPostMedia(
+          filePath: widget.mediaFile.path,
+          postId: tempPostId,
         );
-        mediaUrl = result.url;
-        mediaThumbnailUrl = result.thumbnailUrl ?? '';
       }
 
-      if (mediaUrl.isEmpty) {
-        throw Exception('Upload succeeded but download URL is empty');
-      }
+      setState(() => _uploadProgress = 0.8);
 
-      setState(() => _uploadProgress = 0.7);
-
+      // 2. Create Models
       final postRepo = ref.read(postRepositoryProvider);
       final post = PostModel(
-        postId: '',
+        postId: '', // Set by repo
         uid: user.uid,
-        username: profile?.username ?? profile?.displayName ?? '',
+        username: profile?.username ?? profile?.displayName ?? 'User',
         userPhoto: profile?.photoUrl ?? '',
         caption: captionCheck.maskedText ?? caption,
         mediaUrl: mediaUrl,
-        mediaThumbnailUrl: mediaThumbnailUrl,
+        mediaThumbnailUrl: generatedThumbUrl ?? '',
+        isVideo: widget.isVideo,
         createdAt: DateTime.now(),
         spotifyTrackId: _selectedTrack?.id,
         spotifyTrackName: _selectedTrack?.name,
-        spotifyArtistName: _selectedTrack?.artist,
-        spotifyAlbumArtUrl: _selectedTrack?.albumArtUrl,
+        spotifyArtistName: _selectedTrack?.artists?.first.name,
+        spotifyAlbumArtUrl: _selectedTrack?.album?.images?.first.url,
         spotifyPreviewUrl: _selectedTrack?.previewUrl,
         isPrivate: profile?.isPrivate ?? false,
         visibility: _visibility,
-        overlays: widget.overlays
-            ?.map((e) => {
-                  'type': e.type.name,
-                  'value': e.value,
-                  'dx': e.position.dx,
-                  'dy': e.position.dy,
-                  'scale': e.scale,
-                  'rotation': e.rotation,
-                  'color': e.color?.value,
-                })
-            .toList(),
+        overlays: widget.overlays?.map((e) => e.toMap()).toList(),
       );
 
       // 3. Create regular post
@@ -161,6 +168,7 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
           creatorUsername: profile?.username ?? profile?.displayName ?? 'User',
           creatorPhoto: profile?.photoUrl ?? '',
           videoUrl: mediaUrl,
+          thumbnailUrl: generatedThumbUrl ?? '',
           caption: captionCheck.maskedText ?? caption,
           hashtags: [], 
           createdAt: DateTime.now(),
