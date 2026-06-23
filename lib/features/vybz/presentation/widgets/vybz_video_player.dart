@@ -27,6 +27,7 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
   VideoPlayerController? _controller;
   bool _isInitialized = false;
   bool _showHeart = false;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -40,11 +41,16 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
     setState(() {
       _isInitialized = false;
       _controller = null;
+      _errorMessage = null;
     });
 
     try {
+      if (widget.videoUrl.isEmpty) {
+        throw Exception('Video URL is empty');
+      }
+
       final controller = VideoPlayerController.networkUrl(
-        Uri.parse(widget.videoUrl),
+        Uri.parse(widget.videoUrl.trim()),
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
       
@@ -71,6 +77,7 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
         setState(() {
           _isInitialized = true; // Mark as done to show error UI
           _controller = null;
+          _errorMessage = e.toString();
         });
       }
     }
@@ -156,18 +163,42 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
     if (controller == null || !controller.value.isInitialized) {
       return Container(
         color: Colors.black,
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.wifi_off_rounded, color: Colors.white38, size: 48),
-              const SizedBox(height: 12),
-              Text('Could not load video', style: GoogleFonts.outfit(color: Colors.white38, fontSize: 13)),
+              const Icon(Icons.error_outline_rounded, color: Colors.white24, size: 48),
               const SizedBox(height: 16),
-              TextButton.icon(
+              Text('Could not load video', 
+                style: GoogleFonts.outfit(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Text(_errorMessage ?? 'Unknown error', 
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(color: Colors.white38, fontSize: 12)),
+              const SizedBox(height: 20),
+              // Debug URL view
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(widget.videoUrl, 
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.firaCode(color: Colors.white24, fontSize: 10)),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
                 onPressed: _initController,
-                icon: const Icon(Icons.refresh_rounded, color: Colors.white70),
-                label: Text('Retry', style: GoogleFonts.outfit(color: Colors.white70)),
+                icon: const Icon(Icons.refresh_rounded, size: 20),
+                label: const Text('Retry'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white10,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
               ),
             ],
           ),
