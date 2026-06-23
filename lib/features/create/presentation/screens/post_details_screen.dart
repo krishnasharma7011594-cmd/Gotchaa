@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../../core/l10n/app_localizations_x.dart';
 import '../../../../core/models/post_model.dart';
