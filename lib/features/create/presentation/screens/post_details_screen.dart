@@ -10,6 +10,7 @@ import '../../../../core/l10n/app_localizations_x.dart';
 import '../../../../core/models/post_model.dart';
 import '../../../../core/models/spotify_track.dart';
 import '../../../../core/models/user_profile.dart';
+import '../../../../core/models/vybz_model.dart';
 import '../../../../core/moderation/content_validator.dart';
 import '../../../../core/providers/auth_providers.dart';
 import '../../../../core/providers/profile_providers.dart';
@@ -148,7 +149,25 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
             .toList(),
       );
 
+      // 3. Create regular post
       await postRepo.createPost(post);
+
+      // 4. If it's a video, also create a Vybz Reel entry
+      if (widget.isVideo) {
+        final vybzRepo = ref.read(firestoreRepositoryProvider);
+        final vybz = VybzModel(
+          id: '',
+          creatorId: user.uid,
+          creatorUsername: profile?.username ?? profile?.displayName ?? 'User',
+          creatorPhoto: profile?.photoUrl ?? '',
+          videoUrl: mediaUrl,
+          caption: captionCheck.maskedText ?? caption,
+          hashtags: [], // Extract hashtags if possible, or leave empty
+          createdAt: DateTime.now(),
+        );
+        await vybzRepo.postVybz(vybz);
+      }
+
       // Fire analytics — non-blocking
       AnalyticsService.logFirstPostCreated(
         postType: widget.isVideo ? 'video' : 'image',

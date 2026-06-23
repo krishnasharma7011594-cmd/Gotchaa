@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../core/providers/vybz_providers.dart';
@@ -36,8 +37,9 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
     });
 
     // Autoplay if this video is currently active in the page controller
-    if (ref.read(activeVybzIdProvider) == widget.vybzId) {
+    if (mounted && ref.read(activeVybzIdProvider) == widget.vybzId) {
       FeedVideoManager().play(widget.videoUrl);
+      setState(() {}); // Force rebuild to show video
     }
   }
 
@@ -88,11 +90,21 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
       }
     });
 
-    if (!_isInitialized || controller == null) {
+    if (!_isInitialized || controller == null || !controller.value.isInitialized) {
       return Container(
         color: Colors.black,
-        child: const Center(
-          child: CircularProgressIndicator(color: Colors.white24),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(color: Colors.white24),
+              const SizedBox(height: 12),
+              Text(
+                'Loading Vybz...',
+                style: GoogleFonts.outfit(color: Colors.white24, fontSize: 12),
+              ),
+            ],
+          ),
         ),
       );
     }

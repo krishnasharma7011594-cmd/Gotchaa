@@ -8,7 +8,9 @@ import '../../../../core/models/user_profile.dart';
 import '../../../../core/providers/auth_providers.dart';
 import '../../../../core/providers/post_providers.dart';
 import '../../../../core/providers/repository_providers.dart';
+import '../../../../core/providers/shell_navigation_provider.dart';
 import '../../../../core/providers/social_providers.dart';
+import '../../../../core/providers/vybz_providers.dart';
 import '../../../../core/services/block_mute_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../chat/presentation/screens/chat_conversation_screen.dart';
@@ -103,6 +105,7 @@ class _OtherProfileView extends ConsumerStatefulWidget {
 }
 
 class _OtherProfileViewState extends ConsumerState<_OtherProfileView> {
+  int _selectedTab = 0; // 0 for Posts, 1 for Vybz
   bool _isFollowingInitialized = false;
   bool _isFollowingLocal = false;
   int _followersCountLocal = 0;
@@ -714,17 +717,26 @@ class _OtherProfileViewState extends ConsumerState<_OtherProfileView> {
                   // Content Header
                   Row(
                     children: [
-                      _TabButton(
+                      GestureDetector(
+                        onTap: () => setState(() => _selectedTab = 0),
+                        child: _TabButton(
                           label: context.tr('profile_tab_posts'),
-                          isActive: true),
+                          isActive: _selectedTab == 0,
+                        ),
+                      ),
                       const SizedBox(width: 24),
-                      _TabButton(
+                      GestureDetector(
+                        onTap: () => setState(() => _selectedTab = 1),
+                        child: _TabButton(
                           label: context.tr('profile_tab_vybz'),
-                          isActive: false),
+                          isActive: _selectedTab == 1,
+                        ),
+                      ),
                       const SizedBox(width: 24),
                       _TabButton(
-                          label: context.tr('profile_tab_tagged'),
-                          isActive: false),
+                        label: context.tr('profile_tab_tagged'),
+                        isActive: _selectedTab == 2,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -735,7 +747,9 @@ class _OtherProfileViewState extends ConsumerState<_OtherProfileView> {
 
           // ── Content ───────────────────────────────────────────
           if (showContent)
-            _PostsGrid(uid: widget.profile.uid)
+            _selectedTab == 0
+                ? _PostsGrid(uid: widget.profile.uid)
+                : _VybzGrid(uid: widget.profile.uid)
           else
             SliverToBoxAdapter(
               child: _buildPrivateAccountPlaceholder(context),
@@ -939,6 +953,117 @@ class _PostsGrid extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(vertical: 40),
           child: Center(
             child: Text(context.tr('profile_load_failed'),
+                style: GoogleFonts.outfit(color: Colors.grey)),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Vybz grid for a user
+// ═══════════════════════════════════════════════════════════════════════════════
+
+class _VybzGrid extends ConsumerWidget {
+  const _VybzGrid({required this.uid});
+  final String uid;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final vybzAsync = ref.watch(userVybzProvider(uid));
+
+    return vybzAsync.when(
+      data: (vybzList) {
+        if (vybzList.isEmpty) {
+          return SliverToBoxAdapter(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 60),
+                child: Column(
+                  children: [
+                    Icon(Icons.video_library_outlined,
+                        size: 48, color: Colors.grey.shade200),
+                    const SizedBox(height: 12),
+                    Text(
+                      'No Vybz yet',
+                      style: GoogleFonts.outfit(
+                          color: Colors.grey.shade400, fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+        return SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 2),
+          sliver: SliverGrid(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 2,
+              mainAxisSpacing: 2,
+              childAspectRatio: 9 / 16,
+            ),
+            delegate: SliverChildBuilderDelegate(
+              (ctx, i) {
+                final vybz = vybzList[i];
+                return GestureDetector(
+                  onTap: () {
+                    // Navigate to Vybz Feed starting at this index
+                    ref.read(shellPageControllerProvider).jumpToPage(3);
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Container(color: AppColors.darkSurface),
+                        const Center(
+                            child: Icon(Icons.play_circle_outline,
+                                color: Colors.white24, size: 30)),
+                        if (vybz.videoUrl.isNotEmpty) ...[
+                          // You could add a thumbnail here if you have one
+                          Positioned(
+                            bottom: 8,
+                            left: 8,
+                            child: Row(
+                              children: [
+                                const Icon(Icons.play_arrow_rounded,
+                                    color: Colors.white, size: 14),
+                                const SizedBox(width: 2),
+                                Text(
+                                  vybz.viewsCount.toString(),
+                                  style: GoogleFonts.outfit(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                );
+              },
+              childCount: vybzList.length,
+            ),
+          ),
+        );
+      },
+      loading: () => const SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 40),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      ),
+      error: (_, __) => SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 40),
+          child: Center(
+            child: Text('Failed to load Vybz',
                 style: GoogleFonts.outfit(color: Colors.grey)),
           ),
         ),

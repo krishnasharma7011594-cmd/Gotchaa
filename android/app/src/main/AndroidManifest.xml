@@ -10,6 +10,7 @@
     <!-- ACCESS_COARSE_LOCATION: Required for low-accuracy city-level matchmaking and local service suggestions -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
     <!-- Camera hardware feature:
          required="false" so the app is visible on tablets and devices without
