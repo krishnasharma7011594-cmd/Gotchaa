@@ -9,29 +9,41 @@ class PostRepository {
   Future<String> createPost(PostModel post) async {
     final data = post.toMap();
 
-    // Fetch latest privacy lists to ensure the post document has the necessary
-    // metadata for visibility filtering.
-    final profileDoc =
-        await _firestore.collection('users_private').doc(post.uid).get();
-    if (profileDoc.exists) {
-      data['authorGhostUids'] =
-          List<String>.from(profileDoc.data()?['ghostUids'] ?? []);
-      data['authorFriendUids'] =
-          List<String>.from(profileDoc.data()?['friendUids'] ?? []);
+    // Fetch latest privacy lists safely.
+    // Wrap in try-catch because if users_private doesn't exist or is restricted,
+    // we don't want to block the entire post creation.
+    try {
+      final profileDoc =
+          await _firestore.collection('users_private').doc(post.uid).get();
+      if (profileDoc.exists) {
+        data['authorGhostUids'] =
+            List<String>.from(profileDoc.data()?['ghostUids'] ?? []);
+        data['authorFriendUids'] =
+            List<String>.from(profileDoc.data()?['friendUids'] ?? []);
 
-      if (post.visibility.startsWith('list:')) {
-        final listId = post.visibility.split(':')[1];
-        final List<dynamic> lists =
-            profileDoc.data()?['customPrivacyLists'] ?? [];
-        final targetListMap = lists.firstWhere(
-          (l) => l['id'] == listId,
-          orElse: () => null,
-        );
-        if (targetListMap != null) {
-          data['customListUids'] =
-              List<String>.from(targetListMap['uids'] ?? []);
+        if (post.visibility.startsWith('list:')) {
+          final listId = post.visibility.split(':')[1];
+          final List<dynamic> lists =
+              profileDoc.data()?['customPrivacyLists'] ?? [];
+          final targetListMap = lists.firstWhere(
+            (l) => l['id'] == listId,
+            orElse: () => null,
+          );
+          if (targetListMap != null) {
+            data['customListUids'] =
+                List<String>.from(targetListMap['uids'] ?? []);
+          }
         }
+      } else {
+        data['authorGhostUids'] = [];
+        data['authorFriendUids'] = [];
+        data['customListUids'] = [];
       }
+    } catch (e) {
+      // Default to empty lists if fetch fails for any reason
+      data['authorGhostUids'] = [];
+      data['authorFriendUids'] = [];
+      data['customListUids'] = [];
     }
 
     data['updatedAt'] = FieldValue.serverTimestamp();
@@ -193,9 +205,12 @@ class PostRepository {
     });
   }
 
-  /// Delete a post.
+  /// Delete a post and its associated Vybz entry if it exists.
   Future<void> deletePost(String postId) async {
-    await _firestore.collection('posts').doc(postId).delete();
+    final batch = _firestore.batch();
+    batch.delete(_firestore.collection('posts').doc(postId));
+    batch.delete(_firestore.collection('vybz').doc(postId));
+    await batch.commit();
   }
 
   /// Save a post for a user

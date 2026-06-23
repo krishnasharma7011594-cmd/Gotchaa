@@ -31,13 +31,20 @@ void main() async {
 
   final sharedPrefs = await SharedPreferences.getInstance();
 
-  // Check if consent has already been prompted (which means Firebase can be initialized)
-  final hasPrompted = sharedPrefs.getBool('gdpr_consent_prompted') ?? false;
-
-  if (hasPrompted) {
+  // 1. Core Firebase Initialization (Required for build to avoid [core/no-app])
+  try {
     await ConsentGateService.initializeFirebaseAndDependents();
-  } else {
-    debugPrint('Firebase initialization deferred until consent is given');
+    debugPrint('Firebase initialized successfully');
+  } catch (e) {
+    debugPrint('Firebase basic initialization failed: $e');
+  }
+
+  // 2. Check if GDPR consent has been prompted (for data tracking/analytics)
+  final hasPrompted = sharedPrefs.getBool('gdpr_consent_prompted') ?? false;
+  
+  if (!hasPrompted) {
+    debugPrint('Data tracking deferred until consent is given');
+    // We stay initialized but limit tracking
   }
 
   try {
@@ -176,7 +183,7 @@ class GotchaaApp extends ConsumerWidget {
         child: Stack(
           children: [
             if (child != null) child,
-            const FloatingGeminiOverlay(),
+            const BroAssistantOverlay(),
           ],
         ),
       ),

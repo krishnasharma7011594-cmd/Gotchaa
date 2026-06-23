@@ -49,6 +49,14 @@ service firebase.storage {
                    );
     }
 
+    // Support for nested video uploads: posts/{userId}/{postId}/videos/{filename}
+    match /posts/{userId}/{postId}/videos/{filename} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId)
+                   && request.resource.contentType.matches('video/.*')
+                   && request.resource.size < 200 * 1024 * 1024;
+    }
+
     match /vybz/{userId}/{filename} {
       allow read: if isAuthenticated();
       allow write: if isOwner(userId)

@@ -37,9 +37,10 @@ class FeedVideoManager {
 
     try {
       await controller.initialize();
-      controller.setLooping(true);
-    } catch (_) {
-      // Prevent failure bubble on bad URL init
+      await controller.setLooping(true);
+      await controller.setVolume(1.0);
+    } catch (e) {
+      print('Video init error for $url: $e');
     }
     return controller;
   }

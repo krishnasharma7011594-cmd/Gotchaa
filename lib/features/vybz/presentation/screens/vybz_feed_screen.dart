@@ -230,134 +230,11 @@ class _VybzItemState extends ConsumerState<_VybzItem> {
             ),
           ),
         ),
-        PositionedDirectional(
-          end: 15,
-          bottom: 120,
-          child: RepaintBoundary(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: GotchaaLikeButton(
-                    contentId: widget.vybz.id,
-                    contentType: 'vybz',
-                    initialCount: widget.vybz.likesCount,
-                    ownerId: widget.vybz.creatorId,
-                    ownerName: widget.vybz.creatorUsername,
-                    iconSize: 28,
-                    textSize: 13,
-                  ),
-                ),
-                _buildActionButton(
-                  Icons.comment_rounded,
-                  _commentsCountLocal.toString(),
-                  onTap: () {
-                    if (!hasAccess) {
-                      _showLockedFeatureNotice(
-                          context,
-                          ref,
-                          context.tr('profile_locked_karma_title'),
-                          context.tr('profile_locked_karma_msg'));
-                      return;
-                    }
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (context) => CommentSheet(
-                        vybzId: widget.vybz.id,
-                        onCommentAdded: () {
-                          if (mounted) {
-                            setState(() {
-                              _commentsCountLocal++;
-                            });
-                          }
-                        },
-                      ),
-                    );
-                  },
-                ),
-                _buildActionButton(
-                  Icons.share_rounded,
-                  context.tr('vybz_share'),
-                  onTap: () {
-                    Share.share(
-                        'Check out this Vybz on Gotchaa! ${widget.vybz.videoUrl}');
-                  },
-                ),
-                _buildActionButton(
-                  Icons.volunteer_activism_rounded,
-                  context.tr('vybz_appreciate'),
-                  isSpecial: true,
-                  onTap: () async {
-                    if (!hasAccess) {
-                      _showLockedFeatureNotice(
-                          context,
-                          ref,
-                          context.tr('profile_locked_karma_title'),
-                          context.tr('profile_locked_karma_msg'));
-                      return;
-                    }
-                    final user = ref.read(authStateProvider).value;
-                    if (user == null) return;
-
-                    try {
-                      await ref
-                          .read(firestoreRepositoryProvider)
-                          .appreciateVybz(
-                            vybzId: widget.vybz.id,
-                            senderId: user.uid,
-                            receiverId: widget.vybz.creatorId,
-                          );
-
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Appreciation sent! 🌟'),
-                            backgroundColor: AppColors.electricBlue,
-                          ),
-                        );
-                      }
-                    } catch (e) {
-                      // ignore
-                    }
-                  },
-                ),
-                Consumer(builder: (context, ref, _) {
-                  final myUid = ref.read(authStateProvider).value?.uid ?? '';
-                  final bookmarkedAsync = ref.watch(isPostBookmarkedProvider(
-                      (postId: widget.vybz.id, uid: myUid)));
-                  final isBookmarked = bookmarkedAsync.value ?? false;
-
-                  return _buildActionButton(
-                    isBookmarked
-                        ? Icons.bookmark_rounded
-                        : Icons.bookmark_outline_rounded,
-                    isBookmarked
-                        ? context.tr('profile_tab_saved')
-                        : context.tr('btn_save'),
-                    onTap: () {
-                      if (myUid.isEmpty) return;
-                      if (isBookmarked) {
-                        ref
-                            .read(socialRepositoryProvider)
-                            .unbookmarkPost(postId: widget.vybz.id, uid: myUid);
-                      } else {
-                        ref
-                            .read(socialRepositoryProvider)
-                            .bookmarkPost(postId: widget.vybz.id, uid: myUid);
-                      }
-                    },
-                  );
-                }),
-              ],
-            ),
-          ),
-        ),
-        PositionedDirectional(
-          start: 20,
-          end: 80,
-          bottom: 120,
+        // 1. User Info & Caption (Bottom Left)
+        Positioned(
+          left: 16,
+          bottom: 20 + MediaQuery.of(context).padding.bottom,
+          right: 90,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -373,47 +250,184 @@ class _VybzItemState extends ConsumerState<_VybzItem> {
                 },
                 child: Row(
                   children: [
-                    Hero(
-                      tag: 'profile_avatar_${widget.vybz.creatorId}',
-                      child: CircleAvatar(
-                        radius: 20,
-                        backgroundColor: Colors.white10,
-                        backgroundImage: CachedNetworkImageProvider(
-                            'https://i.pravatar.cc/100?u=${widget.vybz.creatorId}'),
-                      ),
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundColor: Colors.white24,
+                      backgroundImage: widget.vybz.creatorPhoto.isNotEmpty
+                          ? CachedNetworkImageProvider(widget.vybz.creatorPhoto)
+                          : null,
+                      child: widget.vybz.creatorPhoto.isEmpty
+                          ? const Icon(Icons.person, color: Colors.white)
+                          : null,
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
                     Text(
-                      '@${widget.vybz.creatorId.substring(0, 8)}...',
+                      widget.vybz.creatorUsername.isNotEmpty
+                          ? '@${widget.vybz.creatorUsername}'
+                          : '@user_${widget.vybz.creatorId.substring(0, 5)}',
                       style: GoogleFonts.outfit(
                         color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        shadows: [
+                          const Shadow(color: Colors.black45, blurRadius: 4)
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white70),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        context.tr('profile_follow'),
+                        style: GoogleFonts.outfit(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 12),
               Text(
-                '${widget.vybz.caption} ${widget.vybz.hashtags.map((h) => '#$h').join(' ')}',
+                widget.vybz.caption,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.outfit(
                   color: Colors.white,
                   fontSize: 14,
+                  shadows: [const Shadow(color: Colors.black45, blurRadius: 4)],
                 ),
               ),
-              const SizedBox(height: 10),
+              if (widget.vybz.hashtags.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(
+                  widget.vybz.hashtags.map((h) => '#$h').join(' '),
+                  style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 12),
               Row(
                 children: [
                   const Icon(Icons.music_note_rounded,
-                      color: Colors.white, size: 16),
-                  const SizedBox(width: 5),
-                  Text(
-                    context.tr('vybz_original_sound'),
-                    style: const TextStyle(color: Colors.white70, fontSize: 13),
+                      color: Colors.white, size: 14),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      '${widget.vybz.creatorUsername.isNotEmpty ? widget.vybz.creatorUsername : 'User'} • ${context.tr('vybz_original_sound')}',
+                      style: GoogleFonts.outfit(
+                        color: Colors.white,
+                        fontSize: 13,
+                        shadows: [
+                          const Shadow(color: Colors.black45, blurRadius: 4)
+                        ],
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.fade,
+                    ),
                   ),
                 ],
               ),
+            ],
+          ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1),
+        ),
+
+        // 2. Action Buttons (Right Sidebar)
+        Positioned(
+          right: 8,
+          bottom: 20 + MediaQuery.of(context).padding.bottom,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GotchaaLikeButton(
+                contentId: widget.vybz.id,
+                contentType: 'vybz',
+                initialCount: widget.vybz.likesCount,
+                ownerId: widget.vybz.creatorId,
+                ownerName: widget.vybz.creatorUsername,
+                iconSize: 32,
+                textSize: 12,
+              ),
+              const SizedBox(height: 16),
+              _buildActionButton(
+                Icons.mode_comment_rounded,
+                _commentsCountLocal.toString(),
+                onTap: () {
+                  if (!hasAccess) {
+                    _showLockedFeatureNotice(
+                        context,
+                        ref,
+                        context.tr('profile_locked_karma_title'),
+                        context.tr('profile_locked_karma_msg'));
+                    return;
+                  }
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => CommentSheet(
+                      vybzId: widget.vybz.id,
+                      onCommentAdded: () {
+                        if (mounted) {
+                          setState(() {
+                            _commentsCountLocal++;
+                          });
+                        }
+                      },
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              _buildActionButton(
+                Icons.share_rounded,
+                '',
+                onTap: () {
+                  Share.share(
+                      'Check out this Vybz on Gotchaa! ${widget.vybz.videoUrl}');
+                },
+              ),
+              const SizedBox(height: 16),
+              _buildActionButton(
+                Icons.volunteer_activism_rounded,
+                '',
+                isSpecial: true,
+                onTap: () => _handleAppreciation(context, hasAccess),
+              ),
+              const SizedBox(height: 16),
+              if (widget.vybz.creatorId == ref.watch(authStateProvider).value?.uid)
+                _buildActionButton(
+                  Icons.more_vert_rounded,
+                  '',
+                  onTap: () => _showVybzDeleteMenu(context, ref),
+                ),
+              const SizedBox(height: 24),
+              // Rotating Music Disc (Instagram Style)
+              Container(
+                width: 40,
+                height: 40,
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const SweepGradient(
+                    colors: [Colors.black, Colors.grey, Colors.black],
+                  ),
+                  border: Border.all(color: Colors.white30, width: 2),
+                ),
+                child: const Icon(Icons.music_note, color: Colors.white, size: 18),
+              )
+                  .animate(onPlay: (controller) => controller.repeat())
+                  .rotate(duration: 4.seconds),
             ],
           ),
         ),
@@ -474,6 +488,113 @@ class _VybzItemState extends ConsumerState<_VybzItem> {
               style: GoogleFonts.outfit(
                   color: Colors.white, fontWeight: FontWeight.bold),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleAppreciation(BuildContext context, bool hasAccess) async {
+    if (!hasAccess) {
+      _showLockedFeatureNotice(
+          context,
+          ref,
+          context.tr('profile_locked_karma_title'),
+          context.tr('profile_locked_karma_msg'));
+      return;
+    }
+    final user = ref.read(authStateProvider).value;
+    if (user == null) return;
+
+    try {
+      await ref.read(firestoreRepositoryProvider).appreciateVybz(
+            vybzId: widget.vybz.id,
+            senderId: user.uid,
+            receiverId: widget.vybz.creatorId,
+          );
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Appreciation sent! 🌟'),
+            backgroundColor: AppColors.electricBlue,
+          ),
+        );
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  void _showVybzDeleteMenu(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFF1A1D26),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white24,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            ListTile(
+              leading:
+                  const Icon(Icons.delete_outline_rounded, color: Colors.red),
+              title: Text(
+                'Delete Reel',
+                style: GoogleFonts.outfit(
+                    color: Colors.red, fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _confirmVybzDeletion(context, ref);
+              },
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _confirmVybzDeletion(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1D26),
+        title: Text('Delete Reel?',
+            style: GoogleFonts.outfit(color: Colors.white)),
+        content: Text('This will permanently remove this Reel from Gotchaa.',
+            style: GoogleFonts.outfit(color: Colors.white70)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel', style: GoogleFonts.outfit(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context); // Close dialog
+              await ref.read(postRepositoryProvider).deletePost(widget.vybz.id);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Reel deleted successfully')),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: Text('Delete',
+                style: GoogleFonts.outfit(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

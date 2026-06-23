@@ -116,6 +116,7 @@ dependencies:
   flutter_map: ^6.1.0
   latlong2: ^0.9.0
   mobile_scanner: ^5.1.1
+  local_auth: ^2.2.0
 
 
 
