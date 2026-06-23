@@ -137,10 +137,13 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
     });
   }
 
+  Offset _offset = const Offset(20, 100); // Bottom-right initial pos
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
     if (authState.asData?.value == null) return const SizedBox.shrink();
+    final screenSize = MediaQuery.of(context).size;
 
     return Material(
       type: MaterialType.transparency,
@@ -169,25 +172,42 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
               ),
             ),
 
-          Positioned(
-            bottom: 100,
-            right: 20,
-            child: _isOpen
-                ? const SizedBox.shrink()
-                : ZoomIn(
-                    child: _buildBroBubble(),
-                  ),
-          ),
+          if (!_isOpen)
+            Positioned(
+              right: _offset.dx,
+              bottom: _offset.dy,
+              child: Draggable(
+                feedback: _buildBroBubble(isDragging: true),
+                childWhenDragging: const SizedBox.shrink(),
+                onDragEnd: (details) {
+                  setState(() {
+                    // Calculate relative to bottom-right as before or just keep absolute
+                    // Let's use simple absolute from bottom/right for consistency
+                    double newBottom = screenSize.height - details.offset.dy - 60;
+                    double newRight = screenSize.width - details.offset.dx - 60;
+                    
+                    // Clamp to screen bounds
+                    _offset = Offset(
+                      newRight.clamp(10, screenSize.width - 70),
+                      newBottom.clamp(10, screenSize.height - 70),
+                    );
+                  });
+                },
+                child: ZoomIn(
+                  child: _buildBroBubble(),
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildBroBubble() => GestureDetector(
-        onTap: _toggleOverlay,
+  Widget _buildBroBubble({bool isDragging = false}) => GestureDetector(
+        onTap: isDragging ? null : _toggleOverlay,
         child: Container(
-          width: 70,
-          height: 70,
+          width: 60, // Smaller size
+          height: 60,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: const LinearGradient(
@@ -197,8 +217,8 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.blue.withOpacity(0.5),
-                blurRadius: 20,
+                color: Colors.blue.withOpacity(isDragging ? 0.8 : 0.5),
+                blurRadius: isDragging ? 30 : 20,
                 spreadRadius: 2,
               ),
             ],
@@ -206,8 +226,8 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
           child: Stack(
             alignment: Alignment.center,
             children: [
-              _PulseCircle(),
-              const Icon(Icons.bolt_rounded, color: Colors.white, size: 35),
+              if (!isDragging) _PulseCircle(),
+              const Icon(Icons.bolt_rounded, color: Colors.white, size: 30),
             ],
           ),
         ),
