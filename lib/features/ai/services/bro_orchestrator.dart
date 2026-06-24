@@ -8,7 +8,8 @@ import 'package:uuid/uuid.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
-import '../../../core/config/app_config.dart';
+import '../../../config/app_config.dart';
+import '../../../core/config/app_config.dart' as secure_config;
 import '../../../core/services/audio_focus_manager.dart';
 import '../domain/models/bro_response.dart';
 import '../domain/models/bro_message.dart';
@@ -16,8 +17,10 @@ import '../presentation/providers/bro_providers.dart';
 
 class BroOrchestrator {
   final Ref _ref;
-  final _dio = Dio(BaseOptions(
-    baseUrl: 'http://localhost:8000',
+  final String _baseUrl = AppConfig.instance.backendUrl;
+  
+  late final _dio = Dio(BaseOptions(
+    baseUrl: _baseUrl,
     connectTimeout: const Duration(seconds: 30),
     receiveTimeout: const Duration(seconds: 30),
   ));
@@ -37,13 +40,13 @@ class BroOrchestrator {
   void _setupAudioPlayerListeners() {
     _audioPlayer.processingStateStream.listen((state) {
       if (state == ProcessingState.completed || state == ProcessingState.idle) {
-        _ref.read(audioFocusManagerProvider).releaseAudioFocus(AudioRequester.broOutput);
+        _ref.read(audioFocusManagerProvider).releaseAudioFocus('bro_output');
       }
     });
   }
 
   void _initFallback() {
-    final apiKey = AppConfig.geminiApiKey;
+    final apiKey = secure_config.AppConfig.geminiApiKey;
     if (apiKey.isNotEmpty) {
       _geminiFallback = GenerativeModel(
         model: 'gemini-1.5-flash',
@@ -57,7 +60,7 @@ class BroOrchestrator {
   Future<void> startListening() async {
     try {
       if (await _audioRecorder.hasPermission()) {
-        await _ref.read(audioFocusManagerProvider).requestAudioFocus(AudioRequester.broInput);
+        await _ref.read(audioFocusManagerProvider).requestAudioFocus('bro_input', AudioRequester.broInput);
         
         final dir = await getTemporaryDirectory();
         final path = '${dir.path}/bro_input_${DateTime.now().millisecondsSinceEpoch}.m4a';
@@ -65,14 +68,14 @@ class BroOrchestrator {
       }
     } catch (e) {
       print('BRO Listening Error: $e');
-      await _ref.read(audioFocusManagerProvider).releaseAudioFocus(AudioRequester.broInput);
+      await _ref.read(audioFocusManagerProvider).releaseAudioFocus('bro_input');
     }
   }
 
   Future<BroResponse> stopListeningAndProcess() async {
     try {
       final path = await _audioRecorder.stop();
-      await _ref.read(audioFocusManagerProvider).releaseAudioFocus(AudioRequester.broInput);
+      await _ref.read(audioFocusManagerProvider).releaseAudioFocus('bro_input');
       
       if (path == null) return BroResponse.failed("No audio detected");
       return await _processVoiceInput(File(path));
@@ -97,7 +100,7 @@ class BroOrchestrator {
       final broResponse = _parseFastApiResponse(response.data, executionTime);
 
       if (broResponse.data != null && broResponse.data['audio_url'] != null) {
-        await _ref.read(audioFocusManagerProvider).requestAudioFocus(AudioRequester.broOutput);
+        await _ref.read(audioFocusManagerProvider).requestAudioFocus('bro_output', AudioRequester.broOutput);
         await _audioPlayer.setUrl(broResponse.data['audio_url']);
         _audioPlayer.play();
       }

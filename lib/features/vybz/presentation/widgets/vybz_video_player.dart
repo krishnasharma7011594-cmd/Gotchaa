@@ -140,7 +140,7 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
       if (next == widget.vybzId) {
         if (_isInitialized && controller != null) {
           // When this Vybz becomes active, request audio focus
-          ref.read(audioFocusManagerProvider).requestAudioFocus(AudioRequester.vybz);
+          ref.read(audioFocusManagerProvider).requestAudioFocus('vybz_${widget.vybzId}', AudioRequester.vybz);
           
           // Only play if focus is granted (this will be handled by the focus provider listener)
           if (ref.read(isVybzAudioAllowedProvider)) {
@@ -151,7 +151,7 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
         if (controller != null) {
           controller.pause();
           // Release focus when no longer active
-          ref.read(audioFocusManagerProvider).releaseAudioFocus(AudioRequester.vybz);
+          ref.read(audioFocusManagerProvider).releaseAudioFocus('vybz_${widget.vybzId}');
         }
       }
     });
@@ -243,11 +243,11 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
             controller.pause();
           }
           if (isActive) {
-            ref.read(audioFocusManagerProvider).releaseAudioFocus(AudioRequester.vybz);
+            ref.read(audioFocusManagerProvider).releaseAudioFocus('vybz_${widget.vybzId}');
           }
         } else if (visibleFraction > 0.8 && isActive) {
           // Video is highly visible and active, request focus and play
-          ref.read(audioFocusManagerProvider).requestAudioFocus(AudioRequester.vybz);
+          ref.read(audioFocusManagerProvider).requestAudioFocus('vybz_${widget.vybzId}', AudioRequester.vybz);
           if (ref.read(isVybzAudioAllowedProvider)) {
             controller?.play();
           }

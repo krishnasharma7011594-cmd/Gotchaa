@@ -10,7 +10,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/bro_message.dart';
 import '../../domain/models/bro_response.dart';
 import '../providers/bro_providers.dart';
-import '../services/bro_orchestrator.dart';
+import '../../services/bro_orchestrator.dart';
 
 class BroAssistantOverlay extends ConsumerStatefulWidget {
   const BroAssistantOverlay({super.key});
