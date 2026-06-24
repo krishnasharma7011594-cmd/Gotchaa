@@ -39,7 +39,7 @@ class AudioFocusManager {
   AudioRequester? get currentFocusOwner => _focusOwner.value;
 
   /// Tracks active requesters
-  final Set<AudioRequester> _activeRequesters = {};
+  final Map<String, AudioRequester> _activeRequesters = {};
 
   AudioSession? _session;
 
@@ -61,21 +61,46 @@ class AudioFocusManager {
     }
   }
 
+  /// Evaluates and returns the highest priority active requester.
+  AudioRequester? _getHighestPriorityRequester() {
+    if (_activeRequesters.isEmpty) return null;
+    if (_activeRequesters.containsValue(AudioRequester.broInput)) {
+      return AudioRequester.broInput;
+    }
+    if (_activeRequesters.containsValue(AudioRequester.broOutput)) {
+      return AudioRequester.broOutput;
+    }
+    if (_activeRequesters.containsValue(AudioRequester.vybz)) {
+      return AudioRequester.vybz;
+    }
+    return null;
+  }
+
   /// Request focus for a specific layer.
   /// 
   /// If a higher priority requester is active, this requester will wait 
   /// until focus is released.
-  Future<void> requestAudioFocus(AudioRequester requester) async {
-    debugPrint('AudioFocus: Requesting for $requester');
-    _activeRequesters.add(requester);
-    await _reevaluateFocus();
+  Future<void> requestAudioFocus(String requesterKey, AudioRequester requester) async {
+    debugPrint('AudioFocus: Requesting for $requesterKey ($requester)');
+    final previousPriority = _getHighestPriorityRequester();
+    _activeRequesters[requesterKey] = requester;
+    final currentPriority = _getHighestPriorityRequester();
+
+    if (currentPriority != previousPriority) {
+      await _reevaluateFocus();
+    }
   }
 
   /// Release focus for a specific layer.
-  Future<void> releaseAudioFocus(AudioRequester requester) async {
-    debugPrint('AudioFocus: Releasing for $requester');
-    _activeRequesters.remove(requester);
-    await _reevaluateFocus();
+  Future<void> releaseAudioFocus(String requesterKey) async {
+    debugPrint('AudioFocus: Releasing for $requesterKey');
+    final previousPriority = _getHighestPriorityRequester();
+    _activeRequesters.remove(requesterKey);
+    final currentPriority = _getHighestPriorityRequester();
+
+    if (currentPriority != previousPriority) {
+      await _reevaluateFocus();
+    }
   }
 
   /// Helper to pause Vybz when BRO becomes active (Input or Output)
@@ -92,27 +117,19 @@ class AudioFocusManager {
     final session = _session ?? await AudioSession.instance;
     _session = session;
 
-    AudioRequester? nextOwner;
-
-    // Priority Check
-    if (_activeRequesters.contains(AudioRequester.broInput)) {
-      nextOwner = AudioRequester.broInput;
-      // Configure for Speech Input (High sensitivity, ducking others)
-      await session.configure(const AudioSessionConfiguration.speech());
-    } else if (_activeRequesters.contains(AudioRequester.broOutput)) {
-      nextOwner = AudioRequester.broOutput;
-      // Configure for Speech Output
-      await session.configure(const AudioSessionConfiguration.speech());
-    } else if (_activeRequesters.contains(AudioRequester.vybz)) {
-      nextOwner = AudioRequester.vybz;
-      // Configure for Music/Media
-      await session.configure(const AudioSessionConfiguration.music());
-    } else {
-      nextOwner = null;
-    }
+    final nextOwner = _getHighestPriorityRequester();
 
     if (_focusOwner.value != nextOwner) {
       debugPrint('AudioFocus: Transitioning from ${_focusOwner.value} to $nextOwner');
+      
+      if (nextOwner == AudioRequester.broInput) {
+        await session.configure(const AudioSessionConfiguration.speech());
+      } else if (nextOwner == AudioRequester.broOutput) {
+        await session.configure(const AudioSessionConfiguration.speech());
+      } else if (nextOwner == AudioRequester.vybz) {
+        await session.configure(const AudioSessionConfiguration.music());
+      }
+
       _focusOwner.add(nextOwner);
       
       if (nextOwner != null) {
