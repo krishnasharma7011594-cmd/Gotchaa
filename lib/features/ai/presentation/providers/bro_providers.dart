@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/models/bro_message.dart';
-import '../services/bro_orchestrator.dart';
+import '../../services/bro_orchestrator.dart';
 
 // StateNotifier for Messages
 class BroMessagesNotifier extends StateNotifier<List<BroMessage>> {
