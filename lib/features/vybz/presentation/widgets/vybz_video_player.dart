@@ -39,7 +39,7 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
 
   Future<void> _initController() async {
     if (!mounted) return;
-    
+
     setState(() {
       _isInitialized = false;
       _controller = null;
@@ -54,14 +54,15 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
       final controller = VideoPlayerController.networkUrl(
         Uri.parse(widget.videoUrl.trim()),
         httpHeaders: const {
-          'User-Agent': 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+          'User-Agent':
+              'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
         },
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
-      
+
       await controller.initialize();
       await controller.setLooping(true);
-      
+
       if (!mounted) {
         await controller.dispose();
         return;
@@ -124,7 +125,7 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
     }
     setState(() => _showHeart = true);
     HapticFeedback.heavyImpact();
-    
+
     // Auto-hide heart after animation
     Future.delayed(const Duration(milliseconds: 800), () {
       if (mounted) setState(() => _showHeart = false);
@@ -140,25 +141,31 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
       if (next == widget.vybzId) {
         if (_isInitialized && controller != null) {
           // When this Vybz becomes active, request audio focus
-          ref.read(audioFocusManagerProvider).requestAudioFocus('vybz_${widget.vybzId}', AudioRequester.vybz);
-          
+          ref
+              .read(audioFocusManagerProvider)
+              .requestAudioFocus('vybz_${widget.vybzId}', AudioRequester.vybz);
+
           // Only play if focus is granted (this will be handled by the focus provider listener)
           if (ref.read(isVybzAudioAllowedProvider)) {
-             controller.play();
+            controller.play();
           }
         }
       } else {
         if (controller != null) {
           controller.pause();
           // Release focus when no longer active
-          ref.read(audioFocusManagerProvider).releaseAudioFocus('vybz_${widget.vybzId}');
+          ref
+              .read(audioFocusManagerProvider)
+              .releaseAudioFocus('vybz_${widget.vybzId}');
         }
       }
     });
 
     // Listen to focus changes to pause/resume audio
     ref.listen(isVybzAudioAllowedProvider, (previous, isAllowed) {
-      if (ref.read(activeVybzIdProvider) == widget.vybzId && _isInitialized && controller != null) {
+      if (ref.read(activeVybzIdProvider) == widget.vybzId &&
+          _isInitialized &&
+          controller != null) {
         if (isAllowed) {
           if (!controller.value.isPlaying) controller.play();
         } else {
@@ -177,7 +184,9 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
             children: [
               const CircularProgressIndicator(color: Colors.white54),
               const SizedBox(height: 12),
-              Text('Loading Vybz...', style: GoogleFonts.outfit(color: Colors.white54, fontSize: 12)),
+              Text('Loading Vybz...',
+                  style:
+                      GoogleFonts.outfit(color: Colors.white54, fontSize: 12)),
             ],
           ),
         ),
@@ -193,14 +202,19 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline_rounded, color: Colors.white24, size: 48),
+              const Icon(Icons.error_outline_rounded,
+                  color: Colors.white24, size: 48),
               const SizedBox(height: 16),
-              Text('Could not load video', 
-                style: GoogleFonts.outfit(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+              Text('Could not load video',
+                  style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              Text(_errorMessage ?? 'Unknown error', 
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(color: Colors.white38, fontSize: 12)),
+              Text(_errorMessage ?? 'Unknown error',
+                  textAlign: TextAlign.center,
+                  style:
+                      GoogleFonts.inter(color: Colors.white38, fontSize: 12)),
               const SizedBox(height: 20),
               // Debug URL view
               Container(
@@ -209,10 +223,11 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
                   color: Colors.white.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(widget.videoUrl, 
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.firaCode(color: Colors.white24, fontSize: 10)),
+                child: Text(widget.videoUrl,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.firaCode(
+                        color: Colors.white24, fontSize: 10)),
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
@@ -222,7 +237,8 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white10,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ],
@@ -236,18 +252,22 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
       onVisibilityChanged: (info) {
         final visibleFraction = info.visibleFraction;
         final isActive = ref.read(activeVybzIdProvider) == widget.vybzId;
-        
+
         if (visibleFraction < 0.1) {
           // Video is mostly invisible, pause and release focus
           if (controller != null && controller.value.isPlaying) {
             controller.pause();
           }
           if (isActive) {
-            ref.read(audioFocusManagerProvider).releaseAudioFocus('vybz_${widget.vybzId}');
+            ref
+                .read(audioFocusManagerProvider)
+                .releaseAudioFocus('vybz_${widget.vybzId}');
           }
         } else if (visibleFraction > 0.8 && isActive) {
           // Video is highly visible and active, request focus and play
-          ref.read(audioFocusManagerProvider).requestAudioFocus('vybz_${widget.vybzId}', AudioRequester.vybz);
+          ref
+              .read(audioFocusManagerProvider)
+              .requestAudioFocus('vybz_${widget.vybzId}', AudioRequester.vybz);
           if (ref.read(isVybzAudioAllowedProvider)) {
             controller?.play();
           }
@@ -262,12 +282,16 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
             FittedBox(
               fit: BoxFit.cover,
               child: SizedBox(
-                width: controller.value.size.width > 0 ? controller.value.size.width : 1080,
-                height: controller.value.size.height > 0 ? controller.value.size.height : 1920,
+                width: controller.value.size.width > 0
+                    ? controller.value.size.width
+                    : 1080,
+                height: controller.value.size.height > 0
+                    ? controller.value.size.height
+                    : 1920,
                 child: VideoPlayer(controller),
               ),
             ),
-            
+
             // Large Pop-up Heart for Double Tap
             if (_showHeart)
               Center(
@@ -285,7 +309,7 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
                     )
                     .fadeOut(begin: 1.0, delay: 500.ms, duration: 300.ms),
               ),
-  
+
             ValueListenableBuilder(
               valueListenable: controller,
               builder: (context, value, child) {

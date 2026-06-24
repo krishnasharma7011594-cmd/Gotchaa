@@ -95,7 +95,7 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
          throw Exception(captionCheck.reason ?? 'Caption blocked');
       }
       */
-      
+
       setState(() => _uploadProgress = 0.2);
       final storageRepo = ref.read(storageRepositoryProvider);
       final postRepo = ref.read(postRepositoryProvider);
@@ -103,7 +103,7 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
       final String tempPostId = Uuid().v4();
       String mediaUrl = '';
       String? generatedThumbUrl;
-      
+
       if (widget.isVideo) {
         // 1. Generate Thumbnail
         final thumbnailFile = await VideoCompress.getFileThumbnail(
@@ -142,7 +142,7 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
 
       // Create Post Model
       final post = PostModel(
-        postId: '', 
+        postId: '',
         uid: user.uid,
         username: profile?.username ?? profile?.displayName ?? 'User',
         userPhoto: profile?.photoUrl ?? '',
@@ -175,7 +175,7 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
           videoUrl: mediaUrl,
           thumbnailUrl: generatedThumbUrl ?? '',
           caption: caption,
-          hashtags: [], 
+          hashtags: [],
           createdAt: DateTime.now(),
         );
         await vybzRepo.postVybz(vybz);

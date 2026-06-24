@@ -1,11 +1,4 @@
-enum BroActionType { 
-  cab_booking, 
-  food_order, 
-  shopping, 
-  payment, 
-  query, 
-  none 
-}
+enum BroActionType { cab_booking, food_order, shopping, payment, query, none }
 
 enum BroStatus { success, pending, failed }
 
@@ -27,10 +20,10 @@ class BroResponse {
   });
 
   factory BroResponse.failed(String error) => BroResponse(
-    actionType: BroActionType.none,
-    status: BroStatus.failed,
-    text: "Sorry boss, kuch phat gaya. $error",
-    executionTime: 0,
-    error: error,
-  );
+        actionType: BroActionType.none,
+        status: BroStatus.failed,
+        text: "Sorry boss, kuch phat gaya. $error",
+        executionTime: 0,
+        error: error,
+      );
 }

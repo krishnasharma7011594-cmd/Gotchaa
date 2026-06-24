@@ -89,7 +89,9 @@ class FeedVideoManager {
   /// Pause play for a specific URL.
   void pause(String url) {
     final controller = _pool[url];
-    if (controller != null && controller.value.isInitialized && controller.value.isPlaying) {
+    if (controller != null &&
+        controller.value.isInitialized &&
+        controller.value.isPlaying) {
       controller.pause();
     }
   }
@@ -122,7 +124,7 @@ class FeedVideoManager {
   }
 
   void onDispose(VideoPlayerController controller) {
-     // Managed by pool
+    // Managed by pool
   }
 
   /// Clean all active controllers (e.g. leaving the Vybz feed screen)

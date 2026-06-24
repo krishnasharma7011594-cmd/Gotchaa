@@ -16,7 +16,8 @@ class BroAssistantOverlay extends ConsumerStatefulWidget {
   const BroAssistantOverlay({super.key});
 
   @override
-  ConsumerState<BroAssistantOverlay> createState() => _BroAssistantOverlayState();
+  ConsumerState<BroAssistantOverlay> createState() =>
+      _BroAssistantOverlayState();
 }
 
 class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
@@ -85,7 +86,7 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
 
     final orchestrator = ref.read(broOrchestratorProvider);
     final messagesNotifier = ref.read(broMessagesProvider.notifier);
-    
+
     // Add User Message
     messagesNotifier.addMessage(BroMessage(
       id: _uuid.v4(),
@@ -101,13 +102,12 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
     try {
       // Process through Orchestrator (handles FastAPI + Fallbacks + Biometrics)
       final response = await orchestrator.processTextQuery(text);
-      
+
       if (response.status == BroStatus.failed) {
         _handleError(response.error ?? "Unknown error");
       }
       // Note: Response history is automatically updated by the Orchestrator
       _scrollToBottom();
-      
     } catch (e) {
       _handleError(e.toString());
     }
@@ -115,12 +115,12 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
 
   void _handleError(String errorMsg) {
     ref.read(broMessagesProvider.notifier).addMessage(BroMessage(
-      id: _uuid.v4(),
-      role: BroRole.assistant,
-      content: 'Bhai, check set-up: $errorMsg',
-      timestamp: DateTime.now(),
-      type: BroMessageType.text,
-    ));
+          id: _uuid.v4(),
+          role: BroRole.assistant,
+          content: 'Bhai, check set-up: $errorMsg',
+          timestamp: DateTime.now(),
+          type: BroMessageType.text,
+        ));
     _scrollToBottom();
   }
 
@@ -159,7 +159,6 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
                 ),
               ),
             ),
-
           if (_isOpen)
             Align(
               alignment: Alignment.bottomCenter,
@@ -171,7 +170,6 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
                 child: _buildBroPanel(),
               ),
             ),
-
           if (!_isOpen)
             Positioned(
               right: _offset.dx,
@@ -183,9 +181,10 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
                   setState(() {
                     // Calculate relative to bottom-right as before or just keep absolute
                     // Let's use simple absolute from bottom/right for consistency
-                    double newBottom = screenSize.height - details.offset.dy - 60;
+                    double newBottom =
+                        screenSize.height - details.offset.dy - 60;
                     double newRight = screenSize.width - details.offset.dx - 60;
-                    
+
                     // Clamp to screen bounds
                     _offset = Offset(
                       newRight.clamp(10, screenSize.width - 70),
@@ -280,7 +279,8 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
             ),
             const Spacer(),
             IconButton(
-              icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white, size: 32),
+              icon: const Icon(Icons.keyboard_arrow_down_rounded,
+                  color: Colors.white, size: 32),
               onPressed: _closeOverlay,
             ),
           ],
@@ -306,7 +306,8 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
   Widget _buildInputArea() {
     final orchestrator = ref.read(broOrchestratorProvider);
     return Container(
-      padding: EdgeInsets.fromLTRB(20, 15, 20, MediaQuery.of(context).padding.bottom + 20),
+      padding: EdgeInsets.fromLTRB(
+          20, 15, 20, MediaQuery.of(context).padding.bottom + 20),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.03),
         border: const Border(top: BorderSide(color: Colors.white10)),
@@ -343,13 +344,13 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
     final isLoading = ref.watch(broLoadingProvider);
     return GestureDetector(
       onLongPressStart: (_) {
-         HapticFeedback.heavyImpact();
-         orchestrator.startListening();
+        HapticFeedback.heavyImpact();
+        orchestrator.startListening();
       },
       onLongPressEnd: (_) async {
-         HapticFeedback.mediumImpact();
-         await orchestrator.stopListeningAndProcess();
-         _scrollToBottom();
+        HapticFeedback.mediumImpact();
+        await orchestrator.stopListeningAndProcess();
+        _scrollToBottom();
       },
       onTap: _sendMessage,
       child: Container(
@@ -362,7 +363,8 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
         child: isLoading
             ? const Padding(
                 padding: EdgeInsets.all(15),
-                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                child: CircularProgressIndicator(
+                    color: Colors.white, strokeWidth: 2),
               )
             : const Icon(Icons.mic_none_rounded, color: Colors.white, size: 28),
       ),
@@ -375,7 +377,8 @@ class _PulseCircle extends StatefulWidget {
   State<_PulseCircle> createState() => _PulseCircleState();
 }
 
-class _PulseCircleState extends State<_PulseCircle> with SingleTickerProviderStateMixin {
+class _PulseCircleState extends State<_PulseCircle>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -429,9 +432,12 @@ class _ChatMessage extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
+          constraints:
+              BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
           decoration: BoxDecoration(
-            color: isUser ? const Color(0xFF3B82F6) : Colors.white.withOpacity(0.08),
+            color: isUser
+                ? const Color(0xFF3B82F6)
+                : Colors.white.withOpacity(0.08),
             borderRadius: BorderRadius.circular(22).copyWith(
               bottomRight: isUser ? Radius.zero : null,
               bottomLeft: isUser ? null : Radius.zero,

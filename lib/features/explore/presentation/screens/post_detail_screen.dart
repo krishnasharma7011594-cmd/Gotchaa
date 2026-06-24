@@ -70,7 +70,8 @@ class PostDetailScreen extends ConsumerWidget {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+              leading:
+                  const Icon(Icons.delete_outline_rounded, color: Colors.red),
               title: Text(
                 'Delete Post',
                 style: GoogleFonts.outfit(
@@ -99,7 +100,8 @@ class PostDetailScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: GoogleFonts.outfit(color: Colors.grey)),
+            child:
+                Text('Cancel', style: GoogleFonts.outfit(color: Colors.grey)),
           ),
           ElevatedButton(
             onPressed: () async {

@@ -11,7 +11,8 @@ void main() {
   setUp(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-      if (methodCall.method == 'getConfiguration' || methodCall.method == 'setConfiguration') {
+      if (methodCall.method == 'getConfiguration' ||
+          methodCall.method == 'setConfiguration') {
         return null;
       }
       if (methodCall.method == 'setActive') {
@@ -34,7 +35,8 @@ void main() {
       // Clear or reset focus owner state if needed
     });
 
-    test('Video swiping race condition test (Multiple vybz requesters)', () async {
+    test('Video swiping race condition test (Multiple vybz requesters)',
+        () async {
       // 1. Video A requests focus
       await manager.requestAudioFocus('vybz_video_A', AudioRequester.vybz);
       expect(manager.currentFocusOwner, AudioRequester.vybz);

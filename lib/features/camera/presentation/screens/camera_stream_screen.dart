@@ -573,7 +573,7 @@ class _CameraStreamScreenState extends State<CameraStreamScreen>
   }
 
   bool _isRecording = false;
-  
+
   Future<void> _startRecording() async {
     if (_ctrl == null || _isRecording) return;
     try {
@@ -593,7 +593,7 @@ class _CameraStreamScreenState extends State<CameraStreamScreen>
       final file = await _ctrl!.stopVideoRecording();
       setState(() => _isRecording = false);
       HapticFeedback.mediumImpact();
-      
+
       if (mounted) {
         await Navigator.push(
           context,

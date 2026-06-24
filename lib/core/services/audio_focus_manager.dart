@@ -31,10 +31,10 @@ class AudioFocusManager {
   }
 
   final _focusOwner = BehaviorSubject<AudioRequester?>.seeded(null);
-  
+
   /// Stream of the current focus owner
   Stream<AudioRequester?> get focusOwnerStream => _focusOwner.stream;
-  
+
   /// Current owner of the audio focus
   AudioRequester? get currentFocusOwner => _focusOwner.value;
 
@@ -46,14 +46,14 @@ class AudioFocusManager {
   Future<void> _initSession() async {
     try {
       _session = await AudioSession.instance;
-      
+
       // Handle system-level interruptions (e.g., phone calls)
       _session?.interruptionEventStream.listen((event) {
         if (event.begin) {
           debugPrint('Audio session interrupted: pause');
           // On interruption, we might want to release focus or handle specifically
         } else {
-           debugPrint('Audio session resumed');
+          debugPrint('Audio session resumed');
         }
       });
     } catch (e) {
@@ -77,10 +77,11 @@ class AudioFocusManager {
   }
 
   /// Request focus for a specific layer.
-  /// 
-  /// If a higher priority requester is active, this requester will wait 
+  ///
+  /// If a higher priority requester is active, this requester will wait
   /// until focus is released.
-  Future<void> requestAudioFocus(String requesterKey, AudioRequester requester) async {
+  Future<void> requestAudioFocus(
+      String requesterKey, AudioRequester requester) async {
     debugPrint('AudioFocus: Requesting for $requesterKey ($requester)');
     final previousPriority = _getHighestPriorityRequester();
     _activeRequesters[requesterKey] = requester;
@@ -120,8 +121,9 @@ class AudioFocusManager {
     final nextOwner = _getHighestPriorityRequester();
 
     if (_focusOwner.value != nextOwner) {
-      debugPrint('AudioFocus: Transitioning from ${_focusOwner.value} to $nextOwner');
-      
+      debugPrint(
+          'AudioFocus: Transitioning from ${_focusOwner.value} to $nextOwner');
+
       if (nextOwner == AudioRequester.broInput) {
         await session.configure(const AudioSessionConfiguration.speech());
       } else if (nextOwner == AudioRequester.broOutput) {
@@ -131,7 +133,7 @@ class AudioFocusManager {
       }
 
       _focusOwner.add(nextOwner);
-      
+
       if (nextOwner != null) {
         await session.setActive(true);
       } else {
