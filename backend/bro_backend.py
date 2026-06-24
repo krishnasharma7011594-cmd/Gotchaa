@@ -97,7 +97,7 @@ async def call_llm(prompt: str) -> str:
     # 2. Fallback to Gemini
     try:
         genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.0-flash')
         response = model.generate_content(f"{SYSTEM_PROMPT}\n\nUser: {prompt}")
         return response.text
     except Exception as e:

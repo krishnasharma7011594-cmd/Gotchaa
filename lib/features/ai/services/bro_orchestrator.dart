@@ -49,7 +49,7 @@ class BroOrchestrator {
     final apiKey = secure_config.AppConfig.geminiApiKey;
     if (apiKey.isNotEmpty) {
       _geminiFallback = GenerativeModel(
-        model: 'gemini-1.5-flash',
+        model: 'gemini-2.0-flash',
         apiKey: apiKey,
       );
     }

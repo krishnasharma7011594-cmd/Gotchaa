@@ -58,7 +58,7 @@ service firebase.storage {
     }
 
     match /vybz/{userId}/{filename} {
-      allow read: if isAuthenticated();
+      allow read: if true;  // Public — needed for ExoPlayer video streaming (can't attach auth tokens to media requests)
       allow write: if isOwner(userId)
                    && request.resource.contentType.matches('video/.*')
                    && request.resource.size < 150 * 1024 * 1024;
