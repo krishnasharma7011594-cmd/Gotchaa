@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:video_player/video_player.dart';
 
+import 'package:visibility_detector/visibility_detector.dart';
 import '../../../../core/providers/vybz_providers.dart';
+import '../../../../core/services/audio_focus_manager.dart';
 import '../../../../core/utils/video_manager.dart';
 
 class VybzVideoPlayer extends ConsumerStatefulWidget {
@@ -51,6 +53,9 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
 
       final controller = VideoPlayerController.networkUrl(
         Uri.parse(widget.videoUrl.trim()),
+        httpHeaders: const {
+          'User-Agent': 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+        },
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
       
@@ -130,14 +135,34 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
   Widget build(BuildContext context) {
     final controller = _controller;
 
+    // Listen to active Vybz ID changes
     ref.listen(activeVybzIdProvider, (previous, next) {
       if (next == widget.vybzId) {
         if (_isInitialized && controller != null) {
-          controller.play();
+          // When this Vybz becomes active, request audio focus
+          ref.read(audioFocusManagerProvider).requestAudioFocus(AudioRequester.vybz);
+          
+          // Only play if focus is granted (this will be handled by the focus provider listener)
+          if (ref.read(isVybzAudioAllowedProvider)) {
+             controller.play();
+          }
         }
       } else {
-        if (controller != null && controller.value.isPlaying) {
+        if (controller != null) {
           controller.pause();
+          // Release focus when no longer active
+          ref.read(audioFocusManagerProvider).releaseAudioFocus(AudioRequester.vybz);
+        }
+      }
+    });
+
+    // Listen to focus changes to pause/resume audio
+    ref.listen(isVybzAudioAllowedProvider, (previous, isAllowed) {
+      if (ref.read(activeVybzIdProvider) == widget.vybzId && _isInitialized && controller != null) {
+        if (isAllowed) {
+          if (!controller.value.isPlaying) controller.play();
+        } else {
+          if (controller.value.isPlaying) controller.pause();
         }
       }
     });
@@ -206,55 +231,78 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
       );
     }
 
-    return GestureDetector(
-      onTap: _handleTap,
-      onDoubleTap: _handleDoubleTap,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          FittedBox(
-            fit: BoxFit.cover,
-            child: SizedBox(
-              width: controller.value.size.width > 0 ? controller.value.size.width : 1080,
-              height: controller.value.size.height > 0 ? controller.value.size.height : 1920,
-              child: VideoPlayer(controller),
+    return VisibilityDetector(
+      key: Key('vybz_${widget.vybzId}'),
+      onVisibilityChanged: (info) {
+        final visibleFraction = info.visibleFraction;
+        final isActive = ref.read(activeVybzIdProvider) == widget.vybzId;
+        
+        if (visibleFraction < 0.1) {
+          // Video is mostly invisible, pause and release focus
+          if (controller != null && controller.value.isPlaying) {
+            controller.pause();
+          }
+          if (isActive) {
+            ref.read(audioFocusManagerProvider).releaseAudioFocus(AudioRequester.vybz);
+          }
+        } else if (visibleFraction > 0.8 && isActive) {
+          // Video is highly visible and active, request focus and play
+          ref.read(audioFocusManagerProvider).requestAudioFocus(AudioRequester.vybz);
+          if (ref.read(isVybzAudioAllowedProvider)) {
+            controller?.play();
+          }
+        }
+      },
+      child: GestureDetector(
+        onTap: _handleTap,
+        onDoubleTap: _handleDoubleTap,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            FittedBox(
+              fit: BoxFit.cover,
+              child: SizedBox(
+                width: controller.value.size.width > 0 ? controller.value.size.width : 1080,
+                height: controller.value.size.height > 0 ? controller.value.size.height : 1920,
+                child: VideoPlayer(controller),
+              ),
             ),
-          ),
-          
-          // Large Pop-up Heart for Double Tap
-          if (_showHeart)
-            Center(
-              child: const Icon(
-                Icons.favorite_rounded,
-                color: Colors.white70,
-                size: 110,
-              )
-                  .animate()
-                  .scale(
-                    begin: const Offset(0, 0),
-                    end: const Offset(1, 1),
-                    duration: 300.ms,
-                    curve: Curves.elasticOut,
-                  )
-                  .fadeOut(begin: 1.0, delay: 500.ms, duration: 300.ms),
+            
+            // Large Pop-up Heart for Double Tap
+            if (_showHeart)
+              Center(
+                child: const Icon(
+                  Icons.favorite_rounded,
+                  color: Colors.white70,
+                  size: 110,
+                )
+                    .animate()
+                    .scale(
+                      begin: const Offset(0, 0),
+                      end: const Offset(1, 1),
+                      duration: 300.ms,
+                      curve: Curves.elasticOut,
+                    )
+                    .fadeOut(begin: 1.0, delay: 500.ms, duration: 300.ms),
+              ),
+  
+            ValueListenableBuilder(
+              valueListenable: controller,
+              builder: (context, value, child) {
+                if (!value.isPlaying && !_showHeart) {
+                  return Center(
+                    child: Icon(
+                      Icons.play_arrow_rounded,
+                      size: 80,
+                      color: Colors.white.withValues(alpha: 0.5),
+                    ).animate().scale(),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
             ),
-
-          ValueListenableBuilder(
-            valueListenable: controller,
-            builder: (context, value, child) {
-              if (!value.isPlaying && !_showHeart) {
-                return Center(
-                  child: Icon(
-                    Icons.play_arrow_rounded,
-                    size: 80,
-                    color: Colors.white.withValues(alpha: 0.5),
-                  ).animate().scale(),
-                );
-              }
-              return const SizedBox.shrink();
-            },
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

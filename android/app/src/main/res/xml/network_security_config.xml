@@ -15,6 +15,7 @@
         <domain includeSubdomains="true">firebaseapp.com</domain>
         <domain includeSubdomains="true">gstatic.com</domain>
         <domain includeSubdomains="true">firestore.googleapis.com</domain>
+        <domain includeSubdomains="true">firebasestorage.app</domain>
     </domain-config>
 
     <!-- Allow cleartext traffic for local development domains -->
