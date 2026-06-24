@@ -256,23 +256,32 @@ class _PostCardState extends ConsumerState<PostCard>
                       final confirm = await showDialog<bool>(
                         context: context,
                         builder: (ctx) => AlertDialog(
-                          title: Text('Delete Post?', style: GoogleFonts.outfit()),
-                          content: Text('This will permanently remove this post.', style: GoogleFonts.outfit()),
+                          title:
+                              Text('Delete Post?', style: GoogleFonts.outfit()),
+                          content: Text(
+                              'This will permanently remove this post.',
+                              style: GoogleFonts.outfit()),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(ctx, false),
-                              child: Text('Cancel', style: GoogleFonts.outfit()),
+                              child:
+                                  Text('Cancel', style: GoogleFonts.outfit()),
                             ),
                             ElevatedButton(
                               onPressed: () => Navigator.pop(ctx, true),
-                              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                              child: Text('Delete', style: GoogleFonts.outfit(color: Colors.white)),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red),
+                              child: Text('Delete',
+                                  style:
+                                      GoogleFonts.outfit(color: Colors.white)),
                             ),
                           ],
                         ),
                       );
                       if (confirm == true) {
-                        await ref.read(postRepositoryProvider).deletePost(widget.post.postId);
+                        await ref
+                            .read(postRepositoryProvider)
+                            .deletePost(widget.post.postId);
                       }
                     }
                   },
@@ -282,7 +291,8 @@ class _PostCardState extends ConsumerState<PostCard>
                         value: 'delete',
                         child: Row(
                           children: [
-                            Icon(Icons.delete_outline_rounded, color: Colors.red, size: 20),
+                            Icon(Icons.delete_outline_rounded,
+                                color: Colors.red, size: 20),
                             SizedBox(width: 8),
                             Text('Delete', style: TextStyle(color: Colors.red)),
                           ],

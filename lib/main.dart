@@ -41,7 +41,7 @@ void main() async {
 
   // 2. Check if GDPR consent has been prompted (for data tracking/analytics)
   final hasPrompted = sharedPrefs.getBool('gdpr_consent_prompted') ?? false;
-  
+
   if (!hasPrompted) {
     debugPrint('Data tracking deferred until consent is given');
     // We stay initialized but limit tracking

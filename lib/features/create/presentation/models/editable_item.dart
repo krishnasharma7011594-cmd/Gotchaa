@@ -55,15 +55,15 @@ class EditableItem {
         hasBackground: hasBackground ?? this.hasBackground,
         fontSize: fontSize ?? this.fontSize,
       );
-      
+
   Map<String, dynamic> toMap() => {
-    'type': type.name,
-    'value': value,
-    'dx': position.dx,
-    'dy': position.dy,
-    'scale': scale,
-    'rotation': rotation,
-    'color': color?.value,
-    'fontSize': fontSize,
-  };
+        'type': type.name,
+        'value': value,
+        'dx': position.dx,
+        'dy': position.dy,
+        'scale': scale,
+        'rotation': rotation,
+        'color': color?.value,
+        'fontSize': fontSize,
+      };
 }

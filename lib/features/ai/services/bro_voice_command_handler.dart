@@ -32,7 +32,7 @@ class BroVoiceCommandHandler extends StateNotifier<BroVoiceState> {
 
   Timer? _listeningTimer;
   String _lastTranscript = "";
-  
+
   // Offline fallback queue
   final List<String> _offlineCommandQueue = [];
 
@@ -46,12 +46,13 @@ class BroVoiceCommandHandler extends StateNotifier<BroVoiceState> {
         onStatus: _handleSttStatus,
         onError: (error) => _handleBroError("STT Error: ${error.errorMsg}"),
       );
-      
+
       await _tts.setLanguage("en-IN"); // Hinglish context
       await _tts.setSpeechRate(0.5);
       await _tts.setVolume(1.0);
       await _tts.setPitch(1.0);
-      await _tts.awaitSpeechCompletion(true); // Wait for speaking to finish to trigger completion tasks
+      await _tts.awaitSpeechCompletion(
+          true); // Wait for speaking to finish to trigger completion tasks
 
       // Start wake word detection if requested
       // Note: Real wake-word usually requires a native plugin like Porcupine,
@@ -67,28 +68,35 @@ class BroVoiceCommandHandler extends StateNotifier<BroVoiceState> {
   Future<void> startWakeWordDetection() async {
     // Guard checking if already listening or wake-word is active to prevent race conditions
     if (state == BroVoiceState.wakeWordDetection) {
-      debugPrint("BroVoiceCommandHandler: Wake-word detection already active. Skipping restart.");
+      debugPrint(
+          "BroVoiceCommandHandler: Wake-word detection already active. Skipping restart.");
       return;
     }
     if (state == BroVoiceState.listening) {
-      debugPrint("BroVoiceCommandHandler: Active listening currently active. Skipping wake-word restart.");
+      debugPrint(
+          "BroVoiceCommandHandler: Active listening currently active. Skipping wake-word restart.");
       return;
     }
     if (state != BroVoiceState.idle) {
-      debugPrint("BroVoiceCommandHandler: Cannot start wake-word detection. Current state is $state, not idle.");
+      debugPrint(
+          "BroVoiceCommandHandler: Cannot start wake-word detection. Current state is $state, not idle.");
       return;
     }
-    
-    debugPrint("BroVoiceCommandHandler: [Restart Point] Starting wake-word detection loop.");
+
+    debugPrint(
+        "BroVoiceCommandHandler: [Restart Point] Starting wake-word detection loop.");
     state = BroVoiceState.wakeWordDetection;
-    
+
     // In wake word mode, we listen without audio focus request (passive)
     // or with low priority if the platform allows.
     await _stt.listen(
       onResult: (result) {
         final text = result.recognizedWords.toLowerCase();
-        if (text.contains("gotchaa") || text.contains("bro") || text.contains("hey gotchaa")) {
-          debugPrint("BroVoiceCommandHandler: Wake-word detected ('$text'). Starting active command listening.");
+        if (text.contains("gotchaa") ||
+            text.contains("bro") ||
+            text.contains("hey gotchaa")) {
+          debugPrint(
+              "BroVoiceCommandHandler: Wake-word detected ('$text'). Starting active command listening.");
           _stt.stop();
           startListening();
         }
@@ -105,11 +113,13 @@ class BroVoiceCommandHandler extends StateNotifier<BroVoiceState> {
 
     try {
       // Step A: Request High Priority Audio Focus
-      await _ref.read(audioFocusManagerProvider).requestAudioFocus('bro_input', AudioRequester.broInput);
+      await _ref
+          .read(audioFocusManagerProvider)
+          .requestAudioFocus('bro_input', AudioRequester.broInput);
       state = BroVoiceState.listening;
 
       _lastTranscript = "";
-      
+
       // Step B: Start Listening with 30s timeout
       await _stt.listen(
         onResult: (result) {
@@ -152,7 +162,7 @@ class BroVoiceCommandHandler extends StateNotifier<BroVoiceState> {
 
     _listeningTimer?.cancel();
     state = BroVoiceState.processing;
-    
+
     // Release input focus before moving to output phase
     await _ref.read(audioFocusManagerProvider).releaseAudioFocus('bro_input');
 
@@ -164,7 +174,8 @@ class BroVoiceCommandHandler extends StateNotifier<BroVoiceState> {
 
       if (response.status == BroStatus.success) {
         // Step E & G: Parse and Execute Task
-        if (response.actionType != BroActionType.none && response.actionType != BroActionType.query) {
+        if (response.actionType != BroActionType.none &&
+            response.actionType != BroActionType.query) {
           await _executeTargetedTask(response);
         }
 
@@ -187,7 +198,7 @@ class BroVoiceCommandHandler extends StateNotifier<BroVoiceState> {
         'data': response.data,
         'context': 'voice_command'
       });
-      
+
       debugPrint("Action executed: ${result.data}");
       // Possibly trigger a deep link if returned
       if (result.data['deep_link'] != null) {
@@ -200,18 +211,22 @@ class BroVoiceCommandHandler extends StateNotifier<BroVoiceState> {
 
   Future<void> _speakResponse(String text) async {
     state = BroVoiceState.speaking;
-    
+
     // Step C: Request Output Focus
-    await _ref.read(audioFocusManagerProvider).requestAudioFocus('bro_output', AudioRequester.broOutput);
-    
+    await _ref
+        .read(audioFocusManagerProvider)
+        .requestAudioFocus('bro_output', AudioRequester.broOutput);
+
     await _tts.speak(text);
-    
+
     // This functions as the TTS completion callback since _tts.awaitSpeechCompletion(true) is set
-    debugPrint("BroVoiceCommandHandler: TTS completed speaking. Releasing focus and transitioning to idle.");
+    debugPrint(
+        "BroVoiceCommandHandler: TTS completed speaking. Releasing focus and transitioning to idle.");
     await _ref.read(audioFocusManagerProvider).releaseAudioFocus('bro_output');
     state = BroVoiceState.idle;
-    
-    debugPrint("BroVoiceCommandHandler: [Restart Point] Restarting wake-word detection after speech completion.");
+
+    debugPrint(
+        "BroVoiceCommandHandler: [Restart Point] Restarting wake-word detection after speech completion.");
     await startWakeWordDetection();
   }
 
@@ -220,22 +235,25 @@ class BroVoiceCommandHandler extends StateNotifier<BroVoiceState> {
   void _handleOfflineFallback(String transcript) {
     if (_offlineCommandQueue.length >= 5) _offlineCommandQueue.removeAt(0);
     _offlineCommandQueue.add(transcript);
-    
-    _speakResponse("I'm currently offline, boss. I've queued your request and will sync it once we're back online.");
+
+    _speakResponse(
+        "I'm currently offline, boss. I've queued your request and will sync it once we're back online.");
   }
 
   void _handleBroError(String message) {
-    debugPrint("BroVoiceCommandHandler: [Error Handler] Error occurred: $message");
+    debugPrint(
+        "BroVoiceCommandHandler: [Error Handler] Error occurred: $message");
     state = BroVoiceState.error;
-    
+
     // Speak the error message via TTS. The _speakResponse method will automatically
     // restart wake-word detection when speaking completes.
     _speakResponse(message);
-    
+
     // Fallback safety timer in case speaking fails to trigger or complete
     Future.delayed(const Duration(seconds: 4), () {
       if (mounted && state == BroVoiceState.error) {
-        debugPrint("BroVoiceCommandHandler: [Error Handler Fallback] Resetting state to idle.");
+        debugPrint(
+            "BroVoiceCommandHandler: [Error Handler Fallback] Resetting state to idle.");
         state = BroVoiceState.idle;
         startWakeWordDetection();
       }
@@ -245,7 +263,7 @@ class BroVoiceCommandHandler extends StateNotifier<BroVoiceState> {
   void _handleSttStatus(String status) {
     debugPrint("STT Status: $status");
     if (status == "done" && state == BroVoiceState.listening) {
-       // Timeout handle if no results came
+      // Timeout handle if no results came
     }
   }
 
@@ -259,7 +277,8 @@ class BroVoiceCommandHandler extends StateNotifier<BroVoiceState> {
 }
 
 /// Provider for the Voice Command Handler
-final broVoiceCommandProvider = StateNotifierProvider<BroVoiceCommandHandler, BroVoiceState>((ref) {
+final broVoiceCommandProvider =
+    StateNotifierProvider<BroVoiceCommandHandler, BroVoiceState>((ref) {
   return BroVoiceCommandHandler(ref);
 });
 
@@ -270,15 +289,19 @@ class BroVoiceControlWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final voiceState = ref.watch(broVoiceCommandProvider);
-    
+
     return Column(
       children: [
         _buildVoiceIndicator(voiceState),
         const SizedBox(height: 20),
         ElevatedButton.icon(
-          onPressed: () => ref.read(broVoiceCommandProvider.notifier).startListening(),
-          icon: Icon(voiceState == BroVoiceState.listening ? Icons.stop : Icons.mic),
-          label: Text(voiceState == BroVoiceState.listening ? "Stop Listening" : "Talk to BRO"),
+          onPressed: () =>
+              ref.read(broVoiceCommandProvider.notifier).startListening(),
+          icon: Icon(
+              voiceState == BroVoiceState.listening ? Icons.stop : Icons.mic),
+          label: Text(voiceState == BroVoiceState.listening
+              ? "Stop Listening"
+              : "Talk to BRO"),
           style: ElevatedButton.styleFrom(
             backgroundColor: _getStateColor(voiceState),
             foregroundColor: Colors.white,
@@ -291,7 +314,7 @@ class BroVoiceControlWidget extends ConsumerWidget {
   Widget _buildVoiceIndicator(BroVoiceState state) {
     String text = "BRO is Idle";
     IconData icon = Icons.blur_on;
-    
+
     switch (state) {
       case BroVoiceState.listening:
         text = "Listening...";
@@ -312,7 +335,7 @@ class BroVoiceControlWidget extends ConsumerWidget {
       default:
         break;
     }
-    
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -325,11 +348,16 @@ class BroVoiceControlWidget extends ConsumerWidget {
 
   Color _getStateColor(BroVoiceState state) {
     switch (state) {
-      case BroVoiceState.listening: return Colors.redAccent;
-      case BroVoiceState.processing: return Colors.blueAccent;
-      case BroVoiceState.speaking: return Colors.greenAccent;
-      case BroVoiceState.error: return Colors.orangeAccent;
-      default: return Colors.grey;
+      case BroVoiceState.listening:
+        return Colors.redAccent;
+      case BroVoiceState.processing:
+        return Colors.blueAccent;
+      case BroVoiceState.speaking:
+        return Colors.greenAccent;
+      case BroVoiceState.error:
+        return Colors.orangeAccent;
+      default:
+        return Colors.grey;
     }
   }
 }

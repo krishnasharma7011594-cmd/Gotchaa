@@ -777,38 +777,42 @@ class _RealPostsGrid extends ConsumerWidget {
                 fit: StackFit.expand,
                 children: [
                   post.mediaUrl.isNotEmpty
-                    ? CachedNetworkImage(
-                        imageUrl: post.mediaThumbnailUrl.isNotEmpty
-                            ? post.mediaThumbnailUrl
-                            : post.mediaUrl,
-                        fit: BoxFit.cover,
-                        placeholder: (_, __) => Container(
+                      ? CachedNetworkImage(
+                          imageUrl: post.mediaThumbnailUrl.isNotEmpty
+                              ? post.mediaThumbnailUrl
+                              : post.mediaUrl,
+                          fit: BoxFit.cover,
+                          placeholder: (_, __) => Container(
+                            color: context.shimmerBase,
+                            child: const Center(
+                                child: SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2))),
+                          ),
+                          errorWidget: (_, __, ___) => Container(
+                            color: Colors.grey.shade900,
+                            child: const Icon(Icons.videocam_rounded,
+                                color: Colors.white24, size: 32),
+                          ),
+                        )
+                      : Container(
                           color: context.shimmerBase,
-                          child: const Center(
-                              child: SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(strokeWidth: 2))),
+                          child: Icon(Icons.image_rounded,
+                              color: context.iconSecondary),
                         ),
-                        errorWidget: (_, __, ___) => Container(
-                          color: Colors.grey.shade900,
-                          child: const Icon(Icons.videocam_rounded,
-                              color: Colors.white24, size: 32),
-                        ),
-                      )
-                    : Container(
-                        color: context.shimmerBase,
-                        child: Icon(Icons.image_rounded,
-                            color: context.iconSecondary),
-                      ),
                   // Show video icon badge for video posts
                   if (post.isVideo)
                     const Positioned(
                       top: 8,
                       right: 8,
                       child: Icon(Icons.videocam_rounded,
-                          color: Colors.white, size: 18,
-                          shadows: [Shadow(color: Colors.black45, blurRadius: 4)]),
+                          color: Colors.white,
+                          size: 18,
+                          shadows: [
+                            Shadow(color: Colors.black45, blurRadius: 4)
+                          ]),
                     ),
                 ],
               ),

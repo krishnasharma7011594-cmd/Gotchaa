@@ -416,7 +416,8 @@ class _VybzItemState extends ConsumerState<_VybzItem> {
                 onTap: () => _handleAppreciation(context, hasAccess),
               ),
               const SizedBox(height: 16),
-              if (widget.vybz.creatorId == ref.watch(authStateProvider).value?.uid)
+              if (widget.vybz.creatorId ==
+                  ref.watch(authStateProvider).value?.uid)
                 _buildActionButton(
                   Icons.more_vert_rounded,
                   '',
@@ -435,7 +436,8 @@ class _VybzItemState extends ConsumerState<_VybzItem> {
                   ),
                   border: Border.all(color: Colors.white30, width: 2),
                 ),
-                child: const Icon(Icons.music_note, color: Colors.white, size: 18),
+                child:
+                    const Icon(Icons.music_note, color: Colors.white, size: 18),
               )
                   .animate(onPlay: (controller) => controller.repeat())
                   .rotate(duration: 4.seconds),
@@ -590,12 +592,13 @@ class _VybzItemState extends ConsumerState<_VybzItem> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: GoogleFonts.outfit(color: Colors.grey)),
+            child:
+                Text('Cancel', style: GoogleFonts.outfit(color: Colors.grey)),
           ),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context); // Close dialog
-              
+
               // Show a loading snackbar
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -605,8 +608,10 @@ class _VybzItemState extends ConsumerState<_VybzItem> {
               );
 
               try {
-                await ref.read(postRepositoryProvider).deletePost(widget.vybz.id);
-                
+                await ref
+                    .read(postRepositoryProvider)
+                    .deletePost(widget.vybz.id);
+
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Reel deleted!')),

@@ -4,15 +4,17 @@ import '../../services/bro_orchestrator.dart';
 
 // StateNotifier for Messages
 class BroMessagesNotifier extends StateNotifier<List<BroMessage>> {
-  BroMessagesNotifier() : super([
-    BroMessage(
-      id: 'welcome',
-      role: BroRole.assistant,
-      content: "Yo! I'm BRO. Bol, kya help karu? I can book cabs, order food, or just chat.",
-      timestamp: DateTime.now(),
-      type: BroMessageType.text,
-    )
-  ]);
+  BroMessagesNotifier()
+      : super([
+          BroMessage(
+            id: 'welcome',
+            role: BroRole.assistant,
+            content:
+                "Yo! I'm BRO. Bol, kya help karu? I can book cabs, order food, or just chat.",
+            timestamp: DateTime.now(),
+            type: BroMessageType.text,
+          )
+        ]);
 
   void addMessage(BroMessage message) {
     state = [...state, message];
@@ -23,7 +25,8 @@ class BroMessagesNotifier extends StateNotifier<List<BroMessage>> {
   }
 }
 
-final broMessagesProvider = StateNotifierProvider<BroMessagesNotifier, List<BroMessage>>((ref) {
+final broMessagesProvider =
+    StateNotifierProvider<BroMessagesNotifier, List<BroMessage>>((ref) {
   return BroMessagesNotifier();
 });
 
@@ -66,6 +69,7 @@ class BroSettingsNotifier extends StateNotifier<BroSettings> {
   void toggleAutoPlay(bool val) => state = state.copyWith(autoPlayVoice: val);
 }
 
-final broSettingsProvider = StateNotifierProvider<BroSettingsNotifier, BroSettings>((ref) {
+final broSettingsProvider =
+    StateNotifierProvider<BroSettingsNotifier, BroSettings>((ref) {
   return BroSettingsNotifier();
 });
