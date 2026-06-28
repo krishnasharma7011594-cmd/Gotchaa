@@ -17,9 +17,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # Skip this job if the service account secret is not available
-    # (e.g., PRs from forks where secrets are not injected)
-    if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON != '' }}
 
     steps:
       - name: Checkout repository
@@ -43,8 +40,7 @@ jobs:
         run: npm install -g firebase-tools
 
       - name: Write service account credentials to file
-        run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}' > /tmp/service_account.json
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}' > /tmp/service_account.json
 
       - name: Deploy Firestore rules & indexes
         env:
