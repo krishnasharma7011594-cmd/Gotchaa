@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -94,12 +95,11 @@ class StorageRepository {
     final uploadFile = compressedPath != null ? XFile(compressedPath) : file;
     final fileName = '${_uuid.v4()}.mp4';
     final ref = _storage.ref().child('vybz').child(userId).child(fileName);
-    final bytes = await uploadFile.readAsBytes();
 
     await GotchaaPerformanceTraces.instance.startImageUpload(kind: 'video');
     try {
-      final uploadTask = ref.putData(
-        bytes,
+      final uploadTask = ref.putFile(
+        File(uploadFile.path),
         SettableMetadata(contentType: 'video/mp4'),
       );
       if (onProgress != null) {

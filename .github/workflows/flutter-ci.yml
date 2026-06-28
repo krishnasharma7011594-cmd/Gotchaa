@@ -1,13 +1,13 @@
 name: Flutter CI
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   push:
     branches: [ main, master, develop ]
   pull_request:
     branches: [ main, master, develop ]
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   analyze_and_test:
@@ -33,10 +33,14 @@ jobs:
         run: flutter pub get
 
       - name: Verify formatting
-        run: dart format --output=none .
+        # --set-exit-if-changed causes the step to FAIL if any file needs reformatting.
+        # --output=none suppresses the formatted file content from stdout.
+        run: dart format --output=none --set-exit-if-changed .
 
       - name: Run static analysis
+        # --no-fatal-infos: info-level hints don't fail CI.
+        # --no-fatal-warnings: warnings don't fail CI (only errors do).
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
       - name: Run unit and widget tests
-        run: flutter test
+        run: flutter test --reporter=github
