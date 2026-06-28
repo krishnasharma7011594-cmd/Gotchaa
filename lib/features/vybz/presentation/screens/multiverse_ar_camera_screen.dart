@@ -161,9 +161,8 @@ class _MultiverseARCameraScreenState
     try {
       final storageRef = FirebaseStorage.instance.ref().child(
           'vybz/${profile.uid}/${DateTime.now().millisecondsSinceEpoch}.jpg');
-      final bytes = await file.readAsBytes();
-      await storageRef.putData(
-          bytes, SettableMetadata(contentType: 'image/jpeg'));
+      await storageRef.putFile(
+          File(file.path), SettableMetadata(contentType: 'image/jpeg'));
       final downloadUrl = await storageRef.getDownloadURL();
 
       final vybz = VybzModel(
@@ -258,13 +257,12 @@ class _MultiverseARCameraScreenState
       );
 
       final File fileToUpload = mediaInfo?.file ?? File(file.path);
-      final bytes = await fileToUpload.readAsBytes();
 
       // 2. Upload to Storage
       final storageRef = FirebaseStorage.instance.ref().child(
           'vybz/${profile.uid}/${DateTime.now().millisecondsSinceEpoch}.mp4');
-      await storageRef.putData(
-          bytes, SettableMetadata(contentType: 'video/mp4'));
+      await storageRef.putFile(
+          fileToUpload, SettableMetadata(contentType: 'video/mp4'));
       final downloadUrl = await storageRef.getDownloadURL();
 
       // Cleanup
