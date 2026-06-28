@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -47,12 +48,14 @@ class BroVoiceCommandHandler extends StateNotifier<BroVoiceState> {
         onError: (error) => _handleBroError("STT Error: ${error.errorMsg}"),
       );
 
-      await _tts.setLanguage("en-IN"); // Hinglish context
+      await _tts.setLanguage('en-IN'); // Hinglish context
       await _tts.setSpeechRate(0.5);
       await _tts.setVolume(1.0);
       await _tts.setPitch(1.0);
-      await _tts.awaitSpeechCompletion(
-          true); // Wait for speaking to finish to trigger completion tasks
+      // Register completion handler so we know when TTS finishes speaking
+      _tts.setCompletionHandler(() {
+        debugPrint('BroVoiceCommandHandler: TTS completion handler triggered.');
+      });
 
       // Start wake word detection if requested
       // Note: Real wake-word usually requires a native plugin like Porcupine,
