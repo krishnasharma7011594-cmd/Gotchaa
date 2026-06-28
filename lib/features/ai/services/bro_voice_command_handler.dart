@@ -5,11 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
-import '../../../../core/config/app_config.dart';
 import '../../../../core/services/audio_focus_manager.dart';
 import '../domain/models/bro_response.dart';
-import '../domain/models/bro_message.dart';
+import '../presentation/providers/bro_providers.dart';
 import 'bro_orchestrator.dart';
 
 /// States of the BRO Voice Command System
