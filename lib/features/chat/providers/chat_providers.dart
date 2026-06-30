@@ -123,8 +123,9 @@ String? _validateMessageDoc(Map<String, dynamic> raw) {
           false;
   final hasMedia = raw['mediaUrl']?.toString().trim().isNotEmpty ?? false;
   if (type == 'text' && !hasText) return 'text message missing content';
-  if ((type == 'image' || type == 'video') && !hasMedia)
+  if ((type == 'image' || type == 'video') && !hasMedia) {
     return '$type message missing mediaUrl';
+  }
 
   return null;
 }

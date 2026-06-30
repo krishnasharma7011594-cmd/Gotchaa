@@ -24,11 +24,11 @@ enum AudioRequester {
 /// 2. BRO voice output (mute/reduce vybz, play TTS)
 /// 3. Vybz (play only if BRO not active)
 class AudioFocusManager {
-  static final AudioFocusManager _instance = AudioFocusManager._internal();
   factory AudioFocusManager() => _instance;
   AudioFocusManager._internal() {
     _initSession();
   }
+  static final AudioFocusManager _instance = AudioFocusManager._internal();
 
   final _focusOwner = BehaviorSubject<AudioRequester?>.seeded(null);
 
@@ -151,13 +151,11 @@ class AudioFocusManager {
 /// Riverpod providers for easy integration
 final audioFocusManagerProvider = Provider<AudioFocusManager>((ref) {
   final manager = AudioFocusManager();
-  ref.onDispose(() => manager.dispose());
+  ref.onDispose(manager.dispose);
   return manager;
 });
 
-final audioFocusOwnerProvider = StreamProvider<AudioRequester?>((ref) {
-  return ref.watch(audioFocusManagerProvider).focusOwnerStream;
-});
+final audioFocusOwnerProvider = StreamProvider<AudioRequester?>((ref) => ref.watch(audioFocusManagerProvider).focusOwnerStream);
 
 /// Specific provider for Vybz to know if it should be playing audio
 final isVybzAudioAllowedProvider = Provider<bool>((ref) {

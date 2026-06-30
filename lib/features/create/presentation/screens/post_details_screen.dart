@@ -4,20 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:video_player/video_player.dart';
 import 'package:uuid/uuid.dart';
+import 'package:video_compress/video_compress.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../../../core/l10n/app_localizations_x.dart';
 import '../../../../core/models/post_model.dart';
 import '../../../../core/models/spotify_track.dart';
 import '../../../../core/models/user_profile.dart';
 import '../../../../core/models/vybz_model.dart';
-import '../../../../core/moderation/content_validator.dart';
 import '../../../../core/providers/auth_providers.dart';
 import '../../../../core/providers/profile_providers.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/providers/shell_navigation_provider.dart';
-import 'package:video_compress/video_compress.dart';
 import '../../../../core/services/analytics_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -100,7 +99,7 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
       final storageRepo = ref.read(storageRepositoryProvider);
       final postRepo = ref.read(postRepositoryProvider);
 
-      final String tempPostId = Uuid().v4();
+      final String tempPostId = const Uuid().v4();
       String mediaUrl = '';
       String? generatedThumbUrl;
 
@@ -120,14 +119,12 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
         );
 
         // 3. Upload Thumbnail if exists
-        if (thumbnailFile != null) {
-          generatedThumbUrl = await storageRepo.uploadImage(
-            XFile(thumbnailFile.path),
-            user.uid,
-            folder: 'posts_thumbs',
-          );
-        }
-      } else {
+        generatedThumbUrl = await storageRepo.uploadImage(
+          XFile(thumbnailFile.path),
+          user.uid,
+          folder: 'posts_thumbs',
+        );
+            } else {
         // Upload Image
         final result = await storageRepo.uploadPostImage(
           XFile(widget.mediaFile.path),

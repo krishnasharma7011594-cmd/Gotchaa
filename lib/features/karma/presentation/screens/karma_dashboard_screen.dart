@@ -30,10 +30,11 @@ class KarmaDashboardScreen extends ConsumerWidget {
         ),
         body: profileAsync.when(
           data: (profile) {
-            if (profile == null)
+            if (profile == null) {
               return Center(
                   child: Text(context.tr('error_something_wrong'),
                       style: const TextStyle(color: Colors.white)));
+            }
             final isUnverified = profile.isVerified == false;
             return SingleChildScrollView(
               padding: const EdgeInsets.all(24),

@@ -114,8 +114,9 @@ class _VibeTalkChatViewState extends ConsumerState<VibeTalkChatView> {
 
   Future<void> _translateMessage(VibeMessage msg) async {
     if (msg.isSystemMessage) return;
-    if (_translations.containsKey(msg.id) || _translatingSet.contains(msg.id))
+    if (_translations.containsKey(msg.id) || _translatingSet.contains(msg.id)) {
       return;
+    }
 
     final svc = ref.read(translationServiceProvider);
 

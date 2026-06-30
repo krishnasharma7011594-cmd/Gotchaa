@@ -105,19 +105,24 @@ class VibeTalkGameService {
       );
     } else {
       String prompt = '';
-      if (type == 'icebreaker')
+      if (type == 'icebreaker') {
         prompt = _icebreakers[_random.nextInt(_icebreakers.length)];
-      if (type == 'tongue_twister')
+      }
+      if (type == 'tongue_twister') {
         prompt =
             'Voice Challenge: Say this fast 3 times!\n${_tongueTwisters[_random.nextInt(_tongueTwisters.length)]}';
-      if (type == 'voice_story')
+      }
+      if (type == 'voice_story') {
         prompt =
             'Voice Challenge!\n${_voiceStories[_random.nextInt(_voiceStories.length)]}';
-      if (type == 'voice_dare')
+      }
+      if (type == 'voice_dare') {
         prompt =
             'Voice Dare!\n${_voiceDares[_random.nextInt(_voiceDares.length)]}';
-      if (type == 'truth_or_dare')
+      }
+      if (type == 'truth_or_dare') {
         prompt = _truthOrDare[_random.nextInt(_truthOrDare.length)];
+      }
 
       return VibeGameContext(
         id: _uuid.v4(),

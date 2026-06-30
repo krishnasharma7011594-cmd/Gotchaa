@@ -652,8 +652,9 @@ class _ProfileView extends ConsumerWidget {
     final vybzAsync = ref.watch(userVybzProvider(uid));
     return vybzAsync.when(
       data: (list) {
-        if (list.isEmpty)
+        if (list.isEmpty) {
           return _buildEmptyTab(context, context.tr('profile_empty_vybz'));
+        }
         return GridView.builder(
           padding: const EdgeInsets.all(2),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -776,8 +777,7 @@ class _RealPostsGrid extends ConsumerWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  post.mediaUrl.isNotEmpty
-                      ? CachedNetworkImage(
+                  if (post.mediaUrl.isNotEmpty) CachedNetworkImage(
                           imageUrl: post.mediaThumbnailUrl.isNotEmpty
                               ? post.mediaThumbnailUrl
                               : post.mediaUrl,
@@ -796,8 +796,7 @@ class _RealPostsGrid extends ConsumerWidget {
                             child: const Icon(Icons.videocam_rounded,
                                 color: Colors.white24, size: 32),
                           ),
-                        )
-                      : Container(
+                        ) else Container(
                           color: context.shimmerBase,
                           child: Icon(Icons.image_rounded,
                               color: context.iconSecondary),

@@ -114,8 +114,9 @@ final followingFeedProvider = StreamProvider<List<FeedItem>>((ref) {
 /// Mixed Feed for the 'Nearby' tab.
 final nearbyFeedProvider = StreamProvider<List<FeedItem>>((ref) {
   final userProfile = ref.watch(currentUserProfileProvider).asData?.value;
-  if (userProfile == null || userProfile.nation == null)
+  if (userProfile == null || userProfile.nation == null) {
     return Stream.value([]);
+  }
 
   final countryCode = userProfile.nation!['currentCountry'] as String?;
   if (countryCode == null) return Stream.value([]);

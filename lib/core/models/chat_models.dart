@@ -176,8 +176,9 @@ class MessageFactory {
     // 1. Validation
     if (senderId.isEmpty) throw ArgumentError('senderId cannot be empty');
     if (receiverId.isEmpty) throw ArgumentError('receiverId cannot be empty');
-    if (text.isEmpty && type == 'text')
+    if (text.isEmpty && type == 'text') {
       throw ArgumentError('text cannot be empty for text messages');
+    }
     if (!['text', 'image', 'audio', 'video', 'deleted', 'system']
         .contains(type)) {
       throw ArgumentError('Invalid message type: $type');

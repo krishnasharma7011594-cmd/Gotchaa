@@ -169,7 +169,7 @@ class _MultiverseARCameraScreenState
         id: '',
         creatorId: profile.uid,
         creatorUsername: profile.username,
-        creatorPhoto: profile.photoUrl ?? '',
+        creatorPhoto: profile.photoUrl,
         videoUrl: downloadUrl, // Reusing field for simplicity in MVP
         caption: 'Shared from my gallery! 📸',
         likesCount: 0,
@@ -272,7 +272,7 @@ class _MultiverseARCameraScreenState
         id: '',
         creatorId: profile.uid,
         creatorUsername: profile.username,
-        creatorPhoto: profile.photoUrl ?? '',
+        creatorPhoto: profile.photoUrl,
         videoUrl: downloadUrl,
         caption:
             'Exploring the ${_multiverseStyles[_activeStyleIndex]} Multiverse! ✨',

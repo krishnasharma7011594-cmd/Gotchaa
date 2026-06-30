@@ -1,21 +1,27 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:record/record.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
-import 'package:local_auth/local_auth.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:record/record.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../config/app_config.dart';
 import '../../../core/config/app_config.dart' as secure_config;
 import '../../../core/services/audio_focus_manager.dart';
-import '../domain/models/bro_response.dart';
 import '../domain/models/bro_message.dart';
+import '../domain/models/bro_response.dart';
 import '../presentation/providers/bro_providers.dart';
 
 class BroOrchestrator {
+
+  BroOrchestrator(this._ref) {
+    _initFallback();
+    _setupAudioPlayerListeners();
+  }
   final Ref _ref;
   final String _baseUrl = AppConfig.instance.backendUrl;
 
@@ -32,11 +38,6 @@ class BroOrchestrator {
 
   GenerativeModel? _geminiFallback;
 
-  BroOrchestrator(this._ref) {
-    _initFallback();
-    _setupAudioPlayerListeners();
-  }
-
   void _setupAudioPlayerListeners() {
     _audioPlayer.processingStateStream.listen((state) {
       if (state == ProcessingState.completed || state == ProcessingState.idle) {
@@ -46,7 +47,7 @@ class BroOrchestrator {
   }
 
   void _initFallback() {
-    final apiKey = secure_config.AppConfig.geminiApiKey;
+    const apiKey = secure_config.AppConfig.geminiApiKey;
     if (apiKey.isNotEmpty) {
       _geminiFallback = GenerativeModel(
         model: 'gemini-2.0-flash',
@@ -80,10 +81,10 @@ class BroOrchestrator {
       final path = await _audioRecorder.stop();
       await _ref.read(audioFocusManagerProvider).releaseAudioFocus('bro_input');
 
-      if (path == null) return BroResponse.failed("No audio detected");
+      if (path == null) return BroResponse.failed('No audio detected');
       return await _processVoiceInput(File(path));
     } catch (e) {
-      return BroResponse.failed("Failed to stop recording: $e");
+      return BroResponse.failed('Failed to stop recording: $e');
     }
   }
 
@@ -115,8 +116,8 @@ class BroOrchestrator {
       await _handlePostProcessing(broResponse);
       return broResponse;
     } catch (e) {
-      return await _fallbackToGemini(
-          "Incoming voice transcript placeholder", startTime);
+      return _fallbackToGemini(
+          'Incoming voice transcript placeholder', startTime);
     } finally {
       _ref.read(broLoadingProvider.notifier).state = false;
     }
@@ -135,7 +136,7 @@ class BroOrchestrator {
       await _handlePostProcessing(broResponse);
       return broResponse;
     } catch (e) {
-      return await _fallbackToGemini(query, startTime);
+      return _fallbackToGemini(query, startTime);
     } finally {
       _ref.read(broLoadingProvider.notifier).state = false;
     }
@@ -143,13 +144,14 @@ class BroOrchestrator {
 
   Future<BroResponse> _fallbackToGemini(
       String query, DateTime startTime) async {
-    if (_geminiFallback == null)
-      return BroResponse.failed("Fallback unavailable.");
+    if (_geminiFallback == null) {
+      return BroResponse.failed('Fallback unavailable.');
+    }
 
     try {
       final content = [Content.text(query)];
       final response = await _geminiFallback!.generateContent(content);
-      final text = response.text ?? "Error thinking.";
+      final text = response.text ?? 'Error thinking.';
 
       final executionTime =
           DateTime.now().difference(startTime).inMilliseconds / 1000.0;
@@ -163,7 +165,7 @@ class BroOrchestrator {
       await _handlePostProcessing(broResponse);
       return broResponse;
     } catch (e) {
-      return BroResponse.failed("Gemini fallback failed: $e");
+      return BroResponse.failed('Gemini fallback failed: $e');
     }
   }
 
@@ -181,7 +183,7 @@ class BroOrchestrator {
 
     if (response.actionType == BroActionType.payment) {
       final authenticated = await _authenticateUser();
-      if (!authenticated) throw Exception("Biometric failed.");
+      if (!authenticated) throw Exception('Biometric failed.');
     }
   }
 
@@ -198,7 +200,7 @@ class BroOrchestrator {
       status: responseData['status'] == 'success'
           ? BroStatus.success
           : BroStatus.failed,
-      text: responseData['text'] ?? "Done!",
+      text: responseData['text'] ?? 'Done!',
       data: responseData['data'],
       executionTime: executionTime,
       error: responseData['error'],

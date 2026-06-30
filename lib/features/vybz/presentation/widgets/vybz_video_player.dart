@@ -8,7 +8,6 @@ import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import '../../../../core/providers/vybz_providers.dart';
 import '../../../../core/services/audio_focus_manager.dart';
-import '../../../../core/utils/video_manager.dart';
 
 class VybzVideoPlayer extends ConsumerStatefulWidget {
   const VybzVideoPlayer({
@@ -255,7 +254,7 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
 
         if (visibleFraction < 0.1) {
           // Video is mostly invisible, pause and release focus
-          if (controller != null && controller.value.isPlaying) {
+          if (controller.value.isPlaying) {
             controller.pause();
           }
           if (isActive) {
@@ -269,7 +268,7 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
               .read(audioFocusManagerProvider)
               .requestAudioFocus('vybz_${widget.vybzId}', AudioRequester.vybz);
           if (ref.read(isVybzAudioAllowedProvider)) {
-            controller?.play();
+            controller.play();
           }
         }
       },
@@ -307,7 +306,7 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
                       duration: 300.ms,
                       curve: Curves.elasticOut,
                     )
-                    .fadeOut(begin: 1.0, delay: 500.ms, duration: 300.ms),
+                    .fadeOut(begin: 1, delay: 500.ms, duration: 300.ms),
               ),
 
             ValueListenableBuilder(

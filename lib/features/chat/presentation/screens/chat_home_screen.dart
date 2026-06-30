@@ -115,15 +115,17 @@ class _ChatHomeScreenState extends ConsumerState<ChatHomeScreen> {
                       Expanded(
                         child: chatsAsync.when(
                           data: (chats) {
-                            if (chats.isEmpty)
+                            if (chats.isEmpty) {
                               return _buildEmptyChatState(chatContext);
+                            }
                             return ListView.builder(
                               padding:
                                   const EdgeInsets.only(top: 4, bottom: 100),
                               itemCount: chats.length + 1,
                               itemBuilder: (context, i) {
-                                if (i == 0)
+                                if (i == 0) {
                                   return _buildE2EENotice(chatContext);
+                                }
                                 return _ChatTile(
                                   chat: chats[i - 1],
                                   currentUid: currentUser?.uid ?? '',
@@ -238,8 +240,9 @@ class _ChatTile extends ConsumerWidget {
         final username = user?.username ?? '';
         final cachedName = chat.participantNames[otherUid] ?? '';
 
-        if (displayName.isNotEmpty && displayName != 'Unknown')
+        if (displayName.isNotEmpty && displayName != 'Unknown') {
           return displayName;
+        }
         if (username.isNotEmpty && username != 'Unknown') return username;
         if (cachedName.isNotEmpty && cachedName != 'Unknown') return cachedName;
         return otherUid.length > 8

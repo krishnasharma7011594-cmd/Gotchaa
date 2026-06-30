@@ -421,9 +421,10 @@ class _CameraStreamScreenState extends State<CameraStreamScreen>
       // Camera permission
       final camGranted =
           await PermissionManager.requestCameraPermission(context);
-      if (!camGranted)
+      if (!camGranted) {
         throw Exception(
             'Camera permission denied.\nPlease go to Settings → Apps → Gotchaa → Permissions and enable Camera.');
+      }
 
       _cameras = await availableCameras();
       if (_cameras.isEmpty) throw Exception('No camera found on this device.');
@@ -431,11 +432,12 @@ class _CameraStreamScreenState extends State<CameraStreamScreen>
       await _FrameProcessor.start();
       await _openCamera(_cameras.first);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _initializing = false;
           _error = e.toString().replaceAll('Exception: ', '');
         });
+      }
     }
   }
 
@@ -519,11 +521,12 @@ class _CameraStreamScreenState extends State<CameraStreamScreen>
               .firstWhere((c) => c.lensDirection == CameraLensDirection.front);
       await _openCamera(next);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _initializing = false;
           _error = 'Flip failed: $e';
         });
+      }
     }
   }
 

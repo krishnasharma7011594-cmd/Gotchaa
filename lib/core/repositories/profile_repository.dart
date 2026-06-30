@@ -25,14 +25,16 @@ class ProfileRepository {
     };
     if (photoUrl != null) publicData['photoUrl'] = photoUrl;
     if (language != null) publicData['language'] = language;
-    if (hasPickedLanguage != null)
+    if (hasPickedLanguage != null) {
       publicData['hasPickedLanguage'] = hasPickedLanguage;
+    }
 
     final Map<String, dynamic> privateData = {
       'updatedAt': FieldValue.serverTimestamp(),
     };
-    if (birthday != null)
+    if (birthday != null) {
       privateData['birthday'] = Timestamp.fromDate(birthday);
+    }
     if (ageTier != null) privateData['ageTier'] = ageTier;
     if (ageVerified != null) privateData['ageVerified'] = ageVerified;
 

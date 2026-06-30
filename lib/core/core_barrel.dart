@@ -35,6 +35,8 @@
 ///
 /// ### State Management
 /// Extend [BaseViewModel], [StateViewModel], or [ListViewModel] for consistent UI state management.
+library;
+
 export 'architecture/architecture_barrel.dart';
 export 'constants/app_constants.dart';
 export 'exceptions/exceptions_barrel.dart';

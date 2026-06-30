@@ -68,7 +68,11 @@ class DataExportService {
 }
 
 class DataExportResult {
-  const DataExportResult._({required this.ok, this.message, this.exportId});
+  const DataExportResult._({
+    required this.ok,
+    required this.message,
+    required this.exportId,
+  });
   DataExportResult.success({required this.message, this.exportId}) : ok = true;
   DataExportResult.error(this.message)
       : ok = false,

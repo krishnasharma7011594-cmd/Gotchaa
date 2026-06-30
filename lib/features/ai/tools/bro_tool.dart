@@ -18,8 +18,7 @@ abstract class BroTool {
   Future<Map<String, dynamic>> execute(Map<String, dynamic> arguments);
 
   /// Convert to [Tool] for Gemini API
-  Tool toGeminiTool() {
-    return Tool(functionDeclarations: [
+  Tool toGeminiTool() => Tool(functionDeclarations: [
       FunctionDeclaration(
         name,
         description,
@@ -31,5 +30,4 @@ abstract class BroTool {
         ),
       ),
     ]);
-  }
 }

@@ -44,8 +44,9 @@ class CirclesFirestoreService {
 
   // Create circle
   Future<CircleModel> createCircle(CircleModel circle) async {
-    if (isThrottled)
+    if (isThrottled) {
       throw Exception('Firestore queries throttled. Please try again later.');
+    }
     final docRef = _db.collection('circles').doc();
     final newCircle = circle.copyWith(id: docRef.id, hostId: currentUserId);
     await docRef.set(newCircle.toMap());

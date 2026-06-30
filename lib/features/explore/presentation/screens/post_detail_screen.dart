@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../../../core/models/post_model.dart';
-import '../../../../core/theme/app_theme.dart';
-import '../../../../core/widgets/post_card.dart';
 import '../../../../core/providers/auth_providers.dart';
 import '../../../../core/providers/repository_providers.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/post_card.dart';
 
 class PostDetailScreen extends ConsumerWidget {
   const PostDetailScreen({required this.post, super.key});

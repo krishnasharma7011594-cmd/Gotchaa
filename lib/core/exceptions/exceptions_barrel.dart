@@ -29,6 +29,8 @@
 /// result.when(
 ///   success: (user) =>
 /// ```
+library;
+
 export 'exceptions.dart';
 export 'failure.dart';
 export 'result.dart';
