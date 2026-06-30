@@ -40,8 +40,9 @@ class PersonalInformationScreen extends ConsumerWidget {
         ),
         body: profileAsync.when(
           data: (profile) {
-            if (profile == null)
+            if (profile == null) {
               return Center(child: Text(context.tr('no_profile_found')));
+            }
 
             return ListView(
               padding: const EdgeInsets.all(20),

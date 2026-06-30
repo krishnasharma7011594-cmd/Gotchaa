@@ -121,8 +121,9 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // 3. Email Verification
       if (!isGuest && !user.emailVerified) {
-        if (state.matchedLocation == '/verify-email' || isLegalRoute)
+        if (state.matchedLocation == '/verify-email' || isLegalRoute) {
           return null;
+        }
         return '/verify-email';
       }
 

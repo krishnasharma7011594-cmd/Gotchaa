@@ -87,7 +87,9 @@ void _isolateEntry(SendPort mainSend) {
 
           if (yIdx >= yBytes.length ||
               uvIdx >= uBytes.length ||
-              uvIdx >= vBytes.length) continue;
+              uvIdx >= vBytes.length) {
+            continue;
+          }
 
           final Y = yBytes[yIdx];
           final U = uBytes[uvIdx];

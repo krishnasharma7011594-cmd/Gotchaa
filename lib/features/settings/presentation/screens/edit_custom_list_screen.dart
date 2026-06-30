@@ -256,8 +256,9 @@ class _EditCustomListScreenState extends ConsumerState<EditCustomListScreen> {
 
   Widget _buildSearchResults(bool isDark, String? currentUid) {
     if (_isSearching) return const Center(child: CircularProgressIndicator());
-    if (_searchResults.isEmpty)
+    if (_searchResults.isEmpty) {
       return const Center(child: Text('No users found'));
+    }
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20),

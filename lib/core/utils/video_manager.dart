@@ -48,7 +48,7 @@ class FeedVideoManager {
     try {
       await controller.initialize();
       await controller.setLooping(true);
-      await controller.setVolume(1.0);
+      await controller.setVolume(1);
     } catch (e) {
       print('Video init error for $url: $e');
       _pool.remove(url);
@@ -107,8 +107,9 @@ class FeedVideoManager {
 
   /// Preload the next video in the queue asynchronously.
   void preload(String url) {
-    if (_pool.containsKey(url) || url.isEmpty || !url.startsWith('http'))
+    if (_pool.containsKey(url) || url.isEmpty || !url.startsWith('http')) {
       return;
+    }
 
     if (_pool.length >= 10) return;
 
@@ -117,7 +118,7 @@ class FeedVideoManager {
       _pool[url] = controller;
       _history.add(url);
       controller.setLooping(true);
-      controller.setVolume(1.0);
+      controller.setVolume(1);
     }).catchError((_) {
       // Fail silently for network timeouts
     });

@@ -1,5 +1,5 @@
-import 'package:local_auth/local_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:local_auth/local_auth.dart';
 
 class BiometricGate {
   static final LocalAuthentication _auth = LocalAuthentication();

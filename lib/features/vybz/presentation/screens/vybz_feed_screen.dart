@@ -10,7 +10,6 @@ import '../../../../core/models/vybz_model.dart';
 import '../../../../core/providers/auth_providers.dart';
 import '../../../../core/providers/profile_providers.dart';
 import '../../../../core/providers/repository_providers.dart';
-import '../../../../core/providers/social_providers.dart';
 import '../../../../core/providers/vybz_providers.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/video_manager.dart';

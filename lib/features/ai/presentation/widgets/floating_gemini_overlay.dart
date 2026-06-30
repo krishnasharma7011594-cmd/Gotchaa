@@ -6,11 +6,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/providers/auth_providers.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/bro_message.dart';
 import '../../domain/models/bro_response.dart';
-import '../providers/bro_providers.dart';
 import '../../services/bro_orchestrator.dart';
+import '../providers/bro_providers.dart';
 
 class BroAssistantOverlay extends ConsumerStatefulWidget {
   const BroAssistantOverlay({super.key});
@@ -104,7 +103,7 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
       final response = await orchestrator.processTextQuery(text);
 
       if (response.status == BroStatus.failed) {
-        _handleError(response.error ?? "Unknown error");
+        _handleError(response.error ?? 'Unknown error');
       }
       // Note: Response history is automatically updated by the Orchestrator
       _scrollToBottom();
@@ -181,9 +180,9 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
                   setState(() {
                     // Calculate relative to bottom-right as before or just keep absolute
                     // Let's use simple absolute from bottom/right for consistency
-                    double newBottom =
+                    final double newBottom =
                         screenSize.height - details.offset.dy - 60;
-                    double newRight = screenSize.width - details.offset.dx - 60;
+                    final double newRight = screenSize.width - details.offset.dx - 60;
 
                     // Clamp to screen bounds
                     _offset = Offset(
@@ -397,11 +396,9 @@ class _PulseCircleState extends State<_PulseCircle>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
+  Widget build(BuildContext context) => AnimatedBuilder(
       animation: _controller,
-      builder: (context, child) {
-        return Container(
+      builder: (context, child) => Container(
           width: 70 + (40 * _controller.value),
           height: 70 + (40 * _controller.value),
           decoration: BoxDecoration(
@@ -411,21 +408,18 @@ class _PulseCircleState extends State<_PulseCircle>
               width: 2,
             ),
           ),
-        );
-      },
+        ),
     );
-  }
 }
 
 class _ChatMessage extends StatelessWidget {
+
+  const _ChatMessage({required this.text, required this.isUser});
   final String text;
   final bool isUser;
 
-  const _ChatMessage({required this.text, required this.isUser});
-
   @override
-  Widget build(BuildContext context) {
-    return Align(
+  Widget build(BuildContext context) => Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: FadeInUp(
         duration: const Duration(milliseconds: 300),
@@ -454,5 +448,4 @@ class _ChatMessage extends StatelessWidget {
         ),
       ),
     );
-  }
 }

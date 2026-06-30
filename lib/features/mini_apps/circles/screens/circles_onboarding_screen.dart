@@ -120,8 +120,9 @@ class _CirclesOnboardingScreenState
                                   ))
                               .toList(),
                           onChanged: (val) {
-                            if (val != null)
+                            if (val != null) {
                               setState(() => _selectedCity = val);
+                            }
                           },
                           decoration: InputDecoration(
                             filled: true,

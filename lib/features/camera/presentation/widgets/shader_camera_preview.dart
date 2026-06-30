@@ -166,11 +166,12 @@ class _ShaderCameraPreviewState extends State<ShaderCameraPreview> {
 
   Future<void> _loadShader(String? assetPath) async {
     if (assetPath == null) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _shader = null;
           _loadedAsset = null;
         });
+      }
       return;
     }
     if (assetPath == _loadedAsset) return; // already loaded
@@ -183,11 +184,12 @@ class _ShaderCameraPreviewState extends State<ShaderCameraPreview> {
         });
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _shader = null;
           _loadedAsset = null;
         });
+      }
     }
   }
 

@@ -118,8 +118,9 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   Future<void> _takePicture() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized)
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
       return;
+    }
     HapticFeedback.mediumImpact();
     try {
       final file = await _cameraController!.takePicture();
@@ -133,8 +134,9 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   Future<void> _startRecording() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized)
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
       return;
+    }
     HapticFeedback.heavyImpact();
     setState(() => _isRecording = true);
     _recordAnimationController.forward();
@@ -144,8 +146,9 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   Future<void> _stopRecording() async {
-    if (_cameraController == null || !_cameraController!.value.isRecordingVideo)
+    if (_cameraController == null || !_cameraController!.value.isRecordingVideo) {
       return;
+    }
     setState(() => _isRecording = false);
     _recordAnimationController.reverse();
     try {

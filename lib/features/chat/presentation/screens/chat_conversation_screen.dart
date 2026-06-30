@@ -226,8 +226,9 @@ class _ChatConversationScreenState
   Future<void> _translateMessage(MessageModel msg) async {
     if (msg.type != 'text') return;
     if (msg.isDeletedForEveryone) return;
-    if (_translations.containsKey(msg.id) || _translatingSet.contains(msg.id))
+    if (_translations.containsKey(msg.id) || _translatingSet.contains(msg.id)) {
       return;
+    }
 
     final svc = ref.read(translationServiceProvider);
 

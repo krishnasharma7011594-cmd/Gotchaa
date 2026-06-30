@@ -350,8 +350,9 @@ class E2EEService {
 
     final myPrivKeyBase64 =
         await _secureStorage.read(key: 'x25519_private_key_$myUid');
-    if (myPrivKeyBase64 == null)
+    if (myPrivKeyBase64 == null) {
       throw Exception('Private key not found for current user');
+    }
     final myPrivKeyBytes = base64Decode(myPrivKeyBase64);
     final myKeyPair = await _x25519.newKeyPairFromSeed(myPrivKeyBytes);
     final myPubKey = await myKeyPair.extractPublicKey();
@@ -362,8 +363,9 @@ class E2EEService {
         .get();
     if (!doc.exists) throw Exception('User not found');
     final otherPubKeyBase64 = doc.data()?['identityPublicKey'] as String?;
-    if (otherPubKeyBase64 == null)
+    if (otherPubKeyBase64 == null) {
       throw Exception('Other user does not have a public key');
+    }
     final otherPubKeyBytes = base64Decode(otherPubKeyBase64);
 
     final combinedKeys = [

@@ -137,8 +137,9 @@ class ProfanityFilter {
     if (matches.isEmpty) return null;
     FilterSeverity highest = FilterSeverity.low;
     for (final m in matches) {
-      if (_severityRank(m.severity) > _severityRank(highest))
+      if (_severityRank(m.severity) > _severityRank(highest)) {
         highest = m.severity;
+      }
     }
     return highest;
   }
@@ -159,7 +160,9 @@ class ProfanityFilter {
     for (final term in _terms) {
       if (term.severity != FilterSeverity.low) continue;
       if (term.allowedContexts != null &&
-          !term.allowedContexts!.contains(context)) continue;
+          !term.allowedContexts!.contains(context)) {
+        continue;
+      }
       final pattern = RegExp(r'\b' + RegExp.escape(term.word) + r'\b',
           caseSensitive: false);
       result =

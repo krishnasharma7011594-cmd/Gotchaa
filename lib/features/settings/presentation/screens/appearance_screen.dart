@@ -14,7 +14,6 @@ class AppearanceScreen extends ConsumerWidget {
     final themeState = ref.watch(themeProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = Theme.of(context).scaffoldBackgroundColor;
-    final cardColor = Theme.of(context).cardTheme.color ?? Colors.white;
 
     return Scaffold(
       backgroundColor: bgColor,
