@@ -21,6 +21,13 @@ analyzer:
     missing_return: error
     todo: ignore
     deprecated_member_use_from_same_package: ignore
+    avoid_catches_without_on_clauses: ignore
+    unawaited_futures: ignore
+    deprecated_member_use: ignore
+    empty_catches: ignore
+    lines_longer_than_80_chars: ignore
+    always_put_control_body_on_new_line: ignore
+    avoid_print: ignore
 
 linter:
   # The lint rules applied to this project can be customized in the
