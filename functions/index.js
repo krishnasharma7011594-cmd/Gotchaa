@@ -12,18 +12,18 @@ const db = admin.firestore();
 const checkRateLimit = async (uid, type, limit, windowMs) => {
     const now = admin.firestore.Timestamp.now();
     const windowStart = new Date(now.toDate().getTime() - windowMs);
-    
+
     const limitRef = db.collection('users').doc(uid).collection('vibetalkLimits').doc(type);
     const limitDoc = await limitRef.get();
-    
+
     let data = limitDoc.exists ? limitDoc.data() : { count: 0, firstAttempt: now };
-    
+
     if (data.firstAttempt.toDate() < windowStart) {
         data = { count: 1, firstAttempt: now };
     } else {
         data.count += 1;
     }
-    
+
     await limitRef.set(data);
     return data.count <= limit;
 };
@@ -37,10 +37,10 @@ exports.findVibeMatch = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
     }
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'User must be logged in.');
-    
+
     const uid = context.auth.uid;
     const { languageCode, continent, wantsGames } = data;
-    
+
     // Rate Limit: 10 queue joins per hour
     const isAllowed = await checkRateLimit(uid, 'queueJoins', 10, 3600000);
     if (!isAllowed) throw new functions.https.HttpsError('resource-exhausted', 'Rate limit exceeded. Try again later.');
@@ -65,22 +65,22 @@ exports.findVibeMatch = functions.https.onCall(async (data, context) => {
     return await db.runTransaction(async (transaction) => {
         const queueRef = db.collection('vibetalk_queue').where('isMatched', '==', false).orderBy('joinedAt').limit(20);
         const snapshot = await transaction.get(queueRef);
-        
+
         let bestMatch = null;
         let maxScore = -1;
-        
+
         snapshot.forEach(doc => {
             if (doc.id === uid) return;
             const candidate = doc.data();
             let score = 0;
-            
+
             if (candidate.languageCode === languageCode) score += 40;
             if (candidate.continent === continent) score += 20;
             if (candidate.wantsGames && wantsGames) score += 20;
-            
+
             const waitTime = (new Date() - candidate.joinedAt.toDate()) / 1000;
             score += Math.min(waitTime / 10, 20);
-            
+
             if (score > maxScore) {
                 maxScore = score;
                 bestMatch = doc;
@@ -92,10 +92,10 @@ exports.findVibeMatch = functions.https.onCall(async (data, context) => {
             const callerId = uid;
             const calleeId = bestMatch.id;
 
-            transaction.update(bestMatch.ref, { 
-                isMatched: true, 
-                matchedWith: callerId, 
-                roomId: roomId 
+            transaction.update(bestMatch.ref, {
+                isMatched: true,
+                matchedWith: callerId,
+                roomId: roomId
             });
 
             const roomRef = db.collection('vibetalk_rooms').doc(roomId);
@@ -136,7 +136,7 @@ exports.submitVibeGameVote = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
     }
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'User must be logged in.');
-    
+
     const { roomId, vote } = data;
     if (!roomId || vote === undefined) {
         throw new functions.https.HttpsError('invalid-argument', 'Missing roomId or vote.');
@@ -152,7 +152,7 @@ exports.submitVibeGameVote = functions.https.onCall(async (data, context) => {
 
         const isUserA = room.callerId === uid;
         const updateKey = isUserA ? 'gameState.userAVote' : 'gameState.userBVote';
-        
+
         tx.update(roomRef, { [updateKey]: vote });
 
         // Check if both have voted using the local state + current vote
@@ -193,7 +193,7 @@ exports.onVybzCommentCreated = functions.firestore
     .onCreate(async (snapshot, context) => {
         const comment = snapshot.data();
         const vybzId = context.params.vybzId;
-        
+
         // Get the Vybz post to find the owner
         const vybzDoc = await db.collection('vybz').doc(vybzId).get();
         const vybzData = vybzDoc.data();
@@ -220,133 +220,133 @@ exports.onVybzCommentCreated = functions.firestore
  * Send Chat Notification
  */
 exports.sendChatNotification = functions.firestore
-  .document('chats/{chatId}/messages/{messageId}')
-  .onCreate(async (snap, context) => {
-    const message = snap.data();
-    if (!message) return null;
+    .document('chats/{chatId}/messages/{messageId}')
+    .onCreate(async (snap, context) => {
+        const message = snap.data();
+        if (!message) return null;
 
-    const chatId = context.params.chatId;
-    const chatDoc = await admin.firestore().collection('chats').doc(chatId).get();
-    if (!chatDoc.exists) return null;
+        const chatId = context.params.chatId;
+        const chatDoc = await admin.firestore().collection('chats').doc(chatId).get();
+        if (!chatDoc.exists) return null;
 
-    const chatData = chatDoc.data();
-    const participants = chatData.participants || [];
-    const receiverId = participants.find(id => id !== message.senderId);
-    if (!receiverId) return null;
+        const chatData = chatDoc.data();
+        const participants = chatData.participants || [];
+        const receiverId = participants.find(id => id !== message.senderId);
+        if (!receiverId) return null;
 
-    const receiverDoc = await admin.firestore().collection('users').doc(receiverId).get();
-    const receiverPrivateDoc = await admin.firestore().collection('users_private').doc(receiverId).get();
-    const senderPrivateDoc = await admin.firestore().collection('users_private').doc(message.senderId).get();
-    if (!receiverDoc.exists || !receiverPrivateDoc.exists || !senderPrivateDoc.exists) return null;
+        const receiverDoc = await admin.firestore().collection('users').doc(receiverId).get();
+        const receiverPrivateDoc = await admin.firestore().collection('users_private').doc(receiverId).get();
+        const senderPrivateDoc = await admin.firestore().collection('users_private').doc(message.senderId).get();
+        if (!receiverDoc.exists || !receiverPrivateDoc.exists || !senderPrivateDoc.exists) return null;
 
-    const receiverData = receiverDoc.data();
-    const receiverPrivateData = receiverPrivateDoc.data();
-    const senderPrivateData = senderPrivateDoc.data();
-    const fcmToken = receiverPrivateData.fcmToken;
+        const receiverData = receiverDoc.data();
+        const receiverPrivateData = receiverPrivateDoc.data();
+        const senderPrivateData = senderPrivateDoc.data();
+        const fcmToken = receiverPrivateData.fcmToken;
 
-    const senderAgeTier = senderPrivateData.ageTier ?? 5;
-    const receiverAgeTier = receiverPrivateData.ageTier ?? 5;
+        const senderAgeTier = senderPrivateData.ageTier ?? 5;
+        const receiverAgeTier = receiverPrivateData.ageTier ?? 5;
 
-    // Junior Mode (13-15): If receiver is Junior, check if receiver follows the sender
-    if (receiverAgeTier === 2) {
-      const followDoc = await admin.firestore().collection('users').doc(receiverId).collection('following').doc(message.senderId).get();
-      if (!followDoc.exists) {
-        console.log(`Notification blocked: Receiver (${receiverId}) is in Junior Mode and does not follow Sender (${message.senderId})`);
-        return null;
-      }
-    }
+        // Junior Mode (13-15): If receiver is Junior, check if receiver follows the sender
+        if (receiverAgeTier === 2) {
+            const followDoc = await admin.firestore().collection('users').doc(receiverId).collection('following').doc(message.senderId).get();
+            if (!followDoc.exists) {
+                console.log(`Notification blocked: Receiver (${receiverId}) is in Junior Mode and does not follow Sender (${message.senderId})`);
+                return null;
+            }
+        }
 
-    // Teen Mode (16-17): If sender or receiver is Teen, verify mutual follow relationship
-    if (senderAgeTier === 3 || receiverAgeTier === 3) {
-      const recFollowsSender = await admin.firestore().collection('users').doc(receiverId).collection('following').doc(message.senderId).get();
-      const sendFollowsRec = await admin.firestore().collection('users').doc(message.senderId).collection('following').doc(receiverId).get();
-      if (!recFollowsSender.exists || !sendFollowsRec.exists) {
-        console.log(`Notification blocked: Sender (${message.senderId}) or Receiver (${receiverId}) is Teen and mutual follow is not established`);
-        return null;
-      }
-    }
+        // Teen Mode (16-17): If sender or receiver is Teen, verify mutual follow relationship
+        if (senderAgeTier === 3 || receiverAgeTier === 3) {
+            const recFollowsSender = await admin.firestore().collection('users').doc(receiverId).collection('following').doc(message.senderId).get();
+            const sendFollowsRec = await admin.firestore().collection('users').doc(message.senderId).collection('following').doc(receiverId).get();
+            if (!recFollowsSender.exists || !sendFollowsRec.exists) {
+                console.log(`Notification blocked: Sender (${message.senderId}) or Receiver (${receiverId}) is Teen and mutual follow is not established`);
+                return null;
+            }
+        }
 
-    const isMuted = chatData.isMuted?.[receiverId] ?? false;
-    
-    // Check if receiver has activity status (publicly visible if they allow it)
-    const activeChatId = receiverPrivateData.activeChatId;
-    if (activeChatId === chatId) return null;
+        const isMuted = chatData.isMuted?.[receiverId] ?? false;
 
-    if (!fcmToken || isMuted) return null;
+        // Check if receiver has activity status (publicly visible if they allow it)
+        const activeChatId = receiverPrivateData.activeChatId;
+        if (activeChatId === chatId) return null;
 
-    let senderName = (chatData.participantNames && chatData.participantNames[message.senderId]) || 'Someone';
-    
-    // If senderName is 'Someone', try to fetch it from users collection
-    if (senderName === 'Someone') {
-      const senderDoc = await admin.firestore().collection('users').doc(message.senderId).get();
-      if (senderDoc.exists) {
-        const senderData = senderDoc.data();
-        senderName = senderData.displayName || senderData.username || 'Someone';
-      }
-    }
+        if (!fcmToken || isMuted) return null;
 
-    let body = message.type === 'text' ? message.text : message.type === 'image' ? '📷 Photo' : '🎤 Voice message';
-    if (message.isEncrypted === true) {
-      body = '🔒 Encrypted Message';
-    }
-    
-    return admin.messaging().send({
-      token: fcmToken,
-      notification: { title: senderName, body: body.substring(0, 100) },
-      data: { chatId, senderId: message.senderId },
-      android: { priority: 'high' },
-      apns: { payload: { aps: { sound: 'default', badge: 1 } } }
+        let senderName = (chatData.participantNames && chatData.participantNames[message.senderId]) || 'Someone';
+
+        // If senderName is 'Someone', try to fetch it from users collection
+        if (senderName === 'Someone') {
+            const senderDoc = await admin.firestore().collection('users').doc(message.senderId).get();
+            if (senderDoc.exists) {
+                const senderData = senderDoc.data();
+                senderName = senderData.displayName || senderData.username || 'Someone';
+            }
+        }
+
+        let body = message.type === 'text' ? message.text : message.type === 'image' ? '📷 Photo' : '🎤 Voice message';
+        if (message.isEncrypted === true) {
+            body = '🔒 Encrypted Message';
+        }
+
+        return admin.messaging().send({
+            token: fcmToken,
+            notification: { title: senderName, body: body.substring(0, 100) },
+            data: { chatId, senderId: message.senderId },
+            android: { priority: 'high' },
+            apns: { payload: { aps: { sound: 'default', badge: 1 } } }
+        });
     });
-  });
 
 /**
  * Send VibeTalk Notification
  */
 exports.sendVibeTalkNotification = functions.firestore
-  .document('vibetalk_rooms/{roomId}/messages/{messageId}')
-  .onCreate(async (snap, context) => {
-    const message = snap.data();
-    if (!message) return null;
+    .document('vibetalk_rooms/{roomId}/messages/{messageId}')
+    .onCreate(async (snap, context) => {
+        const message = snap.data();
+        if (!message) return null;
 
-    const roomId = context.params.roomId;
-    const roomDoc = await admin.firestore().collection('vibetalk_rooms').doc(roomId).get();
-    if (!roomDoc.exists) return null;
+        const roomId = context.params.roomId;
+        const roomDoc = await admin.firestore().collection('vibetalk_rooms').doc(roomId).get();
+        if (!roomDoc.exists) return null;
 
-    const roomData = roomDoc.data();
-    const participants = roomData.users || [];
-    const receiverId = participants.find(id => id !== message.senderId);
-    if (!receiverId) return null;
+        const roomData = roomDoc.data();
+        const participants = roomData.users || [];
+        const receiverId = participants.find(id => id !== message.senderId);
+        if (!receiverId) return null;
 
-    const receiverPrivateDoc = await admin.firestore().collection('users_private').doc(receiverId).get();
-    const senderPrivateDoc = await admin.firestore().collection('users_private').doc(message.senderId).get();
-    if (!receiverPrivateDoc.exists || !senderPrivateDoc.exists) return null;
+        const receiverPrivateDoc = await admin.firestore().collection('users_private').doc(receiverId).get();
+        const senderPrivateDoc = await admin.firestore().collection('users_private').doc(message.senderId).get();
+        if (!receiverPrivateDoc.exists || !senderPrivateDoc.exists) return null;
 
-    const receiverPrivateData = receiverPrivateDoc.data();
-    const senderPrivateData = senderPrivateDoc.data();
-    const fcmToken = receiverPrivateData.fcmToken;
+        const receiverPrivateData = receiverPrivateDoc.data();
+        const senderPrivateData = senderPrivateDoc.data();
+        const fcmToken = receiverPrivateData.fcmToken;
 
-    const senderAgeTier = senderPrivateData.ageTier ?? 5;
-    const receiverAgeTier = receiverPrivateData.ageTier ?? 5;
+        const senderAgeTier = senderPrivateData.ageTier ?? 5;
+        const receiverAgeTier = receiverPrivateData.ageTier ?? 5;
 
-    // VibeTalk Safety Check: Both participants must be adults (ageTier === 4)
-    if (senderAgeTier < 4 || receiverAgeTier < 4) {
-      console.log(`VibeTalk Notification blocked: Sender ageTier is ${senderAgeTier}, Receiver ageTier is ${receiverAgeTier}. VibeTalk is strictly restricted to adults.`);
-      return null;
-    }
+        // VibeTalk Safety Check: Both participants must be adults (ageTier === 4)
+        if (senderAgeTier < 4 || receiverAgeTier < 4) {
+            console.log(`VibeTalk Notification blocked: Sender ageTier is ${senderAgeTier}, Receiver ageTier is ${receiverAgeTier}. VibeTalk is strictly restricted to adults.`);
+            return null;
+        }
 
-    if (!fcmToken) return null;
+        if (!fcmToken) return null;
 
-    return admin.messaging().send({
-      token: fcmToken,
-      notification: { 
-        title: 'New VibeTalk Message', 
-        body: message.text.substring(0, 100) 
-      },
-      data: { roomId, senderId: message.senderId },
-      android: { priority: 'high' },
-      apns: { payload: { aps: { sound: 'default', badge: 1 } } }
+        return admin.messaging().send({
+            token: fcmToken,
+            notification: {
+                title: 'New VibeTalk Message',
+                body: message.text.substring(0, 100)
+            },
+            data: { roomId, senderId: message.senderId },
+            android: { priority: 'high' },
+            apns: { payload: { aps: { sound: 'default', badge: 1 } } }
+        });
     });
-  });
 
 /**
  * Mirror Realtime DB presence to Firestore
@@ -454,7 +454,7 @@ exports.onFollowCreate = functions.firestore
         await updateAnalytics(targetUid, { followersGained: 1, netFollowerChange: 1 });
 
         return db.collection('notifications').doc(targetUid).collection('userNotifications').add({
-            type: 'follow', 
+            type: 'follow',
             fromUid: followerUid,
             fromUsername: follower.displayName || follower.username,
             fromAvatar: follower.profilePictureUrl || '',
@@ -471,9 +471,9 @@ exports.onVybzMilestone = functions.firestore
     .onUpdate(async (change, context) => {
         const before = change.before.data();
         const after = change.after.data();
-        
+
         const milestones = [1000, 10000, 100000, 1000000];
-        
+
         for (const m of milestones) {
             if (before.viewsCount < m && after.viewsCount >= m) {
                 await db.collection('notifications').doc(after.userId).collection('userNotifications').add({
@@ -503,14 +503,14 @@ exports.onReactionCreate = functions.firestore
         const messageDoc = await db.collection('chats').doc(chatId).collection('messages').doc(messageId).get();
         if (!messageDoc.exists) return null;
         const messageData = messageDoc.data();
-        
+
         if (messageData.senderId === uid) return null;
 
         const reactorDoc = await db.collection('users').doc(uid).get();
         const reactor = reactorDoc.data();
 
         return db.collection('notifications').doc(messageData.senderId).collection('userNotifications').add({
-            type: 'commentLike', 
+            type: 'commentLike',
             fromUid: uid,
             fromUsername: reactor.displayName || reactor.username,
             fromAvatar: reactor.profilePictureUrl || '',
@@ -529,29 +529,29 @@ exports.onReactionCreate = functions.firestore
 async function updateAnalytics(uid, increments) {
     const dateStr = new Date().toISOString().split('T')[0];
     const docRef = db.collection('users').doc(uid).collection('analytics').doc(dateStr);
-    
+
     const updateData = { date: dateStr };
     for (const [key, val] of Object.entries(increments)) {
         updateData[key] = admin.firestore.FieldValue.increment(val);
     }
-    
+
     await docRef.set(updateData, { merge: true });
 }
 
 /**
  * Scheduled Tasks
  */
-exports.computeTrendingScores = functions.runWith({ 
-    timeoutSeconds: 540, 
-    memory: '1GB' 
+exports.computeTrendingScores = functions.runWith({
+    timeoutSeconds: 540,
+    memory: '1GB'
 }).pubsub.schedule('every 30 minutes').onRun(async (context) => {
     const now = Date.now();
     const startTime = Date.now();
     const activitySince = new Date(now - 35 * 60 * 1000); // Look back 35m for incremental updates
-    
+
     const ABSOLUTE_LIMIT = 1000;
     const BATCH_SIZE = 500;
-    
+
     try {
         // Fix 2 & 3: Selection and Incremental Computation
         // We only fetch posts that had activity recently to save compute
@@ -581,13 +581,13 @@ exports.computeTrendingScores = functions.runWith({
             }
 
             const data = doc.data();
-            
+
             // Trending Logic: (Views*1 + Likes*3 + Comments*5 + Shares*10)
-            const engagement = (data.viewsCount || 0) * 1.0 + 
-                               (data.likesCount || 0) * 3.0 + 
-                               (data.commentsCount || 0) * 5.0 +
-                               (data.shareCount || 0) * 10.0;
-            
+            const engagement = (data.viewsCount || 0) * 1.0 +
+                (data.likesCount || 0) * 3.0 +
+                (data.commentsCount || 0) * 5.0 +
+                (data.shareCount || 0) * 10.0;
+
             // Time Decay: Score / (age_in_hours + 2)^1.5
             const createdAt = data.createdAt ? data.createdAt.toDate().getTime() : now;
             const ageInHours = (now - createdAt) / (1000 * 60 * 60);
@@ -605,7 +605,7 @@ exports.computeTrendingScores = functions.runWith({
 
         // Fix 5 & 1: Update the Top 100 list
         const updatedPostIds = new Set(updatedScores.map(p => p.postId));
-        
+
         // Remove old versions of updated posts and merge new ones
         mergedTrending = [
             ...updatedScores,
@@ -721,7 +721,7 @@ exports.enforceAgeRestrictions = functions.pubsub.schedule('every 24 hours').onR
     for (const doc of usersPrivateSnap.docs) {
         const uid = doc.id;
         const privateData = doc.data();
-        
+
         // If birthday is not present, check if coppaLimited
         if (!privateData.birthday) {
             if (privateData.ageTier === 0) {
@@ -759,7 +759,7 @@ exports.enforceAgeRestrictions = functions.pubsub.schedule('every 24 hours').onR
 
         if (currentTier !== expectedTier) {
             console.log(`User ${uid}: age is ${age}. Transitioning ageTier from ${currentTier} to ${expectedTier}.`);
-            
+
             // Update private doc
             batch.set(db.collection('users_private').doc(uid), {
                 ageTier: expectedTier,
@@ -864,11 +864,11 @@ exports.deleteUserAccount = functions.runWith({
         chatsSnap.docs.forEach(doc => {
             const participants = doc.data().participants || [];
             const newParticipants = participants.filter(p => p !== uid);
-            
+
             if (newParticipants.length === 0) {
                 chatBatch.delete(doc.ref); // Delete empty chat
             } else {
-                chatBatch.update(doc.ref, { 
+                chatBatch.update(doc.ref, {
                     participants: newParticipants,
                     [`unreadCount.${uid}`]: admin.firestore.FieldValue.delete()
                 });
@@ -913,293 +913,293 @@ exports.deleteUserAccount = functions.runWith({
 exports.seedDemoData = functions.runWith({ timeoutSeconds: 300, memory: '512MB' })
     .https.onCall(async (data, context) => {
 
-    // ── Idempotency Guard ──────────────────────────────────────────────────
-    const seedRef = db.collection('_seed').doc('demo_v1');
-    const seedDoc = await seedRef.get();
-    if (seedDoc.exists && !(data && data.force === true)) {
-        return {
-            status: 'ALREADY_SEEDED',
-            seededAt: seedDoc.data().seededAt,
-            message: 'Demo data already exists. Pass { force: true } to re-seed.',
-        };
-    }
-
-    console.log('Starting demo data seed...');
-    const now = admin.firestore.FieldValue.serverTimestamp();
-    const BASE_DATE = new Date('2025-03-01T00:00:00Z');
-
-    // ── Demo User Definitions ──────────────────────────────────────────────
-    const USERS = [
-        {
-            uid: 'demo_arjun_001',
-            email: 'arjun.sharma.demo@gotchaa.app',
-            password: 'GotchaaDemo@1',
-            displayName: 'Arjun Sharma',
-            username: 'arjun_sharma',
-            bio: '🇮🇳 Software dev from Bangalore. Love cricket, chai & late-night code sessions. Building the future one commit at a time. 🚀',
-            photoUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ArjunSharma&backgroundColor=b6e3f4&clothingColor=3c4f5c',
-            language: 'en',
-            nation: { country: 'India', continent: 'Asia', code: 'IN' },
-            followersCount: 10, followingCount: 5,
-            karma: 350,
-            gender: 'male', ageTier: 4,
-            birthday: new Date('1998-04-15'),
-        },
-        {
-            uid: 'demo_sofia_002',
-            email: 'sofia.martinez.demo@gotchaa.app',
-            password: 'GotchaaDemo@2',
-            displayName: 'Sofía Martínez',
-            username: 'sofia_creates',
-            bio: '🇲🇽 Diseñadora gráfica de CDMX. Amo el arte, la música y los tacos 🌮 La vida es bella y el diseño lo hace más. ✨',
-            photoUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SofiaMartinez&backgroundColor=ffdfbf&clothingColor=f4a261',
-            language: 'es',
-            nation: { country: 'Mexico', continent: 'Americas', code: 'MX' },
-            followersCount: 8, followingCount: 12,
-            karma: 220,
-            gender: 'female', ageTier: 4,
-            birthday: new Date('2000-09-22'),
-        },
-        {
-            uid: 'demo_omar_003',
-            email: 'omar.rashidi.demo@gotchaa.app',
-            password: 'GotchaaDemo@3',
-            displayName: 'Omar Al-Rashidi',
-            username: 'omar_uae',
-            bio: '🇦🇪 Entrepreneur from Dubai. Passionate about fintech, travel & connecting cultures. GOTCHAA is where worlds meet. 🌍💼',
-            photoUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=OmarRashidi&backgroundColor=c0aede&clothingColor=264653',
-            language: 'ar',
-            nation: { country: 'United Arab Emirates', continent: 'Asia', code: 'AE' },
-            followersCount: 15, followingCount: 8,
-            karma: 480,
-            gender: 'male', ageTier: 4,
-            birthday: new Date('1995-12-03'),
-        },
-    ];
-
-    // ── Create Firebase Auth Users ─────────────────────────────────────────
-    for (const u of USERS) {
-        try {
-            await admin.auth().createUser({
-                uid: u.uid, email: u.email, password: u.password,
-                displayName: u.displayName, emailVerified: true, photoURL: u.photoUrl,
-            });
-            console.log(`Auth created: ${u.uid}`);
-        } catch (e) {
-            if (e.code === 'auth/uid-already-exists' || e.code === 'auth/email-already-exists') {
-                console.log(`Auth exists (skipping): ${u.uid}`);
-            } else { throw e; }
+        // ── Idempotency Guard ──────────────────────────────────────────────────
+        const seedRef = db.collection('_seed').doc('demo_v1');
+        const seedDoc = await seedRef.get();
+        if (seedDoc.exists && !(data && data.force === true)) {
+            return {
+                status: 'ALREADY_SEEDED',
+                seededAt: seedDoc.data().seededAt,
+                message: 'Demo data already exists. Pass { force: true } to re-seed.',
+            };
         }
-    }
 
-    // ── Firestore Profiles ─────────────────────────────────────────────────
-    const profileBatch = db.batch();
-    for (const u of USERS) {
-        // Public profiles: strictly no ageTier or birthday PII
-        profileBatch.set(db.collection('users').doc(u.uid), {
-            uid: u.uid, username: u.username, displayName: u.displayName,
-            email: u.email, photoUrl: u.photoUrl, bio: u.bio,
-            karma: u.karma, lovers: 0, lovely: 0,
-            followersCount: u.followersCount, followingCount: u.followingCount,
-            isVerified: true, isLimitedUser: false,
-            inviteCode: `DEMO_${u.username.toUpperCase()}`,
-            joinedWithCode: 'GOTCHAA_BETA', inviteLimit: 5, invitesUsed: 0,
-            remainingInvites: 5, totalInvites: 0, isInviteRewardClaimed: false,
-            invitedUsers: [], blockedUids: [], ghostUids: [], friendUids: [],
-            customPrivacyLists: [],
-            createdAt: admin.firestore.Timestamp.fromDate(BASE_DATE),
-            gender: u.gender, ageVerified: true,
-            hasPickedLanguage: true, language: u.language, nation: u.nation,
-            isOnline: false, lastSeen: now, isPrivate: false,
-            showActivityStatus: true, pushNotificationsEnabled: true,
-            emailNotificationsEnabled: true, isTwoFactorEnabled: false,
-            stayAnonymousInConnections: false,
-            termsAcceptedVersion: '2.0', privacyAcceptedVersion: '1.0',
-            legalAcceptedAt: admin.firestore.Timestamp.fromDate(BASE_DATE),
-            isDemo: true,
-        }, { merge: true });
+        console.log('Starting demo data seed...');
+        const now = admin.firestore.FieldValue.serverTimestamp();
+        const BASE_DATE = new Date('2025-03-01T00:00:00Z');
 
-        // Private profiles: holds birthday and ageTier securely
-        profileBatch.set(db.collection('users_private').doc(u.uid), {
-            ageTier: u.ageTier,
-            ageVerified: true,
-            birthday: admin.firestore.Timestamp.fromDate(u.birthday),
-            fcmToken: 'demo_token_' + u.uid,
-            updatedAt: now,
-        }, { merge: true });
-    }
+        // ── Demo User Definitions ──────────────────────────────────────────────
+        const USERS = [
+            {
+                uid: 'demo_arjun_001',
+                email: 'arjun.sharma.demo@gotchaa.app',
+                password: 'GotchaaDemo@1',
+                displayName: 'Arjun Sharma',
+                username: 'arjun_sharma',
+                bio: '🇮🇳 Software dev from Bangalore. Love cricket, chai & late-night code sessions. Building the future one commit at a time. 🚀',
+                photoUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ArjunSharma&backgroundColor=b6e3f4&clothingColor=3c4f5c',
+                language: 'en',
+                nation: { country: 'India', continent: 'Asia', code: 'IN' },
+                followersCount: 10, followingCount: 5,
+                karma: 350,
+                gender: 'male', ageTier: 4,
+                birthday: new Date('1998-04-15'),
+            },
+            {
+                uid: 'demo_sofia_002',
+                email: 'sofia.martinez.demo@gotchaa.app',
+                password: 'GotchaaDemo@2',
+                displayName: 'Sofía Martínez',
+                username: 'sofia_creates',
+                bio: '🇲🇽 Diseñadora gráfica de CDMX. Amo el arte, la música y los tacos 🌮 La vida es bella y el diseño lo hace más. ✨',
+                photoUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SofiaMartinez&backgroundColor=ffdfbf&clothingColor=f4a261',
+                language: 'es',
+                nation: { country: 'Mexico', continent: 'Americas', code: 'MX' },
+                followersCount: 8, followingCount: 12,
+                karma: 220,
+                gender: 'female', ageTier: 4,
+                birthday: new Date('2000-09-22'),
+            },
+            {
+                uid: 'demo_omar_003',
+                email: 'omar.rashidi.demo@gotchaa.app',
+                password: 'GotchaaDemo@3',
+                displayName: 'Omar Al-Rashidi',
+                username: 'omar_uae',
+                bio: '🇦🇪 Entrepreneur from Dubai. Passionate about fintech, travel & connecting cultures. GOTCHAA is where worlds meet. 🌍💼',
+                photoUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=OmarRashidi&backgroundColor=c0aede&clothingColor=264653',
+                language: 'ar',
+                nation: { country: 'United Arab Emirates', continent: 'Asia', code: 'AE' },
+                followersCount: 15, followingCount: 8,
+                karma: 480,
+                gender: 'male', ageTier: 4,
+                birthday: new Date('1995-12-03'),
+            },
+        ];
 
-    // ── Posts ──────────────────────────────────────────────────────────────
-    const PHOTOS = [
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format',
-        'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&auto=format',
-        'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format',
-        'https://images.unsplash.com/photo-1499336315816-097655dcfbda?w=800&auto=format',
-        'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=800&auto=format',
-    ];
-    const posts = [
-        // Arjun — 5 posts
-        { id: 'demo_post_arjun_1', uid: 'demo_arjun_001', username: 'arjun_sharma', name: 'Arjun Sharma', photo: PHOTOS[0], caption: '✨ Bangalore sunsets hit different. #bangalore #vibes', likes: 43, comments: 8 },
-        { id: 'demo_post_arjun_2', uid: 'demo_arjun_001', username: 'arjun_sharma', name: 'Arjun Sharma', photo: PHOTOS[1], caption: 'Weekend cricket with the lads 🏏 No better feeling.', likes: 67, comments: 12 },
-        { id: 'demo_post_arjun_3', uid: 'demo_arjun_001', username: 'arjun_sharma', name: 'Arjun Sharma', photo: PHOTOS[2], caption: 'Finally shipped the feature I\'ve been building for weeks 🚀 #developer', likes: 91, comments: 22 },
-        { id: 'demo_post_arjun_4', uid: 'demo_arjun_001', username: 'arjun_sharma', name: 'Arjun Sharma', photo: PHOTOS[3], caption: 'Chai break > coffee break. Fight me ☕', likes: 128, comments: 31 },
-        { id: 'demo_post_arjun_5', uid: 'demo_arjun_001', username: 'arjun_sharma', name: 'Arjun Sharma', photo: PHOTOS[4], caption: 'When the code finally works at 2am 😂 #devlife', likes: 55, comments: 9 },
-        // Sofía — 3 posts
-        { id: 'demo_post_sofia_1', uid: 'demo_sofia_002', username: 'sofia_creates', name: 'Sofía Martínez', photo: PHOTOS[1], caption: '🎨 Mi nuevo proyecto de diseño. ¿Qué opinan? #diseño #creatividad', likes: 38, comments: 7 },
-        { id: 'demo_post_sofia_2', uid: 'demo_sofia_002', username: 'sofia_creates', name: 'Sofía Martínez', photo: PHOTOS[3], caption: 'CDMX de noche 🌃 La ciudad que nunca duerme', likes: 72, comments: 14 },
-        { id: 'demo_post_sofia_3', uid: 'demo_sofia_002', username: 'sofia_creates', name: 'Sofía Martínez', photo: PHOTOS[4], caption: '¡Tacos de canasta con mis amigos! El mejor plan 🌮 #mexico', likes: 94, comments: 19 },
-        // Omar — 4 posts
-        { id: 'demo_post_omar_1', uid: 'demo_omar_003', username: 'omar_uae', name: 'Omar Al-Rashidi', photo: PHOTOS[0], caption: 'Dubai skyline never gets old 🌆 #Dubai #UAE', likes: 182, comments: 34 },
-        { id: 'demo_post_omar_2', uid: 'demo_omar_003', username: 'omar_uae', name: 'Omar Al-Rashidi', photo: PHOTOS[2], caption: 'Closed a major deal today 💼 Hard work always pays off. #entrepreneur', likes: 210, comments: 41 },
-        { id: 'demo_post_omar_3', uid: 'demo_omar_003', username: 'omar_uae', name: 'Omar Al-Rashidi', photo: PHOTOS[1], caption: '🤝 Met amazing people from 12 countries at this summit. GOTCHAA energy IRL!', likes: 156, comments: 28 },
-        { id: 'demo_post_omar_4', uid: 'demo_omar_003', username: 'omar_uae', name: 'Omar Al-Rashidi', photo: PHOTOS[3], caption: 'The future is multilingual 🌍 Learning from every connection. #culture', likes: 133, comments: 22 },
-    ];
-    posts.forEach((p, i) => {
-        const u = USERS.find(u => u.uid === p.uid);
-        profileBatch.set(db.collection('posts').doc(p.id), {
-            id: p.id, userId: p.uid, username: p.username,
-            userDisplayName: p.name, userPhotoUrl: u.photoUrl,
-            caption: p.caption, mediaUrl: p.photo, mediaType: 'image',
-            likeCount: p.likes, commentCount: p.comments, shareCount: Math.floor(p.likes / 15),
-            isPublic: true, isDemo: true,
-            createdAt: admin.firestore.Timestamp.fromDate(new Date(BASE_DATE.getTime() + i * 86400000 * 2)),
-        }, { merge: true });
-    });
+        // ── Create Firebase Auth Users ─────────────────────────────────────────
+        for (const u of USERS) {
+            try {
+                await admin.auth().createUser({
+                    uid: u.uid, email: u.email, password: u.password,
+                    displayName: u.displayName, emailVerified: true, photoURL: u.photoUrl,
+                });
+                console.log(`Auth created: ${u.uid}`);
+            } catch (e) {
+                if (e.code === 'auth/uid-already-exists' || e.code === 'auth/email-already-exists') {
+                    console.log(`Auth exists (skipping): ${u.uid}`);
+                } else { throw e; }
+            }
+        }
 
-    await profileBatch.commit();
-    console.log('Profiles and posts created.');
+        // ── Firestore Profiles ─────────────────────────────────────────────────
+        const profileBatch = db.batch();
+        for (const u of USERS) {
+            // Public profiles: strictly no ageTier or birthday PII
+            profileBatch.set(db.collection('users').doc(u.uid), {
+                uid: u.uid, username: u.username, displayName: u.displayName,
+                email: u.email, photoUrl: u.photoUrl, bio: u.bio,
+                karma: u.karma, lovers: 0, lovely: 0,
+                followersCount: u.followersCount, followingCount: u.followingCount,
+                isVerified: true, isLimitedUser: false,
+                inviteCode: `DEMO_${u.username.toUpperCase()}`,
+                joinedWithCode: 'GOTCHAA_BETA', inviteLimit: 5, invitesUsed: 0,
+                remainingInvites: 5, totalInvites: 0, isInviteRewardClaimed: false,
+                invitedUsers: [], blockedUids: [], ghostUids: [], friendUids: [],
+                customPrivacyLists: [],
+                createdAt: admin.firestore.Timestamp.fromDate(BASE_DATE),
+                gender: u.gender, ageVerified: true,
+                hasPickedLanguage: true, language: u.language, nation: u.nation,
+                isOnline: false, lastSeen: now, isPrivate: false,
+                showActivityStatus: true, pushNotificationsEnabled: true,
+                emailNotificationsEnabled: true, isTwoFactorEnabled: false,
+                stayAnonymousInConnections: false,
+                termsAcceptedVersion: '2.0', privacyAcceptedVersion: '1.0',
+                legalAcceptedAt: admin.firestore.Timestamp.fromDate(BASE_DATE),
+                isDemo: true,
+            }, { merge: true });
 
-    // ── Chat Conversations ─────────────────────────────────────────────────
-    const chatDefs = [
-        {
-            id: 'demo_chat_arjun_sofia',
-            p: ['demo_arjun_001', 'demo_sofia_002'],
-            names: { demo_arjun_001: 'Arjun Sharma', demo_sofia_002: 'Sofía Martínez' },
-            avatars: { demo_arjun_001: USERS[0].photoUrl, demo_sofia_002: USERS[1].photoUrl },
-            msgs: [
-                { s: 'demo_arjun_001', r: 'demo_sofia_002', t: 'Hey Sofía! Found you through VibeTalk 😊 Your designs are amazing!' },
-                { s: 'demo_sofia_002', r: 'demo_arjun_001', t: '¡Hola Arjun! Yes, that was such a fun session! Your English is great 👍' },
-                { s: 'demo_arjun_001', r: 'demo_sofia_002', t: 'Thanks! I\'ve been trying to improve. Your design portfolio is inspiring.' },
-                { s: 'demo_sofia_002', r: 'demo_arjun_001', t: 'Gracias! 🎨 What kind of apps do you build?' },
-                { s: 'demo_arjun_001', r: 'demo_sofia_002', t: 'Flutter apps mostly — social platforms and fintech. GOTCHAA is actually built in Flutter!' },
-                { s: 'demo_sofia_002', r: 'demo_arjun_001', t: 'Wow, impressive! Have you tried the AR filters? They\'re amazing 😍' },
-                { s: 'demo_arjun_001', r: 'demo_sofia_002', t: 'Yes! The face detection ones use ML Kit on-device. So cool from a dev perspective 🤓' },
-                { s: 'demo_sofia_002', r: 'demo_arjun_001', t: 'Haha very nerdy but I love it! Want to VibeTalk again this weekend?' },
-                { s: 'demo_arjun_001', r: 'demo_sofia_002', t: 'Definitely! Saturday evening works for me — it\'s IST so that\'s what, noon for you?' },
-                { s: 'demo_sofia_002', r: 'demo_arjun_001', t: '¡Perfecto! It\'s a plan 🤝✨ See you then, Arjun!' },
-            ],
-        },
-        {
-            id: 'demo_chat_sofia_omar',
-            p: ['demo_sofia_002', 'demo_omar_003'],
-            names: { demo_sofia_002: 'Sofía Martínez', demo_omar_003: 'Omar Al-Rashidi' },
-            avatars: { demo_sofia_002: USERS[1].photoUrl, demo_omar_003: USERS[2].photoUrl },
-            msgs: [
-                { s: 'demo_omar_003', r: 'demo_sofia_002', t: '¡Hola Sofía! Omar here from Dubai. Loved your latest design post 🔥' },
-                { s: 'demo_sofia_002', r: 'demo_omar_003', t: '¡Hola Omar! Thank you so much, that means a lot coming from an entrepreneur like you!' },
-                { s: 'demo_omar_003', r: 'demo_sofia_002', t: 'The branding work is exceptional. Have you worked with international clients?' },
-                { s: 'demo_sofia_002', r: 'demo_omar_003', t: 'Mostly Latin America so far. But Dubai is on my dream list — the design scene there looks incredible!' },
-                { s: 'demo_omar_003', r: 'demo_sofia_002', t: 'It really is! There\'s a huge demand for creative talent here. You should consider it.' },
-                { s: 'demo_sofia_002', r: 'demo_omar_003', t: 'Seriously? I\'d love to connect with the design community there. Any advice?' },
-                { s: 'demo_omar_003', r: 'demo_sofia_002', t: 'I know a few agency founders. Can make introductions — that\'s the power of GOTCHAA right? 😄' },
-                { s: 'demo_sofia_002', r: 'demo_omar_003', t: '100%! This app is genuinely changing how I meet amazing people globally 🌍' },
-                { s: 'demo_omar_003', r: 'demo_sofia_002', t: 'Sending you some Karma for that post btw — seriously loved the color theory breakdown 🙌' },
-                { s: 'demo_sofia_002', r: 'demo_omar_003', t: '¡Muchas gracias Omar! You\'re too kind. Let\'s stay connected! 💜' },
-            ],
-        },
-        {
-            id: 'demo_chat_arjun_omar',
-            p: ['demo_arjun_001', 'demo_omar_003'],
-            names: { demo_arjun_001: 'Arjun Sharma', demo_omar_003: 'Omar Al-Rashidi' },
-            avatars: { demo_arjun_001: USERS[0].photoUrl, demo_omar_003: USERS[2].photoUrl },
-            msgs: [
-                { s: 'demo_arjun_001', r: 'demo_omar_003', t: 'Hey Omar! Your fintech post was incredible. Are you in payments specifically?' },
-                { s: 'demo_omar_003', r: 'demo_arjun_001', t: 'Hey Arjun! Yes — cross-border remittance and B2B payments. You?' },
-                { s: 'demo_arjun_001', r: 'demo_omar_003', t: 'Building payments infra for India. UPI integrations mostly. It\'s a wild space.' },
-                { s: 'demo_omar_003', r: 'demo_arjun_001', t: 'UPI is literally revolutionary. The rest of the world needs to catch up honestly.' },
-                { s: 'demo_arjun_001', r: 'demo_omar_003', t: 'Right! 400M+ daily transactions now. Instant settlement changed everything here.' },
-                { s: 'demo_omar_003', r: 'demo_arjun_001', t: 'We\'re exploring GCC-India payment corridors. There\'s a massive opportunity there.' },
-                { s: 'demo_arjun_001', r: 'demo_omar_003', t: 'That\'s huge. India-UAE remittance is one of the largest corridors globally.' },
-                { s: 'demo_omar_003', r: 'demo_arjun_001', t: 'Exactly my thinking. Would love to do a proper call and explore synergies 🤝' },
-                { s: 'demo_arjun_001', r: 'demo_omar_003', t: 'Absolutely! I\'ll block some time this week. Sending you my calendar link.' },
-                { s: 'demo_omar_003', r: 'demo_arjun_001', t: 'Perfect. Sending Karma your way for the knowledge share 🚀 GOTCHAA is going to be huge!' },
-            ],
-        },
-    ];
+            // Private profiles: holds birthday and ageTier securely
+            profileBatch.set(db.collection('users_private').doc(u.uid), {
+                ageTier: u.ageTier,
+                ageVerified: true,
+                birthday: admin.firestore.Timestamp.fromDate(u.birthday),
+                fcmToken: 'demo_token_' + u.uid,
+                updatedAt: now,
+            }, { merge: true });
+        }
 
-    for (const chat of chatDefs) {
-        const lastMsg = chat.msgs[chat.msgs.length - 1];
-        const chatRef = db.collection('chats').doc(chat.id);
-        await chatRef.set({
-            participants: chat.p,
-            participantNames: chat.names,
-            participantAvatars: chat.avatars,
-            lastMessage: lastMsg.t,
-            lastMessageSenderId: lastMsg.s,
-            lastMessageType: 'text',
-            lastMessageTime: admin.firestore.Timestamp.fromDate(new Date(Date.now() - 600000)),
-            unreadCount: { [chat.p[0]]: 0, [chat.p[1]]: 2 },
-            typing: { [chat.p[0]]: false, [chat.p[1]]: false },
-            isArchived: { [chat.p[0]]: false, [chat.p[1]]: false },
-            isMuted: { [chat.p[0]]: false, [chat.p[1]]: false },
-            isDemo: true,
-        }, { merge: true });
-
-        const msgBatch = db.batch();
-        chat.msgs.forEach((m, i) => {
-            const msgRef = chatRef.collection('messages').doc(`demo_msg_${chat.id}_${i + 1}`);
-            msgBatch.set(msgRef, {
-                schemaVersion: 1,
-                senderId: m.s, receiverId: m.r, text: m.t,
-                type: 'text', status: 'read',
-                timestamp: admin.firestore.Timestamp.fromDate(new Date(Date.now() - (10 - i) * 300000)),
-                createdAt: admin.firestore.Timestamp.fromDate(new Date(Date.now() - (10 - i) * 300000)),
-                isEncrypted: false, isDeletedForEveryone: false,
-                isDeletedFor: [], reactions: {}, isDemo: true,
+        // ── Posts ──────────────────────────────────────────────────────────────
+        const PHOTOS = [
+            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format',
+            'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&auto=format',
+            'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format',
+            'https://images.unsplash.com/photo-1499336315816-097655dcfbda?w=800&auto=format',
+            'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=800&auto=format',
+        ];
+        const posts = [
+            // Arjun — 5 posts
+            { id: 'demo_post_arjun_1', uid: 'demo_arjun_001', username: 'arjun_sharma', name: 'Arjun Sharma', photo: PHOTOS[0], caption: '✨ Bangalore sunsets hit different. #bangalore #vibes', likes: 43, comments: 8 },
+            { id: 'demo_post_arjun_2', uid: 'demo_arjun_001', username: 'arjun_sharma', name: 'Arjun Sharma', photo: PHOTOS[1], caption: 'Weekend cricket with the lads 🏏 No better feeling.', likes: 67, comments: 12 },
+            { id: 'demo_post_arjun_3', uid: 'demo_arjun_001', username: 'arjun_sharma', name: 'Arjun Sharma', photo: PHOTOS[2], caption: 'Finally shipped the feature I\'ve been building for weeks 🚀 #developer', likes: 91, comments: 22 },
+            { id: 'demo_post_arjun_4', uid: 'demo_arjun_001', username: 'arjun_sharma', name: 'Arjun Sharma', photo: PHOTOS[3], caption: 'Chai break > coffee break. Fight me ☕', likes: 128, comments: 31 },
+            { id: 'demo_post_arjun_5', uid: 'demo_arjun_001', username: 'arjun_sharma', name: 'Arjun Sharma', photo: PHOTOS[4], caption: 'When the code finally works at 2am 😂 #devlife', likes: 55, comments: 9 },
+            // Sofía — 3 posts
+            { id: 'demo_post_sofia_1', uid: 'demo_sofia_002', username: 'sofia_creates', name: 'Sofía Martínez', photo: PHOTOS[1], caption: '🎨 Mi nuevo proyecto de diseño. ¿Qué opinan? #diseño #creatividad', likes: 38, comments: 7 },
+            { id: 'demo_post_sofia_2', uid: 'demo_sofia_002', username: 'sofia_creates', name: 'Sofía Martínez', photo: PHOTOS[3], caption: 'CDMX de noche 🌃 La ciudad que nunca duerme', likes: 72, comments: 14 },
+            { id: 'demo_post_sofia_3', uid: 'demo_sofia_002', username: 'sofia_creates', name: 'Sofía Martínez', photo: PHOTOS[4], caption: '¡Tacos de canasta con mis amigos! El mejor plan 🌮 #mexico', likes: 94, comments: 19 },
+            // Omar — 4 posts
+            { id: 'demo_post_omar_1', uid: 'demo_omar_003', username: 'omar_uae', name: 'Omar Al-Rashidi', photo: PHOTOS[0], caption: 'Dubai skyline never gets old 🌆 #Dubai #UAE', likes: 182, comments: 34 },
+            { id: 'demo_post_omar_2', uid: 'demo_omar_003', username: 'omar_uae', name: 'Omar Al-Rashidi', photo: PHOTOS[2], caption: 'Closed a major deal today 💼 Hard work always pays off. #entrepreneur', likes: 210, comments: 41 },
+            { id: 'demo_post_omar_3', uid: 'demo_omar_003', username: 'omar_uae', name: 'Omar Al-Rashidi', photo: PHOTOS[1], caption: '🤝 Met amazing people from 12 countries at this summit. GOTCHAA energy IRL!', likes: 156, comments: 28 },
+            { id: 'demo_post_omar_4', uid: 'demo_omar_003', username: 'omar_uae', name: 'Omar Al-Rashidi', photo: PHOTOS[3], caption: 'The future is multilingual 🌍 Learning from every connection. #culture', likes: 133, comments: 22 },
+        ];
+        posts.forEach((p, i) => {
+            const u = USERS.find(u => u.uid === p.uid);
+            profileBatch.set(db.collection('posts').doc(p.id), {
+                id: p.id, userId: p.uid, username: p.username,
+                userDisplayName: p.name, userPhotoUrl: u.photoUrl,
+                caption: p.caption, mediaUrl: p.photo, mediaType: 'image',
+                likeCount: p.likes, commentCount: p.comments, shareCount: Math.floor(p.likes / 15),
+                isPublic: true, isDemo: true,
+                createdAt: admin.firestore.Timestamp.fromDate(new Date(BASE_DATE.getTime() + i * 86400000 * 2)),
             }, { merge: true });
         });
-        await msgBatch.commit();
-        console.log(`Chat created: ${chat.id}`);
-    }
 
-    // ── VibeTalk Match History ─────────────────────────────────────────────
-    const vtBatch = db.batch();
-    [
-        { id: 'demo_vt_1', caller: 'demo_arjun_001', callee: 'demo_sofia_002', duration: 420, daysAgo: 3 },
-        { id: 'demo_vt_2', caller: 'demo_omar_003', callee: 'demo_arjun_001', duration: 680, daysAgo: 5 },
-        { id: 'demo_vt_3', caller: 'demo_sofia_002', callee: 'demo_omar_003', duration: 310, daysAgo: 7 },
-    ].forEach(vt => {
-        const matchTime = new Date(Date.now() - vt.daysAgo * 86400000);
-        vtBatch.set(db.collection('vibetalk_rooms').doc(vt.id), {
-            id: vt.id,
-            callerId: vt.caller, calleeId: vt.callee,
-            users: [vt.caller, vt.callee],
-            status: 'ended',
-            duration: vt.duration,
-            createdAt: admin.firestore.Timestamp.fromDate(matchTime),
-            endedAt: admin.firestore.Timestamp.fromDate(new Date(matchTime.getTime() + vt.duration * 1000)),
-            rating: { [vt.caller]: 5, [vt.callee]: 5 },
-            gameState: { round: 3, bothVoted: true },
-            reconnectionState: 'disconnected',
-            isDemo: true,
-        }, { merge: true });
+        await profileBatch.commit();
+        console.log('Profiles and posts created.');
+
+        // ── Chat Conversations ─────────────────────────────────────────────────
+        const chatDefs = [
+            {
+                id: 'demo_chat_arjun_sofia',
+                p: ['demo_arjun_001', 'demo_sofia_002'],
+                names: { demo_arjun_001: 'Arjun Sharma', demo_sofia_002: 'Sofía Martínez' },
+                avatars: { demo_arjun_001: USERS[0].photoUrl, demo_sofia_002: USERS[1].photoUrl },
+                msgs: [
+                    { s: 'demo_arjun_001', r: 'demo_sofia_002', t: 'Hey Sofía! Found you through VibeTalk 😊 Your designs are amazing!' },
+                    { s: 'demo_sofia_002', r: 'demo_arjun_001', t: '¡Hola Arjun! Yes, that was such a fun session! Your English is great 👍' },
+                    { s: 'demo_arjun_001', r: 'demo_sofia_002', t: 'Thanks! I\'ve been trying to improve. Your design portfolio is inspiring.' },
+                    { s: 'demo_sofia_002', r: 'demo_arjun_001', t: 'Gracias! 🎨 What kind of apps do you build?' },
+                    { s: 'demo_arjun_001', r: 'demo_sofia_002', t: 'Flutter apps mostly — social platforms and fintech. GOTCHAA is actually built in Flutter!' },
+                    { s: 'demo_sofia_002', r: 'demo_arjun_001', t: 'Wow, impressive! Have you tried the AR filters? They\'re amazing 😍' },
+                    { s: 'demo_arjun_001', r: 'demo_sofia_002', t: 'Yes! The face detection ones use ML Kit on-device. So cool from a dev perspective 🤓' },
+                    { s: 'demo_sofia_002', r: 'demo_arjun_001', t: 'Haha very nerdy but I love it! Want to VibeTalk again this weekend?' },
+                    { s: 'demo_arjun_001', r: 'demo_sofia_002', t: 'Definitely! Saturday evening works for me — it\'s IST so that\'s what, noon for you?' },
+                    { s: 'demo_sofia_002', r: 'demo_arjun_001', t: '¡Perfecto! It\'s a plan 🤝✨ See you then, Arjun!' },
+                ],
+            },
+            {
+                id: 'demo_chat_sofia_omar',
+                p: ['demo_sofia_002', 'demo_omar_003'],
+                names: { demo_sofia_002: 'Sofía Martínez', demo_omar_003: 'Omar Al-Rashidi' },
+                avatars: { demo_sofia_002: USERS[1].photoUrl, demo_omar_003: USERS[2].photoUrl },
+                msgs: [
+                    { s: 'demo_omar_003', r: 'demo_sofia_002', t: '¡Hola Sofía! Omar here from Dubai. Loved your latest design post 🔥' },
+                    { s: 'demo_sofia_002', r: 'demo_omar_003', t: '¡Hola Omar! Thank you so much, that means a lot coming from an entrepreneur like you!' },
+                    { s: 'demo_omar_003', r: 'demo_sofia_002', t: 'The branding work is exceptional. Have you worked with international clients?' },
+                    { s: 'demo_sofia_002', r: 'demo_omar_003', t: 'Mostly Latin America so far. But Dubai is on my dream list — the design scene there looks incredible!' },
+                    { s: 'demo_omar_003', r: 'demo_sofia_002', t: 'It really is! There\'s a huge demand for creative talent here. You should consider it.' },
+                    { s: 'demo_sofia_002', r: 'demo_omar_003', t: 'Seriously? I\'d love to connect with the design community there. Any advice?' },
+                    { s: 'demo_omar_003', r: 'demo_sofia_002', t: 'I know a few agency founders. Can make introductions — that\'s the power of GOTCHAA right? 😄' },
+                    { s: 'demo_sofia_002', r: 'demo_omar_003', t: '100%! This app is genuinely changing how I meet amazing people globally 🌍' },
+                    { s: 'demo_omar_003', r: 'demo_sofia_002', t: 'Sending you some Karma for that post btw — seriously loved the color theory breakdown 🙌' },
+                    { s: 'demo_sofia_002', r: 'demo_omar_003', t: '¡Muchas gracias Omar! You\'re too kind. Let\'s stay connected! 💜' },
+                ],
+            },
+            {
+                id: 'demo_chat_arjun_omar',
+                p: ['demo_arjun_001', 'demo_omar_003'],
+                names: { demo_arjun_001: 'Arjun Sharma', demo_omar_003: 'Omar Al-Rashidi' },
+                avatars: { demo_arjun_001: USERS[0].photoUrl, demo_omar_003: USERS[2].photoUrl },
+                msgs: [
+                    { s: 'demo_arjun_001', r: 'demo_omar_003', t: 'Hey Omar! Your fintech post was incredible. Are you in payments specifically?' },
+                    { s: 'demo_omar_003', r: 'demo_arjun_001', t: 'Hey Arjun! Yes — cross-border remittance and B2B payments. You?' },
+                    { s: 'demo_arjun_001', r: 'demo_omar_003', t: 'Building payments infra for India. UPI integrations mostly. It\'s a wild space.' },
+                    { s: 'demo_omar_003', r: 'demo_arjun_001', t: 'UPI is literally revolutionary. The rest of the world needs to catch up honestly.' },
+                    { s: 'demo_arjun_001', r: 'demo_omar_003', t: 'Right! 400M+ daily transactions now. Instant settlement changed everything here.' },
+                    { s: 'demo_omar_003', r: 'demo_arjun_001', t: 'We\'re exploring GCC-India payment corridors. There\'s a massive opportunity there.' },
+                    { s: 'demo_arjun_001', r: 'demo_omar_003', t: 'That\'s huge. India-UAE remittance is one of the largest corridors globally.' },
+                    { s: 'demo_omar_003', r: 'demo_arjun_001', t: 'Exactly my thinking. Would love to do a proper call and explore synergies 🤝' },
+                    { s: 'demo_arjun_001', r: 'demo_omar_003', t: 'Absolutely! I\'ll block some time this week. Sending you my calendar link.' },
+                    { s: 'demo_omar_003', r: 'demo_arjun_001', t: 'Perfect. Sending Karma your way for the knowledge share 🚀 GOTCHAA is going to be huge!' },
+                ],
+            },
+        ];
+
+        for (const chat of chatDefs) {
+            const lastMsg = chat.msgs[chat.msgs.length - 1];
+            const chatRef = db.collection('chats').doc(chat.id);
+            await chatRef.set({
+                participants: chat.p,
+                participantNames: chat.names,
+                participantAvatars: chat.avatars,
+                lastMessage: lastMsg.t,
+                lastMessageSenderId: lastMsg.s,
+                lastMessageType: 'text',
+                lastMessageTime: admin.firestore.Timestamp.fromDate(new Date(Date.now() - 600000)),
+                unreadCount: { [chat.p[0]]: 0, [chat.p[1]]: 2 },
+                typing: { [chat.p[0]]: false, [chat.p[1]]: false },
+                isArchived: { [chat.p[0]]: false, [chat.p[1]]: false },
+                isMuted: { [chat.p[0]]: false, [chat.p[1]]: false },
+                isDemo: true,
+            }, { merge: true });
+
+            const msgBatch = db.batch();
+            chat.msgs.forEach((m, i) => {
+                const msgRef = chatRef.collection('messages').doc(`demo_msg_${chat.id}_${i + 1}`);
+                msgBatch.set(msgRef, {
+                    schemaVersion: 1,
+                    senderId: m.s, receiverId: m.r, text: m.t,
+                    type: 'text', status: 'read',
+                    timestamp: admin.firestore.Timestamp.fromDate(new Date(Date.now() - (10 - i) * 300000)),
+                    createdAt: admin.firestore.Timestamp.fromDate(new Date(Date.now() - (10 - i) * 300000)),
+                    isEncrypted: false, isDeletedForEveryone: false,
+                    isDeletedFor: [], reactions: {}, isDemo: true,
+                }, { merge: true });
+            });
+            await msgBatch.commit();
+            console.log(`Chat created: ${chat.id}`);
+        }
+
+        // ── VibeTalk Match History ─────────────────────────────────────────────
+        const vtBatch = db.batch();
+        [
+            { id: 'demo_vt_1', caller: 'demo_arjun_001', callee: 'demo_sofia_002', duration: 420, daysAgo: 3 },
+            { id: 'demo_vt_2', caller: 'demo_omar_003', callee: 'demo_arjun_001', duration: 680, daysAgo: 5 },
+            { id: 'demo_vt_3', caller: 'demo_sofia_002', callee: 'demo_omar_003', duration: 310, daysAgo: 7 },
+        ].forEach(vt => {
+            const matchTime = new Date(Date.now() - vt.daysAgo * 86400000);
+            vtBatch.set(db.collection('vibetalk_rooms').doc(vt.id), {
+                id: vt.id,
+                callerId: vt.caller, calleeId: vt.callee,
+                users: [vt.caller, vt.callee],
+                status: 'ended',
+                duration: vt.duration,
+                createdAt: admin.firestore.Timestamp.fromDate(matchTime),
+                endedAt: admin.firestore.Timestamp.fromDate(new Date(matchTime.getTime() + vt.duration * 1000)),
+                rating: { [vt.caller]: 5, [vt.callee]: 5 },
+                gameState: { round: 3, bothVoted: true },
+                reconnectionState: 'disconnected',
+                isDemo: true,
+            }, { merge: true });
+        });
+        await vtBatch.commit();
+
+        // ── Seed Marker (Idempotency) ──────────────────────────────────────────
+        await seedRef.set({
+            seededAt: now,
+            version: 'demo_v1',
+            userIds: USERS.map(u => u.uid),
+        });
+
+        console.log('Demo seed complete!');
+        return {
+            status: 'SUCCESS',
+            message: 'Demo data seeded successfully.',
+            users: USERS.map(u => ({ uid: u.uid, email: u.email, username: u.username })),
+        };
     });
-    await vtBatch.commit();
-
-    // ── Seed Marker (Idempotency) ──────────────────────────────────────────
-    await seedRef.set({
-        seededAt: now,
-        version: 'demo_v1',
-        userIds: USERS.map(u => u.uid),
-    });
-
-    console.log('Demo seed complete!');
-    return {
-        status: 'SUCCESS',
-        message: 'Demo data seeded successfully.',
-        users: USERS.map(u => ({ uid: u.uid, email: u.email, username: u.username })),
-    };
-});
 
 // ── Legal policy version tracking (users_private) ─────────────────────────────
 const REQUIRED_PRIVACY_VERSION = 'v3.0';
@@ -1774,23 +1774,10 @@ exports.executeBroAction = functions.runWith({
             }
 
             case 'payment': {
-                const amount = params.amount || "₹100";
-                const recipient = params.recipient || params.to || "someone";
-
-                await executeWithRetries(async () => {
-                    if (process.env.PAYMENT_API_URL) {
-                        await axios.post(process.env.PAYMENT_API_URL, { amount, recipient }, { timeout: 10000 });
-                    } else {
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                    }
-                });
-
-                const transactionId = `TXN-${Math.floor(10000000 + Math.random() * 90000000)}`;
-
                 return {
-                    success: true,
-                    result: { transactionId, amount, recipient },
-                    tts_response: `Payment of ${amount} to ${recipient} was successful, boss. Transaction ID is ${transactionId}.`
+                    success: false,
+                    result: null,
+                    tts_response: "Sorry boss, payments or transfers are blocked due to security regulations. You need to handle it yourself."
                 };
             }
 

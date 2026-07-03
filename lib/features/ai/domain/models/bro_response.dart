@@ -1,4 +1,4 @@
-enum BroActionType { cab_booking, food_order, shopping, payment, query, none }
+enum BroActionType { cab_booking, food_order, shopping, payment, navigation, ui_control, query, none }
 
 enum BroStatus { success, pending, failed }
 
