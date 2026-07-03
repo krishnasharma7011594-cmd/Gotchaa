@@ -6,7 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/providers/auth_providers.dart';
+
 import '../../domain/models/bro_message.dart';
+
 import '../../domain/models/bro_response.dart';
 import '../../services/bro_orchestrator.dart';
 import '../providers/bro_providers.dart';
@@ -138,6 +140,14 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
 
   Offset _offset = const Offset(20, 100); // Bottom-right initial pos
 
+  String get _agentName {
+    // Allows build-time override, e.g. --dart-define=BRO_AGENT_NAME=Jarvis
+    const fallback = 'BRO';
+    // Note: AppConfig currently doesn't expose a dedicated broAgentName.
+    // Keep overlay name overridable via --dart-define later.
+    return fallback;
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
@@ -182,7 +192,8 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
                     // Let's use simple absolute from bottom/right for consistency
                     final double newBottom =
                         screenSize.height - details.offset.dy - 60;
-                    final double newRight = screenSize.width - details.offset.dx - 60;
+                    final double newRight =
+                        screenSize.width - details.offset.dx - 60;
 
                     // Clamp to screen bounds
                     _offset = Offset(
@@ -202,7 +213,12 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
   }
 
   Widget _buildBroBubble({bool isDragging = false}) => GestureDetector(
-        onTap: isDragging ? null : _toggleOverlay,
+        onTap: isDragging
+            ? null
+            : () {
+                // Prevent drag gesture from immediately toggling.
+                _toggleOverlay();
+              },
         child: Container(
           width: 60, // Smaller size
           height: 60,
@@ -397,8 +413,8 @@ class _PulseCircleState extends State<_PulseCircle>
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) => Container(
+        animation: _controller,
+        builder: (context, child) => Container(
           width: 70 + (40 * _controller.value),
           height: 70 + (40 * _controller.value),
           decoration: BoxDecoration(
@@ -409,43 +425,42 @@ class _PulseCircleState extends State<_PulseCircle>
             ),
           ),
         ),
-    );
+      );
 }
 
 class _ChatMessage extends StatelessWidget {
-
   const _ChatMessage({required this.text, required this.isUser});
   final String text;
   final bool isUser;
 
   @override
   Widget build(BuildContext context) => Align(
-      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-      child: FadeInUp(
-        duration: const Duration(milliseconds: 300),
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-          constraints:
-              BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
-          decoration: BoxDecoration(
-            color: isUser
-                ? const Color(0xFF3B82F6)
-                : Colors.white.withOpacity(0.08),
-            borderRadius: BorderRadius.circular(22).copyWith(
-              bottomRight: isUser ? Radius.zero : null,
-              bottomLeft: isUser ? null : Radius.zero,
+        alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+        child: FadeInUp(
+          duration: const Duration(milliseconds: 300),
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.8),
+            decoration: BoxDecoration(
+              color: isUser
+                  ? const Color(0xFF3B82F6)
+                  : Colors.white.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(22).copyWith(
+                bottomRight: isUser ? Radius.zero : null,
+                bottomLeft: isUser ? null : Radius.zero,
+              ),
             ),
-          ),
-          child: Text(
-            text,
-            style: GoogleFonts.outfit(
-              color: Colors.white,
-              fontSize: 16,
-              height: 1.4,
+            child: Text(
+              text,
+              style: GoogleFonts.outfit(
+                color: Colors.white,
+                fontSize: 16,
+                height: 1.4,
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
 }
