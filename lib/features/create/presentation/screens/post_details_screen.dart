@@ -124,7 +124,7 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
           user.uid,
           folder: 'posts_thumbs',
         );
-            } else {
+      } else {
         // Upload Image
         final result = await storageRepo.uploadPostImage(
           XFile(widget.mediaFile.path),

@@ -155,7 +155,8 @@ final audioFocusManagerProvider = Provider<AudioFocusManager>((ref) {
   return manager;
 });
 
-final audioFocusOwnerProvider = StreamProvider<AudioRequester?>((ref) => ref.watch(audioFocusManagerProvider).focusOwnerStream);
+final audioFocusOwnerProvider = StreamProvider<AudioRequester?>(
+    (ref) => ref.watch(audioFocusManagerProvider).focusOwnerStream);
 
 /// Specific provider for Vybz to know if it should be playing audio
 final isVybzAudioAllowedProvider = Provider<bool>((ref) {

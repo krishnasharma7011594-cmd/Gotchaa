@@ -108,8 +108,7 @@ class BroOrchestrator {
       await _handlePostProcessing(broResponse);
       return broResponse;
     } catch (e) {
-      final broResponse =
-          BroResponse.failed('Voice processing failed: $e');
+      final broResponse = BroResponse.failed('Voice processing failed: $e');
       await _handlePostProcessing(broResponse);
       return broResponse;
     } finally {

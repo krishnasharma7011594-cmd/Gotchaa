@@ -24,7 +24,6 @@ enum BroVoiceState {
 /// It coordinates STT, AI processing (LangGraph/Gemini), task execution via
 /// Firebase, and TTS response, all while managing audio focus priority.
 class BroVoiceCommandHandler extends StateNotifier<BroVoiceState> {
-
   BroVoiceCommandHandler(this._ref) : super(BroVoiceState.idle) {
     _initializeVoiceEngines();
   }
@@ -279,7 +278,8 @@ class BroVoiceCommandHandler extends StateNotifier<BroVoiceState> {
 
 /// Provider for the Voice Command Handler
 final broVoiceCommandProvider =
-    StateNotifierProvider<BroVoiceCommandHandler, BroVoiceState>(BroVoiceCommandHandler.new);
+    StateNotifierProvider<BroVoiceCommandHandler, BroVoiceState>(
+        BroVoiceCommandHandler.new);
 
 /// UI Example Widget
 class BroVoiceControlWidget extends ConsumerWidget {
