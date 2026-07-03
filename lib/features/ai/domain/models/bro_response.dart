@@ -1,14 +1,23 @@
-enum BroActionType { cab_booking, food_order, shopping, payment, navigation, ui_control, query, none }
+enum BroActionType {
+  cab_booking,
+  food_order,
+  shopping,
+  payment,
+  navigation,
+  ui_control,
+  query,
+  none
+}
 
 enum BroStatus { success, pending, failed }
 
 class BroResponse {
-
   BroResponse({
     required this.actionType,
     required this.status,
     required this.text,
-    required this.executionTime, this.data,
+    required this.executionTime,
+    this.data,
     this.error,
   });
 

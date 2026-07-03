@@ -1,9 +1,9 @@
-
 enum BroRole { user, assistant }
 
 enum BroMessageType { voice, text }
 
-class BroMessage { // For voice messages
+class BroMessage {
+  // For voice messages
 
   BroMessage({
     required this.id,

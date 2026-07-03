@@ -146,7 +146,8 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   Future<void> _stopRecording() async {
-    if (_cameraController == null || !_cameraController!.value.isRecordingVideo) {
+    if (_cameraController == null ||
+        !_cameraController!.value.isRecordingVideo) {
       return;
     }
     setState(() => _isRecording = false);

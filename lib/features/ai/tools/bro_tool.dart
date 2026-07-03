@@ -19,15 +19,16 @@ abstract class BroTool {
 
   /// Convert to [Tool] for Gemini API
   Tool toGeminiTool() => Tool(functionDeclarations: [
-      FunctionDeclaration(
-        name,
-        description,
-        Schema.object(
-          properties: parameters.map((key, value) {
-            // Simplistic mapping: in production this would be more robust
-            return MapEntry(key, Schema.string(description: value.toString()));
-          }),
+        FunctionDeclaration(
+          name,
+          description,
+          Schema.object(
+            properties: parameters.map((key, value) {
+              // Simplistic mapping: in production this would be more robust
+              return MapEntry(
+                  key, Schema.string(description: value.toString()));
+            }),
+          ),
         ),
-      ),
-    ]);
+      ]);
 }

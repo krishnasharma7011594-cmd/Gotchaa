@@ -26,7 +26,8 @@ class BroMessagesNotifier extends StateNotifier<List<BroMessage>> {
 }
 
 final broMessagesProvider =
-    StateNotifierProvider<BroMessagesNotifier, List<BroMessage>>((ref) => BroMessagesNotifier());
+    StateNotifierProvider<BroMessagesNotifier, List<BroMessage>>(
+        (ref) => BroMessagesNotifier());
 
 // Loading State
 final broLoadingProvider = StateProvider<bool>((ref) => false);
@@ -36,7 +37,6 @@ final broOrchestratorProvider = Provider(BroOrchestrator.new);
 
 // Settings
 class BroSettings {
-
   BroSettings({
     this.voiceSpeed = 1.0,
     this.language = 'hinglish',
@@ -50,11 +50,12 @@ class BroSettings {
     double? voiceSpeed,
     String? language,
     bool? autoPlayVoice,
-  }) => BroSettings(
-      voiceSpeed: voiceSpeed ?? this.voiceSpeed,
-      language: language ?? this.language,
-      autoPlayVoice: autoPlayVoice ?? this.autoPlayVoice,
-    );
+  }) =>
+      BroSettings(
+        voiceSpeed: voiceSpeed ?? this.voiceSpeed,
+        language: language ?? this.language,
+        autoPlayVoice: autoPlayVoice ?? this.autoPlayVoice,
+      );
 }
 
 class BroSettingsNotifier extends StateNotifier<BroSettings> {
@@ -66,4 +67,5 @@ class BroSettingsNotifier extends StateNotifier<BroSettings> {
 }
 
 final broSettingsProvider =
-    StateNotifierProvider<BroSettingsNotifier, BroSettings>((ref) => BroSettingsNotifier());
+    StateNotifierProvider<BroSettingsNotifier, BroSettings>(
+        (ref) => BroSettingsNotifier());
