@@ -17,7 +17,6 @@ import '../domain/models/bro_response.dart';
 import '../presentation/providers/bro_providers.dart';
 
 class BroOrchestrator {
-
   BroOrchestrator(this._ref) {
     _initFallback();
     _setupAudioPlayerListeners();
@@ -145,7 +144,13 @@ class BroOrchestrator {
   Future<BroResponse> _fallbackToGemini(
       String query, DateTime startTime) async {
     if (_geminiFallback == null) {
-      return BroResponse.failed('Fallback unavailable.');
+      final geminiKeyEmpty = secure_config.AppConfig.geminiApiKey.isEmpty;
+      final reason = geminiKeyEmpty
+          ? 'GEMINI_API_KEY is missing (build-time). '
+              'Rebuild with --dart-define=GEMINI_API_KEY=...'
+          : 'Gemini fallback is not initialized.';
+
+      return BroResponse.failed(reason);
     }
 
     try {

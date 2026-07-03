@@ -118,7 +118,7 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
     ref.read(broMessagesProvider.notifier).addMessage(BroMessage(
           id: _uuid.v4(),
           role: BroRole.assistant,
-          content: 'Bhai, check set-up: $errorMsg',
+          content: errorMsg,
           timestamp: DateTime.now(),
           type: BroMessageType.text,
         ));
