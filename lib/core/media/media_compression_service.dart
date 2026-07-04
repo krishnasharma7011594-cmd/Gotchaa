@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:image/image.dart' as img;
@@ -62,8 +63,17 @@ class MediaCompressionService {
         path,
         quality: VideoQuality.MediumQuality,
         deleteOrigin: false,
+        includeAudio: true, // Keep the audio track intact so voice/sound works
       );
-      return info?.path;
+      if (info?.path != null) {
+        final compressedFile = File(info!.path!);
+        if (await compressedFile.exists() && await compressedFile.length() > 0) {
+          return info.path;
+        } else {
+          print('Compressed video file is empty (0 bytes). Falling back to original.');
+        }
+      }
+      return null;
     } catch (e) {
       // Fallback: If compression fails (e.g. platform channel issues, unsupported codecs, Web issues),
       // print the error and return null. The app will fall back to using the original video file.

@@ -50,16 +50,26 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
         throw Exception('Video URL is empty');
       }
 
-      final controller = VideoPlayerController.networkUrl(
-        Uri.parse(widget.videoUrl.trim()),
-        httpHeaders: const {
-          'User-Agent':
-              'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
-        },
-        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-      );
+      VideoPlayerController controller;
+      try {
+        controller = VideoPlayerController.networkUrl(
+          Uri.parse(widget.videoUrl.trim()),
+          httpHeaders: const {
+            'User-Agent':
+                'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+          },
+          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+        );
+        await controller.initialize();
+      } catch (headerError) {
+        debugPrint('Failed to initialize with custom headers, trying without headers: $headerError');
+        controller = VideoPlayerController.networkUrl(
+          Uri.parse(widget.videoUrl.trim()),
+          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+        );
+        await controller.initialize();
+      }
 
-      await controller.initialize();
       await controller.setLooping(true);
 
       if (!mounted) {

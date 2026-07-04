@@ -257,7 +257,13 @@ class _MultiverseARCameraScreenState
           deleteOrigin: false, // Keep the original just in case
           includeAudio: true,
         );
-        fileToUpload = mediaInfo?.file ?? File(file.path);
+        final compressedFile = mediaInfo?.file;
+        if (compressedFile != null && await compressedFile.exists() && await compressedFile.length() > 0) {
+          fileToUpload = compressedFile;
+        } else {
+          print('Compressed video file is empty or missing, falling back to original.');
+          fileToUpload = File(file.path);
+        }
       } catch (e) {
         print('Multiverse AR camera video compression failed, using original file: $e');
         fileToUpload = File(file.path);
