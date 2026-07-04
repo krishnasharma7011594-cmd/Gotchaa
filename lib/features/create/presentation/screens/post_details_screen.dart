@@ -104,12 +104,17 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
       String? generatedThumbUrl;
 
       if (widget.isVideo) {
-        // 1. Generate Thumbnail
-        final thumbnailFile = await VideoCompress.getFileThumbnail(
-          widget.mediaFile.path,
-          quality: 50,
-          position: -1,
-        );
+        // 1. Generate Thumbnail with Try-Catch fallback
+        File? thumbnailFile;
+        try {
+          thumbnailFile = await VideoCompress.getFileThumbnail(
+            widget.mediaFile.path,
+            quality: 50,
+            position: -1,
+          );
+        } catch (e) {
+          print('Failed to generate video thumbnail: $e');
+        }
 
         // 2. Upload Video
         mediaUrl = await storageRepo.uploadVideo(
@@ -119,11 +124,18 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
         );
 
         // 3. Upload Thumbnail if exists
-        generatedThumbUrl = await storageRepo.uploadImage(
-          XFile(thumbnailFile.path),
-          user.uid,
-          folder: 'posts_thumbs',
-        );
+        if (thumbnailFile != null) {
+          try {
+            generatedThumbUrl = await storageRepo.uploadImage(
+              XFile(thumbnailFile.path),
+              user.uid,
+              // Use 'posts' folder to ensure we conform to storage.rules and avoid Permission Denied exceptions
+              folder: 'posts',
+            );
+          } catch (e) {
+            print('Failed to upload video thumbnail: $e');
+          }
+        }
       } else {
         // Upload Image
         final result = await storageRepo.uploadPostImage(

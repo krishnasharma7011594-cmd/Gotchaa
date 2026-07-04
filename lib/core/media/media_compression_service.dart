@@ -57,11 +57,18 @@ class MediaCompressionService {
   }
 
   Future<String?> compressVideoPath(String path) async {
-    final info = await VideoCompress.compressVideo(
-      path,
-      quality: VideoQuality.MediumQuality,
-      deleteOrigin: false,
-    );
-    return info?.path;
+    try {
+      final info = await VideoCompress.compressVideo(
+        path,
+        quality: VideoQuality.MediumQuality,
+        deleteOrigin: false,
+      );
+      return info?.path;
+    } catch (e) {
+      // Fallback: If compression fails (e.g. platform channel issues, unsupported codecs, Web issues),
+      // print the error and return null. The app will fall back to using the original video file.
+      print('Video compression failed, falling back to original video: $e');
+      return null;
+    }
   }
 }
