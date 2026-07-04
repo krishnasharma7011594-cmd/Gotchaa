@@ -909,31 +909,55 @@ class _PostsGrid extends ConsumerWidget {
                   },
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4),
-                    child: post.mediaUrl.isNotEmpty
-                        ? CachedNetworkImage(
-                            imageUrl: post.mediaUrl,
-                            fit: BoxFit.cover,
-                            placeholder: (_, __) =>
-                                Container(color: Colors.grey.shade100),
-                          )
-                        : Container(
-                            color:
-                                AppColors.electricBlue.withValues(alpha: 0.05),
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Text(
-                                  post.caption,
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.outfit(
-                                      fontSize: 10,
-                                      color: AppColors.electricBlue),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        post.mediaUrl.isNotEmpty
+                            ? CachedNetworkImage(
+                                imageUrl: post.isVideo && post.mediaThumbnailUrl.isNotEmpty
+                                    ? post.mediaThumbnailUrl
+                                    : post.mediaUrl,
+                                fit: BoxFit.cover,
+                                placeholder: (_, __) =>
+                                    Container(color: Colors.grey.shade100),
+                                errorWidget: (_, __, ___) => Container(
+                                  color: Colors.black12,
+                                  child: Icon(post.isVideo ? Icons.play_circle_fill_rounded : Icons.error, color: Colors.grey.shade600),
+                                ),
+                              )
+                            : Container(
+                                color:
+                                    AppColors.electricBlue.withValues(alpha: 0.05),
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Text(
+                                      post.caption,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.outfit(
+                                          fontSize: 10,
+                                          color: AppColors.electricBlue),
+                                    ),
+                                  ),
                                 ),
                               ),
+                        if (post.isVideo)
+                          const Positioned(
+                            top: 8,
+                            right: 8,
+                            child: Icon(
+                              Icons.play_circle_fill_rounded,
+                              color: Colors.white,
+                              size: 18,
+                              shadows: [
+                                Shadow(color: Colors.black54, blurRadius: 4)
+                              ],
                             ),
                           ),
+                      ],
+                    ),
                   ),
                 );
               },

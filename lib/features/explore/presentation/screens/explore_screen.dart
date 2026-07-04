@@ -256,13 +256,33 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen>
                         child: Container(
                           color: context.inputFill,
                           child: item.post.mediaUrl.isNotEmpty
-                              ? CachedNetworkImage(
-                                  imageUrl: item.post.mediaUrl,
-                                  fit: BoxFit.cover,
-                                  placeholder: (context, url) =>
-                                      Container(color: context.inputFill),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
+                              ? Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    CachedNetworkImage(
+                                      imageUrl: item.post.isVideo && item.post.mediaThumbnailUrl.isNotEmpty
+                                          ? item.post.mediaThumbnailUrl
+                                          : item.post.mediaUrl,
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) =>
+                                          Container(color: context.inputFill),
+                                      errorWidget: (context, url, error) =>
+                                          Icon(item.post.isVideo ? Icons.play_circle_fill_rounded : Icons.error, color: context.iconSecondary),
+                                    ),
+                                    if (item.post.isVideo)
+                                      const Positioned(
+                                        top: 8,
+                                        right: 8,
+                                        child: Icon(
+                                          Icons.play_circle_fill_rounded,
+                                          color: Colors.white,
+                                          size: 18,
+                                          shadows: [
+                                            Shadow(color: Colors.black54, blurRadius: 4)
+                                          ],
+                                        ),
+                                      ),
+                                  ],
                                 )
                               : Center(
                                   child: Padding(
@@ -411,13 +431,33 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen>
                   child: Container(
                     color: context.inputFill,
                     child: post.mediaUrl.isNotEmpty
-                        ? CachedNetworkImage(
-                            imageUrl: post.mediaUrl,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) =>
-                                Container(color: context.inputFill),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
+                        ? Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              CachedNetworkImage(
+                                imageUrl: post.isVideo && post.mediaThumbnailUrl.isNotEmpty
+                                    ? post.mediaThumbnailUrl
+                                    : post.mediaUrl,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) =>
+                                    Container(color: context.inputFill),
+                                errorWidget: (context, url, error) =>
+                                    Icon(post.isVideo ? Icons.play_circle_fill_rounded : Icons.error, color: context.iconSecondary),
+                              ),
+                              if (post.isVideo)
+                                const Positioned(
+                                  top: 8,
+                                  right: 8,
+                                  child: Icon(
+                                    Icons.play_circle_fill_rounded,
+                                    color: Colors.white,
+                                    size: 18,
+                                    shadows: [
+                                      Shadow(color: Colors.black54, blurRadius: 4)
+                                    ],
+                                  ),
+                                ),
+                            ],
                           )
                         : Center(
                             child: Padding(

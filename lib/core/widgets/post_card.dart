@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../features/profile/presentation/screens/user_profile_screen.dart';
 import '../../features/reporting/report_dialog.dart';
@@ -40,6 +41,9 @@ class _PostCardState extends ConsumerState<PostCard>
   late AudioPlayer _audioPlayer;
   bool _isPlaying = false;
 
+  VideoPlayerController? _videoController;
+  bool _isVideoInitialized = false;
+
   @override
   void initState() {
     super.initState();
@@ -53,12 +57,29 @@ class _PostCardState extends ConsumerState<PostCard>
     _heartScale = Tween<double>(begin: 0.5, end: 1.2).animate(
       CurvedAnimation(parent: _heartAnimController, curve: Curves.elasticOut),
     );
+
+    if (widget.post.isVideo && widget.post.mediaUrl.isNotEmpty) {
+      _videoController = VideoPlayerController.networkUrl(
+        Uri.parse(widget.post.mediaUrl),
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+      )..initialize().then((_) {
+          if (mounted) {
+            setState(() {
+              _isVideoInitialized = true;
+            });
+            _videoController!.setLooping(true);
+            _videoController!.play();
+            _videoController!.setVolume(1.0);
+          }
+        });
+    }
   }
 
   @override
   void dispose() {
     _heartAnimController.dispose();
     _audioPlayer.dispose();
+    _videoController?.dispose();
     super.dispose();
   }
 
@@ -312,27 +333,7 @@ class _PostCardState extends ConsumerState<PostCard>
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: CachedNetworkImage(
-                      imageUrl: widget.post.mediaThumbnailUrl.isNotEmpty
-                          ? widget.post.mediaThumbnailUrl
-                          : widget.post.mediaUrl,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(
-                        height: 350,
-                        color: context.shimmerBase,
-                        child: const Center(child: CircularProgressIndicator()),
-                      ),
-                      errorWidget: (_, __, ___) => Container(
-                        height: 350,
-                        color: context.shimmerBase,
-                        child: Icon(Icons.broken_image_rounded,
-                            size: 40, color: context.iconSecondary),
-                      ),
-                    ),
-                  ),
+                  _buildMediaWidget(),
                   if (_showHeartAnimation)
                     ScaleTransition(
                       scale: _heartScale,
@@ -517,6 +518,98 @@ class _PostCardState extends ConsumerState<PostCard>
         ],
       ),
     );
+  }
+
+  Widget _buildMediaWidget() {
+    if (widget.post.isVideo) {
+      if (_isVideoInitialized && _videoController != null) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: AspectRatio(
+            aspectRatio: _videoController!.value.aspectRatio,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  if (_videoController!.value.isPlaying) {
+                    _videoController!.pause();
+                  } else {
+                    _videoController!.play();
+                  }
+                });
+              },
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  VideoPlayer(_videoController!),
+                  if (!_videoController!.value.isPlaying)
+                    Container(
+                      color: Colors.black26,
+                      child: const Icon(
+                        Icons.play_arrow_rounded,
+                        color: Colors.white,
+                        size: 64,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        );
+      } else {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (widget.post.mediaThumbnailUrl.isNotEmpty)
+                  CachedNetworkImage(
+                    imageUrl: widget.post.mediaThumbnailUrl,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, __, ___) => Container(
+                      color: Colors.black,
+                      child: const Center(
+                        child: CircularProgressIndicator(color: Colors.white54),
+                      ),
+                    ),
+                  )
+                else
+                  Container(
+                    color: Colors.black,
+                    child: const Center(
+                      child: CircularProgressIndicator(color: Colors.white54),
+                    ),
+                  ),
+                const Center(
+                  child: Icon(Icons.play_arrow_rounded, color: Colors.white70, size: 48),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+    } else {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: CachedNetworkImage(
+          imageUrl: widget.post.mediaUrl,
+          width: double.infinity,
+          fit: BoxFit.cover,
+          placeholder: (_, __) => Container(
+            height: 350,
+            color: context.shimmerBase,
+            child: const Center(child: CircularProgressIndicator()),
+          ),
+          errorWidget: (_, __, ___) => Container(
+            height: 350,
+            color: context.shimmerBase,
+            child: Icon(Icons.broken_image_rounded,
+                size: 40, color: context.iconSecondary),
+          ),
+        ),
+      );
+    }
   }
 
   String _timeSince(DateTime date) {
