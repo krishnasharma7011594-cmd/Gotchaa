@@ -46,25 +46,36 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
     });
 
     try {
-      if (widget.videoUrl.isEmpty) {
+      final url = widget.videoUrl.trim();
+
+      if (url.isEmpty) {
         throw Exception('Video URL is empty');
       }
 
+      // Only Firebase Storage download URLs (with alt=media&token=) are playable by ExoPlayer.
+      // If the URL lacks this, it is a broken/incomplete URL stored in Firestore.
+      if (url.contains('firebasestorage.googleapis.com') &&
+          !url.contains('alt=media')) {
+        throw Exception(
+            'Invalid video URL: missing download token.\nThis video may have been uploaded with an older version of the app. Please re-upload the video.');
+      }
+
+      // Try without custom headers first (more compatible with Firebase Storage + ExoPlayer)
       VideoPlayerController controller;
       try {
         controller = VideoPlayerController.networkUrl(
-          Uri.parse(widget.videoUrl.trim()),
+          Uri.parse(url),
+          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+        );
+        await controller.initialize();
+      } catch (e) {
+        debugPrint('Init without headers failed: $e\nRetrying with User-Agent header...');
+        controller = VideoPlayerController.networkUrl(
+          Uri.parse(url),
           httpHeaders: const {
             'User-Agent':
                 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
           },
-          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-        );
-        await controller.initialize();
-      } catch (headerError) {
-        debugPrint('Failed to initialize with custom headers, trying without headers: $headerError');
-        controller = VideoPlayerController.networkUrl(
-          Uri.parse(widget.videoUrl.trim()),
           videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
         );
         await controller.initialize();

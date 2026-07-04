@@ -248,32 +248,19 @@ class _MultiverseARCameraScreenState
     );
 
     try {
-      // 1. Compress Video with Try-Catch fallback
-      File fileToUpload;
-      try {
-        final MediaInfo? mediaInfo = await VideoCompress.compressVideo(
-          file.path,
-          quality: VideoQuality.MediumQuality,
-          deleteOrigin: false, // Keep the original just in case
-          includeAudio: true,
-        );
-        final compressedFile = mediaInfo?.file;
-        if (compressedFile != null && await compressedFile.exists() && await compressedFile.length() > 0) {
-          fileToUpload = compressedFile;
-        } else {
-          print('Compressed video file is empty or missing, falling back to original.');
-          fileToUpload = File(file.path);
-        }
-      } catch (e) {
-        print('Multiverse AR camera video compression failed, using original file: $e');
-        fileToUpload = File(file.path);
-      }
-
-      // 2. Upload to Storage
+      // 1. Upload to Storage directly (no compression to avoid 0-byte failures)
       final storageRef = FirebaseStorage.instance.ref().child(
           'vybz/${profile.uid}/${DateTime.now().millisecondsSinceEpoch}.mp4');
-      await storageRef.putFile(
-          fileToUpload, SettableMetadata(contentType: 'video/mp4'));
+      final uploadTask = storageRef.putFile(
+          File(file.path),
+          SettableMetadata(
+            contentType: 'video/mp4',
+            customMetadata: {'uploadedBy': profile.uid},
+          ));
+      final taskSnapshot = await uploadTask;
+      if (taskSnapshot.state != TaskState.success) {
+        throw Exception('Upload failed: ${taskSnapshot.state}');
+      }
       final downloadUrl = await storageRef.getDownloadURL();
 
       // Cleanup

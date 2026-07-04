@@ -90,30 +90,46 @@ class StorageRepository {
     String userId, {
     UploadProgressCallback? onProgress,
   }) async {
-    final compressedPath =
-        await MediaCompressionService.instance.compressVideoPath(file.path);
-    final uploadFile = compressedPath != null ? XFile(compressedPath) : file;
+    // NOTE: We intentionally skip video_compress here.
+    // Compression was causing silent failures (0-byte outputs) that resulted
+    // in files being unreachable after upload. The original file is uploaded
+    // directly to avoid corruption. Firebase Storage handles large files fine.
     final fileName = '${_uuid.v4()}.mp4';
     final ref = _storage.ref().child('vybz').child(userId).child(fileName);
 
     await GotchaaPerformanceTraces.instance.startImageUpload(kind: 'video');
     try {
       final uploadTask = ref.putFile(
-        File(uploadFile.path),
-        SettableMetadata(contentType: 'video/mp4'),
+        File(file.path),
+        SettableMetadata(
+          contentType: 'video/mp4',
+          customMetadata: {'uploadedBy': userId},
+        ),
       );
+
       if (onProgress != null) {
         uploadTask.snapshotEvents.listen((s) {
           final total = s.totalBytes;
           if (total > 0) onProgress(s.bytesTransferred / total);
         });
       }
+
       final taskSnapshot = await uploadTask;
-      if (taskSnapshot.state == TaskState.error ||
-          taskSnapshot.state == TaskState.canceled) {
-        throw Exception('Upload failed or was canceled');
+
+      if (taskSnapshot.state != TaskState.success) {
+        throw Exception(
+            'Video upload failed with state: ${taskSnapshot.state}. Please try again.');
       }
-      return taskSnapshot.ref.getDownloadURL();
+
+      final downloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+      // Sanity check — must contain alt=media for ExoPlayer to stream it
+      if (!downloadUrl.contains('alt=media')) {
+        throw Exception(
+            'Invalid download URL returned from Firebase Storage. Please retry.');
+      }
+
+      return downloadUrl;
     } finally {
       await GotchaaPerformanceTraces.instance.stopImageUpload();
     }
