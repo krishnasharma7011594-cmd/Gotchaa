@@ -796,8 +796,8 @@ class _RealPostsGrid extends ConsumerWidget {
                               child: SizedBox(
                                   width: 20,
                                   height: 20,
-                                  child:
-                                      CircularProgressIndicator(strokeWidth: 2))),
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2))),
                         ),
                         errorWidget: (_, __, ___) => Container(
                           color: Colors.grey.shade900,

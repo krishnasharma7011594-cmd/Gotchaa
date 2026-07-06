@@ -582,7 +582,8 @@ class _PostCardState extends ConsumerState<PostCard>
                     ),
                   ),
                 const Center(
-                  child: Icon(Icons.play_arrow_rounded, color: Colors.white70, size: 48),
+                  child: Icon(Icons.play_arrow_rounded,
+                      color: Colors.white70, size: 48),
                 ),
               ],
             ),

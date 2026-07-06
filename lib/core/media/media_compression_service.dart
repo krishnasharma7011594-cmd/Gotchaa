@@ -62,4 +62,3 @@ class MediaCompressionService {
     return null;
   }
 }
-

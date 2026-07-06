@@ -914,7 +914,8 @@ class _PostsGrid extends ConsumerWidget {
                       children: [
                         post.mediaUrl.isNotEmpty
                             ? CachedNetworkImage(
-                                imageUrl: post.isVideo && post.mediaThumbnailUrl.isNotEmpty
+                                imageUrl: post.isVideo &&
+                                        post.mediaThumbnailUrl.isNotEmpty
                                     ? post.mediaThumbnailUrl
                                     : post.mediaUrl,
                                 fit: BoxFit.cover,
@@ -922,12 +923,16 @@ class _PostsGrid extends ConsumerWidget {
                                     Container(color: Colors.grey.shade100),
                                 errorWidget: (_, __, ___) => Container(
                                   color: Colors.black12,
-                                  child: Icon(post.isVideo ? Icons.play_circle_fill_rounded : Icons.error, color: Colors.grey.shade600),
+                                  child: Icon(
+                                      post.isVideo
+                                          ? Icons.play_circle_fill_rounded
+                                          : Icons.error,
+                                      color: Colors.grey.shade600),
                                 ),
                               )
                             : Container(
-                                color:
-                                    AppColors.electricBlue.withValues(alpha: 0.05),
+                                color: AppColors.electricBlue
+                                    .withValues(alpha: 0.05),
                                 child: Center(
                                   child: Padding(
                                     padding: const EdgeInsets.all(8),

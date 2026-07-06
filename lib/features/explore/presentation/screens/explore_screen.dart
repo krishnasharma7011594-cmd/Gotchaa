@@ -259,7 +259,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen>
                               ? Stack(
                                   fit: StackFit.expand,
                                   children: [
-                                    if (item.post.isVideo && item.post.mediaThumbnailUrl.isEmpty)
+                                    if (item.post.isVideo &&
+                                        item.post.mediaThumbnailUrl.isEmpty)
                                       Container(
                                         color: Colors.grey.shade900,
                                         child: const Icon(
@@ -277,7 +278,12 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen>
                                         placeholder: (context, url) =>
                                             Container(color: context.inputFill),
                                         errorWidget: (context, url, error) =>
-                                            Icon(item.post.isVideo ? Icons.play_circle_fill_rounded : Icons.error, color: context.iconSecondary),
+                                            Icon(
+                                                item.post.isVideo
+                                                    ? Icons
+                                                        .play_circle_fill_rounded
+                                                    : Icons.error,
+                                                color: context.iconSecondary),
                                       ),
                                     if (item.post.isVideo)
                                       const Positioned(
@@ -288,7 +294,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen>
                                           color: Colors.white,
                                           size: 18,
                                           shadows: [
-                                            Shadow(color: Colors.black54, blurRadius: 4)
+                                            Shadow(
+                                                color: Colors.black54,
+                                                blurRadius: 4)
                                           ],
                                         ),
                                       ),
@@ -445,14 +453,18 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen>
                             fit: StackFit.expand,
                             children: [
                               CachedNetworkImage(
-                                imageUrl: post.isVideo && post.mediaThumbnailUrl.isNotEmpty
+                                imageUrl: post.isVideo &&
+                                        post.mediaThumbnailUrl.isNotEmpty
                                     ? post.mediaThumbnailUrl
                                     : post.mediaUrl,
                                 fit: BoxFit.cover,
                                 placeholder: (context, url) =>
                                     Container(color: context.inputFill),
-                                errorWidget: (context, url, error) =>
-                                    Icon(post.isVideo ? Icons.play_circle_fill_rounded : Icons.error, color: context.iconSecondary),
+                                errorWidget: (context, url, error) => Icon(
+                                    post.isVideo
+                                        ? Icons.play_circle_fill_rounded
+                                        : Icons.error,
+                                    color: context.iconSecondary),
                               ),
                               if (post.isVideo)
                                 const Positioned(
@@ -463,7 +475,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen>
                                     color: Colors.white,
                                     size: 18,
                                     shadows: [
-                                      Shadow(color: Colors.black54, blurRadius: 4)
+                                      Shadow(
+                                          color: Colors.black54, blurRadius: 4)
                                     ],
                                   ),
                                 ),

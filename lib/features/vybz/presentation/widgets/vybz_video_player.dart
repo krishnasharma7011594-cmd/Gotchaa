@@ -69,7 +69,8 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
         );
         await controller.initialize();
       } catch (e) {
-        debugPrint('Init without headers failed: $e\nRetrying with User-Agent header...');
+        debugPrint(
+            'Init without headers failed: $e\nRetrying with User-Agent header...');
         controller = VideoPlayerController.networkUrl(
           Uri.parse(url),
           httpHeaders: const {
