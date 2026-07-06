@@ -122,13 +122,6 @@ class StorageRepository {
       }
 
       final downloadUrl = await taskSnapshot.ref.getDownloadURL();
-
-      // Sanity check — must contain alt=media for ExoPlayer to stream it
-      if (!downloadUrl.contains('alt=media')) {
-        throw Exception(
-            'Invalid download URL returned from Firebase Storage. Please retry.');
-      }
-
       return downloadUrl;
     } finally {
       await GotchaaPerformanceTraces.instance.stopImageUpload();

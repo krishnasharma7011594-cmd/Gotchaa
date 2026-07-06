@@ -52,15 +52,9 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
         throw Exception('Video URL is empty');
       }
 
-      // Only Firebase Storage download URLs (with alt=media&token=) are playable by ExoPlayer.
-      // If the URL lacks this, it is a broken/incomplete URL stored in Firestore.
-      if (url.contains('firebasestorage.googleapis.com') &&
-          !url.contains('alt=media')) {
-        throw Exception(
-            'Invalid video URL: missing download token.\nThis video may have been uploaded with an older version of the app. Please re-upload the video.');
-      }
-
-      // Try without custom headers first (more compatible with Firebase Storage + ExoPlayer)
+      // Accept both Firebase download URLs (alt=media&token=...) and
+      // Cloud-Function-generated signed URLs (storage.googleapis.com with X-Goog-Signature).
+      // Do NOT reject based on URL format — just try to initialize and let ExoPlayer decide.
       VideoPlayerController controller;
       try {
         controller = VideoPlayerController.networkUrl(
@@ -71,6 +65,7 @@ class _VybzVideoPlayerState extends ConsumerState<VybzVideoPlayer> {
       } catch (e) {
         debugPrint(
             'Init without headers failed: $e\nRetrying with User-Agent header...');
+        // Some CDNs and signed URLs require a User-Agent to avoid 403s
         controller = VideoPlayerController.networkUrl(
           Uri.parse(url),
           httpHeaders: const {

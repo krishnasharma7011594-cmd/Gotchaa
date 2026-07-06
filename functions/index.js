@@ -1662,11 +1662,19 @@ exports.compressUploadedVideo = functions.runWith({
         });
 
         const thumbFileRef = bucket.file(thumbTargetFilePath);
-        const [generatedUrl] = await thumbFileRef.getSignedUrl({
-            action: 'read',
-            expires: '03-09-2491'
-        });
-        thumbDownloadUrl = generatedUrl;
+        // Get Firebase download token (same URL format as client getDownloadURL())
+        const [thumbMeta] = await thumbFileRef.getMetadata();
+        const thumbToken = thumbMeta.metadata && thumbMeta.metadata.firebaseStorageDownloadTokens
+            ? thumbMeta.metadata.firebaseStorageDownloadTokens
+            : null;
+        if (thumbToken) {
+            const encodedThumbPath = encodeURIComponent(thumbTargetFilePath);
+            thumbDownloadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodedThumbPath}?alt=media&token=${thumbToken}`;
+        } else {
+            // Fallback: generate a long-lived signed URL
+            const [signedThumbUrl] = await thumbFileRef.getSignedUrl({ action: 'read', expires: '03-09-2491' });
+            thumbDownloadUrl = signedThumbUrl;
+        }
         console.log(`Generated thumbnail URL: ${thumbDownloadUrl}`);
 
         fs.unlinkSync(tempThumbPath);
@@ -1690,12 +1698,21 @@ exports.compressUploadedVideo = functions.runWith({
         console.error(`Failed to delete raw file: ${filePath}`, e);
     }
 
-    // Construct the public storage URL or generate a signed URL
+    // Get Firebase-compatible download URL (alt=media&token format — works with ExoPlayer)
     const fileRef = bucket.file(targetFilePath);
-    const [downloadUrl] = await fileRef.getSignedUrl({
-        action: 'read',
-        expires: '03-09-2491'
-    });
+    const [fileMeta] = await fileRef.getMetadata();
+    const fileToken = fileMeta.metadata && fileMeta.metadata.firebaseStorageDownloadTokens
+        ? fileMeta.metadata.firebaseStorageDownloadTokens
+        : null;
+    let downloadUrl;
+    if (fileToken) {
+        const encodedFilePath = encodeURIComponent(targetFilePath);
+        downloadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodedFilePath}?alt=media&token=${fileToken}`;
+    } else {
+        // Fallback to signed URL
+        const [signedUrl] = await fileRef.getSignedUrl({ action: 'read', expires: '03-09-2491' });
+        downloadUrl = signedUrl;
+    }
 
     console.log(`Finding Firestore documents with video path: ${filePath}`);
     const searchString = filePath.replace(/\//g, '%2F');
