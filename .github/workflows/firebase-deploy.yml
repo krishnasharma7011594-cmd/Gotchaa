@@ -40,13 +40,13 @@ jobs:
         run: npm install -g firebase-tools
 
       - name: Authenticate to Google Cloud
-        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON != '' }}
+        if: secrets.FIREBASE_SERVICE_ACCOUNT_GOTCHAA != ''
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GOTCHAA }}
 
       - name: Deploy Firestore rules & indexes
-        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON != '' }}
+        if: secrets.FIREBASE_SERVICE_ACCOUNT_GOTCHAA != ''
         run: |
           firebase deploy \
             --non-interactive \
@@ -54,7 +54,7 @@ jobs:
             --only firestore
 
       - name: Deploy Storage rules
-        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON != '' }}
+        if: secrets.FIREBASE_SERVICE_ACCOUNT_GOTCHAA != ''
         run: |
           firebase deploy \
             --non-interactive \
@@ -62,9 +62,10 @@ jobs:
             --only storage
 
       - name: Deploy Cloud Functions
-        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON != '' }}
+        if: secrets.FIREBASE_SERVICE_ACCOUNT_GOTCHAA != ''
         run: |
           firebase deploy \
             --non-interactive \
             --project studio-1284397718-50704 \
             --only functions
+
