@@ -778,26 +778,33 @@ class _RealPostsGrid extends ConsumerWidget {
                 fit: StackFit.expand,
                 children: [
                   if (post.mediaUrl.isNotEmpty)
-                    CachedNetworkImage(
-                      imageUrl: post.mediaThumbnailUrl.isNotEmpty
-                          ? post.mediaThumbnailUrl
-                          : post.mediaUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(
-                        color: context.shimmerBase,
-                        child: const Center(
-                            child: SizedBox(
-                                width: 20,
-                                height: 20,
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 2))),
-                      ),
-                      errorWidget: (_, __, ___) => Container(
+                    if (post.isVideo && post.mediaThumbnailUrl.isEmpty)
+                      Container(
                         color: Colors.grey.shade900,
                         child: const Icon(Icons.videocam_rounded,
                             color: Colors.white24, size: 32),
-                      ),
-                    )
+                      )
+                    else
+                      CachedNetworkImage(
+                        imageUrl: post.isVideo
+                            ? post.mediaThumbnailUrl
+                            : post.mediaUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) => Container(
+                          color: context.shimmerBase,
+                          child: const Center(
+                              child: SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child:
+                                      CircularProgressIndicator(strokeWidth: 2))),
+                        ),
+                        errorWidget: (_, __, ___) => Container(
+                          color: Colors.grey.shade900,
+                          child: const Icon(Icons.videocam_rounded,
+                              color: Colors.white24, size: 32),
+                        ),
+                      )
                   else
                     Container(
                       color: context.shimmerBase,
@@ -845,12 +852,41 @@ class _RealPostsGrid extends ConsumerWidget {
             ClipRRect(
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(20)),
-              child: CachedNetworkImage(
-                imageUrl: post.mediaUrl,
-                width: double.infinity,
-                height: 300,
-                fit: BoxFit.cover,
-              ),
+              child: post.isVideo
+                  ? Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        if (post.mediaThumbnailUrl.isNotEmpty)
+                          CachedNetworkImage(
+                            imageUrl: post.mediaThumbnailUrl,
+                            width: double.infinity,
+                            height: 300,
+                            fit: BoxFit.cover,
+                          )
+                        else
+                          Container(
+                            width: double.infinity,
+                            height: 300,
+                            color: Colors.grey.shade900,
+                            child: const Icon(Icons.videocam_rounded,
+                                color: Colors.white24, size: 50),
+                          ),
+                        const Icon(
+                          Icons.play_circle_fill_rounded,
+                          color: Colors.white,
+                          size: 64,
+                          shadows: [
+                            Shadow(color: Colors.black45, blurRadius: 8)
+                          ],
+                        ),
+                      ],
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: post.mediaUrl,
+                      width: double.infinity,
+                      height: 300,
+                      fit: BoxFit.cover,
+                    ),
             ),
           Padding(
             padding: const EdgeInsets.all(16),

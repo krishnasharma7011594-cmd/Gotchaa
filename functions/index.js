@@ -1627,13 +1627,68 @@ exports.compressUploadedVideo = functions.runWith({
         }
     });
 
+    // ── Generate & Upload Video Thumbnail ─────────────────────────────────
+    let thumbDownloadUrl = '';
+    try {
+        console.log(`Generating thumbnail with FFmpeg`);
+        const baseName = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
+        const tempThumbPath = path.join(os.tmpdir(), `thumb_${baseName}.jpg`);
+        await new Promise((resolve, reject) => {
+            const ffmpegThumbArgs = [
+                '-y',
+                '-ss', '00:00:00',
+                '-i', tempFilePath,
+                '-vframes', '1',
+                '-q:v', '2',
+                tempThumbPath
+            ];
+            const process = spawn('ffmpeg', ffmpegThumbArgs);
+            process.on('close', (code) => {
+                if (code === 0) {
+                    resolve();
+                } else {
+                    reject(new Error(`FFmpeg thumbnail generation failed with code ${code}`));
+                }
+            });
+        });
+
+        const thumbTargetFilePath = path.join(path.dirname(filePath), `thumb_${baseName}.jpg`);
+        console.log(`Uploading thumbnail to: ${thumbTargetFilePath}`);
+        await bucket.upload(tempThumbPath, {
+            destination: thumbTargetFilePath,
+            metadata: {
+                contentType: 'image/jpeg'
+            }
+        });
+
+        const thumbFileRef = bucket.file(thumbTargetFilePath);
+        const [generatedUrl] = await thumbFileRef.getSignedUrl({
+            action: 'read',
+            expires: '03-09-2491'
+        });
+        thumbDownloadUrl = generatedUrl;
+        console.log(`Generated thumbnail URL: ${thumbDownloadUrl}`);
+
+        fs.unlinkSync(tempThumbPath);
+    } catch (e) {
+        console.error('Failed to generate thumbnail via FFmpeg:', e);
+    }
+
     // Cleanup temp files
-    fs.unlinkSync(tempFilePath);
-    fs.unlinkSync(tempOutputPath);
+    try {
+        fs.unlinkSync(tempFilePath);
+        fs.unlinkSync(tempOutputPath);
+    } catch (e) {
+        console.warn('Error cleaning up temp files:', e);
+    }
 
     // Delete the original raw upload to save storage costs!
     console.log(`Deleting raw upload: ${filePath}`);
-    await bucket.file(filePath).delete();
+    try {
+        await bucket.file(filePath).delete();
+    } catch (e) {
+        console.error(`Failed to delete raw file: ${filePath}`, e);
+    }
 
     // Construct the public storage URL or generate a signed URL
     const fileRef = bucket.file(targetFilePath);
@@ -1642,18 +1697,55 @@ exports.compressUploadedVideo = functions.runWith({
         expires: '03-09-2491'
     });
 
-    console.log(`Finding Firestore document with videoUrl: ${filePath}`);
+    console.log(`Finding Firestore documents with video path: ${filePath}`);
+    const searchString = filePath.replace(/\//g, '%2F');
+    let vybzUpdated = false;
+    let postsUpdated = false;
+
+    // 1. Always search 'vybz' collection (video posts create a vybz doc)
     const vybzSnap = await db.collection('vybz').get();
     for (const doc of vybzSnap.docs) {
         const data = doc.data();
-        if (data.videoUrl && data.videoUrl.includes(filePath.replace('/', '%2F'))) {
-            console.log(`Updating Firestore document ${doc.id} with optimized URL`);
-            await doc.ref.update({
+        if (data.videoUrl && data.videoUrl.includes(searchString)) {
+            console.log(`Updating Vybz document ${doc.id} with optimized URL`);
+            const updateData = {
                 videoUrl: downloadUrl,
                 isOptimized: true
-            });
+            };
+            if (thumbDownloadUrl) {
+                updateData.thumbnailUrl = thumbDownloadUrl;
+            }
+            await doc.ref.update(updateData);
+            vybzUpdated = true;
             break;
         }
+    }
+
+    // 2. Always search 'posts' collection too — a video post creates BOTH a vybz
+    //    doc AND a posts doc pointing to the same storage path. Both must be updated
+    //    or the feed will 404 on the deleted raw file.
+    const postsSnap = await db.collection('posts').get();
+    for (const doc of postsSnap.docs) {
+        const data = doc.data();
+        if (data.mediaUrl && data.mediaUrl.includes(searchString)) {
+            console.log(`Updating Post document ${doc.id} with optimized URL`);
+            const updateData = {
+                mediaUrl: downloadUrl,
+                isOptimized: true
+            };
+            if (thumbDownloadUrl) {
+                updateData.mediaThumbnailUrl = thumbDownloadUrl;
+            }
+            await doc.ref.update(updateData);
+            postsUpdated = true;
+            break;
+        }
+    }
+
+    if (!vybzUpdated && !postsUpdated) {
+        console.warn(`No Firestore document found matching storage path: ${filePath}`);
+    } else {
+        console.log(`Update summary — vybz: ${vybzUpdated}, posts: ${postsUpdated}`);
     }
 
     return null;

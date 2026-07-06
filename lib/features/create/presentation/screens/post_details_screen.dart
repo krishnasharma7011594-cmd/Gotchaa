@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
-import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../core/l10n/app_localizations_x.dart';
@@ -104,38 +103,16 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
       String? generatedThumbUrl;
 
       if (widget.isVideo) {
-        // 1. Generate Thumbnail with Try-Catch fallback
-        File? thumbnailFile;
-        try {
-          thumbnailFile = await VideoCompress.getFileThumbnail(
-            widget.mediaFile.path,
-            quality: 50,
-            position: -1,
-          );
-        } catch (e) {
-          print('Failed to generate video thumbnail: $e');
-        }
-
-        // 2. Upload Video
+        // Thumbnail generation is handled server-side by the `compressUploadedVideo`
+        // Cloud Function (FFmpeg). It will update the Firestore doc with both the
+        // optimized video URL and thumbnail URL after processing completes.
+        // The UI reacts to this via real-time Firestore streams.
         mediaUrl = await storageRepo.uploadVideo(
           XFile(widget.mediaFile.path),
           user.uid,
-          onProgress: (p) => setState(() => _uploadProgress = 0.2 + p * 0.5),
+          onProgress: (p) => setState(() => _uploadProgress = 0.2 + p * 0.7),
         );
-
-        // 3. Upload Thumbnail if exists
-        if (thumbnailFile != null) {
-          try {
-            generatedThumbUrl = await storageRepo.uploadImage(
-              XFile(thumbnailFile.path),
-              user.uid,
-              // Use 'posts' folder to ensure we conform to storage.rules and avoid Permission Denied exceptions
-              folder: 'posts',
-            );
-          } catch (e) {
-            print('Failed to upload video thumbnail: $e');
-          }
-        }
+        // generatedThumbUrl remains null — the CF will populate it
       } else {
         // Upload Image
         final result = await storageRepo.uploadPostImage(

@@ -1,8 +1,6 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:image/image.dart' as img;
-import 'package:video_compress/video_compress.dart';
 
 enum MediaUploadKind { profile, post, story, thumbnail, chat }
 
@@ -16,7 +14,8 @@ class CompressedMedia {
   final Uint8List? thumbnailBytes;
 }
 
-/// Resizes and compresses images; compresses video before upload.
+/// Resizes and compresses images; video compression is handled server-side
+/// by the `compressUploadedVideo` Cloud Function (FFmpeg).
 class MediaCompressionService {
   MediaCompressionService._();
   static final MediaCompressionService instance = MediaCompressionService._();
@@ -57,28 +56,10 @@ class MediaCompressionService {
     return CompressedMedia(fullBytes: fullBytes, thumbnailBytes: thumbBytes);
   }
 
+  /// Video compression is done server-side by the Cloud Function.
+  /// Returns null so callers fall back to uploading the original file directly.
   Future<String?> compressVideoPath(String path) async {
-    try {
-      final info = await VideoCompress.compressVideo(
-        path,
-        quality: VideoQuality.MediumQuality,
-        deleteOrigin: false,
-        includeAudio: true, // Keep the audio track intact so voice/sound works
-      );
-      if (info?.path != null) {
-        final compressedFile = File(info!.path!);
-        if (await compressedFile.exists() && await compressedFile.length() > 0) {
-          return info.path;
-        } else {
-          print('Compressed video file is empty (0 bytes). Falling back to original.');
-        }
-      }
-      return null;
-    } catch (e) {
-      // Fallback: If compression fails (e.g. platform channel issues, unsupported codecs, Web issues),
-      // print the error and return null. The app will fall back to using the original video file.
-      print('Video compression failed, falling back to original video: $e');
-      return null;
-    }
+    return null;
   }
 }
+

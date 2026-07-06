@@ -259,16 +259,26 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen>
                               ? Stack(
                                   fit: StackFit.expand,
                                   children: [
-                                    CachedNetworkImage(
-                                      imageUrl: item.post.isVideo && item.post.mediaThumbnailUrl.isNotEmpty
-                                          ? item.post.mediaThumbnailUrl
-                                          : item.post.mediaUrl,
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) =>
-                                          Container(color: context.inputFill),
-                                      errorWidget: (context, url, error) =>
-                                          Icon(item.post.isVideo ? Icons.play_circle_fill_rounded : Icons.error, color: context.iconSecondary),
-                                    ),
+                                    if (item.post.isVideo && item.post.mediaThumbnailUrl.isEmpty)
+                                      Container(
+                                        color: Colors.grey.shade900,
+                                        child: const Icon(
+                                          Icons.videocam_rounded,
+                                          color: Colors.white24,
+                                          size: 32,
+                                        ),
+                                      )
+                                    else
+                                      CachedNetworkImage(
+                                        imageUrl: item.post.isVideo
+                                            ? item.post.mediaThumbnailUrl
+                                            : item.post.mediaUrl,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) =>
+                                            Container(color: context.inputFill),
+                                        errorWidget: (context, url, error) =>
+                                            Icon(item.post.isVideo ? Icons.play_circle_fill_rounded : Icons.error, color: context.iconSecondary),
+                                      ),
                                     if (item.post.isVideo)
                                       const Positioned(
                                         top: 8,
