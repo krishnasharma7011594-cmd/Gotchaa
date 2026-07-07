@@ -4,10 +4,38 @@ const axios = require('axios');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const multer = require('multer');
+const admin = require('firebase-admin');
+
+if (admin.apps.length === 0) {
+  admin.initializeApp({
+    projectId: 'studio-1284397718-50704',
+    storageBucket: 'studio-1284397718-50704.firebasestorage.app'
+  });
+}
+
+// Authentication Guard Middleware (checks Firebase auth tokens)
+const checkAuth = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Unauthorized: No token provided' });
+  }
+  const idToken = authHeader.split('Bearer ')[1];
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    req.user = decodedToken;
+    next();
+  } catch (error) {
+    console.error('Error verifying Firebase ID token:', error);
+    return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+  }
+};
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Mount protected Music module router
+app.use('/music', checkAuth, require('./musicRouter'));
 
 // ==========================================
 // --- 1. RATE LIMITING MIDDLEWARES ---

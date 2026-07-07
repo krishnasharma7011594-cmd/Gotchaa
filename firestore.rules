@@ -96,6 +96,11 @@ service cloud.firestore {
       allow read, write: if isSignedIn();
     }
 
+    match /sounds/{soundId} {
+      allow read: if isSignedIn() && (resource.data.visibility == 'public' || resource.data.creatorId == request.auth.uid);
+      allow write: if false;
+    }
+
     match /vibetalk_rooms/{roomId} {
       allow read, write: if isSignedIn();
       match /{document=**} {

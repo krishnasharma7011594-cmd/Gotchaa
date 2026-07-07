@@ -4,6 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/l10n/app_localizations_x.dart';
+import '../../data/models/sound_model.dart';
+import '../../data/repositories/music_repository.dart';
+import 'sound_composer_screen.dart';
 import '../../../../core/models/vybz_model.dart';
 import '../../../../core/providers/auth_providers.dart';
 import '../../../../core/providers/repository_providers.dart';
@@ -20,6 +23,7 @@ class _VybzUploadScreenState extends ConsumerState<VybzUploadScreen> {
   final TextEditingController _captionController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   XFile? _videoFile;
+  SoundModel? _attachedSound;
   List<String> suggestedHashtags = [];
   bool isAnalyzing = false;
   bool isPosting = false;
@@ -30,6 +34,17 @@ class _VybzUploadScreenState extends ConsumerState<VybzUploadScreen> {
       setState(() {
         _videoFile = video;
       });
+    }
+  }
+
+  Future<void> _openSoundComposer() async {
+    final sound = await Navigator.push<SoundModel>(
+      context,
+      MaterialPageRoute(
+          builder: (_) => const SoundComposerScreen()),
+    );
+    if (sound != null && mounted) {
+      setState(() => _attachedSound = sound);
     }
   }
 
@@ -60,6 +75,18 @@ class _VybzUploadScreenState extends ConsumerState<VybzUploadScreen> {
       );
 
       await ref.read(firestoreRepositoryProvider).postVybz(vybz);
+
+      // Attach AI sound if the user picked one.
+      // We fire-and-forget here since the post doc already exists.
+      if (_attachedSound != null) {
+        try {
+          await ref
+              .read(musicRepositoryProvider)
+              .attachSoundToPost(_attachedSound!.soundId, vybz.id);
+        } catch (_) {
+          // Non-fatal — the post is already live.
+        }
+      }
 
       if (mounted) {
         Navigator.pop(context);
@@ -146,7 +173,60 @@ class _VybzUploadScreenState extends ConsumerState<VybzUploadScreen> {
               ),
               const SizedBox(height: 30),
 
-              if (_videoFile != null) ...[],
+              // ── AI Sound attachment strip ──────────────────────────
+              if (_attachedSound != null)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: AppColors.electricBlue.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                        color: AppColors.electricBlue.withOpacity(0.4)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.music_note_rounded,
+                          color: AppColors.electricBlue, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _attachedSound!.prompt,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.outfit(
+                              color: AppColors.electricBlue,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () =>
+                            setState(() => _attachedSound = null),
+                        child: const Icon(Icons.close_rounded,
+                            color: AppColors.electricBlue, size: 18),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                OutlinedButton.icon(
+                  onPressed: _openSoundComposer,
+                  icon: const Icon(Icons.music_note_rounded, size: 18),
+                  label: Text('Add Sound',
+                      style: GoogleFonts.outfit(
+                          fontSize: 14, fontWeight: FontWeight.w500)),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.electricBlue,
+                    side: const BorderSide(color: AppColors.electricBlue),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                  ),
+                ),
+              const SizedBox(height: 16),
 
               Text(context.tr('vybz_caption_label'),
                   style: GoogleFonts.outfit(
