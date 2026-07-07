@@ -105,15 +105,15 @@ class _SoundComposerScreenState extends ConsumerState<SoundComposerScreen> {
         ref.read(_generatedSoundProvider.notifier).state = sound;
       }
     } on Exception catch (e) {
-      String message = 'Something went wrong. Please try again.';
+      String message = 'Something went wrong: ${e.toString()}';
       final msg = e.toString();
       if (msg.contains('429') || msg.contains('limit')) {
         message =
             'Daily generation limit reached. Try again tomorrow or browse the Library.';
       } else if (msg.contains('502') || msg.contains('generation')) {
         message = 'Music generation failed. The service may be temporarily unavailable.';
-      } else if (msg.contains('SocketException') || msg.contains('connection')) {
-        message = 'No internet connection. Please check your network and try again.';
+      } else if (msg.contains('SocketException') || msg.contains('connection') || msg.contains('Connection refused') || msg.contains('NetworkIsUnreachable')) {
+        message = 'Could not connect to the backend server. Please verify your backend server is running and accessible.';
       }
       if (mounted) ref.read(_generateErrorProvider.notifier).state = message;
     } finally {
