@@ -1,14 +1,20 @@
+import 'package:flutter/foundation.dart';
+
 class AppConfig {
   AppConfig._internal();
   static final AppConfig instance = AppConfig._internal();
 
   static const String backendEnv = String.fromEnvironment(
     'BACKEND_ENV',
-    defaultValue: 'development',
+    defaultValue: '',
   );
 
   String get backendUrl {
-    switch (backendEnv) {
+    final env = backendEnv.isNotEmpty 
+        ? backendEnv 
+        : (kReleaseMode ? 'production' : 'development');
+
+    switch (env) {
       case 'production':
         return 'https://gotchaa.railway.app';
       case 'staging':
