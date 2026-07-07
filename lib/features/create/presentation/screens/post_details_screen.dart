@@ -19,6 +19,9 @@ import '../../../../core/providers/shell_navigation_provider.dart';
 import '../../../../core/services/analytics_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../vybz/data/models/sound_model.dart';
+import '../../vybz/data/repositories/music_repository.dart';
+import '../../vybz/presentation/screens/sound_composer_screen.dart';
 import '../models/editable_item.dart';
 import '../widgets/spotify_search_sheet.dart';
 
@@ -45,13 +48,13 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
   double _uploadProgress = 0;
   String? _errorMessage;
   VideoPlayerController? _videoController;
-  SpotifyTrack? _selectedTrack;
+  SoundModel? _attachedSound;
   String _visibility = 'public'; // 'public', 'friends', 'ghost'
 
   @override
   void initState() {
     super.initState();
-    _selectedTrack = widget.initialTrack;
+    _attachedSound = null;
     if (widget.isVideo) {
       _videoController = VideoPlayerController.file(widget.mediaFile)
         ..initialize().then((_) {
@@ -137,11 +140,9 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
         mediaThumbnailUrl: generatedThumbUrl ?? '',
         isVideo: widget.isVideo,
         createdAt: DateTime.now(),
-        spotifyTrackId: _selectedTrack?.id,
-        spotifyTrackName: _selectedTrack?.name,
-        spotifyArtistName: _selectedTrack?.artist,
-        spotifyAlbumArtUrl: _selectedTrack?.albumArtUrl,
-        spotifyPreviewUrl: _selectedTrack?.previewUrl,
+        soundId: _attachedSound?.soundId,
+        soundPrompt: _attachedSound?.prompt,
+        soundPlaybackUrl: _attachedSound?.playbackUrl,
         isPrivate: profile?.isPrivate ?? false,
         visibility: _visibility,
         overlays: widget.overlays?.map((e) => e.toMap()).toList(),
@@ -165,6 +166,17 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
           createdAt: DateTime.now(),
         );
         await vybzRepo.postVybz(vybz);
+      }
+
+      // Increment sound count and link it via the music attachment service
+      if (_attachedSound != null) {
+        try {
+          await ref
+              .read(musicRepositoryProvider)
+              .attachSoundToPost(_attachedSound!.soundId, postId);
+        } catch (_) {
+          // non-fatal
+        }
       }
 
       // Fire analytics — non-blocking
@@ -513,29 +525,27 @@ class _PostDetailsScreenState extends ConsumerState<PostDetailsScreen> {
                     // Options
                     _optionTile(
                       icon: Icons.music_note_rounded,
-                      iconColor: Colors.green,
-                      title: _selectedTrack != null
-                          ? 'Music: ${_selectedTrack!.name}'
-                          : 'Attach Music (Spotify)',
-                      trailing: _selectedTrack != null
+                      iconColor: AppColors.electricBlue,
+                      title: _attachedSound != null
+                          ? 'AI Music: ${_attachedSound!.prompt}'
+                          : 'Attach AI Music (Gemini)',
+                      trailing: _attachedSound != null
                           ? IconButton(
                               icon: const Icon(Icons.close, size: 20),
                               onPressed: () {
-                                setState(() => _selectedTrack = null);
+                                setState(() => _attachedSound = null);
                               },
                             )
                           : Icon(Icons.chevron_right_rounded,
                               color: context.iconMuted, size: 22),
                       onTap: () async {
-                        final selected =
-                            await showModalBottomSheet<SpotifyTrack>(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) => const SpotifySearchSheet(),
+                        final selected = await Navigator.push<SoundModel>(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const SoundComposerScreen()),
                         );
                         if (selected != null) {
-                          setState(() => _selectedTrack = selected);
+                          setState(() => _attachedSound = selected);
                         }
                       },
                     ),

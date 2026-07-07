@@ -353,8 +353,8 @@ class _PostCardState extends ConsumerState<PostCard>
               ),
             ),
 
-          // ── Spotify Attachment ────────────────────────────
-          if (widget.post.spotifyTrackId != null)
+          // ── AI Music Attachment ────────────────────────────
+          if (widget.post.soundId != null && widget.post.soundPlaybackUrl != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: Container(
@@ -366,21 +366,15 @@ class _PostCardState extends ConsumerState<PostCard>
                 ),
                 child: Row(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: (widget.post.spotifyAlbumArtUrl != null)
-                          ? CachedNetworkImage(
-                              imageUrl: widget.post.spotifyAlbumArtUrl!,
-                              width: 44,
-                              height: 44,
-                              fit: BoxFit.cover,
-                            )
-                          : Container(
-                              width: 44,
-                              height: 44,
-                              color: Colors.green.withOpacity(0.1),
-                              child: const Icon(Icons.music_note,
-                                  color: Colors.green)),
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: AppColors.electricBlue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.music_note_rounded,
+                          color: AppColors.electricBlue),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -388,18 +382,18 @@ class _PostCardState extends ConsumerState<PostCard>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.post.spotifyTrackName ?? 'Music',
+                            widget.post.soundPrompt ?? 'AI Music Vibe',
                             style: GoogleFonts.outfit(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                                fontSize: 13,
                                 color: context.textPrimary),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
-                            widget.post.spotifyArtistName ?? 'Spotify',
+                            'Gemini Lyria 3 • AI Generated',
                             style: GoogleFonts.outfit(
-                                fontSize: 12, color: context.textSecondary),
+                                fontSize: 11, color: context.textSecondary),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -409,12 +403,12 @@ class _PostCardState extends ConsumerState<PostCard>
                     const SizedBox(width: 8),
                     IconButton(
                       onPressed: () async {
-                        final previewUrl = widget.post.spotifyPreviewUrl;
-                        if (previewUrl == null) return;
+                        final playbackUrl = widget.post.soundPlaybackUrl;
+                        if (playbackUrl == null) return;
                         if (_isPlaying) {
                           await _audioPlayer.pause();
                         } else {
-                          await _audioPlayer.setUrl(previewUrl);
+                          await _audioPlayer.setUrl(playbackUrl);
                           await _audioPlayer.play();
                         }
                         if (mounted) setState(() => _isPlaying = !_isPlaying);
@@ -423,7 +417,7 @@ class _PostCardState extends ConsumerState<PostCard>
                           _isPlaying
                               ? Icons.pause_circle_filled
                               : Icons.play_circle_filled,
-                          color: Colors.green,
+                          color: AppColors.electricBlue,
                           size: 32),
                     ),
                   ],

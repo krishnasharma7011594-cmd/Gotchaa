@@ -20,6 +20,9 @@ class PostModel {
     this.spotifyArtistName,
     this.spotifyAlbumArtUrl,
     this.spotifyPreviewUrl,
+    this.soundId,
+    this.soundPrompt,
+    this.soundPlaybackUrl,
     this.overlays,
     this.authorNation,
     this.authorLanguage,
@@ -56,6 +59,9 @@ class PostModel {
         spotifyArtistName: data['spotifyArtistName'] as String?,
         spotifyAlbumArtUrl: data['spotifyAlbumArtUrl'] as String?,
         spotifyPreviewUrl: data['spotifyPreviewUrl'] as String?,
+        soundId: data['soundId'] as String?,
+        soundPrompt: data['soundPrompt'] as String?,
+        soundPlaybackUrl: data['soundPlaybackUrl'] as String?,
         overlays: data['overlays'] != null
             ? List<Map<String, dynamic>>.from(data['overlays'])
             : null,
@@ -95,6 +101,9 @@ class PostModel {
   final String? spotifyArtistName;
   final String? spotifyAlbumArtUrl;
   final String? spotifyPreviewUrl;
+  final String? soundId;
+  final String? soundPrompt;
+  final String? soundPlaybackUrl;
   final List<Map<String, dynamic>>? overlays;
   final String? authorNation;
   final String? authorLanguage;
@@ -130,6 +139,9 @@ class PostModel {
         if (spotifyAlbumArtUrl != null)
           'spotifyAlbumArtUrl': spotifyAlbumArtUrl,
         if (spotifyPreviewUrl != null) 'spotifyPreviewUrl': spotifyPreviewUrl,
+        if (soundId != null) 'soundId': soundId,
+        if (soundPrompt != null) 'soundPrompt': soundPrompt,
+        if (soundPlaybackUrl != null) 'soundPlaybackUrl': soundPlaybackUrl,
         if (overlays != null) 'overlays': overlays,
         if (authorNation != null) 'authorNation': authorNation,
         if (authorLanguage != null) 'authorLanguage': authorLanguage,
