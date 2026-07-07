@@ -19,9 +19,9 @@ import '../../../../core/providers/shell_navigation_provider.dart';
 import '../../../../core/services/analytics_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../vybz/data/models/sound_model.dart';
-import '../../vybz/data/repositories/music_repository.dart';
-import '../../vybz/presentation/screens/sound_composer_screen.dart';
+import '../../../../features/vybz/data/models/sound_model.dart';
+import '../../../../features/vybz/data/repositories/music_repository.dart';
+import '../../../../features/vybz/presentation/screens/sound_composer_screen.dart';
 import '../models/editable_item.dart';
 import '../widgets/spotify_search_sheet.dart';
 
