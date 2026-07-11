@@ -105,15 +105,19 @@ class _SoundComposerScreenState extends ConsumerState<SoundComposerScreen> {
         ref.read(_generatedSoundProvider.notifier).state = sound;
       }
     } on Exception catch (e) {
-      String message = 'Something went wrong: ${e.toString()}';
-      final msg = e.toString();
-      if (msg.contains('429') || msg.contains('limit')) {
+      final raw = e.toString();
+      String message;
+      if (raw.contains('resource-exhausted') || raw.contains('limit')) {
         message =
-            'Daily generation limit reached. Try again tomorrow or browse the Library.';
-      } else if (msg.contains('502') || msg.contains('generation')) {
-        message = 'Music generation failed. The service may be temporarily unavailable.';
-      } else if (msg.contains('SocketException') || msg.contains('connection') || msg.contains('Connection refused') || msg.contains('NetworkIsUnreachable')) {
-        message = 'Could not connect to the backend server. Please verify your backend server is running and accessible.';
+            '🎵 Daily limit reached (5/day). Browse the Library to reuse a sound!';
+      } else if (raw.contains('permission-denied')) {
+        message = 'Age verification required. Only 18+ users can generate AI music.';
+      } else if (raw.contains('unauthenticated')) {
+        message = 'Please sign in again to generate music.';
+      } else if (raw.contains('internal') || raw.contains('unavailable')) {
+        message = 'AI music service is temporarily unavailable. Try again in a moment.';
+      } else {
+        message = 'Generation failed: $raw';
       }
       if (mounted) ref.read(_generateErrorProvider.notifier).state = message;
     } finally {

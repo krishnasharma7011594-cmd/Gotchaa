@@ -1965,3 +1965,266 @@ exports.executeBroAction = functions.runWith({
     }
 });
 
+// ============================================================================
+// ─── MUSIC / AI SOUND FUNCTIONS ─────────────────────────────────────────────
+// ============================================================================
+
+const axios = require('axios');
+const { v4: uuidv4Music } = require('uuid');
+
+/** Helper — get today's date string YYYY-MM-DD */
+const _dateStr = () => new Date().toISOString().split('T')[0];
+
+/** Helper — generate a long-lived signed URL for a storage path */
+async function _signedUrl(storagePath) {
+    const bucket = admin.storage().bucket();
+    const file = bucket.file(storagePath);
+    const [url] = await file.getSignedUrl({
+        action: 'read',
+        expires: '03-09-2491',
+    });
+    return url;
+}
+
+/**
+ * generateSound
+ * Called from Flutter SoundComposerScreen.
+ * Input:  { prompt: string }
+ * Output: SoundModel-compatible JSON with playbackUrl.
+ */
+exports.generateSound = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'Must be signed in.');
+    }
+    const uid = context.auth.uid;
+    const prompt = (data.prompt || '').trim();
+
+    if (!prompt || prompt.length > 300) {
+        throw new functions.https.HttpsError(
+            'invalid-argument',
+            'Prompt must be 1–300 characters.',
+        );
+    }
+
+    // ── 1. Age-gate ───────────────────────────────────────────────────────────
+    const userPrivateDoc = await db.collection('users_private').doc(uid).get();
+    if (!userPrivateDoc.exists || userPrivateDoc.data().ageTier !== 4) {
+        throw new functions.https.HttpsError(
+            'permission-denied',
+            'AI music generation is restricted to verified adult users (18+).',
+        );
+    }
+
+    // ── 2. Daily rate limit (5/day per user) ─────────────────────────────────
+    const maxPerDay = 5;
+    const limitRef = db.collection('music_generation_limits').doc(`${uid}_${_dateStr()}`);
+    const limitDoc = await limitRef.get();
+    const currentCount = limitDoc.exists ? (limitDoc.data().count || 0) : 0;
+
+    if (currentCount >= maxPerDay) {
+        throw new functions.https.HttpsError(
+            'resource-exhausted',
+            `Daily limit of ${maxPerDay} AI sounds reached. Try again tomorrow.`,
+        );
+    }
+
+    // ── 3. Call Gemini Lyria API ──────────────────────────────────────────────
+    const apiKey = process.env.GEMINI_API_KEY;
+    let base64Audio;
+
+    try {
+        const model = 'lyria-realtime-exp'; // public Gemini model for audio generation
+        const response = await axios.post(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+            {
+                contents: [{
+                    parts: [{
+                        text: `Generate an atmospheric music clip: ${prompt}`
+                    }]
+                }],
+                generationConfig: {
+                    responseModalities: ['AUDIO'],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: { voiceName: 'Aoede' }
+                        }
+                    }
+                }
+            },
+            { timeout: 60000 }
+        );
+
+        // Extract base64 audio from response
+        const candidate = response.data?.candidates?.[0];
+        const audioPart = candidate?.content?.parts?.find(p => p.inlineData?.mimeType?.startsWith('audio/'));
+        if (audioPart?.inlineData?.data) {
+            base64Audio = audioPart.inlineData.data;
+        } else {
+            throw new Error('No audio data in Gemini response');
+        }
+    } catch (err) {
+        functions.logger.error('[generateSound] Gemini API error:', err.response?.data || err.message);
+        throw new functions.https.HttpsError(
+            'internal',
+            'Music generation failed. The AI service is temporarily unavailable.',
+        );
+    }
+
+    // ── 4. Upload to Firebase Storage ─────────────────────────────────────────
+    const soundId = uuidv4Music();
+    const storagePath = `sounds/${soundId}.mp3`;
+    const bucket = admin.storage().bucket();
+    const file = bucket.file(storagePath);
+    const buffer = Buffer.from(base64Audio, 'base64');
+
+    await file.save(buffer, {
+        metadata: {
+            contentType: 'audio/mpeg',
+            metadata: { creatorId: uid },
+        },
+    });
+
+    // ── 5. Write Firestore document ───────────────────────────────────────────
+    const soundDoc = {
+        soundId,
+        creatorId: uid,
+        prompt: prompt.substring(0, 300),
+        model: 'lyria-realtime-exp',
+        storagePath,
+        durationSec: 30,
+        usageCount: 0,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        visibility: 'public',
+    };
+    await db.collection('sounds').doc(soundId).set(soundDoc);
+
+    // ── 6. Atomically increment daily counter ─────────────────────────────────
+    await db.runTransaction(async (tx) => {
+        const doc = await tx.get(limitRef);
+        const count = doc.exists ? (doc.data().count || 0) : 0;
+        tx.set(limitRef, {
+            count: count + 1,
+            lastGeneratedAt: admin.firestore.FieldValue.serverTimestamp(),
+        }, { merge: true });
+    });
+
+    // ── 7. Return with signed playback URL ────────────────────────────────────
+    const playbackUrl = await _signedUrl(storagePath);
+    return { ...soundDoc, createdAt: new Date().toISOString(), playbackUrl };
+});
+
+
+/**
+ * listSoundLibrary
+ * Input:  { sort?: 'trending'|'recent', cursor?: string, limit?: number }
+ * Output: Array of SoundModel-compatible JSON objects with playbackUrl.
+ */
+exports.listSoundLibrary = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'Must be signed in.');
+    }
+
+    const sort = data.sort || 'recent';
+    const cursorId = data.cursor || null;
+    const limit = Math.min(parseInt(data.limit || 20, 10), 50);
+
+    let query = db.collection('sounds').where('visibility', '==', 'public');
+
+    if (sort === 'trending') {
+        query = query.orderBy('usageCount', 'desc').orderBy('createdAt', 'desc');
+    } else {
+        query = query.orderBy('createdAt', 'desc');
+    }
+
+    if (cursorId) {
+        const cursorDoc = await db.collection('sounds').doc(cursorId).get();
+        if (cursorDoc.exists) query = query.startAfter(cursorDoc);
+    }
+
+    const snapshot = await query.limit(limit).get();
+    const results = [];
+
+    for (const doc of snapshot.docs) {
+        const d = doc.data();
+        try {
+            const playbackUrl = await _signedUrl(d.storagePath);
+            results.push({
+                ...d,
+                createdAt: d.createdAt?.toDate()?.toISOString() ?? null,
+                playbackUrl,
+            });
+        } catch (_) {
+            // Skip sounds with broken storage paths
+        }
+    }
+
+    return results;
+});
+
+
+/**
+ * getSoundPlaybackUrl
+ * Input:  { soundId: string }
+ * Output: { url: string }
+ */
+exports.getSoundPlaybackUrl = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'Must be signed in.');
+    }
+
+    const soundId = data.soundId;
+    if (!soundId) {
+        throw new functions.https.HttpsError('invalid-argument', 'soundId is required.');
+    }
+
+    const soundDoc = await db.collection('sounds').doc(soundId).get();
+    if (!soundDoc.exists) {
+        throw new functions.https.HttpsError('not-found', 'Sound not found.');
+    }
+
+    const url = await _signedUrl(soundDoc.data().storagePath);
+    return { url };
+});
+
+
+/**
+ * attachSoundToPost
+ * Input:  { soundId: string, postId: string }
+ * Output: { success: true }
+ */
+exports.attachSoundToPost = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'Must be signed in.');
+    }
+
+    const uid = context.auth.uid;
+    const { soundId, postId } = data;
+
+    if (!soundId || !postId) {
+        throw new functions.https.HttpsError('invalid-argument', 'soundId and postId are required.');
+    }
+
+    const soundDoc = await db.collection('sounds').doc(soundId).get();
+    if (!soundDoc.exists) {
+        throw new functions.https.HttpsError('not-found', 'Sound not found.');
+    }
+
+    const soundData = soundDoc.data();
+    if (soundData.visibility !== 'public' && soundData.creatorId !== uid) {
+        throw new functions.https.HttpsError('permission-denied', 'Cannot attach a private sound you do not own.');
+    }
+
+    const postDoc = await db.collection('posts').doc(postId).get();
+    if (!postDoc.exists) {
+        throw new functions.https.HttpsError('not-found', 'Post not found.');
+    }
+
+    const batch = db.batch();
+    batch.update(db.collection('posts').doc(postId), { soundId });
+    batch.update(db.collection('sounds').doc(soundId), {
+        usageCount: admin.firestore.FieldValue.increment(1),
+    });
+    await batch.commit();
+
+    return { success: true };
+});

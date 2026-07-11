@@ -1,97 +1,99 @@
 // lib/features/vybz/data/repositories/music_repository.dart
 //
-// Talks to the four Express /music endpoints.
-// All methods return typed results — no raw JSON or GCS paths leak out.
+// Calls Firebase Cloud Functions — no Railway/Express needed.
+// The four callable functions are: generateSound, listSoundLibrary,
+// getSoundPlaybackUrl, attachSoundToPost.
 
-import 'package:dio/dio.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../../../config/app_config.dart';
 import '../models/sound_model.dart';
 
 class MusicRepository {
-  MusicRepository(this._dio);
+  MusicRepository(this._functions);
 
-  final Dio _dio;
+  final FirebaseFunctions _functions;
 
-  // ── Helpers ──────────────────────────────────────────────────────────────
+  // ── Helpers ───────────────────────────────────────────────────────────────
 
-  Future<Options> _authOptions() async {
-    final token = await FirebaseAuth.instance.currentUser?.getIdToken();
-    if (token == null) throw Exception('User not authenticated');
-    return Options(headers: {'Authorization': 'Bearer $token'});
+  /// Wraps a [FirebaseFunctionsException] into a friendlier message.
+  Exception _wrap(Object e) {
+    if (e is FirebaseFunctionsException) {
+      return Exception(e.message ?? e.code);
+    }
+    return Exception(e.toString());
   }
 
   // ── Public API ────────────────────────────────────────────────────────────
 
-  /// POST /music/generate
-  /// Sends the prompt and returns the generated [SoundModel] including a
-  /// signed playback URL. Never returns a raw storagePath.
+  /// Generates an AI music clip from [prompt] and returns the [SoundModel].
   Future<SoundModel> generateSound(String prompt) async {
     if (prompt.isEmpty || prompt.length > 300) {
       throw ArgumentError('Prompt must be 1–300 characters');
     }
-    final opts = await _authOptions();
-    final resp = await _dio.post(
-      '/music/generate',
-      data: {'prompt': prompt},
-      options: opts,
-    );
-    return SoundModel.fromJson(resp.data as Map<String, dynamic>);
+    try {
+      final result = await _functions
+          .httpsCallable('generateSound')
+          .call<Map<Object?, Object?>>({'prompt': prompt});
+
+      return SoundModel.fromJson(
+        Map<String, dynamic>.from(result.data),
+      );
+    } catch (e) {
+      throw _wrap(e);
+    }
   }
 
-  /// GET /music/library?sort=trending|recent&cursor=&limit=
+  /// Returns a paginated list of public sounds from the library.
   Future<List<SoundModel>> listLibrary({
     String sort = 'recent',
     String? cursor,
     int limit = 20,
   }) async {
-    final opts = await _authOptions();
-    final resp = await _dio.get(
-      '/music/library',
-      queryParameters: {
+    try {
+      final result = await _functions
+          .httpsCallable('listSoundLibrary')
+          .call<List<Object?>>({
         'sort': sort,
         if (cursor != null) 'cursor': cursor,
         'limit': limit,
-      },
-      options: opts,
-    );
-    final data = resp.data as List<dynamic>;
-    return data
-        .map((e) => SoundModel.fromJson(e as Map<String, dynamic>))
-        .toList();
+      });
+
+      return (result.data)
+          .map((e) => SoundModel.fromJson(Map<String, dynamic>.from(e as Map)))
+          .toList();
+    } catch (e) {
+      throw _wrap(e);
+    }
   }
 
-  /// GET /music/:soundId/playback-url
-  /// Returns a signed URL string — no raw storage path exposed.
+  /// Fetches a fresh signed playback URL for [soundId].
   Future<String> getPlaybackUrl(String soundId) async {
-    final opts = await _authOptions();
-    final resp = await _dio.get(
-      '/music/$soundId/playback-url',
-      options: opts,
-    );
-    return (resp.data as Map<String, dynamic>)['url'] as String;
+    try {
+      final result = await _functions
+          .httpsCallable('getSoundPlaybackUrl')
+          .call<Map<Object?, Object?>>({'soundId': soundId});
+
+      return result.data['url'] as String;
+    } catch (e) {
+      throw _wrap(e);
+    }
   }
 
-  /// POST /music/:soundId/attach
+  /// Attaches [soundId] to [postId], incrementing the sound's usageCount.
   Future<void> attachSoundToPost(String soundId, String postId) async {
-    final opts = await _authOptions();
-    await _dio.post(
-      '/music/$soundId/attach',
-      data: {'postId': postId},
-      options: opts,
-    );
+    try {
+      await _functions
+          .httpsCallable('attachSoundToPost')
+          .call({'soundId': soundId, 'postId': postId});
+    } catch (e) {
+      throw _wrap(e);
+    }
   }
 }
 
 // ── Riverpod provider ─────────────────────────────────────────────────────
 
 final musicRepositoryProvider = Provider<MusicRepository>((ref) {
-  final dio = Dio(BaseOptions(
-    baseUrl: AppConfig.instance.backendUrl,
-    connectTimeout: const Duration(seconds: 30),
-    receiveTimeout: const Duration(seconds: 60),
-  ));
-  return MusicRepository(dio);
+  return MusicRepository(FirebaseFunctions.instance);
 });
