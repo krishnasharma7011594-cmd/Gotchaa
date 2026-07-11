@@ -1247,8 +1247,39 @@ exports.recordLegalAcceptance = functions.https.onCall(async (data, context) => 
 // ── Moderation dashboard ───────────────────────────────────────────────────────
 const MOD_SEVERITY_ORDER = { critical: 0, high: 1, normal: 2, low: 3 };
 
+/**
+ * Server-side role authorization helpers.
+ * SECURITY: These check Firebase custom claims on the verified ID token,
+ * NOT the `role` field on the user's Firestore document (which is client-writable
+ * and therefore not a trust boundary). Custom claims are only set via Admin SDK.
+ */
+function requireModerator(context) {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'Login required.');
+    }
+    const role = context.auth.token.role;
+    if (role !== 'admin' && role !== 'moderator') {
+        throw new functions.https.HttpsError(
+            'permission-denied',
+            'This action requires moderator or admin privileges.'
+        );
+    }
+}
+
+function requireAdmin(context) {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'Login required.');
+    }
+    if (context.auth.token.role !== 'admin') {
+        throw new functions.https.HttpsError(
+            'permission-denied',
+            'This action requires admin privileges.'
+        );
+    }
+}
+
 exports.getModerationQueue = functions.https.onCall(async (data, context) => {
-    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login required');
+    requireModerator(context);
     const snap = await db.collection('moderation_reports')
         .where('status', '==', 'pending')
         .orderBy('timestamp', 'desc')
@@ -1274,7 +1305,7 @@ exports.getModerationQueue = functions.https.onCall(async (data, context) => {
 });
 
 exports.takeModerationAction = functions.https.onCall(async (data, context) => {
-    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login required');
+    requireModerator(context);
     const { reportId, action, targetUserId, contentType, contentId, note } = data;
     const valid = ['warn', 'mute_24h', 'mute_7d', 'ban', 'delete_content', 'restore_content'];
     if (!valid.includes(action)) throw new functions.https.HttpsError('invalid-argument', 'Invalid action');
@@ -1319,7 +1350,7 @@ exports.takeModerationAction = functions.https.onCall(async (data, context) => {
 });
 
 exports.moderationStats = functions.https.onCall(async (data, context) => {
-    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login required');
+    requireModerator(context);
     const dayAgo = new Date(Date.now() - 86400000);
     const reportsSnap = await db.collection('moderation_reports')
         .where('timestamp', '>=', admin.firestore.Timestamp.fromDate(dayAgo))
@@ -1341,7 +1372,8 @@ exports.moderationStats = functions.https.onCall(async (data, context) => {
 });
 
 exports.handleCsamIncident = functions.https.onCall(async (data, context) => {
-    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login required');
+    // CSAM incidents require full admin privileges (not just moderator)
+    requireAdmin(context);
     const userId = data.userId || context.auth.uid;
     const hash = data.perceptualHash || 'unknown';
 
@@ -2033,37 +2065,29 @@ exports.generateSound = functions.https.onCall(async (data, context) => {
     let base64Audio;
 
     try {
-        const model = 'lyria-realtime-exp'; // public Gemini model for audio generation
+        const model = 'lyria-3-clip-preview'; // standard music clip generation model
         const response = await axios.post(
-            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/interactions?key=${apiKey}`,
             {
-                contents: [{
-                    parts: [{
-                        text: `Generate an atmospheric music clip: ${prompt}`
-                    }]
-                }],
-                generationConfig: {
-                    responseModalities: ['AUDIO'],
-                    speechConfig: {
-                        voiceConfig: {
-                            prebuiltVoiceConfig: { voiceName: 'Aoede' }
-                        }
-                    }
-                }
+                model: `models/${model}`,
+                input: prompt
             },
-            { timeout: 60000 }
+            { 
+                headers: { 'Content-Type': 'application/json' },
+                timeout: 90000 
+            }
         );
 
-        // Extract base64 audio from response
-        const candidate = response.data?.candidates?.[0];
-        const audioPart = candidate?.content?.parts?.find(p => p.inlineData?.mimeType?.startsWith('audio/'));
-        if (audioPart?.inlineData?.data) {
-            base64Audio = audioPart.inlineData.data;
+        // Extract base64 audio from Interactions response (outputAudio.data or similar)
+        const outputAudio = response.data?.outputAudio;
+        if (outputAudio?.data) {
+            base64Audio = outputAudio.data;
         } else {
-            throw new Error('No audio data in Gemini response');
+            functions.logger.error('[generateSound] Interactions API response payload: ', JSON.stringify(response.data));
+            throw new Error('No outputAudio data found in Interactions response');
         }
     } catch (err) {
-        functions.logger.error('[generateSound] Gemini API error:', err.response?.data || err.message);
+        functions.logger.error('[generateSound] Gemini Interactions API error:', err.response?.data || err.message);
         throw new functions.https.HttpsError(
             'internal',
             'Music generation failed. The AI service is temporarily unavailable.',
