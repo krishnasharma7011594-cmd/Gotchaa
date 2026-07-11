@@ -13,7 +13,10 @@ service firebase.storage {
 
     // Validates if the authenticated user's UID is part of the chatId (format: uid1_uid2)
     function isChatParticipant(chatId) {
-      return isAuthenticated() && (chatId.matches('.*' + request.auth.uid + '.*'));
+      return isAuthenticated() && (
+        chatId.split('_')[0] == request.auth.uid ||
+        chatId.split('_')[1] == request.auth.uid
+      );
     }
 
     // --- Profile Pictures ---

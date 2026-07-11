@@ -31,7 +31,7 @@ const checkRateLimit = async (uid, type, limit, windowMs) => {
 /**
  * Find Vibe Match with Weighted Scoring
  */
-exports.findVibeMatch = functions.https.onCall(async (data, context) => {
+exports.findVibeMatch = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
     // TASK 1: App Check Verification
     if (context.app === undefined) {
         throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
@@ -130,7 +130,7 @@ exports.findVibeMatch = functions.https.onCall(async (data, context) => {
 /**
  * Handle Game Votes Atomically
  */
-exports.submitVibeGameVote = functions.https.onCall(async (data, context) => {
+exports.submitVibeGameVote = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
     // TASK 1: App Check Verification
     if (context.app === undefined) {
         throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
@@ -169,7 +169,7 @@ exports.submitVibeGameVote = functions.https.onCall(async (data, context) => {
  * Gemini AI Proxy (TASK 1)
  * Protects API key and enforces App Check
  */
-exports.geminiProxy = functions.https.onCall(async (data, context) => {
+exports.geminiProxy = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
     if (context.app === undefined) {
         throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
     }
@@ -655,7 +655,10 @@ function calculateAge(birthdayDate) {
  * Callable Cloud Function: validateParentalConsent
  * Validates parental consent for a minor/child user.
  */
-exports.validateParentalConsent = functions.https.onCall(async (data, context) => {
+exports.validateParentalConsent = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     const { childUid } = data;
     if (!childUid) {
         throw new functions.https.HttpsError('invalid-argument', 'Missing childUid.');
@@ -812,7 +815,8 @@ exports.enforceAgeRestrictions = functions.pubsub.schedule('every 24 hours').onR
  */
 exports.deleteUserAccount = functions.runWith({
     timeoutSeconds: 540,
-    memory: '2GB'
+    memory: '2GB',
+    maxInstances: 20
 }).https.onCall(async (data, context) => {
     if (context.app === undefined) {
         throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
@@ -910,7 +914,7 @@ exports.deleteUserAccount = functions.runWith({
 // Call from Flutter: FirebaseFunctions.instance.httpsCallable('seedDemoData').call()
 // Or from Firebase Console → Functions → seedDemoData → Test
 // ═══════════════════════════════════════════════════════════════════════════
-exports.seedDemoData = functions.runWith({ timeoutSeconds: 300, memory: '512MB' })
+exports.seedDemoData = functions.runWith({ timeoutSeconds: 300, memory: '512MB', maxInstances: 20 })
     .https.onCall(async (data, context) => {
 
         // ── Idempotency Guard ──────────────────────────────────────────────────
@@ -1216,7 +1220,10 @@ function getClientIp(context) {
 /**
  * Records legal acceptance with IP proof in users_private/{uid}.
  */
-exports.recordLegalAcceptance = functions.https.onCall(async (data, context) => {
+exports.recordLegalAcceptance = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     if (!context.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'User must be logged in.');
     }
@@ -1278,7 +1285,10 @@ function requireAdmin(context) {
     }
 }
 
-exports.getModerationQueue = functions.https.onCall(async (data, context) => {
+exports.getModerationQueue = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     requireModerator(context);
     const snap = await db.collection('moderation_reports')
         .where('status', '==', 'pending')
@@ -1304,7 +1314,10 @@ exports.getModerationQueue = functions.https.onCall(async (data, context) => {
     return { queue, total: queue.length };
 });
 
-exports.takeModerationAction = functions.https.onCall(async (data, context) => {
+exports.takeModerationAction = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     requireModerator(context);
     const { reportId, action, targetUserId, contentType, contentId, note } = data;
     const valid = ['warn', 'mute_24h', 'mute_7d', 'ban', 'delete_content', 'restore_content'];
@@ -1349,7 +1362,10 @@ exports.takeModerationAction = functions.https.onCall(async (data, context) => {
     return { success: true, action };
 });
 
-exports.moderationStats = functions.https.onCall(async (data, context) => {
+exports.moderationStats = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     requireModerator(context);
     const dayAgo = new Date(Date.now() - 86400000);
     const reportsSnap = await db.collection('moderation_reports')
@@ -1371,7 +1387,10 @@ exports.moderationStats = functions.https.onCall(async (data, context) => {
     };
 });
 
-exports.handleCsamIncident = functions.https.onCall(async (data, context) => {
+exports.handleCsamIncident = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     // CSAM incidents require full admin privileges (not just moderator)
     requireAdmin(context);
     const userId = data.userId || context.auth.uid;
@@ -1410,18 +1429,27 @@ exports.handleCsamIncident = functions.https.onCall(async (data, context) => {
     return { suspended: true, incidentId: incidentRef.id };
 });
 
-exports.notifyAdminModeration = functions.https.onCall(async (data, context) => {
+exports.notifyAdminModeration = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     console.log('[MODERATION ALERT]', JSON.stringify(data));
     return { notified: true };
 });
 
-exports.notifyTrustTeam = functions.https.onCall(async (data, context) => {
+exports.notifyTrustTeam = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     console.log('[TRUST ALERT]', JSON.stringify(data));
     return { notified: true };
 });
 
 // ── Security: login, sessions, export ─────────────────────────────────────────
-exports.recordLoginSession = functions.https.onCall(async (data, context) => {
+exports.recordLoginSession = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login required');
     const uid = context.auth.uid;
     const ip = getClientIp(context);
@@ -1451,7 +1479,10 @@ exports.recordLoginSession = functions.https.onCall(async (data, context) => {
     return { sessionId, suspiciousIp: !!(priorIp && ip && priorIp !== ip) };
 });
 
-exports.sendLoginNotification = functions.https.onCall(async (data, context) => {
+exports.sendLoginNotification = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login required');
     const uid = context.auth.uid;
     const deviceName = data.deviceName || 'Unknown device';
@@ -1475,9 +1506,26 @@ exports.sendLoginNotification = functions.https.onCall(async (data, context) => 
     return { notified: isNewDevice };
 });
 
-exports.verify2FA = functions.https.onCall(async (data, context) => {
+// SECURITY FIX (VULN-005): 2FA TOTP brute-forcing protection.
+// Limits attempts to 5 failures, locking the 2FA verify endpoint for 15 minutes.
+exports.verify2FA = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login required');
     const uid = context.auth.uid;
+
+    const lockRef = db.collection('users_private').doc(uid).collection('sessions').doc('2fa_lock');
+    const lockSnap = await lockRef.get();
+    const lockData = lockSnap.exists ? lockSnap.data() : { attempts: 0, lockedUntil: null };
+
+    if (lockData.lockedUntil && lockData.lockedUntil.toDate() > new Date()) {
+        throw new functions.https.HttpsError(
+            'resource-exhausted',
+            'Too many failed 2FA verification attempts. Try again in 15 minutes.'
+        );
+    }
+
     const code = String(data.code || '').replace(/\s/g, '');
     if (!/^\d{6}$/.test(code)) return { valid: false };
     const privateDoc = await db.collection('users_private').doc(uid).get();
@@ -1489,10 +1537,30 @@ exports.verify2FA = functions.https.onCall(async (data, context) => {
         token: code,
         window: 1,
     });
-    return { valid: !!valid };
+
+    if (valid) {
+        // Clear lock on success
+        await lockRef.delete();
+        return { valid: true };
+    } else {
+        const attempts = (lockData.attempts || 0) + 1;
+        const lockedUntil = attempts >= 5 ? admin.firestore.Timestamp.fromMillis(Date.now() + 15 * 60000) : null;
+        await lockRef.set({ attempts, lockedUntil });
+        if (attempts >= 5) {
+            throw new functions.https.HttpsError(
+                'resource-exhausted',
+                'Too many failed 2FA verification attempts. Try again in 15 minutes.'
+            );
+        }
+        return { valid: false };
+    }
 });
 
-exports.trackFailedLogin = functions.https.onCall(async (data, context) => {
+// SECURITY FIX (VULN-006): Failed login rate-limit enforcement.
+exports.trackFailedLogin = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     const email = (data.email || '').toLowerCase().trim();
     if (!email) return { tracked: false };
     const ref = db.collection('login_attempts').doc(email.replace(/[^a-z0-9@._-]/g, '_'));
@@ -1514,13 +1582,19 @@ exports.trackFailedLogin = functions.https.onCall(async (data, context) => {
     return { tracked: true, failCount: after.data()?.failCount || 0 };
 });
 
-exports.revokeSession = functions.https.onCall(async (data, context) => {
+exports.revokeSession = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login required');
     await db.collection('users_private').doc(context.auth.uid).collection('sessions').doc(data.sessionId).delete();
     return { revoked: true };
 });
 
-exports.revokeAllOtherSessions = functions.https.onCall(async (data, context) => {
+exports.revokeAllOtherSessions = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login required');
     const snap = await db.collection('users_private').doc(context.auth.uid).collection('sessions').get();
     const batch = db.batch();
@@ -1531,7 +1605,10 @@ exports.revokeAllOtherSessions = functions.https.onCall(async (data, context) =>
     return { revoked: true };
 });
 
-exports.generateDataExport = functions.https.onCall(async (data, context) => {
+exports.generateDataExport = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login required');
     const uid = context.auth.uid;
     const privateDoc = await db.collection('users_private').doc(uid).get();
@@ -1557,7 +1634,10 @@ exports.generateDataExport = functions.https.onCall(async (data, context) => {
     };
 });
 
-exports.checkPolicyOnLogin = functions.https.onCall(async (data, context) => {
+exports.checkPolicyOnLogin = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     if (!context.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'User must be logged in.');
     }
@@ -1806,7 +1886,8 @@ exports.compressUploadedVideo = functions.runWith({
  */
 exports.executeBroAction = functions.runWith({
     timeoutSeconds: 30,
-    memory: '256MB'
+    memory: '256MB',
+    maxInstances: 20
 }).https.onCall(async (data, context) => {
     // 1. App Check Verification
     if (context.app === undefined) {
@@ -2024,7 +2105,10 @@ async function _signedUrl(storagePath) {
  * Input:  { prompt: string }
  * Output: SoundModel-compatible JSON with playbackUrl.
  */
-exports.generateSound = functions.https.onCall(async (data, context) => {
+exports.generateSound = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     if (!context.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'Must be signed in.');
     }
@@ -2143,7 +2227,10 @@ exports.generateSound = functions.https.onCall(async (data, context) => {
  * Input:  { sort?: 'trending'|'recent', cursor?: string, limit?: number }
  * Output: Array of SoundModel-compatible JSON objects with playbackUrl.
  */
-exports.listSoundLibrary = functions.https.onCall(async (data, context) => {
+exports.listSoundLibrary = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     if (!context.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'Must be signed in.');
     }
@@ -2191,7 +2278,10 @@ exports.listSoundLibrary = functions.https.onCall(async (data, context) => {
  * Input:  { soundId: string }
  * Output: { url: string }
  */
-exports.getSoundPlaybackUrl = functions.https.onCall(async (data, context) => {
+exports.getSoundPlaybackUrl = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     if (!context.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'Must be signed in.');
     }
@@ -2216,7 +2306,10 @@ exports.getSoundPlaybackUrl = functions.https.onCall(async (data, context) => {
  * Input:  { soundId: string, postId: string }
  * Output: { success: true }
  */
-exports.attachSoundToPost = functions.https.onCall(async (data, context) => {
+exports.attachSoundToPost = functions.runWith({ maxInstances: 20 }).https.onCall(async (data, context) => {
+    if (context.app === undefined) {
+        throw new functions.https.HttpsError('failed-precondition', 'The function must be called from a verified app.');
+    }
     if (!context.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'Must be signed in.');
     }

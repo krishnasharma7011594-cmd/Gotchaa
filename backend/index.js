@@ -13,6 +13,28 @@ if (admin.apps.length === 0) {
   });
 }
 
+// Enforce non-wildcard CORS to allow local hosts & mobile app bundle IDs
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:8080',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:8080',
+  'https://studio-1284397718-50704.firebaseapp.com',
+  'https://studio-1284397718-50704.web.app'
+];
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Blocked by CORS policy'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Firebase-AppCheck'],
+  credentials: true
+};
+
 // Authentication Guard Middleware (checks Firebase auth tokens)
 const checkAuth = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -30,12 +52,28 @@ const checkAuth = async (req, res, next) => {
   }
 };
 
+// Verification of Firebase App Check tokens for Express endpoints
+const checkAppCheck = async (req, res, next) => {
+  const appCheckToken = req.header('X-Firebase-AppCheck');
+  if (!appCheckToken) {
+    return res.status(401).json({ error: 'Unauthorized: App Check token missing' });
+  }
+  try {
+    await admin.appCheck().verifyToken(appCheckToken);
+    next();
+  } catch (err) {
+    console.error('App Check validation failed:', err);
+    return res.status(401).json({ error: 'Unauthorized: App Check token invalid' });
+  }
+};
+
 const app = express();
-app.use(cors());
-app.use(express.json());
+app.use(cors(corsOptions));
+// Limit JSON body size to 10KB to prevent memory exhaustion / DoS
+app.use(express.json({ limit: '10kb' }));
 
 // Mount protected Music module router
-app.use('/music', checkAuth, require('./musicRouter'));
+app.use('/music', checkAppCheck, checkAuth, require('./musicRouter'));
 
 // ==========================================
 // --- 1. RATE LIMITING MIDDLEWARES ---
@@ -299,6 +337,12 @@ app.post('/translation/translate', translationLimiter, (req, res) => {
 
 app.get('/health', (req, res) => {
   res.json({ status: "healthy", service: "Gotcha Spotify & Security Integration API Layer" });
+});
+
+// Global exception handler middleware to prevent internal stack trace leakage
+app.use((err, req, res, next) => {
+  console.error('[Global Error Handler]:', err.stack || err.message);
+  res.status(500).json({ error: 'An unexpected error occurred. Please try again later.' });
 });
 
 const PORT = process.env.PORT || 3000;

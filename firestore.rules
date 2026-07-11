@@ -121,38 +121,77 @@ service cloud.firestore {
         resource.data.get('uid', '') == request.auth.uid;
     }
 
+    // Only followers/following involved can write or read
     match /followers/{userId}/userFollowers/{followerId} {
-      allow read, write: if isSignedIn();
+      allow read: if isSignedIn();
+      allow create, update: if isOwner(followerId);
+      allow delete: if isOwner(userId) || isOwner(followerId) || isAdmin();
     }
 
     match /following/{userId}/userFollowing/{followedId} {
-      allow read, write: if isSignedIn();
+      allow read: if isSignedIn();
+      allow create, update: if isOwner(userId);
+      allow delete: if isOwner(userId) || isOwner(followedId) || isAdmin();
     }
 
+    // SECURITY FIX (VULN-003): Chat collection participant verification
     match /chats/{chatId} {
-      allow read, write: if isSignedIn();
+      // Direct message chat IDs are format: uid1_uid2. Verify the user is either uid1 or uid2.
+      function isChatParticipant() {
+        return isSignedIn() && (
+          chatId.split('_')[0] == request.auth.uid ||
+          chatId.split('_')[1] == request.auth.uid
+        );
+      }
+
+      allow read, write: if isChatParticipant() || isAdmin();
 
       match /{allSubcollections=**} {
-        allow read, write: if isSignedIn();
+        allow read, write: if isChatParticipant() || isAdmin();
       }
     }
 
+    // SECURITY FIX (VULN-003): Post writes restricted to owner
     match /posts/{postId} {
-      allow read, write: if isSignedIn();
+      allow read: if isSignedIn();
+      // Only owner can create or update/delete post.
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if isSignedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+
+      match /comments/{commentId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+        allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      }
+
+      match /likes/{userId} {
+        allow read: if isSignedIn();
+        allow write: if isOwner(userId);
+      }
+
       match /{allSubcollections=**} {
-        allow read, write: if isSignedIn();
+        allow read: if isSignedIn();
+        allow write: if isSignedIn();
       }
     }
 
+    // SECURITY FIX (VULN-003): Vybz (video reels) write verification
     match /vybz/{vybzId} {
-      allow read, write: if isSignedIn();
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      
       match /{allSubcollections=**} {
-        allow read, write: if isSignedIn();
+        allow read: if isSignedIn();
+        allow write: if isSignedIn();
       }
     }
 
+    // SECURITY FIX (VULN-003): Stories owner controls
     match /stories/{storyId} {
-      allow read, write: if isSignedIn();
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
     }
 
     match /sounds/{soundId} {
@@ -160,21 +199,46 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // SECURITY FIX (VULN-003): Vibetalk Rooms participant rules
     match /vibetalk_rooms/{roomId} {
-      allow read, write: if isSignedIn();
+      function isRoomParticipant() {
+        return isSignedIn() && (
+          resource.data.callerId == request.auth.uid ||
+          resource.data.calleeId == request.auth.uid
+        );
+      }
+      allow read: if isRoomParticipant() || isAdmin();
+      // Allow creation by matching function transaction. Allow updates for gamestate only.
+      allow create: if isAdmin();
+      allow update: if isRoomParticipant() || isAdmin();
+      allow delete: if isAdmin();
+
       match /{document=**} {
-        allow read, write: if isSignedIn();
+        allow read, write: if isRoomParticipant() || isAdmin();
       }
     }
 
+    // Vibetalk matching queue
     match /vibetalk_queue/{queueId} {
-      allow read, write: if isSignedIn();
+      allow read: if isOwner(queueId) || isAdmin();
+      allow write: if isOwner(queueId);
     }
 
+    // SECURITY FIX (VULN-003): Circles (groups) admin/member restrictions
     match /circles/{circleId} {
-      allow read, write: if isSignedIn();
+      function isCircleMember() {
+        return isSignedIn() && (
+          request.auth.uid in resource.data.members ||
+          resource.data.ownerId == request.auth.uid
+        );
+      }
+      allow read: if isCircleMember() || resource.data.visibility == 'public';
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow update: if isSignedIn() && (resource.data.ownerId == request.auth.uid || isCircleMember());
+      allow delete: if isSignedIn() && (resource.data.ownerId == request.auth.uid || isAdmin());
+
       match /{document=**} {
-        allow read, write: if isSignedIn();
+        allow read, write: if isCircleMember() || isAdmin();
       }
     }
 
