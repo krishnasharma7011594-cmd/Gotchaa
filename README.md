@@ -1,141 +1,345 @@
 # Gotchaa
 
-> Connect globally, express visually, and communicate securely without language barriers.
+GOTCHAA — Connect globally, express visually, and communicate securely without language barriers.
 
-Gotchaa is a founder-led, high-performance social super app built on Flutter, Node.js Express, and Firebase. Designed for active multi-country interactions, it integrates secure, end-to-end encrypted messaging, short-form creative video streams, local geographical discovery, and multi-model AI modules to deliver a seamless, state-of-the-art social experience.
+Gotchaa is a production-grade, founder-led social super app built on Flutter, Node.js, and Firebase. Designed for seamless international interactions, it integrates end-to-end encrypted messaging, a short-form video creation platform with GPU shaders, geolocation community discovery, and multi-model AI workflows (Gemini & Groq) to deliver a modern, high-performance social ecosystem.
+
+[![Flutter CI](https://github.com/krishnasharma7011594-cmd/Gotchaa/actions/workflows/flutter-ci.yml/badge.svg)](https://github.com/krishnasharma7011594-cmd/Gotchaa/actions/workflows/flutter-ci.yml)
+[![Web & Backend CI](https://github.com/krishnasharma7011594-cmd/Gotchaa/actions/workflows/web-backend-ci.yml/badge.svg)](https://github.com/krishnasharma7011594-cmd/Gotchaa/actions/workflows/web-backend-ci.yml)
+[![Firebase Deploy](https://github.com/krishnasharma7011594-cmd/Gotchaa/actions/workflows/firebase-deploy.yml/badge.svg)](https://github.com/krishnasharma7011594-cmd/Gotchaa/actions/workflows/firebase-deploy.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+[Project Logo Placeholder]
+
+[Website Placeholder] | [Demo Video Placeholder] | [Live Demo Placeholder]
+
+---
+
+## 📸 Screenshots
+
+| Home Feed | Messaging | AI Assistant | Explore | Profile |
+| --- | --- | --- | --- | --- |
+| ![Home Feed Screen](https://placehold.co/400x800/0d0d1a/ffffff/png?text=Home+Feed) | ![Messaging Screen](https://placehold.co/400x800/0d0d1a/ffffff/png?text=Messaging) | ![AI Assistant Screen](https://placehold.co/400x800/0d0d1a/ffffff/png?text=AI+Assistant) | ![Explore Screen](https://placehold.co/400x800/0d0d1a/ffffff/png?text=Explore) | ![Profile Screen](https://placehold.co/400x800/0d0d1a/ffffff/png?text=Profile) |
+
+---
+
+## 🎥 Demo GIFs
+
+| App Walkthrough | Encrypted Messaging | AI Sound Composer | Shaders & Creator Tools |
+| --- | --- | --- | --- |
+| ![App Walkthrough Demo](https://placehold.co/300x600/0d0d1a/ffffff/gif?text=App+Demo) | ![Messaging Demo](https://placehold.co/300x600/0d0d1a/ffffff/gif?text=Messaging+Demo) | ![AI Composer Demo](https://placehold.co/300x600/0d0d1a/ffffff/gif?text=AI+Demo) | ![Video Feed Demo](https://placehold.co/300x600/0d0d1a/ffffff/gif?text=Creator+Tools) |
+
+---
+
+## 🌟 Features
+
+### 🧠 Artificial Intelligence
+* **Contextual Assistant:** Chat interface powered by `gemini-3-flash-preview` that dynamically refuses non-app topics and enforces platform context.
+* **Intelligent Deep Linking:** Automatically extracts user intents to trigger routing pathways for third-party services (e.g. food delivery, transport, booking).
+* **Local Translation Engine:** On-device low-latency translation and language identification utilizing Google ML Kit.
+* **Multimodal Generation:** Serves as a gateway for Gemini-powered media generation including text-to-speech output.
+
+### 💬 Messaging
+* **VibeTalk Audio Rooms:** Real-time, voice-centric, and transcribed multi-user audio chat rooms.
+* **WebRTC Calling:** High-fidelity real-time voice call connectivity managed through RTC session pools.
+* **Media Messaging:** Safe and interactive exchange of dynamic stickers, gifs, audio recordings, and media attachments.
+
+### 🎬 Creator Tools (Vybz)
+* **Real-time Shaders:** Custom GPU fragment shaders (`beauty_smooth.frag`/`beauty_color.frag`) for hardware-accelerated camera filtering.
+* **AI Sound Composer:** In-feed music generator using the Gemini Interactions API (`lyria-3-clip-preview`) saving files directly to Firebase Storage.
+* **Shared Sound Library:** Shared public repository where users can catalog, sort, and reuse custom generated soundtracks.
+
+### 🔒 Security & Privacy
+* **Client-Side E2EE:** Direct chat sessions encrypted locally using Curve25519, AES-GCM, and SHA-256 keys.
+* **Safety Verification:** Numeric fingerprint fingerprinting and QR safety numbers verified peer-to-peer.
+* **Encrypted Storage:** Key material, recovery parameters, and flags secured locally using AES-based EncryptedSharedPreferences via Flutter Secure Storage.
+* **Biometric Auth Integration:** Local authentication hooks protecting settings configurations and E2EE keys.
+
+### 🌐 Discover & Social
+* **Map-based Explore:** Custom location interfaces (`flutter_map`) fetching nearby posts and public circles within geo-coordinates.
+* **Circles:** Discover localized community groups and discussion channels.
+* **Dynamic Feed:** Custom feed mixer integrating story feeds, user text posts, and short-form video reels.
+
+### 🛡️ Governance & Safety
+* **Parental & Legal Gates:** Active verification controls validating age limit bounds (restricting matching strictly to 18+).
+* **Automatic Moderation:** Automatic hash checks for CSAM patterns and automated escalation to Trust Teams.
+
+---
+
+## 📐 Architecture
+
+Gotchaa is designed around a clean feature-driven architecture where features contain their respective presentation, domain, and data sources. State updates are pushed reactively from secure storage and database triggers.
 
 ```mermaid
 graph TD
-    A[Flutter Mobile Client] -->|E2EE WebRTC Signals / Data| B(Firebase Realtime DB)
-    A -->|Auth / Social Operations| C[Firebase Cloud Functions]
-    A -->|Asset Uploads| D[Firebase Storage]
-    C -->|Store Metadata / Indices| E[(Cloud Firestore)]
-    C -->|v1beta/interactions| F[Gemini API - lyria-3-clip-preview]
-    C -->|v1beta/generateContent| G[Gemini API - gemini-1.5-flash]
+    subgraph Client Application [Flutter Mobile Client]
+        UI[UI Screens & Widgets] -->|Read State| Riverpod[Riverpod Providers]
+        Riverpod -->|Call API| Repository[Repositories]
+        Repository -->|Local Queries| Hive[(Hive Cache)]
+        Repository -->|Secure Keys| FSS[Flutter Secure Storage]
+        Repository -->|P2P Audio/Video| WebRTC[WebRTC Call Engine]
+    end
+
+    subgraph Firebase Ecosystem [Cloud Backend Layer]
+        Auth[Firebase Authentication]
+        Storage[Firebase Storage]
+        Firestore[(Cloud Firestore)]
+        RTDB[Realtime DB - Signaling]
+    end
+
+    subgraph Backend Services [Compute Layer]
+        Functions[Cloud Functions / Node.js API]
+        Gemini[Gemini Interactions API]
+    end
+
+    Repository -->|Sign in / Token| Auth
+    Repository -->|Upload / Download| Storage
+    Repository -->|NoSQL Queries| Firestore
+    WebRTC -->|SDP & ICE Exchange| RTDB
+    Repository -->|Trigger HTTPS Callables| Functions
+    Functions -->|Transactions & Rules| Firestore
+    Functions -->|Interact / Generate Audio| Gemini
 ```
 
----
-
-## 🌟 Core Features
-
-### 1. Messaging & Encrypted Channels
-* **End-to-End Encryption (E2EE):** Direct messaging streams are secured using out-of-band key exchanges (Curve25519, AES-GCM, SHA-256) persisting safety key fingerprints via native secure storage.
-* **VibeTalk Rooms:** Audio-centric real-time chat rooms powered by WebRTC.
-* **Interactive Media:** Secure exchange of stickers, gifs, images, and audio messages.
-
-### 2. Vybz (Short-Form Creator Feed)
-* **Real-time Video Processing:** Hardware-accelerated camera capturing with custom fragment shaders (`beauty_smooth.frag`/`beauty_color.frag`) for real-time visual enhancements.
-* **AI Music Composer:** Seamless sound generation utilizing the **Gemini Interactions API** (`lyria-3-clip-preview`) directly within the create feed. Generated tracks are saved to Firebase Storage and cataloged in a shared, public library.
-
-### 3. Gotchaa AI Assistant (BRO Voice & Chat)
-* **Context-Bound Agent:** Integrated chatbot running `gemini-3-flash-preview` focused entirely on answering Gotchaa questions.
-* **Smart Mini-App Launcher:** Intelligently intercepts voice or text requests to automatically trigger deep links to external services (such as cab bookings via Rapido/Uber, food ordering via Fassos/Swiggy, grocery runs via Zepto/Blinkit, or health consults via Practo).
-
-### 4. Circles & Explore
-* **Geographical Discovery:** Map-based local explorer view (`flutter_map`) to discover localized user content, active rooms, and circles.
-* **Real-time Proximity:** Queries Firestore using localized coordinate bounds to show nearby communities.
-
-### 5. Karma & Governance
-* **Gamified Contributions:** Keeps track of positive interaction patterns, rewarding constructive users with positive Karma points.
-* **Trust & Safety Gates:** Complete compliance pipelines, including age verification (restricting matching features strictly to 18+ verified adult users), parental consent checking, CSAM automated hash flags, and trust team escalation channels.
+[Architecture Diagram Placeholder]
 
 ---
 
-## ⚙️ Technical Architecture
+## 🛠️ Technology Stack
 
-Gotchaa uses a decoupled, hybrid serverless structure:
-
-* **Frontend:** A structured Flutter application organized by feature modules (`lib/features/*`). App state is managed strictly using **Riverpod** with code generation (`riverpod_generator`). Local offline synchronization uses **Hive** caching.
-* **Backend Functions:** Firebase Cloud Functions (`functions/index.js`) serve as the main, secure gateway, handling high-privilege operations such as AI music generation (interacting with the Gemini API server-to-server), user matching limits, and administrative safety audits.
-* **Local Translation Stack:** Uses **Google ML Kit** running entirely on-device to translate texts and identify language codes without triggering high-latency network queries.
-
-```mermaid
-sequenceDiagram
-    participant User as Mobile Client (Flutter)
-    participant Cloud as Cloud Functions (Node.js)
-    participant Gemini as Gemini AI API
-    participant Storage as Firebase Storage
-
-    User->>Cloud: Request generateSound(prompt)
-    Note over Cloud: Checks user ageTier == 4<br/>Verifies daily rate limit (5/day)
-    Cloud->>Gemini: POST /v1beta/interactions (models/lyria-3-clip-preview)
-    Gemini-->>Cloud: Return generated audio (base64)
-    Cloud->>Storage: Save file to sounds/{id}.mp3
-    Cloud-->>User: Return SoundModel metadata + signed URL
-```
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology | Version | Detail |
+| Frontend Layer | Technology | Version | Purpose |
 | --- | --- | --- | --- |
-| **Frontend** | Flutter / Dart | `SDK ^3.3.0` | Riverpod, GoRouter, Hive, JustAudio, WebRTC |
-| **Backend** | Express / Node.js | `22` | API routing and rate-limiting middleware |
-| **Functions** | Firebase Functions SDK | `^4.9.0` | Serverless API routes (generateSound, findVibeMatch) |
-| **Database** | Cloud Firestore / RTDB | latest | Document-based social model + live message queues |
-| **AI** | Gemini API / Google ML Kit | `^0.13.x` | On-device translation + multimodal audio creation |
-| **CI/CD** | GitHub Actions | active | Testing, Lint verification, and deployment runs |
+| **Framework** | Flutter | `>=3.3.0` | Cross-platform UI layout engine |
+| **State Management** | Riverpod | `^2.5.1` | Decoupled reactive state provider |
+| **Local Storage** | Hive | `^2.2.3` | High-performance offline database caching |
+| **Secure Key Store** | Flutter Secure Storage | `^10.3.1` | Encryption keys and session persistence |
+| **Realtime P2P** | Flutter WebRTC | `^1.4.1` | P2P media channels for VibeTalk |
+| **Audio Processing** | Just Audio | `^0.10.5` | Multi-source playback and session routing |
+
+| Backend & Cloud | Technology | Version | Purpose |
+| --- | --- | --- | --- |
+| **Compute** | Node.js Express / Firebase Functions | Node `22` / SDK `^4.9.0` | Serverless backend API endpoint routes |
+| **Primary Database** | Cloud Firestore | latest | Document schema storing users, posts, and configurations |
+| **Signaling Store** | Firebase Realtime Database | latest | Lightweight sync layer for WebRTC signals |
+| **Storage** | Cloud Storage for Firebase | latest | Storage bucket holding videos and audio files |
+| **Auth Gateway** | Firebase Auth / Google Sign In | `^5.1.0` | Multi-provider sign-in and session verification |
+
+| AI & Intelligence | Technology | Purpose |
+| --- | --- | --- |
+| **Music Generation** | Gemini Interactions API (`lyria-3-clip-preview`) | Text-to-audio soundtrack generation |
+| **Core Assistant** | Google Generative AI (`gemini-3-flash-preview`) | Contextual app chatbot assistant |
+| **Local Translation** | Google ML Kit Translation / Language ID | Offline translation and language checks |
+| **Computer Vision** | Google ML Kit Face Detection / Selfie Segment | Vision filtering and camera shaders |
 
 ---
 
-## 🚀 Getting Started
+## 📁 Project Structure
 
-### Prerequisites
-* Flutter SDK (Version `>=3.3.0`)
-* Node.js (Version `22.x`)
-* Firebase CLI installed (`npm install -g firebase-tools`)
+```
+Gotchaa/
+├── android/                   # Native Android configuration
+├── assets/                    # Static app resources
+│   ├── animations/            # Lottie animation layers
+│   ├── logo/                  # Icon and splash branding vectors
+│   ├── shaders/               # GPU visual filter scripts ( beauty_smooth.frag )
+│   └── stickers/              # Chat sticker templates
+├── backend/                   # Legacy API server source files
+├── functions/                 # Production Firebase Cloud Functions
+│   ├── index.js               # Entrypoint for HTTPS callable operations
+│   └── package.json           # Node configuration and dependencies
+├── ios/                       # Native iOS build files
+└── lib/                       # Flutter Core codebase
+    ├── core/                  # Shared global utilities
+    │   ├── config/            # Local constants and static settings
+    │   ├── security/          # E2EE key algorithms and validations
+    │   └── services/          # Real-time infrastructure providers
+    └── features/              # Feature modules
+        ├── ai/                # BRO Voice Assistant and chat components
+        ├── chat/              # Chat pipelines and WebRTC handlers
+        ├── explore/           # Location mapping and discovery filters
+        ├── safety/            # Trust, age gating, and reporting
+        └── vybz/              # Reels, camera shaders, and AI audio tools
+```
 
-### 1. Repository Setup
+---
+
+## 📥 Installation
+
+### 1. Pre-requisites
+* Install [Flutter SDK](https://docs.flutter.dev/get-started/install) (Version `>=3.3.0`)
+* Install [Node.js](https://nodejs.org/en) (Version `22.x`)
+* Install [Firebase CLI](https://firebase.google.com/docs/cli):
+  ```bash
+  npm install -g firebase-tools
+  ```
+
+### 2. Get the Code
 ```bash
 git clone https://github.com/krishnasharma7011594-cmd/Gotchaa.git
 cd Gotchaa
 ```
 
-### 2. Configure Backend Environment
-Create a `.env` file in the `functions/` directory:
+### 3. Native Configurations
+Register your application in your Firebase Console and download:
+* For Android: Place `google-services.json` in `android/app/`
+* For iOS: Place `GoogleService-Info.plist` in `ios/Runner/`
+
+---
+
+## ⚙️ Configuration
+
+### Environment Variables
+Configure your backend environment values. Create a `.env` file under `functions/`:
+
+| Variable | Description |
+| --- | --- |
+| `GEMINI_API_KEY` | Developer API key for accessing Google AI Studio models |
+| `GROQ_API_KEY` | Developer API key for Groq engine processing |
+| `SPOTIFY_CLIENT_ID` | Spotify Client Credentials ID for search capabilities |
+| `SPOTIFY_CLIENT_SECRET` | Spotify client credentials secret |
+| `LYRIA_DEFAULT_MODEL` | Targeting identifier for Gemini audio (lyria-3-clip-preview) |
+
+### App Compile Time Variables
+Gotchaa injects security credentials at build time to prevent hardcoding keys.
+
+Compile script:
 ```bash
-# functions/.env
-GEMINI_API_KEY=your_gemini_api_key_here
+--dart-define=GEMINI_API_KEY=YOUR_API_KEY_HERE
 ```
 
-### 3. Run Firebase Cloud Functions Locally
-To run and test the backend callable APIs locally using the Firebase emulator:
+---
+
+## 🏃 Running Locally
+
+<details>
+<summary><b>1. Firebase Emulators</b></summary>
+
+For local offline debugging, run the suite of Firebase Emulators:
+```bash
+firebase emulators:start --only firestore,database,storage,functions
+```
+</details>
+
+<details>
+<summary><b>2. Backend Functions</b></summary>
+
+Verify dependencies and serve cloud configurations locally:
 ```bash
 cd functions
 npm install
 npm run serve
 ```
+</details>
 
-### 4. Run the Mobile App
-Inject your Gemini API Key at build time to run the application:
+<details>
+<summary><b>3. Flutter Client (Development)</b></summary>
+
+Run the app on your debug device:
 ```bash
 flutter pub get
-flutter run --dart-define=GEMINI_API_KEY=your_gemini_api_key_here
+flutter run --dart-define=GEMINI_API_KEY=YOUR_API_KEY_HERE
 ```
+</details>
+
+<details>
+<summary><b>4. Production Build (APK Release)</b></summary>
+
+Generate the release binaries split by CPU architecture:
+```bash
+flutter build apk --release --split-per-abi --dart-define=GEMINI_API_KEY=YOUR_API_KEY_HERE
+```
+</details>
 
 ---
 
-## 🔄 CI/CD Workflows
+## 🔄 CI/CD
 
-Gotchaa uses GitHub Actions for continuous integration:
-* **Flutter Verification (flutter-ci.yml):** Automatically runs static analyzer checks (`flutter analyze`) and tests on pushes to the `main` or `master` branches.
-* **Web Backend CI (web-backend-ci.yml):** Installs node dependencies, validates syntax, and triggers backend unit tests.
-* **Firebase Deploy (firebase-deploy.yml):** Manages live deployment of updated Cloud Functions, firestore security rules, and index sets.
+The workflows in `.github/workflows/` automate checks:
+* **Flutter CI (`flutter-ci.yml`):** Runs static analysis (`flutter analyze`) and tests for any push or pull request hitting targeted development branches.
+* **Web & Backend CI (`web-backend-ci.yml`):** Automatically boots environment containers, tests syntax on node entry points, and runs Mocha test assertions.
+* **Firebase Deploy (`firebase-deploy.yml`):** Automates serverless deployment of modified Functions scripts, security index updates, and schema rules to your Firebase console.
+
+---
+
+## 🔒 Security
+
+* **Out-of-band Verification:** P2P verification is anchored around safety numbers generated out-of-band using SHA-256 hashes of exchange public keys.
+* **Device Encryption:** Session tokens, private keys, and user preference flags are stored locally using hardware-backed keystores on Android and Keychain on iOS.
+* [Security implementation details placeholder]
+
+---
+
+## ⚡ Performance
+
+The following performance benchmarks are placeholder references to be verified in staging:
+
+| Metric | Target Value |
+| --- | --- |
+| **Startup Time (Cold)** | [Startup Time Placeholder] |
+| **APK Size (Compressed)** | [APK Size Placeholder] |
+| **Memory Usage (Idle)** | [Memory Usage Placeholder] |
+| **Target Frame Rate (UI)** | [Frame Rate Placeholder] |
+| **Average API Response Time** | [API Response Time Placeholder] |
+
+---
+
+## 🗺️ Roadmap
+
+- [x] Integrate E2EE protocol utilizing Curve25519 key agreements
+- [x] Develop on-device shaders (`beauty_smooth.frag`) for camera streams
+- [x] Migrate sound generators to serverless Firebase Cloud Functions
+- [x] Embed multi-intent voice queries in BRO assistant screen
+- [ ] Implement group call WebRTC connectivity rooms
+- [ ] Connect localized geo-spatial clusters for feed queries
+- [ ] [Staging Roadmap Item Placeholder]
+
+---
+
+## 🐞 Known Issues
+
+* [Known Issue Placeholder 1]
+* [Known Issue Placeholder 2]
+
+---
+
+## 🔮 Future Plans
+
+* [Future Plan Placeholder 1]
+* [Future Plan Placeholder 2]
 
 ---
 
 ## 🤝 Contributing
 
-Gotchaa is currently closed to public external contributions. For collaboration requests or security disclosures, please contact the founder directly.
+Contributions to Gotchaa are currently restricted. The repository is not open to external pull requests. For questions regarding source verification or collaborative opportunities, please contact the founder.
 
 ---
 
 ## 📄 License
-Licensed under the MIT License.
+
+Gotchaa is distributed under the MIT License. See [LICENSE](LICENSE) for more details.
 
 ---
 
 ## 📬 Contact
-**Founder:** Krishna Sharma  
-**Github:** [@krishnasharma7011594](https://github.com/krishnasharma7011594-cmd)
+
+* **Founder:** Krishna Sharma
+* **GitHub:** [@krishnasharma7011594](https://github.com/krishnasharma7011594-cmd)
+* **LinkedIn:** [LinkedIn Placeholder]
+* **Website:** [Website Placeholder]
+* **Email:** [Email Placeholder]
+* **X (Twitter):** [X Placeholder]
+
+---
+
+## 💡 Support
+
+* **Star:** Star this repository to show your support!
+* **Issues:** Report bugs or submit feature proposals.
+* **Sponsorship:** [Sponsorship Placeholder]
+
+---
+
+<p align="center">
+  Made with ❤️ by Krishna Sharma
+</p>
