@@ -261,11 +261,15 @@ The workflows in `.github/workflows/` automate checks:
 
 ---
 
-## 🔒 Security
+## 🔒 Security & Privacy
 
-* **Out-of-band Verification:** P2P verification is anchored around safety numbers generated out-of-band using SHA-256 hashes of exchange public keys.
-* **Device Encryption:** Session tokens, private keys, and user preference flags are stored locally using hardware-backed keystores on Android and Keychain on iOS.
-* [Security implementation details placeholder]
+Gotchaa is built with a defense-in-depth architecture to ensure user data remains secure and private.
+* **Client-Side E2EE:** Direct chat messages are encrypted on-device before transmission using Curve25519 key agreements and AES-GCM encryption, guaranteeing that message content remains unreadable by intermediate infrastructure.
+* **Device-Level Protection:** Encryption keys, local session parameters, and biometric preferences are secured inside hardware-backed storage (iOS Keychain and Android Keystore).
+* **Edge & Anti-Abuse Hardening:** All client-facing endpoints are protected via Firebase App Check to prevent unauthorized automated abuse, combined with serverless scaling controls and rate limits.
+* **Granular Access Control:** Core application data access is enforced at the database and storage level via strict Firestore and Cloud Storage security rules, combined with role-based checks.
+
+For a detailed breakdown of our security posture, encryption models, and access control flows, see our [SECURITY.md](SECURITY.md) file.
 
 ---
 
