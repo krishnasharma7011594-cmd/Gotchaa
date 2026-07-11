@@ -10,8 +10,8 @@ class AppConfig {
   );
 
   String get backendUrl {
-    final env = backendEnv.isNotEmpty 
-        ? backendEnv 
+    final env = backendEnv.isNotEmpty
+        ? backendEnv
         : (kReleaseMode ? 'production' : 'development');
 
     switch (env) {

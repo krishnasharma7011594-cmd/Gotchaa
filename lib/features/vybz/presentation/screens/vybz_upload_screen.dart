@@ -40,8 +40,7 @@ class _VybzUploadScreenState extends ConsumerState<VybzUploadScreen> {
   Future<void> _openSoundComposer() async {
     final sound = await Navigator.push<SoundModel>(
       context,
-      MaterialPageRoute(
-          builder: (_) => const SoundComposerScreen()),
+      MaterialPageRoute(builder: (_) => const SoundComposerScreen()),
     );
     if (sound != null && mounted) {
       setState(() => _attachedSound = sound);
@@ -202,8 +201,7 @@ class _VybzUploadScreenState extends ConsumerState<VybzUploadScreen> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () =>
-                            setState(() => _attachedSound = null),
+                        onTap: () => setState(() => _attachedSound = null),
                         child: const Icon(Icons.close_rounded,
                             color: AppColors.electricBlue, size: 18),
                       ),

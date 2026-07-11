@@ -354,7 +354,8 @@ class _PostCardState extends ConsumerState<PostCard>
             ),
 
           // ── AI Music Attachment ────────────────────────────
-          if (widget.post.soundId != null && widget.post.soundPlaybackUrl != null)
+          if (widget.post.soundId != null &&
+              widget.post.soundPlaybackUrl != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: Container(

@@ -19,7 +19,8 @@ import '../../data/repositories/music_repository.dart';
 
 // ── Providers ─────────────────────────────────────────────────────────────
 
-final _tabIndexProvider = StateProvider<int>((ref) => 0); // 0=Generate 1=Library
+final _tabIndexProvider =
+    StateProvider<int>((ref) => 0); // 0=Generate 1=Library
 final _promptProvider = StateProvider<String>((ref) => '');
 final _generatingProvider = StateProvider<bool>((ref) => false);
 final _generatedSoundProvider = StateProvider<SoundModel?>((ref) => null);
@@ -111,11 +112,13 @@ class _SoundComposerScreenState extends ConsumerState<SoundComposerScreen> {
         message =
             '🎵 Daily limit reached (5/day). Browse the Library to reuse a sound!';
       } else if (raw.contains('permission-denied')) {
-        message = 'Age verification required. Only 18+ users can generate AI music.';
+        message =
+            'Age verification required. Only 18+ users can generate AI music.';
       } else if (raw.contains('unauthenticated')) {
         message = 'Please sign in again to generate music.';
       } else if (raw.contains('internal') || raw.contains('unavailable')) {
-        message = 'AI music service is temporarily unavailable. Try again in a moment.';
+        message =
+            'AI music service is temporarily unavailable. Try again in a moment.';
       } else {
         message = 'Generation failed: $raw';
       }
@@ -171,8 +174,7 @@ class _SoundComposerScreenState extends ConsumerState<SoundComposerScreen> {
 // ── Segmented Control ─────────────────────────────────────────────────────
 
 class _SegmentedTabs extends StatelessWidget {
-  const _SegmentedTabs(
-      {required this.selectedIndex, required this.onChanged});
+  const _SegmentedTabs({required this.selectedIndex, required this.onChanged});
 
   final int selectedIndex;
   final ValueChanged<int> onChanged;
@@ -212,11 +214,9 @@ class _SegmentedTabs extends StatelessWidget {
             child: Text(
               label,
               style: GoogleFonts.outfit(
-                color:
-                    selectedIndex == idx ? Colors.white : Colors.white54,
-                fontWeight: selectedIndex == idx
-                    ? FontWeight.bold
-                    : FontWeight.normal,
+                color: selectedIndex == idx ? Colors.white : Colors.white54,
+                fontWeight:
+                    selectedIndex == idx ? FontWeight.bold : FontWeight.normal,
                 fontSize: 14,
               ),
             ),
@@ -273,8 +273,7 @@ class _GenerateTabState extends ConsumerState<_GenerateTab> {
             maxLines: 5,
             maxLength: 300,
             style: GoogleFonts.outfit(color: Colors.white),
-            onChanged: (v) =>
-                ref.read(_promptProvider.notifier).state = v,
+            onChanged: (v) => ref.read(_promptProvider.notifier).state = v,
             decoration: InputDecoration(
               hintText:
                   'e.g. "Upbeat lo-fi hip hop with soft piano and rain sounds"',
@@ -295,11 +294,13 @@ class _GenerateTabState extends ConsumerState<_GenerateTab> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: isGenerating || charCount == 0 ? null : () {
-                final state =
-                    context.findAncestorStateOfType<_SoundComposerScreenState>();
-                state?._generate();
-              },
+              onPressed: isGenerating || charCount == 0
+                  ? null
+                  : () {
+                      final state = context
+                          .findAncestorStateOfType<_SoundComposerScreenState>();
+                      state?._generate();
+                    },
               icon: isGenerating
                   ? const SizedBox(
                       width: 18,
@@ -384,8 +385,7 @@ class _LibraryTab extends ConsumerWidget {
       children: [
         // Trending / Recent toggle
         Padding(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           child: Row(
             children: [
               _sortChip(ref, 'trending', 'Trending 🔥', sort),
@@ -399,7 +399,8 @@ class _LibraryTab extends ConsumerWidget {
         Expanded(
           child: libraryAsync.when(
             loading: () => const Center(
-                child: CircularProgressIndicator(color: AppColors.electricBlue)),
+                child:
+                    CircularProgressIndicator(color: AppColors.electricBlue)),
             error: (e, _) => Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
@@ -438,15 +439,13 @@ class _LibraryTab extends ConsumerWidget {
     );
   }
 
-  Widget _sortChip(
-      WidgetRef ref, String value, String label, String current) {
+  Widget _sortChip(WidgetRef ref, String value, String label, String current) {
     final selected = current == value;
     return GestureDetector(
       onTap: () => ref.read(_librarySortProvider.notifier).state = value,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
-        padding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: selected ? AppColors.electricBlue : Colors.white10,
           borderRadius: BorderRadius.circular(20),
@@ -454,8 +453,7 @@ class _LibraryTab extends ConsumerWidget {
         child: Text(label,
             style: GoogleFonts.outfit(
                 color: selected ? Colors.white : Colors.white54,
-                fontWeight:
-                    selected ? FontWeight.bold : FontWeight.normal,
+                fontWeight: selected ? FontWeight.bold : FontWeight.normal,
                 fontSize: 13)),
       ),
     );
@@ -488,7 +486,9 @@ class _SoundCardState extends ConsumerState<_SoundCard> {
   @override
   void dispose() {
     _player.dispose();
-    ref.read(audioFocusManagerProvider).releaseAudioFocus('card_${widget.sound.soundId}');
+    ref
+        .read(audioFocusManagerProvider)
+        .releaseAudioFocus('card_${widget.sound.soundId}');
     super.dispose();
   }
 
@@ -546,9 +546,7 @@ class _SoundCardState extends ConsumerState<_SoundCard> {
                     border: Border.all(color: AppColors.electricBlue),
                   ),
                   child: Icon(
-                    _isPlaying
-                        ? Icons.pause_rounded
-                        : Icons.play_arrow_rounded,
+                    _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                     color: AppColors.electricBlue,
                     size: 26,
                   ),
