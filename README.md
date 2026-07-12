@@ -34,8 +34,11 @@ Gotchaa is a production-grade, founder-led social super app built on Flutter, No
 ## 🌟 Features
 
 ### 🧠 Artificial Intelligence
-* **Contextual Assistant:** Chat interface powered by `gemini-3-flash-preview` that dynamically refuses non-app topics and enforces platform context.
-* **Intelligent Deep Linking:** Automatically extracts user intents to trigger routing pathways for third-party services (e.g. food delivery, transport, booking).
+* **BRO Navigation & Deep Link Agent:** Upgraded intelligent intent classifier mapping queries to structured `BroToolCall` objects (Navigate, DeepLink, Conversation).
+* **Fast Rule Engine:** Deterministic intent mapping bypassing LLM for simple commands (e.g., "Open Wallet", "Launch Uber") enabling zero-latency responses.
+* **Smart Registries:** Robust `ScreenRegistry` (17 internal screens) and `AppRegistry` (12 external mini apps) with comprehensive alias support.
+* **Contextual Assistant:** Chat interface powered by `gemini-1.5-flash` that dynamically enforces platform context and falls back to backend legacy APIs when needed.
+* **Robust Voice Interaction:** Advanced state machine (`BroVoiceStateV2`) handling mic permissions, silence detection, live transcriptions, and audio wave animations.
 * **Local Translation Engine:** On-device low-latency translation and language identification utilizing Google ML Kit.
 * **Multimodal Generation:** Serves as a gateway for Gemini-powered media generation including text-to-speech output.
 
