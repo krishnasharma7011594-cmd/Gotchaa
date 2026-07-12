@@ -60,16 +60,42 @@ class BroIntentClassifier {
       developer.log('Invoking backend /bro/chat endpoint',
           name: 'BRO.IntentClassifier');
       return await _classifyWithBackend(cleanQuery);
+    } on DioException catch (e) {
+      // Backend is unreachable (expected in dev/staging) — give a friendly
+      // conversational response rather than a dead-end error.
+      developer.log(
+          'Backend unavailable (${e.type.name}): responding conversationally.',
+          name: 'BRO.IntentClassifier');
+      return BroConversationCall(
+        reply: _getOfflineReply(cleanQuery),
+        confidence: 0.5,
+        rawQuery: query,
+      );
     } catch (e) {
       developer.log('Backend fallback failed: $e',
           name: 'BRO.IntentClassifier');
-      return BroUnknownCall(
-        reply:
-            'Sorry bro, I cannot connect to any services right now. Check your internet connection.',
-        confidence: 1.0,
+      return BroConversationCall(
+        reply: _getOfflineReply(cleanQuery),
+        confidence: 0.5,
         rawQuery: query,
       );
     }
+  }
+
+  /// Generates a graceful conversational reply when no AI service is reachable.
+  String _getOfflineReply(String query) {
+    final q = query.toLowerCase();
+    if (q.contains('how') ||
+        q.contains('what') ||
+        q.contains('kya') ||
+        q.contains('kaisa') ||
+        q.contains('kaise')) {
+      return "Yaar, abhi mera AI brain thoda busy hai — try karo thodi der mein! 🤖";
+    }
+    if (q.contains('help') || q.contains('bata') || q.contains('batao')) {
+      return "Main yahan hoon bro! Abhi network slow lag raha hai, ek second mein back aaonga. Kuch screen open karni ho toh bol! 🚀";
+    }
+    return "Hey bro! Main sun raha hoon — bas AI engine warm up ho rahi hai. Koi screen kholni ho? Bol do! 😎";
   }
 
   Future<BroToolCall> _classifyWithGemini(
