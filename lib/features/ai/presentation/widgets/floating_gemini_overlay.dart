@@ -6,11 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/providers/auth_providers.dart';
-
 import '../../domain/models/bro_message.dart';
-
 import '../../domain/models/bro_response.dart';
-import '../../services/bro_orchestrator.dart';
+import '../../services/bro_voice_command_handler.dart';
 import '../providers/bro_providers.dart';
 
 class BroAssistantOverlay extends ConsumerStatefulWidget {
@@ -101,13 +99,11 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
     _scrollToBottom();
 
     try {
-      // Process through Orchestrator (handles FastAPI + Fallbacks + Biometrics)
       final response = await orchestrator.processTextQuery(text);
 
       if (response.status == BroStatus.failed) {
         _handleError(response.error ?? 'Unknown error');
       }
-      // Note: Response history is automatically updated by the Orchestrator
       _scrollToBottom();
     } catch (e) {
       _handleError(e.toString());
@@ -138,15 +134,7 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
     });
   }
 
-  Offset _offset = const Offset(20, 100); // Bottom-right initial pos
-
-  String get _agentName {
-    // Allows build-time override, e.g. --dart-define=BRO_AGENT_NAME=Jarvis
-    const fallback = 'BRO';
-    // Note: AppConfig currently doesn't expose a dedicated broAgentName.
-    // Keep overlay name overridable via --dart-define later.
-    return fallback;
-  }
+  Offset _offset = const Offset(20, 100);
 
   @override
   Widget build(BuildContext context) {
@@ -188,14 +176,11 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
                 childWhenDragging: const SizedBox.shrink(),
                 onDragEnd: (details) {
                   setState(() {
-                    // Calculate relative to bottom-right as before or just keep absolute
-                    // Let's use simple absolute from bottom/right for consistency
                     final double newBottom =
                         screenSize.height - details.offset.dy - 60;
                     final double newRight =
                         screenSize.width - details.offset.dx - 60;
 
-                    // Clamp to screen bounds
                     _offset = Offset(
                       newRight.clamp(10, screenSize.width - 70),
                       newBottom.clamp(10, screenSize.height - 70),
@@ -213,14 +198,9 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
   }
 
   Widget _buildBroBubble({bool isDragging = false}) => GestureDetector(
-        onTap: isDragging
-            ? null
-            : () {
-                // Prevent drag gesture from immediately toggling.
-                _toggleOverlay();
-              },
+        onTap: isDragging ? null : _toggleOverlay,
         child: Container(
-          width: 60, // Smaller size
+          width: 60,
           height: 60,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
@@ -249,6 +229,8 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
 
   Widget _buildBroPanel() {
     final size = MediaQuery.of(context).size;
+    final voiceState = ref.watch(broVoiceCommandProvider);
+
     return Container(
       height: size.height * 0.75,
       width: size.width,
@@ -259,8 +241,11 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
       child: Column(
         children: [
           _buildHeader(),
-          Expanded(child: _buildChatList()),
-          _buildInputArea(),
+          if (voiceState != BroVoiceStateV2.idle)
+            Expanded(child: _buildVoiceVisualizer(voiceState))
+          else
+            Expanded(child: _buildChatList()),
+          _buildInputArea(voiceState),
         ],
       ),
     );
@@ -283,7 +268,7 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
                   ),
                 ),
                 Text(
-                  'Jarvis powered Action Agent',
+                  'Gotchaa Navigator Agent',
                   style: GoogleFonts.outfit(
                     fontSize: 14,
                     color: Colors.blueAccent,
@@ -318,8 +303,92 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
     );
   }
 
-  Widget _buildInputArea() {
-    final orchestrator = ref.read(broOrchestratorProvider);
+  Widget _buildVoiceVisualizer(BroVoiceStateV2 state) {
+    final liveTranscript = ref.watch(broLiveTranscriptProvider);
+    String statusText = 'Listening...';
+    Widget animation = const SizedBox.shrink();
+
+    switch (state) {
+      case BroVoiceStateV2.permission:
+        statusText = 'Requesting Microphone Permission...';
+        animation =
+            const Icon(Icons.lock_rounded, color: Colors.blueAccent, size: 80);
+        break;
+      case BroVoiceStateV2.starting:
+        statusText = 'Starting speech engine...';
+        animation = const CircularProgressIndicator(color: Colors.blueAccent);
+        break;
+      case BroVoiceStateV2.listening:
+        statusText = 'Speak now, Bro!';
+        animation = _VoiceWaves(isWaveActive: false);
+        break;
+      case BroVoiceStateV2.transcribing:
+        statusText = 'Listening...';
+        animation = _VoiceWaves(isWaveActive: true);
+        break;
+      case BroVoiceStateV2.thinking:
+        statusText = 'Thinking...';
+        animation = const CircularProgressIndicator(color: Colors.cyanAccent);
+        break;
+      case BroVoiceStateV2.speaking:
+        statusText = 'Speaking...';
+        animation = _VoiceWaves(isWaveActive: true, color: Colors.greenAccent);
+        break;
+      case BroVoiceStateV2.error:
+        statusText = 'Something went wrong';
+        animation = const Icon(Icons.warning_amber_rounded,
+            color: Colors.orangeAccent, size: 80);
+        break;
+      case BroVoiceStateV2.stopped:
+        statusText = 'Stopped';
+        animation =
+            const Icon(Icons.mic_off_rounded, color: Colors.white24, size: 80);
+        break;
+      default:
+        break;
+    }
+
+    return FadeIn(
+      duration: const Duration(milliseconds: 300),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                statusText,
+                style: GoogleFonts.outfit(
+                  color: Colors.blueAccent,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 40),
+              SizedBox(height: 120, child: Center(child: animation)),
+              const SizedBox(height: 40),
+              Text(
+                liveTranscript.isEmpty
+                    ? 'Say: "Open Wallet" or "Launch Spotify"'
+                    : '"$liveTranscript"',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.outfit(
+                  color: Colors.white70,
+                  fontSize: 20,
+                  fontStyle: FontStyle.italic,
+                  height: 1.4,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInputArea(BroVoiceStateV2 voiceState) {
+    final isListening = voiceState == BroVoiceStateV2.listening ||
+        voiceState == BroVoiceStateV2.transcribing;
     return Container(
       padding: EdgeInsets.fromLTRB(
           20, 15, 20, MediaQuery.of(context).padding.bottom + 20),
@@ -349,31 +418,33 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
             ),
           ),
           const SizedBox(width: 15),
-          _buildSendButton(orchestrator),
+          _buildSendButton(isListening),
         ],
       ),
     );
   }
 
-  Widget _buildSendButton(BroOrchestrator orchestrator) {
+  Widget _buildSendButton(bool isListening) {
     final isLoading = ref.watch(broLoadingProvider);
+    final voiceHandler = ref.read(broVoiceCommandProvider.notifier);
+
     return GestureDetector(
       onLongPressStart: (_) {
         HapticFeedback.heavyImpact();
-        orchestrator.startListening();
+        voiceHandler.startListening();
       },
       onLongPressEnd: (_) async {
         HapticFeedback.mediumImpact();
-        await orchestrator.stopListeningAndProcess();
+        await voiceHandler.stopListeningAndProcess();
         _scrollToBottom();
       },
-      onTap: _sendMessage,
+      onTap: isListening ? () => voiceHandler.cancelListening() : _sendMessage,
       child: Container(
         width: 55,
         height: 55,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.blueAccent,
+          color: isListening ? Colors.redAccent : Colors.blueAccent,
         ),
         child: isLoading
             ? const Padding(
@@ -381,7 +452,11 @@ class _BroAssistantOverlayState extends ConsumerState<BroAssistantOverlay>
                 child: CircularProgressIndicator(
                     color: Colors.white, strokeWidth: 2),
               )
-            : const Icon(Icons.mic_none_rounded, color: Colors.white, size: 28),
+            : Icon(
+                isListening ? Icons.stop_rounded : Icons.mic_none_rounded,
+                color: Colors.white,
+                size: 28,
+              ),
       ),
     );
   }
@@ -426,6 +501,74 @@ class _PulseCircleState extends State<_PulseCircle>
           ),
         ),
       );
+}
+
+class _VoiceWaves extends StatefulWidget {
+  const _VoiceWaves({this.isWaveActive = true, this.color = Colors.blueAccent});
+  final bool isWaveActive;
+  final Color color;
+
+  @override
+  State<_VoiceWaves> createState() => _VoiceWavesState();
+}
+
+class _VoiceWavesState extends State<_VoiceWaves>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+    if (widget.isWaveActive) {
+      _controller.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _VoiceWaves oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isWaveActive && !_controller.isAnimating) {
+      _controller.repeat(reverse: true);
+    } else if (!widget.isWaveActive) {
+      _controller.stop();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final scale = widget.isWaveActive ? _controller.value : 0.1;
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(5, (index) {
+            final double height =
+                30 + (40 * scale * ((index - 2).abs() == 0 ? 1 : 0.6));
+            return Container(
+              width: 8,
+              height: height,
+              margin: const EdgeInsets.symmetric(horizontal: 6),
+              decoration: BoxDecoration(
+                color: widget.color.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            );
+          }),
+        );
+      },
+    );
+  }
 }
 
 class _ChatMessage extends StatelessWidget {

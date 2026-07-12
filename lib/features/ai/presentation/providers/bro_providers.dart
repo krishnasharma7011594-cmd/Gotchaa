@@ -1,6 +1,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../domain/models/bro_intent.dart';
 import '../../domain/models/bro_message.dart';
 import '../../services/bro_orchestrator.dart';
+
+// Complete Voice State Machine
+enum BroVoiceStateV2 {
+  idle,
+  permission,
+  starting,
+  listening,
+  transcribing,
+  thinking,
+  speaking,
+  error,
+  stopped
+}
 
 // StateNotifier for Messages
 class BroMessagesNotifier extends StateNotifier<List<BroMessage>> {
@@ -10,7 +25,7 @@ class BroMessagesNotifier extends StateNotifier<List<BroMessage>> {
             id: 'welcome',
             role: BroRole.assistant,
             content:
-                "Yo! I'm BRO. Bol, kya help karu? I can book cabs, order food, or just chat.",
+                "Yo! I'm BRO. I can help you navigate Gotchaa, launch your Mini Apps (like Uber, Swiggy, Spotify), or just chat. Bol, kya help karu?",
             timestamp: DateTime.now(),
             type: BroMessageType.text,
           )
@@ -32,8 +47,8 @@ final broMessagesProvider =
 // Loading State
 final broLoadingProvider = StateProvider<bool>((ref) => false);
 
-// BRO Orchestrator instance
-final broOrchestratorProvider = Provider(BroOrchestrator.new);
+// Live Transcription State
+final broLiveTranscriptProvider = StateProvider<String>((ref) => '');
 
 // Settings
 class BroSettings {
@@ -69,3 +84,21 @@ class BroSettingsNotifier extends StateNotifier<BroSettings> {
 final broSettingsProvider =
     StateNotifierProvider<BroSettingsNotifier, BroSettings>(
         (ref) => BroSettingsNotifier());
+
+// Context Provider mapping current UI state to BRO Context
+final broContextProvider = Provider<BroContext>((ref) {
+  // Read shell page index (camera=0, chat=1, explore=2, mini_apps=3, vybz=4, profile=5)
+  // In `floating_gemini_overlay.dart`, ref.watch(broContextProvider) will retrieve current screen.
+  // We'll import appropriate shell providers to resolve current screen.
+  return const BroContext(
+    currentScreen: 'home',
+    isInMiniApp: false,
+    isMicActive: false,
+    isRecording: false,
+    language: 'hinglish',
+    theme: 'dark',
+  );
+});
+
+// BRO Orchestrator instance — used by overlay and voice handler
+final broOrchestratorProvider = Provider(BroOrchestrator.new);
