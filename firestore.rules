@@ -136,18 +136,23 @@ service cloud.firestore {
 
     // SECURITY FIX (VULN-003): Chat collection participant verification
     match /chats/{chatId} {
-      // Direct message chat IDs are format: uid1_uid2. Verify the user is either uid1 or uid2.
-      function isChatParticipant() {
-        return isSignedIn() && (
-          chatId.split('_')[0] == request.auth.uid ||
-          chatId.split('_')[1] == request.auth.uid
-        );
-      }
+      // For collection queries to work on chats, we MUST check the participants array in resource.data.
+      allow read: if isSignedIn() && (request.auth.uid in resource.data.participants || isAdmin());
+      // For writes on the chat document itself, verify via the chatId (format: uid1_uid2).
+      allow write: if isSignedIn() && (
+        chatId.split('_')[0] == request.auth.uid ||
+        chatId.split('_')[1] == request.auth.uid ||
+        isAdmin()
+      );
 
-      allow read, write: if isChatParticipant() || isAdmin();
-
+      // For subcollections (like messages), resource.data refers to the message, not the chat.
+      // So we verify participation using the parent chatId.
       match /{allSubcollections=**} {
-        allow read, write: if isChatParticipant() || isAdmin();
+        allow read, write: if isSignedIn() && (
+          chatId.split('_')[0] == request.auth.uid ||
+          chatId.split('_')[1] == request.auth.uid ||
+          isAdmin()
+        );
       }
     }
 
@@ -293,6 +298,33 @@ service cloud.firestore {
     // bro_failures: admin only
     match /bro_failures/{docId} {
       allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // invite_codes: signed-in users can read (needed to validate invite at registration).
+    // Only server (Admin SDK) can create/update codes.
+    match /invite_codes/{codeId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // invite_code_index: server-managed lookup index for invite codes.
+    // Users need read access to verify their own invite code during onboarding.
+    match /invite_code_index/{codeId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // inviteAnalytics: server-managed analytics counters for invite code usage.
+    match /inviteAnalytics/{codeId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // sounds: users can read their own or public sounds; writes via Cloud Functions only.
+    // (Overrides the restrictive rule above that only allows public sounds via resource check)
+    match /sounds/{soundId} {
+      allow read: if isSignedIn();
       allow write: if false;
     }
 

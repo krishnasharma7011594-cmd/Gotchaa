@@ -125,27 +125,6 @@
       ]
     },
     {
-      "collectionGroup": "blocked_accounts",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "blockerId", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "blocked_accounts",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "blockedId", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "muted_accounts",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "muterId", "order": "ASCENDING" }
-      ]
-    },
-    {
       "collectionGroup": "posts",
       "queryScope": "COLLECTION",
       "fields": [
@@ -159,13 +138,6 @@
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "creatorId", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "notifications",
-      "queryScope": "COLLECTION_GROUP",
-      "fields": [
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
     }
