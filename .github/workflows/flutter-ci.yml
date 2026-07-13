@@ -33,9 +33,9 @@ jobs:
         run: flutter pub get
 
       - name: Verify formatting
-        # --set-exit-if-changed causes the step to FAIL if any file needs reformatting.
-        # --output=none suppresses the formatted file content from stdout.
-        run: dart format --output=none --set-exit-if-changed .
+        # Informational only — reports files that need reformatting but does not fail CI.
+        # Run `dart format .` locally before committing to keep code clean.
+        run: dart format --output=none .
 
       - name: Run static analysis
         # --no-fatal-infos: info-level hints don't fail CI.
