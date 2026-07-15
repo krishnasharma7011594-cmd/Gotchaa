@@ -364,6 +364,7 @@ class ResponseValidatorInterceptor extends Interceptor {
           'An error occurred. Please try again later.',
         DioExceptionType.connectionError =>
           'Connection failed. Check your internet connection.',
+        _ => 'Request timeout. Please try again.',
       };
 }
 

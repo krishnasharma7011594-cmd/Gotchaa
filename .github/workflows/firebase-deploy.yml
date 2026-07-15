@@ -17,6 +17,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GOTCHAA }}
 
     steps:
       - name: Checkout repository
@@ -44,16 +46,13 @@ jobs:
         run: node --check index.js
 
       - name: Authenticate to Google Cloud
-        # Only runs when the service account secret is actually configured
-        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GOTCHAA != '' }}
-        id: auth
+        if: ${{ env.FIREBASE_SERVICE_ACCOUNT != '' }}
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GOTCHAA }}
-        continue-on-error: true
+          credentials_json: ${{ env.FIREBASE_SERVICE_ACCOUNT }}
 
       - name: Deploy Firestore rules & indexes
-        if: ${{ steps.auth.outcome == 'success' }}
+        if: ${{ env.FIREBASE_SERVICE_ACCOUNT != '' }}
         run: |
           firebase deploy \
             --non-interactive \
@@ -61,7 +60,7 @@ jobs:
             --only firestore
 
       - name: Deploy Storage rules
-        if: ${{ steps.auth.outcome == 'success' }}
+        if: ${{ env.FIREBASE_SERVICE_ACCOUNT != '' }}
         run: |
           firebase deploy \
             --non-interactive \
@@ -69,7 +68,7 @@ jobs:
             --only storage
 
       - name: Deploy Cloud Functions
-        if: ${{ steps.auth.outcome == 'success' }}
+        if: ${{ env.FIREBASE_SERVICE_ACCOUNT != '' }}
         run: |
           firebase deploy \
             --non-interactive \
@@ -77,5 +76,5 @@ jobs:
             --only functions
 
       - name: Skip Notice (no credentials configured)
-        if: ${{ steps.auth.outcome != 'success' }}
+        if: ${{ env.FIREBASE_SERVICE_ACCOUNT == '' }}
         run: echo "ℹ️ Firebase deploy skipped - FIREBASE_SERVICE_ACCOUNT_GOTCHAA secret not configured in this repo."
