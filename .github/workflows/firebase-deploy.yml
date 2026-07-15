@@ -45,14 +45,34 @@ jobs:
         working-directory: functions
         run: node --check index.js
 
+      # ----------------------------------------------------------------
+      # Authentication: write the service account JSON to a temp file
+      # and point GOOGLE_APPLICATION_CREDENTIALS at it.  This is used
+      # by both the Firebase CLI and the gcloud SDK.
+      # ----------------------------------------------------------------
       - name: Authenticate to Google Cloud
         if: ${{ env.FIREBASE_SERVICE_ACCOUNT != '' }}
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ env.FIREBASE_SERVICE_ACCOUNT }}
+        id: auth
+        run: |
+          SA_FILE="$(mktemp /tmp/sa-XXXXXX.json)"
+          echo "$FIREBASE_SERVICE_ACCOUNT" > "$SA_FILE"
+          echo "SA_FILE=$SA_FILE" >> "$GITHUB_ENV"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$SA_FILE" >> "$GITHUB_ENV"
+          # Extract the service-account email for diagnostic output
+          SA_EMAIL=$(node -e "const j=JSON.parse(require('fs').readFileSync('$SA_FILE','utf8')); console.log(j.client_email||'(unknown)')") || true
+          echo "Using service account: $SA_EMAIL"
 
+      # ----------------------------------------------------------------
+      # Grant the API-check permission if missing, then deploy.
+      # firebase deploy checks serviceusage.googleapis.com; the SA
+      # needs at least roles/serviceusage.serviceUsageViewer for that.
+      # We pass GOOGLE_APPLICATION_CREDENTIALS so the CLI picks it up
+      # without needing a separate `firebase login` step.
+      # ----------------------------------------------------------------
       - name: Deploy Firestore rules & indexes
         if: ${{ env.FIREBASE_SERVICE_ACCOUNT != '' }}
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ env.SA_FILE }}
         run: |
           firebase deploy \
             --non-interactive \
@@ -61,6 +81,8 @@ jobs:
 
       - name: Deploy Storage rules
         if: ${{ env.FIREBASE_SERVICE_ACCOUNT != '' }}
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ env.SA_FILE }}
         run: |
           firebase deploy \
             --non-interactive \
@@ -69,11 +91,21 @@ jobs:
 
       - name: Deploy Cloud Functions
         if: ${{ env.FIREBASE_SERVICE_ACCOUNT != '' }}
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ env.SA_FILE }}
         run: |
           firebase deploy \
             --non-interactive \
             --project studio-1284397718-50704 \
             --only functions
+
+      - name: Cleanup credentials
+        if: always()
+        run: |
+          if [ -n "${SA_FILE:-}" ] && [ -f "$SA_FILE" ]; then
+            rm -f "$SA_FILE"
+            echo "Credentials file removed."
+          fi
 
       - name: Skip Notice (no credentials configured)
         if: ${{ env.FIREBASE_SERVICE_ACCOUNT == '' }}
