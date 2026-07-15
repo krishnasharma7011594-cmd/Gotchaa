@@ -21,40 +21,47 @@ if (admin.apps.length === 0) {
     admin.initializeApp({ projectId: 'test-project-gotchaa' });
 }
 
-// Stub initializeApp so index.js doesn't try to re-initialize
-sinon.stub(admin, 'initializeApp');
+// Stub initializeApp safely so index.js doesn't try to re-initialize
+if (typeof admin.initializeApp.restore !== 'function') {
+    sinon.stub(admin, 'initializeApp');
+}
 
-// Stub Firestore with chainable methods returning empty results
-const collectionStub = sinon.stub(Firestore.prototype, 'collection').callsFake(() => ({
-    doc: sinon.stub().returns({
-        collection: sinon.stub().returns({
-            doc: sinon.stub().returns({ get: sinon.stub().resolves({ exists: false }) }),
-            get: sinon.stub().resolves({ docs: [], size: 0 }),
-            orderBy: sinon.stub().returnsThis(),
-            limit: sinon.stub().returnsThis(),
-        }),
-        get: sinon.stub().resolves({ exists: false }),
-        set: sinon.stub().resolves(),
-        update: sinon.stub().resolves(),
-        delete: sinon.stub().resolves(),
-    }),
-    add: sinon.stub().resolves({ id: 'mock_doc_id' }),
-    where: sinon.stub().returnsThis(),
-    orderBy: sinon.stub().returnsThis(),
-    limit: sinon.stub().returnsThis(),
-    get: sinon.stub().resolves({ docs: [], size: 0, forEach: () => {} }),
-}));
+// Setup sandbox for prototype stubbing
+const sandbox = sinon.createSandbox();
+let collectionStub;
 
 const myFunctions = require('../index.js');
 
 describe('VULN-001 & VULN-002: Security Regression Tests', () => {
-    after(() => { sinon.restore(); });
+    before(() => {
+        collectionStub = sandbox.stub(Firestore.prototype, 'collection').callsFake(() => ({
+            doc: sinon.stub().returns({
+                collection: sinon.stub().returns({
+                    doc: sinon.stub().returns({ get: sinon.stub().resolves({ exists: false }) }),
+                    get: sinon.stub().resolves({ docs: [], size: 0 }),
+                    orderBy: sinon.stub().returnsThis(),
+                    limit: sinon.stub().returnsThis(),
+                }),
+                get: sinon.stub().resolves({ exists: false }),
+                set: sinon.stub().resolves(),
+                update: sinon.stub().resolves(),
+                delete: sinon.stub().resolves(),
+            }),
+            add: sinon.stub().resolves({ id: 'mock_doc_id' }),
+            where: sinon.stub().returnsThis(),
+            orderBy: sinon.stub().returnsThis(),
+            limit: sinon.stub().returnsThis(),
+            get: sinon.stub().resolves({ docs: [], size: 0, forEach: () => {} }),
+        }));
+    });
+
+    after(() => { sandbox.restore(); });
 
     describe('getModerationQueue (VULN-002)', () => {
         it('should throw permission-denied for a plain authenticated user (no role claim)', async () => {
             const wrapped = fft.wrap(myFunctions.getModerationQueue);
             try {
-                await wrapped({}, { auth: { uid: 'user123', token: { role: undefined } } });
+                await wrapped({}, { app: {}, auth: { uid: 'user123', token: { role: undefined } } });
                 throw new Error('Should have thrown permission-denied');
             } catch (err) {
                 expect(err.code).to.equal('permission-denied');
@@ -65,7 +72,7 @@ describe('VULN-001 & VULN-002: Security Regression Tests', () => {
         it('should throw unauthenticated when called with no auth context', async () => {
             const wrapped = fft.wrap(myFunctions.getModerationQueue);
             try {
-                await wrapped({}, { auth: null });
+                await wrapped({}, { app: {}, auth: null });
                 throw new Error('Should have thrown unauthenticated');
             } catch (err) {
                 expect(err.code).to.equal('unauthenticated');
@@ -74,13 +81,13 @@ describe('VULN-001 & VULN-002: Security Regression Tests', () => {
 
         it('should allow access when auth token has role == "moderator"', async () => {
             const wrapped = fft.wrap(myFunctions.getModerationQueue);
-            const result = await wrapped({}, { auth: { uid: 'mod1', token: { role: 'moderator' } } });
+            const result = await wrapped({}, { app: {}, auth: { uid: 'mod1', token: { role: 'moderator' } } });
             expect(result).to.have.property('queue');
         });
 
         it('should allow access when auth token has role == "admin"', async () => {
             const wrapped = fft.wrap(myFunctions.getModerationQueue);
-            const result = await wrapped({}, { auth: { uid: 'admin1', token: { role: 'admin' } } });
+            const result = await wrapped({}, { app: {}, auth: { uid: 'admin1', token: { role: 'admin' } } });
             expect(result).to.have.property('queue');
         });
     });
@@ -91,7 +98,7 @@ describe('VULN-001 & VULN-002: Security Regression Tests', () => {
             try {
                 await wrapped(
                     { action: 'ban', targetUserId: 'victim' },
-                    { auth: { uid: 'attacker', token: { role: undefined } } }
+                    { app: {}, auth: { uid: 'attacker', token: { role: undefined } } }
                 );
                 throw new Error('Should have thrown permission-denied');
             } catch (err) {
@@ -102,7 +109,7 @@ describe('VULN-001 & VULN-002: Security Regression Tests', () => {
         it('should throw unauthenticated with no auth', async () => {
             const wrapped = fft.wrap(myFunctions.takeModerationAction);
             try {
-                await wrapped({ action: 'ban' }, { auth: null });
+                await wrapped({ action: 'ban' }, { app: {}, auth: null });
                 throw new Error('Should have thrown unauthenticated');
             } catch (err) {
                 expect(err.code).to.equal('unauthenticated');
@@ -114,7 +121,7 @@ describe('VULN-001 & VULN-002: Security Regression Tests', () => {
         it('should throw permission-denied for plain auth', async () => {
             const wrapped = fft.wrap(myFunctions.moderationStats);
             try {
-                await wrapped({}, { auth: { uid: 'user', token: {} } });
+                await wrapped({}, { app: {}, auth: { uid: 'user', token: {} } });
                 throw new Error('Should have thrown permission-denied');
             } catch (err) {
                 expect(err.code).to.equal('permission-denied');
@@ -128,7 +135,7 @@ describe('VULN-001 & VULN-002: Security Regression Tests', () => {
             try {
                 await wrapped(
                     { userId: 'victim' },
-                    { auth: { uid: 'mod1', token: { role: 'moderator' } } }
+                    { app: {}, auth: { uid: 'mod1', token: { role: 'moderator' } } }
                 );
                 throw new Error('Should have thrown permission-denied');
             } catch (err) {
@@ -139,7 +146,7 @@ describe('VULN-001 & VULN-002: Security Regression Tests', () => {
         it('should throw permission-denied for plain auth user', async () => {
             const wrapped = fft.wrap(myFunctions.handleCsamIncident);
             try {
-                await wrapped({ userId: 'victim' }, { auth: { uid: 'attacker', token: {} } });
+                await wrapped({ userId: 'victim' }, { app: {}, auth: { uid: 'attacker', token: {} } });
                 throw new Error('Should have thrown permission-denied');
             } catch (err) {
                 expect(err.code).to.equal('permission-denied');

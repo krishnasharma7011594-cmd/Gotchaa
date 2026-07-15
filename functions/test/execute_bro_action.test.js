@@ -14,34 +14,41 @@ if (admin.apps.length === 0) {
     });
 }
 
-// 2. Stub initializeApp to prevent the double-initialization error when index.js runs
-sinon.stub(admin, 'initializeApp');
+// 2. Stub initializeApp safely to prevent the double-initialization error when index.js runs
+if (typeof admin.initializeApp.restore !== 'function') {
+    sinon.stub(admin, 'initializeApp');
+}
 
-// 3. Stub Firestore.prototype.collection globally
+// 3. Setup sandbox for prototype stubbing
+const sandbox = sinon.createSandbox();
 let addStub = sinon.stub().resolves({ id: 'mock_doc_id' });
-const collectionStub = sinon.stub(Firestore.prototype, 'collection').callsFake((name) => {
-    if (name === 'bro_failures') {
-        return {
-            add: addStub
-        };
-    }
-    // Fallback stub for other collections accessed during load/tests
-    return {
-        doc: sinon.stub().returns({
-            collection: sinon.stub().returns({
-                doc: sinon.stub().returns({
-                    get: sinon.stub().resolves({ exists: false })
-                })
-            })
-        }),
-        add: sinon.stub().resolves({ id: 'mock_doc_id' })
-    };
-});
+let collectionStub;
 
 // 4. Import the functions
 const myFunctions = require('../index.js');
 
 describe('executeBroAction Cloud Function Unit Tests', () => {
+    before(() => {
+        collectionStub = sandbox.stub(Firestore.prototype, 'collection').callsFake((name) => {
+            if (name === 'bro_failures') {
+                return {
+                    add: addStub
+                };
+            }
+            // Fallback stub for other collections accessed during load/tests
+            return {
+                doc: sinon.stub().returns({
+                    collection: sinon.stub().returns({
+                        doc: sinon.stub().returns({
+                            get: sinon.stub().resolves({ exists: false })
+                        })
+                    })
+                }),
+                add: sinon.stub().resolves({ id: 'mock_doc_id' })
+            };
+        });
+    });
+
     beforeEach(() => {
         addStub.resetHistory();
     });
@@ -51,7 +58,7 @@ describe('executeBroAction Cloud Function Unit Tests', () => {
     });
 
     after(() => {
-        sinon.restore();
+        sandbox.restore();
     });
 
     it('should throw an error if App Check token is missing', async () => {

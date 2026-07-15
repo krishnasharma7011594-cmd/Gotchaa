@@ -2,7 +2,9 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const speakeasy = require('speakeasy');
 const { v4: uuidv4 } = require('uuid');
-admin.initializeApp();
+if (admin.apps.length === 0) {
+    admin.initializeApp();
+}
 
 const db = admin.firestore();
 

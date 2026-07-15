@@ -360,8 +360,6 @@ class ResponseValidatorInterceptor extends Interceptor {
           'Connection timeout. Check your internet connection.',
         DioExceptionType.receiveTimeout => 'Request timeout. Please try again.',
         DioExceptionType.sendTimeout => 'Request timeout. Please try again.',
-        DioExceptionType.transformTimeout =>
-          'Request timeout. Please try again.',
         DioExceptionType.unknown =>
           'An error occurred. Please try again later.',
         DioExceptionType.connectionError =>

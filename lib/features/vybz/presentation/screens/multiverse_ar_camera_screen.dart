@@ -262,12 +262,6 @@ class _MultiverseARCameraScreenState
       }
       final downloadUrl = await storageRef.getDownloadURL();
 
-      // Cleanup
-      try {
-        await VideoCompress.deleteAllCache();
-      } catch (e) {
-        print('Failed to clean up VideoCompress cache: $e');
-      }
 
       final vybz = VybzModel(
         id: '',
