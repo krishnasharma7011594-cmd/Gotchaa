@@ -133,3 +133,4 @@ coverage/
 # Service accounts and credentials
 serviceAccountKey.json
 *service-account*.json
+scripts/*.ps1
