@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GOTCHAA }}
+      FIREBASE_SKIP_ENABLE_CHECK: "1"
 
     steps:
       - name: Checkout repository
@@ -97,6 +98,7 @@ jobs:
         run: |
           firebase deploy \
             --non-interactive \
+            --force \
             --project studio-1284397718-50704 \
             --only functions
 
