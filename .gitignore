@@ -122,7 +122,8 @@ firestore-debug.log
 # Android tools
 cmdline.zip
 
-# Internal Antigravity directories
+# Internal Antigravity directories (AI tool session data — not project code)
+.gemini/
 brain/
 scratch/
 

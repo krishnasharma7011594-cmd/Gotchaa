@@ -2,6 +2,8 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const speakeasy = require('speakeasy');
 const { v4: uuidv4 } = require('uuid');
+// DEV-ONLY: demo seed accounts — see functions/src/dev/seedData.js
+const { DEMO_USERS } = require('./src/dev/seedData');
 if (admin.apps.length === 0) {
     admin.initializeApp();
 }
@@ -934,54 +936,8 @@ exports.seedDemoData = functions.runWith({ timeoutSeconds: 300, memory: '512MB',
         const now = admin.firestore.FieldValue.serverTimestamp();
         const BASE_DATE = new Date('2025-03-01T00:00:00Z');
 
-        // ── Demo User Definitions ──────────────────────────────────────────────
-        const USERS = [
-            {
-                uid: 'demo_arjun_001',
-                email: 'arjun.sharma.demo@gotchaa.app',
-                password: 'GotchaaDemo@1',
-                displayName: 'Arjun Sharma',
-                username: 'arjun_sharma',
-                bio: '🇮🇳 Software dev from Bangalore. Love cricket, chai & late-night code sessions. Building the future one commit at a time. 🚀',
-                photoUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ArjunSharma&backgroundColor=b6e3f4&clothingColor=3c4f5c',
-                language: 'en',
-                nation: { country: 'India', continent: 'Asia', code: 'IN' },
-                followersCount: 10, followingCount: 5,
-                karma: 350,
-                gender: 'male', ageTier: 4,
-                birthday: new Date('1998-04-15'),
-            },
-            {
-                uid: 'demo_sofia_002',
-                email: 'sofia.martinez.demo@gotchaa.app',
-                password: 'GotchaaDemo@2',
-                displayName: 'Sofía Martínez',
-                username: 'sofia_creates',
-                bio: '🇲🇽 Diseñadora gráfica de CDMX. Amo el arte, la música y los tacos 🌮 La vida es bella y el diseño lo hace más. ✨',
-                photoUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SofiaMartinez&backgroundColor=ffdfbf&clothingColor=f4a261',
-                language: 'es',
-                nation: { country: 'Mexico', continent: 'Americas', code: 'MX' },
-                followersCount: 8, followingCount: 12,
-                karma: 220,
-                gender: 'female', ageTier: 4,
-                birthday: new Date('2000-09-22'),
-            },
-            {
-                uid: 'demo_omar_003',
-                email: 'omar.rashidi.demo@gotchaa.app',
-                password: 'GotchaaDemo@3',
-                displayName: 'Omar Al-Rashidi',
-                username: 'omar_uae',
-                bio: '🇦🇪 Entrepreneur from Dubai. Passionate about fintech, travel & connecting cultures. GOTCHAA is where worlds meet. 🌍💼',
-                photoUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=OmarRashidi&backgroundColor=c0aede&clothingColor=264653',
-                language: 'ar',
-                nation: { country: 'United Arab Emirates', continent: 'Asia', code: 'AE' },
-                followersCount: 15, followingCount: 8,
-                karma: 480,
-                gender: 'male', ageTier: 4,
-                birthday: new Date('1995-12-03'),
-            },
-        ];
+        // ── Demo User Definitions (imported from src/dev/seedData.js) ──────────
+        const USERS = DEMO_USERS;
 
         // ── Create Firebase Auth Users ─────────────────────────────────────────
         for (const u of USERS) {
