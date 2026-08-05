@@ -3,10 +3,11 @@ const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
-const serviceAccount = require('../serviceAccountKey.json');
-
+// NOTE: This script uses Application Default Credentials (ADC).
+// To run locally, set the GOOGLE_APPLICATION_CREDENTIALS environment variable
+// to the path of your service account key JSON file.
+// Example: export GOOGLE_APPLICATION_CREDENTIALS="/path/to/key.json"
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
     storageBucket: 'studio-1284397718-50704.firebasestorage.app'
 });
 

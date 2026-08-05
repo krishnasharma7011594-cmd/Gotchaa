@@ -192,7 +192,11 @@ Register your application in your Firebase Console and download:
 ## ⚙️ Configuration
 
 ### Environment Variables
-Configure your backend environment values. Create a `.env` file under `functions/`:
+Configure your backend environment values. Copy the root `.env.example` file to `.env` and fill in your keys:
+
+```bash
+cp .env.example .env
+```
 
 | Variable | Description |
 | --- | --- |
@@ -200,7 +204,8 @@ Configure your backend environment values. Create a `.env` file under `functions
 | `GROQ_API_KEY` | Developer API key for Groq engine processing |
 | `SPOTIFY_CLIENT_ID` | Spotify Client Credentials ID for search capabilities |
 | `SPOTIFY_CLIENT_SECRET` | Spotify client credentials secret |
-| `LYRIA_DEFAULT_MODEL` | Targeting identifier for Gemini audio (lyria-3-clip-preview) |
+| `FIREBASE_PROJECT_ID` | Your Firebase Project ID |
+| `FIREBASE_STORAGE_BUCKET` | Your Firebase Storage Bucket URL |
 
 ### App Compile Time Variables
 Gotchaa injects security credentials at build time to prevent hardcoding keys.

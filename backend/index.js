@@ -6,10 +6,21 @@ const rateLimit = require('express-rate-limit');
 const multer = require('multer');
 const admin = require('firebase-admin');
 
-if (admin.apps.length === 0) {
-  admin.initializeApp({
-    projectId: 'studio-1284397718-50704',
-    storageBucket: 'studio-1284397718-50704.firebasestorage.app'
+const { initializeApp, getApps } = require('firebase-admin/app');
+
+const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID;
+const FIREBASE_STORAGE_BUCKET = process.env.FIREBASE_STORAGE_BUCKET;
+
+if (!FIREBASE_PROJECT_ID || !FIREBASE_STORAGE_BUCKET) {
+  console.error("CRITICAL ERROR: FIREBASE_PROJECT_ID and FIREBASE_STORAGE_BUCKET environment variables are required.");
+  console.error("Please configure these in your .env file. See .env.example for reference.");
+  process.exit(1);
+}
+
+if (getApps().length === 0) {
+  initializeApp({
+    projectId: FIREBASE_PROJECT_ID,
+    storageBucket: FIREBASE_STORAGE_BUCKET
   });
 }
 

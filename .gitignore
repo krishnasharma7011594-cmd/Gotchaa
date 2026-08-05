@@ -110,3 +110,26 @@ key.properties
 # Large release artifacts and memory dumps
 *.hprof
 web/releases/
+
+# Generated logs and temporary files
+analyze*.txt
+build*.txt
+flutter*.log
+hs_err_pid*.log
+maven_resp.json
+firestore-debug.log
+
+# Android tools
+cmdline.zip
+
+# Internal Antigravity directories
+brain/
+scratch/
+
+# Coverage and Debug
+debug-info/
+coverage/
+
+# Service accounts and credentials
+serviceAccountKey.json
+*service-account*.json

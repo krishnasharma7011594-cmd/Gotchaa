@@ -21,9 +21,23 @@ load_dotenv()
 app = FastAPI(title="BRO - Jarvis AI Backend for Gotchaa")
 
 # CORS Middleware
+# Read allowed origins from environment variable or use safe defaults
+origins_env = os.getenv("ALLOWED_ORIGINS")
+if origins_env:
+    allowed_origins = [origin.strip() for origin in origins_env.split(",")]
+else:
+    allowed_origins = [
+        "http://localhost:3000",
+        "http://localhost:8080",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:8080",
+        "https://studio-1284397718-50704.firebaseapp.com",
+        "https://studio-1284397718-50704.web.app"
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
