@@ -9,26 +9,6 @@ Gotchaa is a production-grade, founder-led social super app built on Flutter, No
 [![Firebase Deploy](https://github.com/krishnasharma7011594-cmd/Gotchaa/actions/workflows/firebase-deploy.yml/badge.svg)](https://github.com/krishnasharma7011594-cmd/Gotchaa/actions/workflows/firebase-deploy.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-[Project Logo Placeholder]
-
-[Website Placeholder] | [Demo Video Placeholder] | [Live Demo Placeholder]
-
----
-
-## 📸 Screenshots
-
-| Home Feed | Messaging | AI Assistant | Explore | Profile |
-| --- | --- | --- | --- | --- |
-| ![Home Feed Screen](https://placehold.co/400x800/0d0d1a/ffffff/png?text=Home+Feed) | ![Messaging Screen](https://placehold.co/400x800/0d0d1a/ffffff/png?text=Messaging) | ![AI Assistant Screen](https://placehold.co/400x800/0d0d1a/ffffff/png?text=AI+Assistant) | ![Explore Screen](https://placehold.co/400x800/0d0d1a/ffffff/png?text=Explore) | ![Profile Screen](https://placehold.co/400x800/0d0d1a/ffffff/png?text=Profile) |
-
----
-
-## 🎥 Demo GIFs
-
-| App Walkthrough | Encrypted Messaging | AI Sound Composer | Shaders & Creator Tools |
-| --- | --- | --- | --- |
-| ![App Walkthrough Demo](https://placehold.co/300x600/0d0d1a/ffffff/gif?text=App+Demo) | ![Messaging Demo](https://placehold.co/300x600/0d0d1a/ffffff/gif?text=Messaging+Demo) | ![AI Composer Demo](https://placehold.co/300x600/0d0d1a/ffffff/gif?text=AI+Demo) | ![Video Feed Demo](https://placehold.co/300x600/0d0d1a/ffffff/gif?text=Creator+Tools) |
-
 ---
 
 ## 🌟 Features
@@ -104,8 +84,6 @@ graph TD
     Functions -->|Interact / Generate Audio| Gemini
 ```
 
-[Architecture Diagram Placeholder]
-
 ---
 
 ## 🛠️ Technology Stack
@@ -121,7 +99,7 @@ graph TD
 
 | Backend & Cloud | Technology | Version | Purpose |
 | --- | --- | --- | --- |
-| **Compute** | Node.js Express / Firebase Functions | Node `22` / SDK `^4.9.0` | Serverless backend API endpoint routes |
+| **Compute** | Node.js Express / Firebase Functions | Node `20` / SDK `^4.9.0` | Serverless backend API endpoint routes |
 | **Primary Database** | Cloud Firestore | latest | Document schema storing users, posts, and configurations |
 | **Signaling Store** | Firebase Realtime Database | latest | Lightweight sync layer for WebRTC signals |
 | **Storage** | Cloud Storage for Firebase | latest | Storage bucket holding videos and audio files |
@@ -170,7 +148,7 @@ Gotchaa/
 
 ### 1. Pre-requisites
 * Install [Flutter SDK](https://docs.flutter.dev/get-started/install) (Version `>=3.3.0`)
-* Install [Node.js](https://nodejs.org/en) (Version `22.x`)
+* Install [Node.js](https://nodejs.org/en) (Version `20.x`)
 * Install [Firebase CLI](https://firebase.google.com/docs/cli):
   ```bash
   npm install -g firebase-tools
@@ -266,6 +244,7 @@ The workflows in `.github/workflows/` automate checks:
 * **Flutter CI (`flutter-ci.yml`):** Runs static analysis (`flutter analyze`) and tests for any push or pull request hitting targeted development branches.
 * **Web & Backend CI (`web-backend-ci.yml`):** Automatically boots environment containers, tests syntax on node entry points, and runs Mocha test assertions.
 * **Firebase Deploy (`firebase-deploy.yml`):** Automates serverless deployment of modified Functions scripts, security index updates, and schema rules to your Firebase console.
+* **Secret Scanning (`secret-scan.yml`):** Runs Gitleaks on every push and PR to block any future accidental secret commits.
 
 ---
 
@@ -281,20 +260,6 @@ For a detailed breakdown of our security posture, encryption models, and access 
 
 ---
 
-## ⚡ Performance
-
-The following performance benchmarks are placeholder references to be verified in staging:
-
-| Metric | Target Value |
-| --- | --- |
-| **Startup Time (Cold)** | [Startup Time Placeholder] |
-| **APK Size (Compressed)** | [APK Size Placeholder] |
-| **Memory Usage (Idle)** | [Memory Usage Placeholder] |
-| **Target Frame Rate (UI)** | [Frame Rate Placeholder] |
-| **Average API Response Time** | [API Response Time Placeholder] |
-
----
-
 ## 🗺️ Roadmap
 
 - [x] Integrate E2EE protocol utilizing Curve25519 key agreements
@@ -303,21 +268,6 @@ The following performance benchmarks are placeholder references to be verified i
 - [x] Embed multi-intent voice queries in BRO assistant screen
 - [ ] Implement group call WebRTC connectivity rooms
 - [ ] Connect localized geo-spatial clusters for feed queries
-- [ ] [Staging Roadmap Item Placeholder]
-
----
-
-## 🐞 Known Issues
-
-* [Known Issue Placeholder 1]
-* [Known Issue Placeholder 2]
-
----
-
-## 🔮 Future Plans
-
-* [Future Plan Placeholder 1]
-* [Future Plan Placeholder 2]
 
 ---
 
@@ -337,10 +287,6 @@ Gotchaa is distributed under the MIT License. See [LICENSE](LICENSE) for more de
 
 * **Founder:** Krishna Sharma
 * **GitHub:** [@krishnasharma7011594](https://github.com/krishnasharma7011594-cmd)
-* **LinkedIn:** [LinkedIn Placeholder]
-* **Website:** [Website Placeholder]
-* **Email:** [Email Placeholder]
-* **X (Twitter):** [X Placeholder]
 
 ---
 
@@ -348,7 +294,6 @@ Gotchaa is distributed under the MIT License. See [LICENSE](LICENSE) for more de
 
 * **Star:** Star this repository to show your support!
 * **Issues:** Report bugs or submit feature proposals.
-* **Sponsorship:** [Sponsorship Placeholder]
 
 ---
 
